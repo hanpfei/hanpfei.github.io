@@ -1,0 +1,292 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Linux 权能综述 | WolfcsTech</title><link rel="stylesheet" type="text/css" href="//fonts.css.network/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.2.0"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=1.2.0"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Linux 权能综述</h1><a id="logo" href="/.">WolfcsTech</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">Linux 权能综述</h1><div class="post-meta">Jul 10, 2017<span> | </span><span class="category"><a href="/categories/安全/">安全</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><a data-disqus-identifier="2017/07/10/linux-capabilities-overview/" href="/2017/07/10/linux-capabilities-overview/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><p>为了执行权限检查，传统的 UNIX 实现区分两种类型的进程：特权进程（其有效用户 ID 为0，称为超级用户或 root），和非特权用户（其有效 UID 非0）。特权进程绕过所有的内核权限检查，而非特权进程受基于进程的认证信息（通常是：有效 UID，有效 GID，和补充组列表）的完整权限检查的支配。<br><a id="more"></a><br>自内核 2.2 版本开始，Linux 将传统上与超级用户关联的特权分为几个单元，称为 capabilities （权能），它们可以被独立的启用或禁用。权能是每个线程的属性。</p>
+<h1 id="权能列表"><a href="#权能列表" class="headerlink" title="权能列表"></a>权能列表</h1><p>下面的列表展示了 Linux 上实现的权能，以及每种权能允许的操作或行为：</p>
+<ul>
+<li><strong>CAP_AUDIT_CONTROL</strong>（自 Linux 2.6.11）<br>启用和禁用内核审计；修改审计过滤器规则；提取审计状态和过滤规则。</li>
+<li><strong>CAP_AUDIT_READ</strong>（自 Linux 3.16）<br>允许通过一个多播 netlink socket 读取审计日志。</li>
+<li><strong>CAP_AUDIT_WRITE</strong>（自 Linux 2.6.11）<br>向内核审计日志写记录。</li>
+<li><strong>CAP_BLOCK_SUSPEND</strong>（自 Linux 3.5）<br>可以阻塞系统挂起（<strong>epoll</strong>(7) <strong>EPOLLWAKEUP</strong>，<em>/proc/sys/wake_lock</em>）的特性。</li>
+<li><strong>CAP_CHOWN</strong><br>对文件的 UIDs 和 GIDs 做任意的修改（参考 <strong>chown</strong>(2)）。</li>
+<li><strong>CAP_DAC_OVERRIDE</strong><br>绕过文件的读，写，和执行权限检查。（DAC 是 “discretionary access control” 的缩写。）</li>
+<li><strong>CAP_DAC_READ_SEARCH</strong><ul>
+<li>绕过文件的读权限检查和目录的读和执行权限检查；</li>
+<li>调用 <strong>open_by_handle_at</strong>(2)。</li>
+</ul>
+</li>
+<li><strong>CAP_FOWNER</strong><ul>
+<li>对于通常要求进程的文件系统 UID 与文件的 UID 匹配的操作，绕过权限检查 (比如，<strong>chmod</strong>(2)，<strong>utime</strong>(2))，除了那些包含在 <strong>CAP_DAC_OVERRIDE</strong> 和 <strong>CAP_DAC_READ_SEARCH</strong> 中的操作；</li>
+<li>为任意文件设置扩展文件属性(参考 <strong>chattr</strong>(1))；</li>
+<li>为任意文件设置访问控制表(ACLs)；</li>
+<li>对文件删除操作忽略目录的 sticky 位；</li>
+<li>在 <strong>open</strong>(2) 和 <strong>fcntl</strong>(2) 任意文件时设置 <strong>O_NOATIME</strong>。</li>
+</ul>
+</li>
+<li><strong>CAP_FSETID</strong><br>当文件修改时不清除 set-user-ID 和 set-group-ID 模式位；为文件 GID 与调用进程的文件系统或补充 GIDs 不匹配的文件设置 set-group-ID 位。</li>
+<li><strong>CAP_IPC_LOCK</strong><br>锁定内存 (<strong>mlock</strong>(2)，<strong>mlockall</strong>(2)，<strong>mmap</strong>(2)，<strong>shmctl</strong>(2))。</li>
+<li><strong>CAP_IPC_OWNER</strong><br>绕过对 System V IPC 对象的操作的权限检查。</li>
+<li><strong>CAP_KILL</strong><br>绕过发送信号 (参考 <strong>kill</strong>(2)) 时的权限检查。这包括使用 <strong>ioctl</strong>(2) <strong>KDSIGACCEPT</strong> 操作。</li>
+<li><strong>CAP_LEASE</strong>（自 Linux 2.4）<br>为任意文件建立租约 (参考 <strong>fcntl</strong>(2))。</li>
+<li><strong>CAP_LINUX_IMMUTABLE</strong><br>设置<strong>FS_APPEND_FL</strong> 和 <strong>FS_IMMUTABLE_FL</strong> inode 标记 (参考 <strong>chattr</strong>(1))。</li>
+<li><strong>CAP_MAC_ADMIN</strong>（自 Linux 2.6.25）<br>覆盖强制访问控制 (Mandatory Access Control (MAC)).  为 Smack Linux 安全模块(Linux Security Module (LSM)) 而实现。</li>
+<li><strong>CAP_MAC_OVERRIDE</strong>（自 Linux 2.6.25）<br>允许 MAC 配置或状态改变。为 Smack LSM 而实现。</li>
+<li><strong>CAP_MKNOD</strong>（自 Linux 2.4）<br>使用 <strong>mknod</strong>(2) 创建特殊文件。</li>
+<li><strong>CAP_NET_ADMIN</strong><br>执行多种网络有关的操作：<ul>
+<li>接口配置；</li>
+<li>IP 防火墙，地址伪装，和账单管理；</li>
+<li>修改路由表；</li>
+<li>为透明代理绑定任何地址；</li>
+<li>设置服务类性 (type-of-service (TOS))；</li>
+<li>清理驱动统计资料；</li>
+<li>设置混杂模式；</li>
+<li>启用组播；</li>
+<li>使用 <strong>setsockopt</strong>(2) 设置下列 socket 选项：<strong>SO_DEBUG</strong>，<strong>SO_MARK</strong>，<strong>SO_PRIORITY</strong> (在0到6范围之外的优先级)，<strong>SO_RCVBUFFORCE</strong>，和 <strong>SO_SNDBUFFORCE</strong>。</li>
+</ul>
+</li>
+<li><strong>CAP_NET_BIND_SERVICE</strong><br>将一个 socket 绑定到一个互联网域特权端口 (端口号小于 1024)。</li>
+<li><strong>CAP_NET_BROADCAST</strong><br>(未使用)  使 socket 发送组播，并监听组播。</li>
+<li><strong>CAP_NET_RAW</strong><ul>
+<li>使用 RAW 和 PACKET sockets；</li>
+<li>为透明代理绑定任何地址。</li>
+</ul>
+</li>
+<li><strong>CAP_SETGID</strong><br>执行任意的进程 GIDs 和补充 GID 列表管理；当通过 UNIX 域 sockets 传递 socket 认证信息时伪造 GID；在一个用户命名空间 (参考 <strong>user_namespaces</strong>(7)) 中写入组 ID 映射。</li>
+<li><strong>CAP_SYS_ADMIN</strong><ul>
+<li>执行一系列系统管理操作，包括：<strong>quotactl</strong>(2)，<strong>mount</strong>(2)，<strong>umount</strong>(2)，<strong>swapon</strong>(2)，<strong>swapoff</strong>(2)，<strong>sethostname</strong>(2)，和 <strong>setdomainname</strong>(2)；</li>
+<li>执行特权 syslog(2) 操作 (自 Linux 2.6.37 开始，应该使用 CAP_SYSLOG 来允许这一操作)；</li>
+<li>执行 <strong>VM86_REQUEST_IRQ vm86</strong>(2) 命令；</li>
+<li>对任意 System V IPC 对象执行 IPC_SET 和 IPC_RMID 操作；</li>
+<li>覆盖 RLIMIT_NPROC 资源限制；</li>
+<li>执行 trusted 和 security Extended Attributes (see <strong>xattr</strong>(7)) 操作；</li>
+<li>使用 <strong>lookup_dcookie</strong>(2)；</li>
+<li>使用  ioprio_set(2) 来分配 IOPRIO_CLASS_RT 和 (Linux 2.6.25 之前) IOPRIO_CLASS_IDLE I/O 调度类别；</li>
+<li>当通过 UNIX 域 sockets 传递 socket 认证信息时伪装 PID；</li>
+<li>在系统调用打开文件 (比如，<strong>accept</strong>(2)，<strong>execve</strong>(2)，<strong>open</strong>(2)，<strong>pipe</strong>(2)) 时，超出 /proc/sys/fs/file-max，系统范围内打开文件数的限制；</li>
+<li>通过 <strong>clone</strong>(2) 和 <strong>unshare</strong>(2) 使用 <strong> CLONE_* </strong> 标记创建新的命名空间（但是，自从 Linux 3.8 开始，创建命名空间不需要任何权能）；</li>
+<li>调用 <strong>perf_event_open</strong>(2)；</li>
+<li>访问特权 perf 事件信息；</li>
+<li>调用 <strong>setns</strong>(2) (在目标命名空间中需要 CAP_SYS_ADMIN)；</li>
+<li>调用 <strong>fanotify_init</strong>(2)；</li>
+<li>调用 <strong>bpf</strong>(2)；</li>
+<li>执行 <strong>KEYCTL_CHOWN</strong> 和 <strong>KEYCTL_SETPERM keyctl</strong>(2) 操作；</li>
+<li>执行 <strong>madvise</strong>(2) <strong>MADV_HWPOISON</strong> 操作；</li>
+<li>使用 <strong>TIOCSTI ioctl</strong>(2) 向一个终端的输入队列中插入字符，而不是调用者的控制终端；</li>
+<li>使用废弃的 <strong>nfsservctl </strong>(2) 系统调用；</li>
+<li>使用废弃的 <strong>bdflush </strong>(2) 系统调用；</li>
+<li>执行各种特权的块设备 <strong>ioctl</strong>(2) 操作；</li>
+<li>执行各种特权的文件系统 <strong>ioctl</strong>(2) 操作；</li>
+<li>对许多设备驱动执行管理操作。</li>
+</ul>
+</li>
+<li><strong>CAP_SYS_BOOT</strong><br>使用 <strong>reboot</strong>(2) 和 <strong>kexec_load</strong>(2)。</li>
+<li><strong>CAP_SYS_CHROOT</strong><br>使用 <strong>chroot</strong>(2)。</li>
+<li><strong>CAP_SYS_MODULE</strong><br>加载和卸载内核模块(参考 <strong>init_module</strong>(2) 和 <strong>delete_module</strong>(2))；在 2.6.25 之前的内核中：从系统范围内的权能边界集合中丢弃权能。</li>
+<li><strong>CAP_SYS_NICE</strong><ul>
+<li>触发进程 nice 值 (<strong>nice</strong>(2)，<strong>setpriority</strong>(2)) 和为任意进程改变 nice 值；</li>
+<li>为调用进程设置实时调度策略，及为任意进程设置调度策略和优先级 (<strong>sched_setscheduler</strong>(2)，<strong>sched_setparam</strong>(2)，<strong>shed_setattr</strong>(2))；</li>
+<li>为任意进程设置 CPU affinity (<strong>sched_setaffinity</strong>(2))；</li>
+<li>为任意进程设置 I/O 调度类别和优先级 (<strong>ioprio_set</strong>(2))；</li>
+<li>对任意进程应用 <strong>migrate_pages</strong>(2) 并允许进程被迁移到任意节点；</li>
+<li>对任意进程应用 <strong>move_pages</strong>(2)；</li>
+<li>在 <strong>mbind</strong>(2) 和 <strong>move_pages</strong>(2) 中使用 <strong>MPOL_MF_MOVE_ALL</strong> 标记。</li>
+</ul>
+</li>
+<li><strong>CAP_SYS_PACCT</strong><br>使用 <strong>acct</strong>(2)。</li>
+<li><strong>CAP_SYS_PTRACE</strong><ul>
+<li>使用 <strong>ptrace</strong>(2) 追踪任意进程；</li>
+<li>对任意进程应用 <strong>get_robust_list</strong>(2)；</li>
+<li>使用 <strong>process_vm_readv</strong>(2) 和 <strong>process_vm_writev</strong>(2) 同任意进程的内存传输数据；</li>
+<li>使用 <strong>kcmp</strong>(2) 检查进程。</li>
+</ul>
+</li>
+<li><strong>CAP_SYS_RAWIO</strong><ul>
+<li>执行 I/O 端口操作 (<strong>iopl</strong>(2) 和 <strong>ioperm</strong>(2))；</li>
+<li>访问 /proc/kcore；</li>
+<li>使用 <strong>FIBMAP ioctl</strong>(2) 操作；</li>
+<li>打开设备访问 x86 模式特有寄存器 (MSRs，参考 <strong>msr</strong>(4))；</li>
+<li>更新 /proc/sys/vm/mmap_min_addr；</li>
+<li>在地址低于 /proc/sys/vm/mmap_min_addr 的位置创建内存映射；</li>
+<li>在 /proc/bus/pci 中映射文件；</li>
+<li>打开 /dev/mem 和 /dev/kmem；</li>
+<li>执行各种 SCSI 设备命令；</li>
+<li>在 <strong>hpsa</strong>(4) 和 <strong>cciss</strong>(4) 设备上执行某一操作；</li>
+<li>在其它设备上执行一系列设备特有操作。</li>
+</ul>
+</li>
+<li><strong>CAP_SYS_RESOURCE</strong><ul>
+<li>使用 ext2 文件系统上的预留空间；</li>
+<li>执行 ioctl(2) 调用控制  ext3 日志；</li>
+<li>覆盖磁盘配额限制；</li>
+<li>增加资源限制 (参考 <strong>setrlimit</strong>(2))；</li>
+<li>覆盖 RLIMIT_NPROC 资源限制；</li>
+<li>在终端分配上覆盖最大的终端数；</li>
+<li>覆盖最大的 keymaps 个数；</li>
+<li>允许实时时钟中断大于64 hz；</li>
+<li>触发一个 System V 消息队列的 msg_qbytes 限制超过 /proc/sys/kernel/msgmnb 中的限制 (参考 <strong>msgop</strong>(2) 和 <strong>msgctl</strong>(2))；</li>
+<li>当使用 <strong>F_SETPIPE_SZ fcntl</strong>(2) 命令设置一个管道的容量时覆盖 /proc/sys/fs/pipe-size-max 的限制；</li>
+<li>使用 <strong>F_SETPIPE_SZ</strong> 增加管道的容量超出 /proc/sys/fs/pipe-max-size 指定的限制；</li>
+<li>当创建 POSIX 消息队列 (参考 <strong>mq_overview</strong>(7)) 时覆盖  /proc/sys/fs/mqueue/queues_max 的限制；</li>
+<li>使用 <strong>prctl</strong>(2) <strong>PR_SET_MM</strong> 操作；</li>
+<li>设置 /proc/PID/oom_score_adj 为一个小于由一个具有 CAP_SYS_RESOURCE 的进程最近设置的值的值。</li>
+</ul>
+</li>
+<li><strong>CAP_SYS_TIME</strong><br>设置系统时钟 (<strong>settimeofday</strong>(2)，<strong>stime</strong>(2)，<strong>adjtimex</strong>(2))；设置实时 (硬件) 时钟。</li>
+<li><strong>CAP_SYS_TTY_CONFIG</strong><br>使用 <strong>vhangup</strong>(2)；对虚拟终端使用各种特权 <strong>ioctl</strong>(2) 操作。</li>
+<li><strong>CAP_SYSLOG</strong> (自 Linux 2.6.37)<ul>
+<li>执行特权 <strong>syslog</strong>(2) 操作。参考 <strong>syslog</strong>(2) 来获取哪些操作需要特权的信息；</li>
+<li>当 /proc/sys/kernel/kptr_restrict 值为 1 时，查看通过 /proc 和其它接口暴露<br>的内核地址。(参考 <strong>proc</strong>(5) 中 kptr_restrict 的讨论。)</li>
+</ul>
+</li>
+<li><strong>CAP_WAKE_ALARM</strong> (自 Linux 3.0)<br>触发将唤醒系统的东西 (设置 CLOCK_REALTIME_ALARM 和 CLOCK_BOOTTIME_ALARM 定时器)。</li>
+</ul>
+<h1 id="过去和当前的实现"><a href="#过去和当前的实现" class="headerlink" title="过去和当前的实现"></a>过去和当前的实现</h1><p>权能的完整实现需要：</p>
+<ol>
+<li>对于所有的特权操作，内核必须检查线程是否在其有效集合中具有要求的权能。</li>
+<li>内核必须提供系统调用以允许设置和提取一个线程的权能。</li>
+<li>文件系统必须支持为一个可执行文件附接权能，以使文件被执行时进程获得那些权能。</li>
+</ol>
+<p>在内核 2.6.24 之前，只有前两个要求能够满足；自内核 2.6.24 开始，所有三个要求都能满足。</p>
+<h1 id="线程权能集合"><a href="#线程权能集合" class="headerlink" title="线程权能集合"></a>线程权能集合</h1><p>每个线程具有三个包含零个或多个上面的权能的权能集合：</p>
+<ul>
+<li><p>被允许的 (Permitted)：<br> 这是线程可以承担的有效权能的限制性超集。这也是在线程的有效集合中不包含 <strong>CAP_SETPCAP</strong> 权能时，可以被线程添加进可继承的集合的权能的限制性超集。</p>
+<p> 如果一个线程从它的被允许集合中丢弃了一个权能，则它将永远无法重新获取该权能 (除非它 <strong>execve</strong>(2)s 一个 set-user-ID-root 程序，或一个关联的文件权能获取了该权能授权的程序)。</p>
+</li>
+<li><p>可继承的 (Inheritable)：<br> 这是跨越一个 execve(2) 保留的权能的集合。当执行任何程序时可继承的权能保持可继承，且当执行一个在文件的可继承集合中设置了对应位的程序时可继承权能被添加进被允许的集合。</p>
+<p> 由于可继承的权能在以非 root 用户运行时通常不跨 <strong>execve</strong>(2) 保留，希望以抬高的权能运行辅助程序的应用应该考虑使用外界的权能，在下面描述。</p>
+</li>
+<li><p>有效地 (Effective)：<br> 这是内核用来为线程执行权限检查的权能集合。</p>
+</li>
+<li><p>外界的 (Ambient) (自 Linux 4.3)：<br> 这是一个为非特权程序的跨 execve(2) 保留的权能集合。外界的权能集合服从不可变性，如果权能既不是被允许的也不是可继承的，则它也从不可能是外界的。</p>
+<p> 外界的权能集合可以直接使用 <strong>prctl</strong>(2) 修改。如果对应的被允许的或可继承的权能被降低，外界的权能将自动地降低。</p>
+<p> 执行一个由于 set-user-ID 或 set-group-ID 位而修改 UID 或 GID 的程序，或执行一个具有任何文件权能集合的程序将清除外界的集合。在调用 execve(2) 时外界的权能被添加进被允许的集合，并被赋值给有效集合。</p>
+</li>
+</ul>
+<p>A child created via fork(2) inherits copies of its parent’s capability sets.  See below for a discussion of the treatment of capabilities during execve(2).</p>
+<p>Using capset(2), a thread may manipulate its own capability sets (see below).</p>
+<p>Since Linux 3.2, the file /proc/sys/kernel/cap_last_cap exposes the numerical value of the highest capability supported by the running kernel; this can be used to determine the highest bit that may be set in a capability set.</p>
+<h1 id="文件权能"><a href="#文件权能" class="headerlink" title="文件权能"></a>文件权能</h1><p>Since kernel 2.6.24, the kernel supports associating capability sets with an executable file using  setcap(8).   The  file  capability  sets  are stored in an extended attribute (see setxattr(2)) named security.capability.  Writing to this extended attribute requires  the  CAP_SETFCAP  capability.   The  file capability  sets, in conjunction with the capability sets of the thread, determine the capabilities of a thread after an execve(2).</p>
+<p>The three file capability sets are:</p>
+<ul>
+<li><p>Permitted (formerly known as forced):<br>  These capabilities are automatically permitted to the thread, regardless of the thread’s  inheritable capabilities.</p>
+</li>
+<li><p>Inheritable (formerly known as allowed):<br>  This  set  is ANDed with the thread’s inheritable set to determine which inheritable capabilities are enabled in the permitted set of the thread after the execve(2).</p>
+</li>
+<li><p>Effective:<br>  This is not a set, but rather just a single bit.  If this bit is set, then  during  an  execve(2) all  of  the  new permitted capabilities for the thread are also raised in the effective set.  If this bit is not set, then after an execve(2), none of the new permitted capabilities  is  in  the new effective set.</p>
+<p>  Enabling  the  file effective capability bit implies that any file permitted or inheritable capability that causes a thread to acquire the corresponding permitted capability during an execve(2) (see the transformation rules described below) will also acquire that capability in its effective set.   Therefore,  when  assigning  capabilities   to   a   file   (setcap(8),   cap_set_file(3), cap_set_fd(3)),  if  we  specify the effective flag as being enabled for any capability, then the effective flag must also be specified as enabled for all other capabilities for which the  corresponding permitted or inheritable flags is enabled.</p>
+</li>
+</ul>
+<h1 id="execve-期间的权能转换"><a href="#execve-期间的权能转换" class="headerlink" title="execve() 期间的权能转换"></a>execve() 期间的权能转换</h1><p>During an execve(2), the kernel calculates the new capabilities of the process using the following algorithm:</p>
+<ul>
+<li><p>P’(ambient) = (file is privileged) ? 0 : P(ambient)</p>
+</li>
+<li><p>P’(permitted) = (P(inheritable) &amp; F(inheritable)) | (F(permitted) &amp; cap_bset) | P’(ambient)</p>
+</li>
+<li><p>P’(effective) = F(effective) ? P’(permitted) : P’(ambient)</p>
+</li>
+<li><p>P’(inheritable) = P(inheritable)    [i.e., unchanged]</p>
+</li>
+</ul>
+<p>其中：</p>
+<ul>
+<li><p>P         denotes the value of a thread capability set before the execve(2)</p>
+</li>
+<li><p>P’        denotes the value of a capability set after the execve(2)</p>
+</li>
+<li><p>F         denotes a file capability set</p>
+</li>
+<li><p>cap_bset  is the value of the capability bounding set (described below).</p>
+</li>
+</ul>
+<p>A privileged file is one that has capabilities or has the set-user-ID or set-group-ID bit set.</p>
+<h1 id="root-的程序的权能和执行"><a href="#root-的程序的权能和执行" class="headerlink" title="root 的程序的权能和执行"></a>root 的程序的权能和执行</h1><p>In order to provide an all-powerful root using capability sets, during an execve(2):</p>
+<ol>
+<li><p>If a set-user-ID-root program is being executed, or the real user ID of the process is 0 (root)  then the file inheritable and permitted sets are defined to be all ones (i.e., all capabilities enabled).</p>
+</li>
+<li><p>If  a  set-user-ID-root  program  is being executed, then the file effective bit is defined to be one (enabled).</p>
+</li>
+</ol>
+<p>The upshot of the above rules, combined with the capabilities transformations described above,  is  that when  a  process  execve(2)s  a  set-user-ID-root  program, or when a process with an effective UID of 0 execve(2)s a program, it gains all capabilities in its permitted and effective capability  sets,  except those  masked  out  by  the capability bounding set.  This provides semantics that are the same as those provided by traditional UNIX systems.</p>
+<h1 id="权能边界集合"><a href="#权能边界集合" class="headerlink" title="权能边界集合"></a>权能边界集合</h1><p>The capability bounding set is a security mechanism that can be used to limit the capabilities that  can be gained during an execve(2).  The bounding set is used in the following ways:</p>
+<ul>
+<li><p>During  an execve(2), the capability bounding set is ANDed with the file permitted capability set, and the result of this operation is assigned to the thread’s permitted  capability  set.   The  capability bounding  set  thus  places a limit on the permitted capabilities that may be granted by an executable file.</p>
+</li>
+<li><p>(Since Linux 2.6.25) The capability bounding set acts as a limiting superset for the capabilities that a  thread  can  add to its inheritable set using capset(2).  This means that if a capability is not in the bounding set, then a thread can’t add this capability to its inheritable set, even if  it  was  in its  permitted  capabilities,  and  thereby cannot have this capability preserved in its permitted set when it execve(2)s a file that has the capability in its inheritable set.</p>
+</li>
+</ul>
+<p>Note that the bounding set masks the file permitted capabilities, but not  the  inherited  capabilities. If  a  thread  maintains  a capability in its inherited set that is not in its bounding set, then it can still gain that capability in its permitted set by executing a file  that  has  the  capability  in  its inherited set.</p>
+<p>Depending  on  the  kernel  version, the capability bounding set is either a system-wide attribute, or a per-process attribute.</p>
+<h2 id="Linux-2-6-25-之前的权能边界集合"><a href="#Linux-2-6-25-之前的权能边界集合" class="headerlink" title="Linux 2.6.25 之前的权能边界集合"></a>Linux 2.6.25 之前的权能边界集合</h2><p>In kernels before 2.6.25, the capability bounding set  is  a  system-wide  attribute  that  affects  all threads  on  the system.  The bounding set is accessible via the file /proc/sys/kernel/cap-bound.  (Confusingly, this bit mask parameter is expressed as  a  signed  decimal  number  in  /proc/sys/kernel/capbound.)</p>
+<p>Only  the  init  process may set capabilities in the capability bounding set; other than that, the superuser (more precisely: programs with the CAP_SYS_MODULE capability) may  only  clear  capabilities  from this set.</p>
+<p>On a standard system the capability bounding set always masks out the CAP_SETPCAP capability.  To remove this restriction (dangerous!), modify the definition of CAP_INIT_EFF_SET  in  include/linux/capability.h and rebuild the kernel.</p>
+<p>The system-wide capability bounding set feature was added to Linux starting with kernel version 2.2.11.</p>
+<h2 id="Linux-2-6-25-之后的权能边界集合"><a href="#Linux-2-6-25-之后的权能边界集合" class="headerlink" title="Linux 2.6.25 之后的权能边界集合"></a>Linux 2.6.25 之后的权能边界集合</h2><p>From Linux 2.6.25, the capability bounding set is a per-thread attribute.  (There is no longer a systemwide capability bounding set.)</p>
+<p>The bounding set is inherited at fork(2) from the thread’s parent, and is preserved across an execve(2).</p>
+<p>A thread may remove capabilities from its capability bounding set  using  the  prctl(2)  PR_CAPBSET_DROP operation,  provided  it  has  the  CAP_SETPCAP capability.  Once a capability has been dropped from the bounding set, it cannot be restored to that set.  A thread can determine  if  a  capability  is  in  its bounding set using the prctl(2) PR_CAPBSET_READ operation.</p>
+<p>Removing capabilities from the bounding set is supported only if file capabilities are compiled into the kernel.  In kernels before Linux 2.6.33, file capabilities were an optional feature configurable via the CONFIG_SECURITY_FILE_CAPABILITIES option.  Since Linux 2.6.33, the configuration option has been removed and file capabilities are always part of the kernel.  When file capabilities are compiled into the  kernel, the init process (the ancestor of all processes) begins with a full bounding set.  If file capabilities are not compiled into the kernel, then init begins with a full  bounding  set  minus  CAP_SETPCAP, because this capability has a different meaning when there are no file capabilities.</p>
+<p>Removing a capability from the bounding set does not remove it from the thread’s inherited set.  However it does prevent the capability from being added back into the thread’s inherited set in the future.</p>
+<h1 id="Effect-of-user-ID-changes-on-capabilities"><a href="#Effect-of-user-ID-changes-on-capabilities" class="headerlink" title="Effect of user ID changes on capabilities"></a>Effect of user ID changes on capabilities</h1><p>To preserve the traditional semantics for transitions between 0 and nonzero user IDs, the  kernel  makes the  following  changes  to a thread’s capability sets on changes to the thread’s real, effective, saved set, and filesystem user IDs (using setuid(2), setresuid(2), or similar):</p>
+<ol>
+<li><p>If one or more of the real, effective or saved set user IDs was previously 0, and as a result of  the UID changes all of these IDs have a nonzero value, then all capabilities are cleared from the permitted and effective capability sets.</p>
+</li>
+<li><p>If the effective user ID is changed from 0 to nonzero, then all capabilities  are  cleared  from  the effective set.</p>
+</li>
+<li><p>If the effective user ID is changed from nonzero to 0, then the permitted set is copied to the effective set.</p>
+</li>
+<li><p>If the filesystem user ID is changed from 0 to nonzero (see setfsuid(2)), then the following capabilities   are  cleared  from  the  effective  set:  CAP_CHOWN,  CAP_DAC_OVERRIDE,  CAP_DAC_READ_SEARCH, CAP_FOWNER, CAP_FSETID, CAP_LINUX_IMMUTABLE (since Linux  2.6.30),  CAP_MAC_OVERRIDE,  and  CAP_MKNOD (since Linux 2.6.30).  If the filesystem UID is changed from nonzero to 0, then any of these capabilities that are enabled in the permitted set are enabled in the effective set.</p>
+</li>
+</ol>
+<p>If a thread that has a 0 value for one or more of its user IDs wants to prevent its permitted capability set  being cleared when it resets all of its user IDs to nonzero values, it can do so using the prctl(2) PR_SET_KEEPCAPS operation or the SECBIT_KEEP_CAPS securebits flag described below.</p>
+<h1 id="以编程方式调整权能集合"><a href="#以编程方式调整权能集合" class="headerlink" title="以编程方式调整权能集合"></a>以编程方式调整权能集合</h1><p>A thread can retrieve and change its capability sets using the capget(2)  and  capset(2)  system  calls. However,  the  use  of cap_get_proc(3) and cap_set_proc(3), both provided in the libcap package, is preferred for this purpose.  The following rules govern changes to the thread capability sets:</p>
+<ol>
+<li><p>If the caller does not have the CAP_SETPCAP capability, the new inheritable set must be a  subset  of the combination of the existing inheritable and permitted sets.</p>
+</li>
+<li><p>(Since  Linux  2.6.25)  The  new  inheritable set must be a subset of the combination of the existing inheritable set and the capability bounding set.</p>
+</li>
+<li><p>The new permitted set must be a subset of the existing permitted set (i.e., it  is  not  possible  to acquire permitted capabilities that the thread does not currently have).</p>
+</li>
+<li><p>The new effective set must be a subset of the new permitted set.</p>
+</li>
+</ol>
+<h1 id="securebits-标志：建立一个仅限权能的环境"><a href="#securebits-标志：建立一个仅限权能的环境" class="headerlink" title="securebits 标志：建立一个仅限权能的环境"></a>securebits 标志：建立一个仅限权能的环境</h1><p>Starting  with kernel 2.6.26, and with a kernel in which file capabilities are enabled, Linux implements a set of per-thread securebits flags that can be used to disable special handling  of  capabilities  for UID 0 (root).  These flags are as follows:</p>
+<ul>
+<li><p>SECBIT_KEEP_CAPS<br> Setting  this flag allows a thread that has one or more 0 UIDs to retain its capabilities when it switches all of its UIDs to a nonzero value.  If this flag is not set, then  such  a  UID  switch causes  the thread to lose all capabilities.  This flag is always cleared on an execve(2).  (This flag provides the same functionality as the older prctl(2) PR_SET_KEEPCAPS operation.)</p>
+</li>
+<li><p>SECBIT_NO_SETUID_FIXUP<br> Setting this flag stops the kernel from adjusting capability sets when  the  threads’s  effective and  filesystem UIDs are switched between zero and nonzero values.  (See the subsection Effect of User ID Changes on Capabilities.)</p>
+</li>
+<li><p>SECBIT_NOROOT<br> If this bit is set, then the kernel does not grant capabilities when a  set-user-ID-root  program is executed, or when a process with an effective or real UID of 0 calls execve(2).  (See the subsection Capabilities and execution of programs by root.)</p>
+</li>
+<li><p>SECBIT_NO_CAP_AMBIENT_RAISE<br> Setting this flag disallows raising ambient capabilities via  the  prctl(2)  PR_CAP_AMBIENT_RAISE operation.</p>
+</li>
+</ul>
+<p>Each  of  the  above  “base”  flags has a companion “locked” flag.  Setting any of the “locked” flags is irreversible, and has the effect of preventing further changes to the corresponding  “base”  flag.   The locked  flags  are:  SECBIT_KEEP_CAPS_LOCKED,  SECBIT_NO_SETUID_FIXUP_LOCKED,  SECBIT_NOROOT_LOCKED, and SECBIT_NO_CAP_AMBIENT_RAISE.</p>
+<p>The  securebits  flags  can  be  modified  and  retrieved  using  the  prctl(2)  PR_SET_SECUREBITS   and PR_GET_SECUREBITS operations.  The CAP_SETPCAP capability is required to modify the flags.</p>
+<p>The  securebits  flags are inherited by child processes.  During an execve(2), all of the flags are preserved, except SECBIT_KEEP_CAPS which is always cleared.</p>
+<p>An application can use the following call to lock itself, and all of its descendants, into  an  environment where the only way of gaining capabilities is by executing a program with associated file capabilities:<br><figure class="highlight 1c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">prctl(PR_SET_SECUREBITS,</div><div class="line">        SECBIT_KEEP_CAPS_LOCKED <span class="string">|</span></div><div class="line">        SECBIT_NO_SETUID_FIXUP <span class="string">|</span></div><div class="line">        SECBIT_NO_SETUID_FIXUP_LOCKED <span class="string">|</span></div><div class="line">        SECBIT_NOROOT <span class="string">|</span></div><div class="line">        SECBIT_NOROOT_LOCKED);</div></pre></td></tr></table></figure></p>
+<h1 id="与用户命名空间交互"><a href="#与用户命名空间交互" class="headerlink" title="与用户命名空间交互"></a>与用户命名空间交互</h1><p>For a discussion of the interaction of capabilities and user namespaces, see user_namespaces(7).</p>
+<h1 id="标准参考"><a href="#标准参考" class="headerlink" title="标准参考"></a>标准参考</h1><p>No standards govern capabilities, but the Linux capability implementation  is  based  on  the  withdrawn POSIX.1e draft standard; see ⟨<a href="http://wt.tuxomania.net/publications/posix.1e/⟩" target="_blank" rel="external">http://wt.tuxomania.net/publications/posix.1e/⟩</a>.</p>
+<h1 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h1><p>From  kernel  2.5.27  to  kernel  2.6.26,  capabilities  were  an  optional kernel component, and can be enabled/disabled via the CONFIG_SECURITY_CAPABILITIES kernel configuration option.</p>
+<p>The /proc/PID/task/TID/status file  can  be  used  to  view  the  capability  sets  of  a  thread.   The /proc/PID/status  file shows the capability sets of a process’s main thread.  Before Linux 3.8, nonexistent capabilities were shown as being enabled (1) in these sets.  Since Linux 3.8, all nonexistent capabilities (above CAP_LAST_CAP) are shown as disabled (0).</p>
+<p>The  libcap  package provides a suite of routines for setting and getting capabilities that is more comfortable and less likely to change than the interface provided by capset(2) and capget(2).  This package also provides the setcap(8) and getcap(8) programs.  It can be found at ⟨<a href="http://www.kernel.org/pub/linux/libs/security/linux-privs⟩" target="_blank" rel="external">http://www.kernel.org/pub/linux/libs/security/linux-privs⟩</a>.</p>
+<p>Before  kernel  2.6.24,  and from kernel 2.6.24 to kernel 2.6.32 if file capabilities are not enabled, a thread with the CAP_SETPCAP capability can manipulate the capabilities of  threads  other  than  itself. However,  this  is  only theoretically possible, since no thread ever has CAP_SETPCAP in either of these cases:</p>
+<ul>
+<li><p>In the pre-2.6.25 implementation the system-wide capability bounding set,  /proc/sys/kernel/cap-bound, always  masks out this capability, and this can not be changed without modifying the kernel source and rebuilding.</p>
+</li>
+<li><p>If file capabilities are disabled in the current implementation, then init starts out with this  capability removed from its per-process bounding set, and that bounding set is inherited by all other processes created on the system.</p>
+</li>
+</ul>
+<h1 id="另请参阅"><a href="#另请参阅" class="headerlink" title="另请参阅"></a>另请参阅</h1><p>capsh(1),  setpriv(1),   prctl(2),   setfsuid(2),   cap_clear(3),   cap_copy_ext(3),   cap_from_text(3), cap_get_file(3),   cap_get_proc(3),  cap_init(3),  capgetp(3),  capsetp(3),  libcap(3),  credentials(7), user_namespaces(7), pthreads(7), getcap(8), setcap(8)</p>
+<p>include/linux/capability.h in the Linux kernel source tree</p>
+<h1 id="版本记录"><a href="#版本记录" class="headerlink" title="版本记录"></a>版本记录</h1><p>This page is part of release 4.04 of the Linux man-pages project.  A description of the project,  information   about   reporting   bugs,   and   the   latest   version   of   this  page,  can  be  found  at <a href="http://www.kernel.org/doc/man-pages/" target="_blank" rel="external">http://www.kernel.org/doc/man-pages/</a>.</p>
+</div><div class="tags"><a href="/tags/安全/">安全</a></div><div class="post-nav"><a href="/2017/07/11/android-graphics-system/" class="pre">Android 图形系统</a><a href="/2017/06/11/jni_tips/" class="next">JNI技巧</a></div><div id="disqus_thread"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="widget"><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="请输入关键字..."/></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android开发/">Android开发</a><span class="category-list-count">34</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-C-开发/">C/C++开发</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java开发/">Java开发</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux内核/">Linux内核</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/live555/">live555</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/业界趣闻/">业界趣闻</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/后台开发/">后台开发</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络协议/">网络协议</a><span class="category-list-count">39</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络调试/">网络调试</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随想杂谈/">随想杂谈</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/音视频开发/">音视频开发</a><span class="category-list-count">3</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/OpenGL/" style="font-size: 15px;">OpenGL</a> <a href="/tags/网络协议/" style="font-size: 15px;">网络协议</a> <a href="/tags/Android开发/" style="font-size: 15px;">Android开发</a> <a href="/tags/源码分析/" style="font-size: 15px;">源码分析</a> <a href="/tags/chromium/" style="font-size: 15px;">chromium</a> <a href="/tags/后台开发/" style="font-size: 15px;">后台开发</a> <a href="/tags/Java开发/" style="font-size: 15px;">Java开发</a> <a href="/tags/QUIC/" style="font-size: 15px;">QUIC</a> <a href="/tags/翻译/" style="font-size: 15px;">翻译</a> <a href="/tags/网络调试/" style="font-size: 15px;">网络调试</a> <a href="/tags/HTTP2/" style="font-size: 15px;">HTTP2</a> <a href="/tags/UDT/" style="font-size: 15px;">UDT</a> <a href="/tags/安全/" style="font-size: 15px;">安全</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/C-C-开发/" style="font-size: 15px;">C/C++开发</a> <a href="/tags/Django/" style="font-size: 15px;">Django</a> <a href="/tags/Go-语言/" style="font-size: 15px;">Go 语言</a> <a href="/tags/图形图像/" style="font-size: 15px;">图形图像</a> <a href="/tags/Linux内核/" style="font-size: 15px;">Linux内核</a> <a href="/tags/音视频开发/" style="font-size: 15px;">音视频开发</a> <a href="/tags/live555/" style="font-size: 15px;">live555</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-fei"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">二月 2013</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/09/04/live555_src_analysis_describe/">live555 源码分析： DESCRIBE 的处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/01/live555_src_analysis_rtsp_rtp_rtcp_wireshark/">Wireshark 抓包分析 RTSP/RTP/RTCP 基本工作过程</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/01/live555_src_analysis_rtspserver/">live555 源码分析：RTSPServer</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/31/live555_src_analysis_mediaserver/">live555 源码分析：MediaSever</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/30/live555_src_analysis_infrasture/">live555 源码分析：基础设施</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/24/h264_send_with_ortp/">使用 ortp 发送原始 H.264 码流</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/23/h264_play/">原始 H.264 码流播放</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/18/h264_on_rtp/">H.264 视频的 RTP 载荷格式</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/12/working/">从工作中得到了什么？</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/03/sdp/">会话描述协议</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a><ul></ul><a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a><ul></ul><a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a></div><div class="widget"><div class="widget-title"><i class="fa fa-commt"> 最近评论</i></div><script type="text/javascript" src="//wolfcstech.disqus.com/recent_comments_widget.js?num_items=5&amp;hide_avatars=1&amp;avatar_size=32&amp;excerpt_length=20&amp;hide_mods=1"></script></div></div></div></div><a id="totop" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.2.0" async></script><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">网站地图</a> |<a href="/atom.xml">订阅本站</a> |<span>联系博主：<a href="mailto:hanpfei@gmail.com" target="_blank" class="fa fa-email"> </a><a href="undefined" target="_blank" class="fa fa-weibo"></a><a href="https://github.com/hanpfei" target="_blank" class="fa fa-github"> </a></span></p><p><span> Copyright &copy;<a href="/." rel="nofollow">Han Pengfei</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span><span><a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> Theme </a>by<a rel="nofollow" target="_blank" href="https://github.com/chaooo"> Charles.</a></span></p></div></div></div><script>var disqus_shortname = 'wolfcstech';
+var disqus_identifier = '2017/07/10/linux-capabilities-overview/';
+var disqus_title = 'Linux 权能综述';
+var disqus_url = 'https://www.wolfcstech.com/2017/07/10/linux-capabilities-overview/';
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//wolfcstech.disqus.com/count.js" async></script><script type="text/javascript" src="/js/search.json.js?v=1.2.0"></script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></body></html>

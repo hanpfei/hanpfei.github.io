@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>HBase数据模型 | WolfcsTech</title><link rel="stylesheet" type="text/css" href="//fonts.css.network/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.2.0"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=1.2.0"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">HBase数据模型</h1><a id="logo" href="/.">WolfcsTech</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">HBase数据模型</h1><div class="post-meta">Mar 17, 2017<span> | </span><span class="category"><a href="/categories/Java开发/">Java开发</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><a data-disqus-identifier="2017/03/17/HBase数据模型/" href="/2017/03/17/HBase数据模型/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><p>在 HBase 中，数据存储在表中，其中具有行和列。这个术语与关系型数据库（RDBMS）的重叠，但这不是有用的类比。相反，将 HBase 的表想象为多维的映射可能更有帮助。</p>
+<h3 id="HBase-数据模型术语"><a href="#HBase-数据模型术语" class="headerlink" title="HBase 数据模型术语"></a><em>HBase 数据模型术语</em></h3><p><strong>表</strong><br>HBase 表由多个行组成。</p>
+<p><strong>行</strong><br>HBase 中的行由行键及一个或多个关联了值的列组成。行按照存储时的行键的字母序排序。因此，行键的设计非常重要。目标是以一种将相关的行存储在彼此相近的位置的方式存储。一种常用的行键模式是网站的域名。如果你的行键是域名，你可能应该以逆序存储它们（org.apache.www，org.apache.mail，org.apache.jira）。这种方式下，所有的 Apache 域名在表中是彼此接近的，而不是基于子域名的第一个字母而彼此分离。</p>
+<hr>
+<p><strong>HBase 中，一个行键只能标识一个行，还是可以标识多个行？</strong></p>
+<hr>
+<p><strong>列</strong><br>HBase 中的列由列族（column family）和列修饰符组成，它们由 <code>:</code> (冒号)<br>字符分割。</p>
+<p><strong>列族（column family）</strong><br>列族物理上共同定位一组列及其值，通常出于性能原因。每个列族具有一系列存储属性，比如它的值是否应该缓存在内存中，它的数据如何压缩或它的行键如何编码，及其它。表中的每一行具有相同的列族，尽管给定的行可能不存储任何给定的列族。</p>
+<hr>
+<p><strong>表中的一行具有相同的列族，也就是说，每一行最多只能有一个列族。由此为何不直接将行键当作列族来用？在 HBase 中列族与行键之间是否有关系？</strong></p>
+<hr>
+<p><strong>列修饰符</strong><br>列修饰符被添加到列族以提供对给定的一片数据的索引。给定列族 <code>content</code>，一个列修饰符可能是 <code>content:html</code>，而另一个可能是 <code>content:pdf</code>。尽管列族在创建表时就固定了下来，而列修饰符是可变的，且在行之间可能存在这巨大的差异。</p>
+<p><strong>单元（Cell）</strong><br>单元是行，列族和列修饰符的结合，且包含了值和时间戳，其表示值的版本。</p>
+<hr>
+<p><strong>定位一个单元的过程为：行键 -&gt; 列族 -&gt; 列修饰符？</strong></p>
+<hr>
+<p><strong>时间戳</strong><br>时间戳伴随每个值写入，它是值的给定版本的标识符。默认情况下，时间戳表示 RegionServer 上数据写入时的时间，但你在将数据放入单元时，可以指定一个不同的时间戳值。</p>
+<h2 id="概念视图"><a href="#概念视图" class="headerlink" title="概念视图"></a>概念视图</h2><p>你可以在 Jim R. Wilson 的博客文章 <a href="https://dzone.com/articles/understanding-hbase-and-bigtab" target="_blank" rel="external">理解 HBase  和 BigTable</a> 中读到非常易于理解的关于 HBase 数据模型的解释。另外一份很好的解释是 Amandeep Khurana 的 PDF 文档 <a href="http://0b4af6cdc2f0c5998459-c0245c5c937c5dedcca3f1764ecc9b2f.r43.cf2.rackcdn.com/9353-login1210_khurana.pdf" target="_blank" rel="external">Introduction to Basic Schema Design</a> </p>
+<p>阅读不同的视角可能有助于对 HBase schema 设计有一个深入的理解。链接的文章涵盖与本节中的信息相同的基础。</p>
+<p>下面的例子是 <a href="http://research.google.com/archive/bigtable.html" target="_blank" rel="external">BigTable</a> 论文的第 2 页中的例子经过微小的改动而来。有一个称为 <code>webtable</code> 的表，其中包含了两行（<code>com.cnn.www</code> 和 <code>com.example.www</code>）及三个名为 <code>contents</code>，<code>anchor</code> 和 <code>people</code> 的列族。在这个例子里，第一行 (<code>com.cnn.www</code>) 中，<code>anchor</code> 包含两列 (<code>anchor:cssnsi.com</code>, <code>anchor:my.look.ca</code>)，<code>contents</code> 包含一列 (<code>contents:html</code>)。这个例子中，包含以 <code>com.cnn.www</code> 为行键的 5 个版本的行，及以 <code>com.example.www</code> 为行键的一个版本的行。<code>contents:html</code> 列修饰符包含给定网站的完整 HTML。每个 <code>anchor</code> 列族的修饰符包含外部站点，其链接到由行表示的网站，以及其在其链接的 anchor 中使用的文本。<code>people</code> 列族表示与站点关联的人。</p>
+<p><strong>列名</strong><br>按惯例，列名由它的列族前缀和一个 <em>修饰符</em> 组成。比如，列 <code>contents:html</code> 由列族 <code>contents</code> 和修饰符 <code>html</code>。冒号字符（<code>:</code>）分割列族和列族 <em>修饰符</em>。</p>
+<p>表 4. <code>webtable</code></p>
+<table>
+<thead>
+<tr>
+<th>Row Key</th>
+<th>Time Stamp</th>
+<th>ColumnFamily <code>contents</code></th>
+<th>ColumnFamily <code>anchor</code></th>
+<th>ColumnFamily <code>people</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t9</td>
+<td></td>
+<td>anchor:cnnsi.com = “CNN”</td>
+<td></td>
+</tr>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t8</td>
+<td></td>
+<td>anchor:cnnsi.com = “CNN”</td>
+<td></td>
+</tr>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t6</td>
+<td>contents:html = “<html>…​”</html></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t5</td>
+<td>contents:html = “<html>…​”</html></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t3</td>
+<td>contents:html = “<html>…​”</html></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>这个表中看上去为空的单元格不占用空间，或者实际上不存在，在 HBase 中。这就是HBase“稀疏”的原因。表的视角不是惟一可能的看待 HBase 中的数据的方式，或者甚至不是最精确的。下面以多维映射表示了相同的信息。这只是一个以说明为目的的模型，可能不是非常的精确。<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"com.cnn.www"</span>: &#123;</div><div class="line">    contents: &#123;</div><div class="line">      t6: contents:html: <span class="string">"&lt;html&gt;..."</span></div><div class="line">      t5: contents:html: <span class="string">"&lt;html&gt;..."</span></div><div class="line">      t3: contents:html: <span class="string">"&lt;html&gt;..."</span></div><div class="line">    &#125;</div><div class="line">    <span class="built_in">anchor</span>: &#123;</div><div class="line">      t9: <span class="built_in">anchor</span>:cnnsi.com = <span class="string">"CNN"</span></div><div class="line">      t8: <span class="built_in">anchor</span>:my.look.ca = <span class="string">"CNN.com"</span></div><div class="line">    &#125;</div><div class="line">    people: &#123;&#125;</div><div class="line">  &#125;</div><div class="line">  <span class="string">"com.example.www"</span>: &#123;</div><div class="line">    contents: &#123;</div><div class="line">      t5: contents:html: <span class="string">"&lt;html&gt;..."</span></div><div class="line">    &#125;</div><div class="line">    <span class="built_in">anchor</span>: &#123;&#125;</div><div class="line">    people: &#123;</div><div class="line">      t5: people:author: <span class="string">"John Doe"</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="物理视图"><a href="#物理视图" class="headerlink" title="物理视图"></a>物理视图</h2><p>尽管在概念层表可以被视为一个行的稀疏集合，但在物理上它们是根据列族存储的。新的列修饰符 (column_family:column_qualifier) 可以在任何时间被添加到现有的列族。</p>
+<p>表 5. 列族 <code>anchor</code></p>
+<table>
+<thead>
+<tr>
+<th>Row Key</th>
+<th>Time Stamp</th>
+<th>ColumnFamily <code>anchor</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t9</td>
+<td>anchor:cnnsi.com = “CNN”</td>
+<td></td>
+</tr>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t8</td>
+<td>anchor:my.look.ca = “CNN.com”</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>表 5. 列族 <code>contents</code></p>
+<table>
+<thead>
+<tr>
+<th>Row Key</th>
+<th>Time Stamp</th>
+<th>ColumnFamily <code>contents:</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t6</td>
+<td>contents:html = “<html>…​”</html></td>
+<td></td>
+</tr>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t5</td>
+<td>contents:html = “<html>…​”</html></td>
+<td></td>
+</tr>
+<tr>
+<td>“com.cnn.www”</td>
+<td>t3</td>
+<td>contents:html = “<html>…​”</html></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>在概念视图中显示的空单元不再存储。这样对时间戳 <code>t8</code> 请求 <code>contents:html</code> 列的值将不返回值。类似地，对时间戳 <code>t9</code> 请求 <code>anchor:my.look.ca</code> 列的值也将不返回值。然而，如果没有提供时间戳，将返回特定列最近的值。给定多个版本，最近的也是第一个被发现的，由于时间戳是降序存储的。这样如果没有指定时间戳，请求行 <code>com.cnn.www</code> 中的所有列的值将返回：时间戳 <code>t6</code> 的 <code>contents:html</code> 的值，时间戳 <code>t9</code> 的 <code>anchor:cnnsi.com</code> 的值，及时间戳 <code>t8</code> 的 <code>anchor:my.look.ca</code> 的值。</p>
+<p>更多关于 Apache HBase 内部如何存储数据的信息，请参考 <a href="http://hbase.apache.org/book.html#regions.arch" target="_blank" rel="external">regions.arch</a>。</p>
+<h2 id="命令空间"><a href="#命令空间" class="headerlink" title="命令空间"></a>命令空间</h2><p>命名空间是与关系型数据库系统中的数据库类似的表的逻辑分组。这种抽象为即将到来的多租户相关特性奠定了基础：</p>
+<ul>
+<li>配额管理 ( <a href="https://issues.apache.org/jira/browse/HBASE-8410" target="_blank" rel="external">HBASE-8410</a> )  - 限制一个命名空间可消费的资源（ 即区域，表）的数量。<ul>
+<li>命名空间安全管理 ( <a href="https://issues.apache.org/jira/browse/HBASE-9206" target="_blank" rel="external">HBASE-9206</a> ) - 为租户提供另一层的安全管理。</li>
+<li>区域服务器组 ( <a href="https://issues.apache.org/jira/browse/HBASE-6721" target="_blank" rel="external">HBASE-6721</a> ) - 命名空间/表可以被固定在 RegionServers 的子集上以保证一个过程级别的隔离。</li>
+</ul>
+</li>
+</ul>
+<h3 id="命名空间管理"><a href="#命名空间管理" class="headerlink" title="命名空间管理"></a>命名空间管理</h3><p>命名空间可以被创建、移除或者改变。在表格创建期间通过指定表单的完全限定表名来确定命名空间成员资格：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;<span class="keyword">table</span> namespace&gt;:&lt;<span class="keyword">table</span> <span class="comment">qualifier&gt;</span></div></pre></td></tr></table></figure></p>
+<p>示例. 例子<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#Create</span> <span class="selector-tag">a</span> namespace</div><div class="line">create_namespace <span class="string">'my_ns'</span></div></pre></td></tr></table></figure></p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#<span class="keyword">create</span> my_table <span class="keyword">in</span> my_ns <span class="keyword">namespace</span></div><div class="line"><span class="keyword">create</span> <span class="string">'my_ns:my_table'</span>, <span class="string">'fam'</span></div></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#drop namespace</span></div><div class="line"><span class="attribute">drop_namespace</span> <span class="string">'my_ns'</span></div></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#alter namespace</span></div><div class="line">alter_namespace <span class="string">'my_ns'</span>, &#123;METHOD =&gt; <span class="string">'set'</span>, <span class="string">'PROPERTY_NAME'</span> =&gt; <span class="string">'PROPERTY_VALUE'</span>&#125;</div></pre></td></tr></table></figure>
+<h3 id="预定义命名空间"><a href="#预定义命名空间" class="headerlink" title="预定义命名空间"></a>预定义命名空间</h3><p>有两个预定义的特殊的命名空间：</p>
+<ul>
+<li>hbase - 系统命名空间，用于包含 HBase 内部的表。</li>
+<li><p>default - 没有显式地指定命名空间的表将自动地落入这个命名空间。</p>
+<p>示例. 例子</p>
+</li>
+</ul>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#namespace=foo <span class="keyword">and</span> <span class="keyword">table</span> qualifier=bar</div><div class="line">create <span class="string">'foo:bar'</span>, <span class="string">'fam'</span></div></pre></td></tr></table></figure>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#<span class="keyword">namespace</span>=<span class="keyword">default</span> <span class="keyword">and</span> table qualifier=bar</div><div class="line"><span class="keyword">create</span> <span class="string">'bar'</span>, <span class="string">'fam'</span></div></pre></td></tr></table></figure>
+<h2 id="表"><a href="#表" class="headerlink" title="表"></a>表</h2><p>表在模式定义时间前面声明。</p>
+<h2 id="行"><a href="#行" class="headerlink" title="行"></a>行</h2><p>行键是未解释的字节。行按字典顺序排序，最低顺序首先出现在表中。空字节数组用于表示表的命名空间的开始和结束。</p>
+<h2 id="列族"><a href="#列族" class="headerlink" title="列族"></a>列族</h2><p>Apache HBase中的列被分组为列族。一个列族所有的列成员具有相同的前缀。比如，列 <em>courses:history</em> 和 <em>courses:math</em> 都是 <em>courses</em> 列族的成员。冒号（<code>:</code>）将列族与列族限定符分割开。列族前缀必须由 <em>可打印</em> 字符组成。合格的尾部，列族修饰符，可以由任意字节组成。列族必须在模式定义时声明，而列不需要在模式时定义，但可以在表启动和运行时动态处理。</p>
+<p>物理上而言，在文件系统上所有的列族成员被存储在一起。由于调整和存储规范是在列族级别完成的，因此建议所有列族成员具有相同的通用访问模式和大小特性。</p>
+<h2 id="单元"><a href="#单元" class="headerlink" title="单元"></a>单元</h2><p><em>{row, column, version}</em> 三元组精确指定 HBase 中的一个 <code>单元</code>。单元内容是未解释的字节。</p>
+<h2 id="数据模型操作"><a href="#数据模型操作" class="headerlink" title="数据模型操作"></a>数据模型操作</h2><p>四个主要的数据模型操作是 Get，Put，Scan 和 Delete。操作通过 <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Table.html" target="_blank" rel="external">表</a> 实例应用。</p>
+<h3 id="Get"><a href="#Get" class="headerlink" title="Get"></a>Get</h3><p><a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Get.html" target="_blank" rel="external">Get</a> 返回特定行的属性。Get 通过 <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Table.html#get(org.apache.hadoop.hbase.client.Get" target="_blank" rel="external">Table.get</a>) 执行。</p>
+<h3 id="Put"><a href="#Put" class="headerlink" title="Put"></a>Put</h3><p><a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Put.html" target="_blank" rel="external">Put</a> 向表中添加新行（如果 key 是新的）或可以更新已有的行（如果 key 已经存在）。Puts 通过 <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Table.html#put(org.apache.hadoop.hbase.client.Put" target="_blank" rel="external">Table.put</a>) (writeBuffer) 或 <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Table.html#batch(java.util.List,%20java.lang.Object%5B%5D" target="_blank" rel="external">Table.batch</a>) ( 非writeBuffer )执行。</p>
+<h3 id="Scans"><a href="#Scans" class="headerlink" title="Scans"></a>Scans</h3><p><a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Scan.html" target="_blank" rel="external">Scan</a> 允许对多个行的指定属性进行迭代。假设表中填充有具有键“row1”，“row2”，“row3”的行，然后是另一组具有键“abc1”，“abc2”和“abc3”的行。下面的例子展示了如何设置一个 Scan 实例来返回以 “row” 开始的行。</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span>[] CF = <span class="string">"cf"</span>.getBytes();</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span>[] ATTR = <span class="string">"attr"</span>.getBytes();</div><div class="line">...</div><div class="line"></div><div class="line">Table table = ...      <span class="comment">// instantiate a Table instance</span></div><div class="line"></div><div class="line">Scan scan = <span class="keyword">new</span> Scan();</div><div class="line">scan.addColumn(CF, ATTR);</div><div class="line">scan.setRowPrefixFilter(Bytes.toBytes(<span class="string">"row"</span>));</div><div class="line">ResultScanner rs = table.getScanner(scan);</div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">  <span class="keyword">for</span> (Result r = rs.<span class="keyword">next</span>(); r != <span class="keyword">null</span>; r = rs.<span class="keyword">next</span>()) &#123;</div><div class="line">    <span class="comment">// process result...</span></div><div class="line">  &#125;</div><div class="line">&#125; <span class="keyword">finally</span> &#123;</div><div class="line">  rs.close();  <span class="comment">// always close the ResultScanner!</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意，通常为 scan 指定特定的停止点的最简单的方式是使用 <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/filter/InclusiveStopFilter.html" target="_blank" rel="external">InclusiveStopFilter</a> 类。</p>
+<h3 id="Delete"><a href="#Delete" class="headerlink" title="Delete"></a>Delete</h3><p><a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Delete.html" target="_blank" rel="external">Delete</a> 从表中移除一行。删除通过 <a href="http://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Table.html#delete(org.apache.hadoop.hbase.client.Delete" target="_blank" rel="external">Table.delete</a>) 执行。</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><h2 id="列元数据"><a href="#列元数据" class="headerlink" title="列元数据"></a>列元数据</h2><h2 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a>Joins</h2><h2 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h2><p>参考 <a href="http://hbase.apache.org/acid-semantics.html" target="_blank" rel="external">ACID 语义</a>。Lars Hofhansl 也写了一篇关于 <a href="http://hadoop-hbase.blogspot.com/2012/03/acid-in-hbase.html" target="_blank" rel="external">HBase 中的 ACID</a> 的笔记。</p>
+<p><a href="http://hbase.apache.org/book.html#datamodel" target="_blank" rel="external">原文</a></p>
+</div><div class="tags"><a href="/tags/后台开发/">后台开发</a><a href="/tags/Java开发/">Java开发</a></div><div class="post-nav"><a href="/2017/04/13/初始DNS服务器地址是哪里来的/" class="pre">初始DNS服务器地址是哪里来的？</a><a href="/2017/03/10/Kafka入门/" class="next">Kafka 入门</a></div><div id="disqus_thread"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="widget"><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="请输入关键字..."/></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android开发/">Android开发</a><span class="category-list-count">34</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-C-开发/">C/C++开发</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java开发/">Java开发</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux内核/">Linux内核</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/live555/">live555</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/业界趣闻/">业界趣闻</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/后台开发/">后台开发</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络协议/">网络协议</a><span class="category-list-count">39</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络调试/">网络调试</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随想杂谈/">随想杂谈</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/音视频开发/">音视频开发</a><span class="category-list-count">3</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/OpenGL/" style="font-size: 15px;">OpenGL</a> <a href="/tags/网络协议/" style="font-size: 15px;">网络协议</a> <a href="/tags/Android开发/" style="font-size: 15px;">Android开发</a> <a href="/tags/源码分析/" style="font-size: 15px;">源码分析</a> <a href="/tags/chromium/" style="font-size: 15px;">chromium</a> <a href="/tags/后台开发/" style="font-size: 15px;">后台开发</a> <a href="/tags/Java开发/" style="font-size: 15px;">Java开发</a> <a href="/tags/QUIC/" style="font-size: 15px;">QUIC</a> <a href="/tags/翻译/" style="font-size: 15px;">翻译</a> <a href="/tags/网络调试/" style="font-size: 15px;">网络调试</a> <a href="/tags/HTTP2/" style="font-size: 15px;">HTTP2</a> <a href="/tags/UDT/" style="font-size: 15px;">UDT</a> <a href="/tags/安全/" style="font-size: 15px;">安全</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/C-C-开发/" style="font-size: 15px;">C/C++开发</a> <a href="/tags/Django/" style="font-size: 15px;">Django</a> <a href="/tags/Go-语言/" style="font-size: 15px;">Go 语言</a> <a href="/tags/图形图像/" style="font-size: 15px;">图形图像</a> <a href="/tags/Linux内核/" style="font-size: 15px;">Linux内核</a> <a href="/tags/音视频开发/" style="font-size: 15px;">音视频开发</a> <a href="/tags/live555/" style="font-size: 15px;">live555</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-fei"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">二月 2013</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/09/04/live555_src_analysis_describe/">live555 源码分析： DESCRIBE 的处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/01/live555_src_analysis_rtsp_rtp_rtcp_wireshark/">Wireshark 抓包分析 RTSP/RTP/RTCP 基本工作过程</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/01/live555_src_analysis_rtspserver/">live555 源码分析：RTSPServer</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/31/live555_src_analysis_mediaserver/">live555 源码分析：MediaSever</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/30/live555_src_analysis_infrasture/">live555 源码分析：基础设施</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/24/h264_send_with_ortp/">使用 ortp 发送原始 H.264 码流</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/23/h264_play/">原始 H.264 码流播放</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/18/h264_on_rtp/">H.264 视频的 RTP 载荷格式</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/12/working/">从工作中得到了什么？</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/03/sdp/">会话描述协议</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a><ul></ul><a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a><ul></ul><a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a></div><div class="widget"><div class="widget-title"><i class="fa fa-commt"> 最近评论</i></div><script type="text/javascript" src="//wolfcstech.disqus.com/recent_comments_widget.js?num_items=5&amp;hide_avatars=1&amp;avatar_size=32&amp;excerpt_length=20&amp;hide_mods=1"></script></div></div></div></div><a id="totop" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.2.0" async></script><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">网站地图</a> |<a href="/atom.xml">订阅本站</a> |<span>联系博主：<a href="mailto:hanpfei@gmail.com" target="_blank" class="fa fa-email"> </a><a href="undefined" target="_blank" class="fa fa-weibo"></a><a href="https://github.com/hanpfei" target="_blank" class="fa fa-github"> </a></span></p><p><span> Copyright &copy;<a href="/." rel="nofollow">Han Pengfei</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span><span><a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> Theme </a>by<a rel="nofollow" target="_blank" href="https://github.com/chaooo"> Charles.</a></span></p></div></div></div><script>var disqus_shortname = 'wolfcstech';
+var disqus_identifier = '2017/03/17/HBase数据模型/';
+var disqus_title = 'HBase数据模型';
+var disqus_url = 'https://www.wolfcstech.com/2017/03/17/HBase数据模型/';
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//wolfcstech.disqus.com/count.js" async></script><script type="text/javascript" src="/js/search.json.js?v=1.2.0"></script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></body></html>

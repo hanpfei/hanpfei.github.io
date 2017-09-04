@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Android TLS 版本过低造成的问题 | WolfcsTech</title><link rel="stylesheet" type="text/css" href="//fonts.css.network/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.2.0"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=1.2.0"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Android TLS 版本过低造成的问题</h1><a id="logo" href="/.">WolfcsTech</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">Android TLS 版本过低造成的问题</h1><div class="post-meta">Jun 8, 2017<span> | </span><span class="category"><a href="/categories/安全/">安全</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><a data-disqus-identifier="2017/06/08/android_tls_version_issue/" href="/2017/06/08/android_tls_version_issue/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><p>由于集成的 SSL 库版本不同，不同 Android 版本的默认 SSL/TLS 版本配置如下表：</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Supported (API Levels)</th>
+<th>Enabled by default (API Levels)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSLv3</td>
+<td>1–TBD</td>
+<td>1–22</td>
+</tr>
+<tr>
+<td>TLSv1</td>
+<td>1+</td>
+<td>1+</td>
+</tr>
+<tr>
+<td>TLSv1.1</td>
+<td>20+</td>
+<td>20+</td>
+</tr>
+<tr>
+<td>TLSv1.2</td>
+<td>20+</td>
+<td>20+</td>
+</tr>
+</tbody>
+</table>
+<a id="more"></a>
+<p>Android 版本与 API Level 之间的对应关系则如下表：</p>
+<table>
+<thead>
+<tr>
+<th>Platform Version</th>
+<th>API Level</th>
+<th>VERSION_CODE</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.android.com/about/versions/nougat/android-7.1.html" target="_blank" rel="external">Android 7.1.1 Android 7.1</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/25/changes.html" target="_blank" rel="external">25</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#N_MR1" target="_blank" rel="external">N_MR1</a></td>
+<td><a href="https://developer.android.com/about/versions/nougat/index.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/nougat/android-7.0.html" target="_blank" rel="external">Android 7.0</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/24/changes.html" target="_blank" rel="external">24</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#N" target="_blank" rel="external">N</a></td>
+<td><a href="https://developer.android.com/about/versions/nougat/index.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/marshmallow/android-6.0.html" target="_blank" rel="external">Android 6.0</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/23/changes.html" target="_blank" rel="external">23</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#M" target="_blank" rel="external">M</a></td>
+<td><a href="https://developer.android.com/about/versions/marshmallow/index.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-5.1.html" target="_blank" rel="external">Android 5.1</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/22/changes.html" target="_blank" rel="external">22</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#LOLLIPOP_MR1" target="_blank" rel="external">LOLLIPOP_MR1</a></td>
+<td><a href="https://developer.android.com/about/versions/lollipop.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-5.0.html" target="_blank" rel="external">Android 5.0</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/21/changes.html" target="_blank" rel="external">21</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#LOLLIPOP" target="_blank" rel="external">LOLLIPOP</a></td>
+<td><a href="https://developer.android.com/about/versions/lollipop.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td>Android 4.4W</td>
+<td><a href="https://developer.android.com/sdk/api_diff/20/changes.html" target="_blank" rel="external">20</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#KITKAT_WATCH" target="_blank" rel="external">KITKAT_WATCH</a></td>
+<td>KitKat for Wearables Only</td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-4.4.html" target="_blank" rel="external">Android 4.4</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/19/changes.html" target="_blank" rel="external">19</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#KITKAT" target="_blank" rel="external">KITKAT</a></td>
+<td><a href="https://developer.android.com/about/versions/kitkat.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-4.3.html" target="_blank" rel="external">Android 4.3</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/18/changes.html" target="_blank" rel="external">18</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#JELLY_BEAN_MR2" target="_blank" rel="external">JELLY_BEAN_MR2</a></td>
+<td><a href="https://developer.android.com/about/versions/jelly-bean.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-4.2.html" target="_blank" rel="external">Android 4.2, 4.2.2</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/17/changes.html" target="_blank" rel="external">17</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#JELLY_BEAN_MR1" target="_blank" rel="external">JELLY_BEAN_MR1</a></td>
+<td><a href="https://developer.android.com/about/versions/jelly-bean.html#android-42" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-4.1.html" target="_blank" rel="external">Android 4.1, 4.1.1</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/16/changes.html" target="_blank" rel="external">16</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#JELLY_BEAN" target="_blank" rel="external">JELLY_BEAN</a></td>
+<td><a href="https://developer.android.com/about/versions/jelly-bean.html#android-41" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-4.0.3.html" target="_blank" rel="external">Android 4.0.3, 4.0.4</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/15/changes.html" target="_blank" rel="external">15</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#ICE_CREAM_SANDWICH_MR1" target="_blank" rel="external">ICE_CREAM_SANDWICH_MR1</a></td>
+<td><a href="https://developer.android.com/about/versions/android-4.0-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-4.0.html" target="_blank" rel="external">Android 4.0, 4.0.1, 4.0.2</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/14/changes.html" target="_blank" rel="external">14</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#ICE_CREAM_SANDWICH" target="_blank" rel="external">ICE_CREAM_SANDWICH</a></td>
+<td><a href="https://developer.android.com/about/versions/android-4.0-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-3.2.html" target="_blank" rel="external">Android 3.2</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/13/changes.html" target="_blank" rel="external">13</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#HONEYCOMB_MR2" target="_blank" rel="external">HONEYCOMB_MR2</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-3.1.html" target="_blank" rel="external">Android 3.1.x</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/12/changes.html" target="_blank" rel="external">12</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#HONEYCOMB_MR1" target="_blank" rel="external">HONEYCOMB_MR1</a></td>
+<td><a href="https://developer.android.com/about/versions/android-3.1-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-3.0.html" target="_blank" rel="external">Android 3.0.x</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/11/changes.html" target="_blank" rel="external">11</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#HONEYCOMB" target="_blank" rel="external">HONEYCOMB</a></td>
+<td><a href="https://developer.android.com/about/versions/android-3.0-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-2.3.3.html" target="_blank" rel="external">Android 2.3.4 Android 2.3.3</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/10/changes.html" target="_blank" rel="external">10</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#GINGERBREAD_MR1" target="_blank" rel="external">GINGERBREAD_MR1</a></td>
+<td><a href="https://developer.android.com/about/versions/android-2.3-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-2.3.html" target="_blank" rel="external">Android 2.3.2 Android 2.3.1 Android 2.3</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/9/changes.html" target="_blank" rel="external">9</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#GINGERBREAD" target="_blank" rel="external">GINGERBREAD</a></td>
+<td><a href="https://developer.android.com/about/versions/android-2.3-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-2.2.html" target="_blank" rel="external">Android 2.2.x</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/8/changes.html" target="_blank" rel="external">8</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#FROYO" target="_blank" rel="external">FROYO</a></td>
+<td><a href="https://developer.android.com/about/versions/android-2.2-highlights.html" target="_blank" rel="external">Platform Highlights</a> </td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-2.1.html" target="_blank" rel="external">Android 2.1.x</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/7/changes.html" target="_blank" rel="external">7</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#ECLAIR_MR1" target="_blank" rel="external">ECLAIR_MR1</a></td>
+<td><a href="https://developer.android.com/about/versions/android-2.0-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-2.0.1.html" target="_blank" rel="external">Android 2.0.1</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/6/changes.html" target="_blank" rel="external">6</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#ECLAIR_0_1" target="_blank" rel="external">ECLAIR_0_1</a></td>
+<td><a href="https://developer.android.com/about/versions/android-2.0-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-2.0.html" target="_blank" rel="external">Android 2.0</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/5/changes.html" target="_blank" rel="external">5</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#ECLAIR" target="_blank" rel="external">ECLAIR</a></td>
+<td><a href="https://developer.android.com/about/versions/android-2.0-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-1.6.html" target="_blank" rel="external">Android 1.6</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/4/changes.html" target="_blank" rel="external">4</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#DONUT" target="_blank" rel="external">DONUT</a></td>
+<td><a href="https://developer.android.com/about/versions/android-1.6-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-1.5.html" target="_blank" rel="external">Android 1.5</a></td>
+<td><a href="https://developer.android.com/sdk/api_diff/3/changes.html" target="_blank" rel="external">3</a></td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#CUPCAKE" target="_blank" rel="external">CUPCAKE</a></td>
+<td><a href="https://developer.android.com/about/versions/android-1.5-highlights.html" target="_blank" rel="external">Platform Highlights</a></td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/about/versions/android-1.1.html" target="_blank" rel="external">Android 1.1</a></td>
+<td>2</td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#BASE_1_1" target="_blank" rel="external">BASE_1_1</a></td>
+<td></td>
+</tr>
+<tr>
+<td>Android 1.0</td>
+<td>1</td>
+<td><a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html#BASE" target="_blank" rel="external">BASE</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>可穿戴设备的 KitKat Android 4.4W 占用了 API Leve 20。也就是说，对于 Android 手机/平板 等设备，在 Android 5.0 之前，最高支持的 SSL/TLS 版本为 TLSv1，而这个版本实际上是一个安全性并不是太好的版本，当前已经有许多网站配置为不再支持这种老版本的 SSL/TLS 。在用 Android 5.0 之前的设备，访问一些不再支持 TLSv1 及之前 SSL/TLS 版本的网站的时候，就会出现一些问题。</p>
+<p>Android 4.4.4 的设备与支持 TLSv1 的 HTTP 服务器建立连接时，其  <strong><em>Client Hello</em></strong>  消息如下：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-a6f3bf43f81f004a.png" alt=""></p>
+<p>SSL/TLS 握手可以正常完成，连接能够建立成功，并顺利完成数据传输。</p>
+<p>Android 4.4.4 的设备与最低支持 TLSv1.1 的 HTTP 服务器建立连接时，其网络包的交互则像下面这样：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-4c6f2e534be8ae30.png" alt=""></p>
+<p>第 4 号包是 TCP 连接建立完成后， Android 客户端发向服务器的 <strong><em>Client Hello</em></strong> 消息，但服务器立即就回了一个 <strong><em>Alert</em></strong> 消息，并关闭了 TCP 连接。此时，用于执行 HTTP 请求的 OkHttp 库也将抛出异常并退出，异常为：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">javax<span class="selector-class">.net</span><span class="selector-class">.ssl</span><span class="selector-class">.SSLHandshakeException</span>: javax<span class="selector-class">.net</span><span class="selector-class">.ssl</span><span class="selector-class">.SSLProtocolException</span>: SSL handshake aborted: ssl=<span class="number">0</span>xb7f24d78: Failure <span class="keyword">in</span> SSL library, usually <span class="selector-tag">a</span> protocol error</div><div class="line">error:<span class="number">1407742</span>E:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert protocol version (external/openssl/ssl/s23_clnt<span class="selector-class">.c</span>:<span class="number">741</span> <span class="number">0</span>x96ff8926:<span class="number">0</span>x00000000)</div><div class="line">    at com<span class="selector-class">.android</span><span class="selector-class">.org</span><span class="selector-class">.conscrypt</span><span class="selector-class">.OpenSSLSocketImpl</span><span class="selector-class">.startHandshake</span>(OpenSSLSocketImpl<span class="selector-class">.java</span>:<span class="number">448</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.connection</span><span class="selector-class">.RealConnection</span><span class="selector-class">.connectTls</span>(RealConnection<span class="selector-class">.java</span>:<span class="number">267</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.connection</span><span class="selector-class">.RealConnection</span><span class="selector-class">.establishProtocol</span>(RealConnection<span class="selector-class">.java</span>:<span class="number">237</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.connection</span><span class="selector-class">.RealConnection</span><span class="selector-class">.connect</span>(RealConnection<span class="selector-class">.java</span>:<span class="number">148</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.connection</span><span class="selector-class">.StreamAllocation</span><span class="selector-class">.findConnection</span>(StreamAllocation<span class="selector-class">.java</span>:<span class="number">186</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.connection</span><span class="selector-class">.StreamAllocation</span><span class="selector-class">.findHealthyConnection</span>(StreamAllocation<span class="selector-class">.java</span>:<span class="number">121</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.connection</span><span class="selector-class">.StreamAllocation</span><span class="selector-class">.newStream</span>(StreamAllocation<span class="selector-class">.java</span>:<span class="number">100</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.connection</span><span class="selector-class">.ConnectInterceptor</span><span class="selector-class">.intercept</span>(ConnectInterceptor<span class="selector-class">.java</span>:<span class="number">42</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">92</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">67</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.cache</span><span class="selector-class">.CacheInterceptor</span><span class="selector-class">.intercept</span>(CacheInterceptor<span class="selector-class">.java</span>:<span class="number">93</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">92</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">67</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.BridgeInterceptor</span><span class="selector-class">.intercept</span>(BridgeInterceptor<span class="selector-class">.java</span>:<span class="number">93</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">92</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RetryAndFollowUpInterceptor</span><span class="selector-class">.intercept</span>(RetryAndFollowUpInterceptor<span class="selector-class">.java</span>:<span class="number">120</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">92</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">67</span>)</div><div class="line">    at com<span class="selector-class">.netease</span><span class="selector-class">.netlib</span><span class="selector-class">.OkHttp3Utils</span><span class="variable">$MyInterceptor</span>.intercept(OkHttp3Utils<span class="selector-class">.java</span>:<span class="number">29</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">92</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.http</span><span class="selector-class">.RealInterceptorChain</span><span class="selector-class">.proceed</span>(RealInterceptorChain<span class="selector-class">.java</span>:<span class="number">67</span>)</div><div class="line">    at okhttp3<span class="selector-class">.RealCall</span><span class="selector-class">.getResponseWithInterceptorChain</span>(RealCall<span class="selector-class">.java</span>:<span class="number">179</span>)</div><div class="line">    at okhttp3.RealCall<span class="variable">$AsyncCall</span>.execute(RealCall<span class="selector-class">.java</span>:<span class="number">129</span>)</div><div class="line">    at okhttp3<span class="selector-class">.internal</span><span class="selector-class">.NamedRunnable</span><span class="selector-class">.run</span>(NamedRunnable<span class="selector-class">.java</span>:<span class="number">32</span>)</div><div class="line">    at java<span class="selector-class">.util</span><span class="selector-class">.concurrent</span><span class="selector-class">.ThreadPoolExecutor</span><span class="selector-class">.runWorker</span>(ThreadPoolExecutor<span class="selector-class">.java</span>:<span class="number">1112</span>)</div><div class="line">    at java<span class="selector-class">.util</span><span class="selector-class">.concurrent</span><span class="selector-class">.ThreadPoolExecutor</span><span class="variable">$Worker</span>.run(ThreadPoolExecutor<span class="selector-class">.java</span>:<span class="number">587</span>)</div><div class="line">    at java<span class="selector-class">.lang</span><span class="selector-class">.Thread</span><span class="selector-class">.run</span>(Thread<span class="selector-class">.java</span>:<span class="number">841</span>)</div><div class="line">	Suppressed: javax<span class="selector-class">.net</span><span class="selector-class">.ssl</span><span class="selector-class">.SSLHandshakeException</span>: javax<span class="selector-class">.net</span><span class="selector-class">.ssl</span><span class="selector-class">.SSLProtocolException</span>: SSL handshake aborted: ssl=<span class="number">0</span>xb7f24d78: Failure <span class="keyword">in</span> SSL library, usually <span class="selector-tag">a</span> protocol error</div><div class="line">error:<span class="number">1407742</span>E:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert protocol version (external/openssl/ssl/s23_clnt<span class="selector-class">.c</span>:<span class="number">741</span> <span class="number">0</span>x96ff8926:<span class="number">0</span>x00000000)</div><div class="line">		... <span class="number">27</span> more</div><div class="line">	Caused by: javax<span class="selector-class">.net</span><span class="selector-class">.ssl</span><span class="selector-class">.SSLProtocolException</span>: SSL handshake aborted: ssl=<span class="number">0</span>xb7f24d78: Failure <span class="keyword">in</span> SSL library, usually <span class="selector-tag">a</span> protocol error</div><div class="line">error:<span class="number">1407742</span>E:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert protocol version (external/openssl/ssl/s23_clnt<span class="selector-class">.c</span>:<span class="number">741</span> <span class="number">0</span>x96ff8926:<span class="number">0</span>x00000000)</div><div class="line">    at com<span class="selector-class">.android</span><span class="selector-class">.org</span><span class="selector-class">.conscrypt</span><span class="selector-class">.NativeCrypto</span><span class="selector-class">.SSL_do_handshake</span>(Native Method)</div><div class="line">    at com<span class="selector-class">.android</span><span class="selector-class">.org</span><span class="selector-class">.conscrypt</span><span class="selector-class">.OpenSSLSocketImpl</span><span class="selector-class">.startHandshake</span>(OpenSSLSocketImpl<span class="selector-class">.java</span>:<span class="number">405</span>)</div><div class="line">		... <span class="number">26</span> more</div><div class="line">Caused by: javax<span class="selector-class">.net</span><span class="selector-class">.ssl</span><span class="selector-class">.SSLProtocolException</span>: SSL handshake aborted: ssl=<span class="number">0</span>xb7f24d78: Failure <span class="keyword">in</span> SSL library, usually <span class="selector-tag">a</span> protocol error</div><div class="line">error:<span class="number">1407742</span>E:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert protocol version (external/openssl/ssl/s23_clnt<span class="selector-class">.c</span>:<span class="number">741</span> <span class="number">0</span>x96ff8926:<span class="number">0</span>x00000000)</div><div class="line">    at com<span class="selector-class">.android</span><span class="selector-class">.org</span><span class="selector-class">.conscrypt</span><span class="selector-class">.NativeCrypto</span><span class="selector-class">.SSL_do_handshake</span>(Native Method)</div><div class="line">    at com<span class="selector-class">.android</span><span class="selector-class">.org</span><span class="selector-class">.conscrypt</span><span class="selector-class">.OpenSSLSocketImpl</span><span class="selector-class">.startHandshake</span>(OpenSSLSocketImpl<span class="selector-class">.java</span>:<span class="number">405</span>)</div><div class="line">	... <span class="number">26</span> more</div></pre></td></tr></table></figure></p>
+<p>在 Android 4.3、Android 4.2.2 和 Android 4.1.1 上，用相同版本的 OkHttp 访问前面配置为最低支持 TLSv1.1 的 HTTP 服务器时，抛出了完全相同的异常。</p>
+<p>客户端版本低于服务器支持的最低 SSL/TLS 版本时，HTTPS 连接会在握手阶段失败。</p>
+<p>参考文档<br><a href="https://developer.android.com/guide/topics/manifest/uses-sdk-element.html" target="_blank" rel="external"><uses-sdk></uses-sdk></a><br><a href="https://developer.android.com/reference/javax/net/ssl/SSLEngine.html" target="_blank" rel="external">SSLEngine</a></p>
+</div><div class="tags"><a href="/tags/Android开发/">Android开发</a><a href="/tags/安全/">安全</a><a href="/tags/HTTPS/">HTTPS</a></div><div class="post-nav"><a href="/2017/06/08/android_certificate_expired_issue/" class="pre">Android 的 HTTPS 证书过期异常</a><a href="/2017/06/05/wifi_shard/" class="next">WiFi 热点共享设置</a></div><div id="disqus_thread"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="widget"><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="请输入关键字..."/></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android开发/">Android开发</a><span class="category-list-count">34</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-C-开发/">C/C++开发</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java开发/">Java开发</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux内核/">Linux内核</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/live555/">live555</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/业界趣闻/">业界趣闻</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/后台开发/">后台开发</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络协议/">网络协议</a><span class="category-list-count">39</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络调试/">网络调试</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/随想杂谈/">随想杂谈</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/音视频开发/">音视频开发</a><span class="category-list-count">3</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/OpenGL/" style="font-size: 15px;">OpenGL</a> <a href="/tags/网络协议/" style="font-size: 15px;">网络协议</a> <a href="/tags/Android开发/" style="font-size: 15px;">Android开发</a> <a href="/tags/源码分析/" style="font-size: 15px;">源码分析</a> <a href="/tags/chromium/" style="font-size: 15px;">chromium</a> <a href="/tags/后台开发/" style="font-size: 15px;">后台开发</a> <a href="/tags/Java开发/" style="font-size: 15px;">Java开发</a> <a href="/tags/QUIC/" style="font-size: 15px;">QUIC</a> <a href="/tags/翻译/" style="font-size: 15px;">翻译</a> <a href="/tags/网络调试/" style="font-size: 15px;">网络调试</a> <a href="/tags/HTTP2/" style="font-size: 15px;">HTTP2</a> <a href="/tags/UDT/" style="font-size: 15px;">UDT</a> <a href="/tags/安全/" style="font-size: 15px;">安全</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/C-C-开发/" style="font-size: 15px;">C/C++开发</a> <a href="/tags/Django/" style="font-size: 15px;">Django</a> <a href="/tags/Go-语言/" style="font-size: 15px;">Go 语言</a> <a href="/tags/图形图像/" style="font-size: 15px;">图形图像</a> <a href="/tags/Linux内核/" style="font-size: 15px;">Linux内核</a> <a href="/tags/音视频开发/" style="font-size: 15px;">音视频开发</a> <a href="/tags/live555/" style="font-size: 15px;">live555</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-fei"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">七月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">五月 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">二月 2013</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/09/04/live555_src_analysis_describe/">live555 源码分析： DESCRIBE 的处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/01/live555_src_analysis_rtsp_rtp_rtcp_wireshark/">Wireshark 抓包分析 RTSP/RTP/RTCP 基本工作过程</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/01/live555_src_analysis_rtspserver/">live555 源码分析：RTSPServer</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/31/live555_src_analysis_mediaserver/">live555 源码分析：MediaSever</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/30/live555_src_analysis_infrasture/">live555 源码分析：基础设施</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/24/h264_send_with_ortp/">使用 ortp 发送原始 H.264 码流</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/23/h264_play/">原始 H.264 码流播放</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/18/h264_on_rtp/">H.264 视频的 RTP 载荷格式</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/12/working/">从工作中得到了什么？</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/03/sdp/">会话描述协议</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a><ul></ul><a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a><ul></ul><a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a></div><div class="widget"><div class="widget-title"><i class="fa fa-commt"> 最近评论</i></div><script type="text/javascript" src="//wolfcstech.disqus.com/recent_comments_widget.js?num_items=5&amp;hide_avatars=1&amp;avatar_size=32&amp;excerpt_length=20&amp;hide_mods=1"></script></div></div></div></div><a id="totop" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.2.0" async></script><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">网站地图</a> |<a href="/atom.xml">订阅本站</a> |<span>联系博主：<a href="mailto:hanpfei@gmail.com" target="_blank" class="fa fa-email"> </a><a href="undefined" target="_blank" class="fa fa-weibo"></a><a href="https://github.com/hanpfei" target="_blank" class="fa fa-github"> </a></span></p><p><span> Copyright &copy;<a href="/." rel="nofollow">Han Pengfei</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span><span><a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> Theme </a>by<a rel="nofollow" target="_blank" href="https://github.com/chaooo"> Charles.</a></span></p></div></div></div><script>var disqus_shortname = 'wolfcstech';
+var disqus_identifier = '2017/06/08/android_tls_version_issue/';
+var disqus_title = 'Android TLS 版本过低造成的问题';
+var disqus_url = 'https://www.wolfcstech.com/2017/06/08/android_tls_version_issue/';
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//wolfcstech.disqus.com/count.js" async></script><script type="text/javascript" src="/js/search.json.js?v=1.2.0"></script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></body></html>

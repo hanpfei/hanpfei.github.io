@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+Cache-Control: private
+Content-Length: 3214
+Content-Type: application/json; charset=utf-8
+Server: Microsoft-IIS/7.5
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+Date: Thu, 13 Oct 2016 02:12:28 GMT
+X-Original-Url: https://www.wolfcstech.com:6121/testApi1
+
+{"res":[{"ctime":"2016-10-11","title":"温州","des":"国内","url":"http://news.163.com/16/1011/11/C33GFLIP0001124J.html"},{"ime":"2016","tit":"b","des":"a"}, {"ime":"2016","tit":"b","des":"a"}],"rea":"Su"}
