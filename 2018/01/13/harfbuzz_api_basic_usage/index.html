@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="图形图像," />
+
+
+<meta name="description" content="Harfbuzz 是一个 OpenType 文本整形引擎。当前的 Harfbuzz 代码库，之前被称为 harfbuzz-ng，版本号为 1.x.x，它是稳定的且处于活跃的维护之中。Harfbuzz 的使用非常广泛，在最新版本的  Firefox，GNOME，ChromeOS，Chrome，LibreOffice，XeTeX，Android，和 KDE 等项目中都有应用。Harfbuzz 的代码可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Harfbuzz API 基本用法">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/01/13/harfbuzz_api_basic_usage/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Harfbuzz 是一个 OpenType 文本整形引擎。当前的 Harfbuzz 代码库，之前被称为 harfbuzz-ng，版本号为 1.x.x，它是稳定的且处于活跃的维护之中。Harfbuzz 的使用非常广泛，在最新版本的  Firefox，GNOME，ChromeOS，Chrome，LibreOffice，XeTeX，Android，和 KDE 等项目中都有应用。Harfbuzz 的代码可">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-2b0fb53e56818ed7.jpg">
+<meta property="og:updated_time" content="2018-02-09T05:55:39.653Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Harfbuzz API 基本用法">
+<meta name="twitter:description" content="Harfbuzz 是一个 OpenType 文本整形引擎。当前的 Harfbuzz 代码库，之前被称为 harfbuzz-ng，版本号为 1.x.x，它是稳定的且处于活跃的维护之中。Harfbuzz 的使用非常广泛，在最新版本的  Firefox，GNOME，ChromeOS，Chrome，LibreOffice，XeTeX，Android，和 KDE 等项目中都有应用。Harfbuzz 的代码可">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-2b0fb53e56818ed7.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/01/13/harfbuzz_api_basic_usage/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Harfbuzz API 基本用法 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/13/harfbuzz_api_basic_usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Harfbuzz API 基本用法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-13T14:46:49+08:00">2018-01-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/13/harfbuzz_api_basic_usage/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/01/13/harfbuzz_api_basic_usage/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/01/13/harfbuzz_api_basic_usage/" class="leancloud_visitors" data-flag-title="Harfbuzz API 基本用法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="[http://harfbuzz.org/](http://harfbuzz.org/">Harfbuzz</a> 是一个 <a href="http://www.microsoft.com/typography/otspec/" target="_blank" rel="external">OpenType</a> 文本整形引擎。当前的 Harfbuzz 代码库，之前被称为 harfbuzz-ng，版本号为 1.x.x，它是稳定的且处于活跃的维护之中。Harfbuzz 的使用非常广泛，在最新版本的  Firefox，GNOME，ChromeOS，Chrome，LibreOffice，XeTeX，Android，和 KDE 等项目中都有应用。Harfbuzz 的代码可以在 <a href="https://cgit.freedesktop.org/harfbuzz/" target="_blank" rel="external">这里</a> 下载，也可以通过 <a href="https://github.com/behdad/harfbuzz" target="_blank" rel="external">GitHub</a> 访问。<br><a id="more"></a><br>老的 HarfBuzz 代码库，现在被称为 harfbuzz-old，它从  <a href="http://freetype.org/" target="_blank" rel="external">FreeType</a>，<a href="http://pango.org/" target="_blank" rel="external">Pango</a>，和 <a href="http://qt-project.org/" target="_blank" rel="external">Qt</a> 派上而来，可以在 <a href="http://cgit.freedesktop.org/harfbuzz.old/" target="_blank" rel="external">这里</a> 下载。老的 HarfBuzz 代码库目前已经不再维护了。</p>
+<p>Harfbuzz 在代码结构上，与 harfbuzz-old 的差别非常大。前面 <strong><em>Behdad Esfahbod</em></strong> 发的那篇名为 <a href="https://lists.freedesktop.org/archives/harfbuzz/2009-August/000359.html" target="_blank" rel="external">Harfbuzz API 设计（Harfbuzz API design）</a> 的邮件，所描述的是新 Harfbuzz API 的设计。</p>
+<p>本文来看一下 Harfbuzz API 的基本用法。学习一个开源库的 API 的用法最方便的途径，常常正是库本身包含的一些示例程序或这测试程序。下载当前最新的发布版本 <a href="https://github.com/harfbuzz/harfbuzz/releases/download/1.7.5/harfbuzz-1.7.5.tar.bz2" target="_blank" rel="external">1.7.5</a> 的源码。将源码解压缩之后，通过如下命令编译它：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">harfbuzz<span class="number">-1.7</span><span class="number">.5</span>$ ./configure</div><div class="line">harfbuzz<span class="number">-1.7</span><span class="number">.5</span>$ make</div></pre></td></tr></table></figure></p>
+<p>编译过程将产生 Harfbuzz 的二进制库文件，和一些测试程序的可执行文件，位于 <code>harfbuzz-1.7.5/src/test.cc</code> 的即是其中一个测试程序。这个测试程序编译之后产生的可执行文件为 <code>harfbuzz-1.7.5/src/test</code>，通过如下方式执行：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">harfbuzz<span class="number">-1.7</span><span class="number">.5</span><span class="symbol">$</span> src/test font-<span class="keyword">file</span>.ttf</div></pre></td></tr></table></figure></p>
+<p>即需要唯一的参数，字库文件的路径。我们对这个测试程序做一点简单的修改，让它处理泰语和缅甸语，字库文件我们使用 Android 7.1.1 代码库中，<code>external/noto-fonts/other/</code> 下的 <code>NotoSansThai-Regular.ttf</code> 和 <code>NotoSansMyanmar-Regular.ttf</code>：<br><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">harfbuzz-<span class="number">1.7</span><span class="meta">.5</span>$ src/<span class="keyword">test</span> ~/Androids/android_7<span class="meta">.1</span><span class="meta">.1</span>/external/noto-fonts/other/NotoSansThai-Regular.ttf</div><div class="line">Opened font file ~/Androids/android_7<span class="meta">.1</span><span class="meta">.1</span>/external/noto-fonts/other/NotoSansThai-Regular.ttf: <span class="number">21380</span> bytes long</div><div class="line">cluster <span class="number">0</span>	glyph <span class="number">0x4</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1264</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">0</span>	glyph <span class="number">0x4e</span> <span class="meta">at</span>	(<span class="number">7</span>,<span class="number">0</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">0</span>	glyph <span class="number">0x5e</span> <span class="meta">at</span>	(<span class="number">127</span>,<span class="number">0</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">0</span>	glyph <span class="number">0x37</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">994</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">3</span>	glyph <span class="number">0x25</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1315</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">4</span>	glyph <span class="number">0x26</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1225</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">5</span>	glyph <span class="number">0x27</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1301</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">6</span>	glyph <span class="number">0x30</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1320</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">7</span>	glyph <span class="number">0x31</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1379</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">8</span>	glyph <span class="number">0x33</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1195</span>,<span class="number">0</span>)</div><div class="line">harfbuzz-<span class="number">1.7</span><span class="meta">.5</span>$ src/<span class="keyword">test</span> ~/Androids/android_7<span class="meta">.1</span><span class="meta">.1</span>/external/noto-fonts/other/NotoSansMyanmar-Regular.ttf</div><div class="line">Opened font file ~/Androids/android_7<span class="meta">.1</span><span class="meta">.1</span>/external/noto-fonts/other/NotoSansMyanmar-Regular.ttf: <span class="number">108160</span> bytes long</div><div class="line">cluster <span class="number">0</span>	glyph <span class="number">0x9</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1381</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">0</span>	glyph <span class="number">0x196</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">993</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">2</span>	glyph <span class="number">0x5</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1384</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">2</span>	glyph <span class="number">0x195</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">547</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">4</span>	glyph <span class="number">0x22</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">2308</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">4</span>	glyph <span class="number">0x197</span> <span class="meta">at</span>	(-<span class="number">42</span>,<span class="number">0</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">6</span>	glyph <span class="number">0x4</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">2302</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">6</span>	glyph <span class="number">0xd5</span> <span class="meta">at</span>	(-<span class="number">19</span>,-<span class="number">50</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">6</span>	glyph <span class="number">0x196</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">993</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">10</span>	glyph <span class="number">0x22</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">2308</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">11</span>	glyph <span class="number">0x16</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">1311</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">11</span>	glyph <span class="number">0x104</span> <span class="meta">at</span>	(-<span class="number">4</span>,-<span class="number">50</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">11</span>	glyph <span class="number">0x195</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">547</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">15</span>	glyph <span class="number">0xe</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">2271</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">15</span>	glyph <span class="number">0x197</span> <span class="meta">at</span>	(-<span class="number">14</span>,<span class="number">0</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">15</span>	glyph <span class="number">0xd2</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">534</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">18</span>	glyph <span class="number">0x15</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">2304</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">18</span>	glyph <span class="number">0x19f</span> <span class="meta">at</span>	(-<span class="number">57</span>,<span class="number">0</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">18</span>	glyph <span class="number">0xd1</span> <span class="meta">at</span>	(-<span class="number">31</span>,<span class="number">0</span>)+(<span class="number">0</span>,<span class="number">0</span>)</div><div class="line">cluster <span class="number">18</span>	glyph <span class="number">0x1a1</span> <span class="meta">at</span>	(<span class="number">0</span>,<span class="number">0</span>)+(<span class="number">709</span>,<span class="number">0</span>)</div></pre></td></tr></table></figure></p>
+<p><code>harfbuzz-1.7.5/src/test.cc</code> 的完整源码如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"hb-private.hh"</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"hb.h"</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> HAVE_GLIB</span></div><div class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;glib.h&gt;</span></span></div><div class="line"><span class="meta"># <span class="meta-keyword">if</span> !GLIB_CHECK_VERSION (2, 22, 0)</span></div><div class="line"><span class="meta">#  <span class="meta-keyword">define</span> g_mapped_file_unref g_mapped_file_free</span></div><div class="line"><span class="meta"># <span class="meta-keyword">endif</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> HAVE_FREETYPE</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"hb-ft.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span></span></div><div class="line"><span class="title">main</span> <span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></div><div class="line">&#123;</div><div class="line">  <span class="keyword">hb_blob_t</span> *blob = <span class="literal">nullptr</span>;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"usage: %s font-file.ttf\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span> (<span class="number">1</span>);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">/* Create the blob */</span></div><div class="line">  &#123;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *font_data;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> len;</div><div class="line">    <span class="keyword">hb_destroy_func_t</span> destroy;</div><div class="line">    <span class="keyword">void</span> *user_data;</div><div class="line">    <span class="keyword">hb_memory_mode_t</span> mm;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> HAVE_GLIB</span></div><div class="line">    GMappedFile *mf = g_mapped_file_new (argv[<span class="number">1</span>], <span class="literal">false</span>, <span class="literal">nullptr</span>);</div><div class="line">    font_data = g_mapped_file_get_contents (mf);</div><div class="line">    len = g_mapped_file_get_length (mf);</div><div class="line">    destroy = (<span class="keyword">hb_destroy_func_t</span>) g_mapped_file_unref;</div><div class="line">    user_data = (<span class="keyword">void</span> *) mf;</div><div class="line">    mm = HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITABLE;</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">    FILE *f = fopen (argv[<span class="number">1</span>], <span class="string">"rb"</span>);</div><div class="line">    fseek (f, <span class="number">0</span>, SEEK_END);</div><div class="line">    len = ftell (f);</div><div class="line">    fseek (f, <span class="number">0</span>, SEEK_SET);</div><div class="line">    font_data = (<span class="keyword">const</span> <span class="keyword">char</span> *) <span class="built_in">malloc</span> (len);</div><div class="line">    <span class="keyword">if</span> (!font_data) len = <span class="number">0</span>;</div><div class="line">    len = fread ((<span class="keyword">char</span> *) font_data, <span class="number">1</span>, len, f);</div><div class="line">    destroy = <span class="built_in">free</span>;</div><div class="line">    user_data = (<span class="keyword">void</span> *) font_data;</div><div class="line">    fclose (f);</div><div class="line">    mm = HB_MEMORY_MODE_WRITABLE;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"></div><div class="line">    blob = hb_blob_create (font_data, len, mm, user_data, destroy);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="built_in">printf</span> (<span class="string">"Opened font file %s: %u bytes long\n"</span>, argv[<span class="number">1</span>], hb_blob_get_length (blob));</div><div class="line"></div><div class="line">  <span class="comment">/* Create the face */</span></div><div class="line">  <span class="keyword">hb_face_t</span> *face = hb_face_create (blob, <span class="number">0</span> <span class="comment">/* first face */</span>);</div><div class="line">  hb_blob_destroy (blob);</div><div class="line">  blob = <span class="literal">nullptr</span>;</div><div class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> upem = hb_face_get_upem (face);</div><div class="line"></div><div class="line">  <span class="keyword">int</span> textSize = <span class="number">36</span>;</div><div class="line">  <span class="keyword">uint16_t</span> x_ppem, y_ppem;</div><div class="line">  <span class="keyword">int</span> x_scale, y_scale;</div><div class="line"></div><div class="line">  x_ppem = y_ppem = textSize;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">int</span> kDevicePixelFraction = <span class="number">64</span>;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">int</span> kMultiplyFor16Dot16 = <span class="number">1</span> &lt;&lt; <span class="number">16</span>;</div><div class="line">  <span class="keyword">float</span> emScale = kDevicePixelFraction * kMultiplyFor16Dot16 / (<span class="keyword">float</span>)upem;</div><div class="line">  x_scale = emScale * textSize;</div><div class="line">  y_scale = emScale * textSize;</div><div class="line"></div><div class="line">  <span class="keyword">hb_font_t</span> *font = hb_font_create (face);</div><div class="line">  hb_font_set_scale(font, x_scale, y_scale);</div><div class="line">  hb_font_set_ppem(font, x_ppem, y_ppem);</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> HAVE_FREETYPE</span></div><div class="line">  hb_ft_font_set_funcs (font);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"></div><div class="line">  <span class="keyword">hb_buffer_t</span> *buffer = hb_buffer_create ();</div><div class="line"></div><div class="line">  <span class="keyword">uint16_t</span> myanmarChars[] = &#123;<span class="number">0x1005</span>, <span class="number">0x102C</span>, <span class="number">0x1001</span>, <span class="number">0x102B</span>,</div><div class="line">          <span class="number">0x101E</span>, <span class="number">0x102D</span>, <span class="number">0x1000</span>, <span class="number">0x1039</span>, <span class="number">0x1001</span>, <span class="number">0x102C</span>,</div><div class="line">          <span class="number">0x101E</span>, <span class="number">0x1012</span>, <span class="number">0x1039</span>, <span class="number">0x1013</span>, <span class="number">0x102B</span>,</div><div class="line">          <span class="number">0x100A</span>, <span class="number">0x102D</span>, <span class="number">0x102F</span>, <span class="number">0x1011</span>, <span class="number">0x102F</span>, <span class="number">0x1036</span>, <span class="number">0x1038</span></div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="keyword">uint16_t</span> thaiChars[] = &#123;</div><div class="line">          <span class="number">0xE01</span>, <span class="number">0xE49</span>, <span class="number">0xE33</span>, <span class="number">0xE20</span>, <span class="number">0xE21</span>, <span class="number">0xE22</span>, <span class="number">0xE2B</span>, <span class="number">0xE2C</span>, <span class="number">0xE2E</span></div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="keyword">uint16_t</span> *chars = myanmarChars;</div><div class="line"></div><div class="line"><span class="comment">//  hb_buffer_add_utf8 (buffer, "\xe0\xa4\x95\xe0\xa5\x8d\xe0\xa4\xb0\xe0\xa5\x8d\xe0\xa4\x95", -1, 0, -1);</span></div><div class="line">  hb_buffer_add_utf16(buffer, chars, <span class="number">-1</span>, <span class="number">0</span>, <span class="number">-1</span>);</div><div class="line">  hb_buffer_guess_segment_properties (buffer);</div><div class="line"></div><div class="line">  hb_shape (font, buffer, <span class="literal">nullptr</span>, <span class="number">0</span>);</div><div class="line"></div><div class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> count = hb_buffer_get_length (buffer);</div><div class="line">  <span class="keyword">hb_glyph_info_t</span> *infos = hb_buffer_get_glyph_infos (buffer, <span class="literal">nullptr</span>);</div><div class="line">  <span class="keyword">hb_glyph_position_t</span> *positions = hb_buffer_get_glyph_positions (buffer, <span class="literal">nullptr</span>);</div><div class="line"></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++)</div><div class="line">  &#123;</div><div class="line">    <span class="keyword">hb_glyph_info_t</span> *info = &amp;infos[i];</div><div class="line">    <span class="keyword">hb_glyph_position_t</span> *pos = &amp;positions[i];</div><div class="line"></div><div class="line">    <span class="built_in">printf</span> (<span class="string">"cluster %d	glyph 0x%x at	(%d,%d)+(%d,%d)\n"</span>,</div><div class="line">	    info-&gt;cluster,</div><div class="line">	    info-&gt;codepoint,</div><div class="line">	    pos-&gt;x_offset,</div><div class="line">	    pos-&gt;y_offset,</div><div class="line">	    pos-&gt;x_advance,</div><div class="line">	    pos-&gt;y_advance);</div><div class="line"></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  hb_buffer_destroy (buffer);</div><div class="line">  hb_font_destroy (font);</div><div class="line">  hb_face_destroy (face);</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>接着再来看前面那段code的结构，上面这段代码执行的步骤如下：</p>
+<ul>
+<li><ol>
+<li>读取字库文件中的数据，然后创建 <code>hb_blot_t</code>。</li>
+</ol>
+</li>
+<li><ol>
+<li>利用前面创建的那个含有字库文件数据的 <code>blob</code>，创建一个 <code>face</code> 。</li>
+</ol>
+</li>
+<li><ol>
+<li>利用前面创建的 <code>face</code>，创建一个 <code>font</code>。然后把字体大小的信息（ppem）及字体设计空间向用户空间转换的系数（scale）设置给 <code>font</code>。计算 <code>ppem</code> 及 <code>scale</code> 的那段代码借用了android 4.2 <code>TextLayoutCache.cpp</code> 的一些做法。</li>
+</ol>
+</li>
+<li><ol>
+<li>创建一个 <code>buffer</code>，把文本添加进去。这个地方用 <code>UTF-16</code> 编码，是因为就手动编码 Unicode 而言，对于许多复杂语系的 Unicode 范围，UTF-16 比 UTF-8 要方便的多，因而也使我们可以更方便地修改它。</li>
+</ol>
+</li>
+<li><ol>
+<li>调用 Harfbuzz 的主 <code>shape</code> 接口执行 <code>shape</code> 动作。</li>
+</ol>
+</li>
+<li><ol>
+<li>最后从 <code>shape</code> 之后的 <code>buffer</code> 中，取出 <code>glyph</code> 和 <code>position</code> 相关信息。</li>
+</ol>
+</li>
+</ul>
+<p>通常情况下对于 Harfbuzz API 的使用，大体上如上面所述。用一张图来简单说明上面的过程：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-2b0fb53e56818ed7.jpg" alt=""></p>
+<p>这样的用法，之所以称为基本用法，有如下这样一些原因：</p>
+<ul>
+<li>前面的第 2、3 步中，在创建 <code>face</code> 和 <code>font</code> 时，是直接通过字库文件的路径进行的。通常情况每个系统都会有自己的字库文件管理系统和 Glyph 管理系统，这种做法就完全没有考虑与现有系统的这些模块衔接的问题。在实际系统中，这两个对象应该通过相应有 callback 参数的那些接口来创建。</li>
+<li>在 Harfbuzz API Design 中，我们看到有提到 Unicode callback 及 Script、Language 和 Direction 这些文本属性等，这些都是需要正确的设置给 <code>buffer</code> 的，因而前面第 4 步所对应的这个测试程序的做法，所创建的 <code>buffer</code> 是不够完整的。</li>
+<li>在打印位置信息时，我们看到有通过 <code>HBFixedToFloat()</code> 这个函数来对 Harfbuzz 输出的位置信息做一个转换，转换为 <code>float</code> 格式的像素个数值。可以看到这个地方除了一个 <code>2048</code>。这个系数在这个测试程序里用的是一个猜想的值。字体大小为 <code>36</code>，所以猜想返回的 <code>advance</code> 值应该处于这一数量级。所以取了 <code>2048</code> 这个系数。</li>
+</ul>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/图形图像/" rel="tag"># 图形图像</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/12/pycairo05_gradients/" rel="next" title="PyCairo渐变">
+                <i class="fa fa-chevron-left"></i> PyCairo渐变
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/13/chinese_tech_site/" rel="prev" title="中文技术网站排名">
+                中文技术网站排名 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

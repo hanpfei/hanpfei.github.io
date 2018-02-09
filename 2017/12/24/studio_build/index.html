@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,Android开发," />
+
+
+<meta name="description" content="获得源码分支当前我们具有如下老版本 Android Studio 的分支：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Studio 构建">
+<meta property="og:url" content="https://www.wolfcstech.com/2017/12/24/studio_build/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="获得源码分支当前我们具有如下老版本 Android Studio 的分支：">
+<meta property="og:updated_time" content="2017-12-24T07:58:55.965Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Studio 构建">
+<meta name="twitter:description" content="获得源码分支当前我们具有如下老版本 Android Studio 的分支：">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2017/12/24/studio_build/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Android Studio 构建 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/12/24/studio_build/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android Studio 构建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-24T15:15:49+08:00">2017-12-24</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/24/studio_build/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2017/12/24/studio_build/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/12/24/studio_build/" class="leancloud_visitors" data-flag-title="Android Studio 构建">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="获得源码"><a href="#获得源码" class="headerlink" title="获得源码"></a>获得源码</h1><h2 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h2><p>当前我们具有如下老版本 Android Studio 的分支：<br><a id="more"></a></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">dev branch</th>
+<th style="text-align:right">release branch</th>
+<th style="text-align:right">IntelliJ</th>
+<th style="text-align:right">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">studio-1.0-dev</td>
+<td style="text-align:right">studio-1.0-release</td>
+<td style="text-align:right">idea13-dev</td>
+<td style="text-align:right">这是 1.0 的分支，<strong><em>已经关闭</em></strong></td>
+</tr>
+<tr>
+<td style="text-align:left">studio-1.1-dev</td>
+<td style="text-align:right">studio-1.1-release</td>
+<td style="text-align:right">idea13-1.1-dev</td>
+<td style="text-align:right">这是 1.1 的分支，<strong><em>已经关闭</em></strong></td>
+</tr>
+<tr>
+<td style="text-align:left">studio-1.2-dev</td>
+<td style="text-align:right">studio-1.2-release</td>
+<td style="text-align:right">idea14-1.2-dev</td>
+<td style="text-align:right">这是 1.2 的分支，<strong><em>已经关闭</em></strong></td>
+</tr>
+<tr>
+<td style="text-align:left">studio-1.3-dev</td>
+<td style="text-align:right">studio-1.3-release</td>
+<td style="text-align:right">idea14-1.3-dev</td>
+<td style="text-align:right">这是 1.3 的分支，<strong><em>已经关闭</em></strong></td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>studio-master-dev</strong></td>
+<td style="text-align:right"><strong>studio-master-dev</strong></td>
+<td style="text-align:right"><strong>studio-master-dev</strong></td>
+</tr>
+</tbody>
+</table>
+<p><code>ub-tools-idea133</code> 和 <code>ub-tools-master</code> 分支已经废弃掉了。我们也不使用 <code>master</code> 分支。</p>
+<h2 id="开发分支"><a href="#开发分支" class="headerlink" title="开发分支"></a>开发分支</h2><p>像 Android 操作系统一样，Android Studio 也是开源的，且可以自由的控制它。在每个稳定版发布之后，Android 将源码发布到 Android Open Source Project (AOSP)，如 <a href="http://source.android.com/source/code-lines.html" target="_blank" rel="external">这里</a> 描述的那样。自 Android Studio 1.4 起，Android Studio 使用了相同的在每个稳定版发布之后发布源码的模式。对于那些为 Android Studio 贡献代码的同学来说，代码提交流程基本上与 Android 平台一样。我们期待继续每隔近 2 - 4 个月发布一个稳定版本的 Android Studio，且每个这样的发布时，源码也将变得可用。请继续为 Android Studio AOSP 分支提交补丁。我们将做 code review 并把修改合并进后续的 Android Studio 版本。我们非常感激所有社区中的你们的合作以及在 Android Studio 上的努力工作。</p>
+<h2 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h2><p>有下列发布标签可用：</p>
+<ul>
+<li>studio-3.0</li>
+<li>studio-2.3</li>
+<li>studio-2.2</li>
+<li>studio-2.0</li>
+<li>studio-1.5</li>
+<li>studio-1.4</li>
+<li>. . .</li>
+</ul>
+<p>gradle 的如下：</p>
+<ul>
+<li>gradle_3.0.0</li>
+<li>gradle_2.3.0</li>
+<li>gradle_2.2.0</li>
+<li>gradle_2.0.0</li>
+<li>gradle_1.5.0</li>
+<li>. . .</li>
+</ul>
+<h2 id="代码检出"><a href="#代码检出" class="headerlink" title="代码检出"></a>代码检出</h2><p>首先，你需要为你的平台安装前提条件。这意味着你需要 git，C 编译器，等等。这里有一些步骤，它们依赖于具体的平台，因此请跳转到官方构建指南页面，其中有详细的指导：<a href="http://source.android.com/source/initializing.html" target="_blank" rel="external">http://source.android.com/source/initializing.html</a>。</p>
+<p>有些要求是不需要的（如大小写敏感的文件系统），除非你也打算构建平台。如果你在 Mac 上，你将依然需要 XCode 来构建模拟器。</p>
+<p>一旦你已经配置了所有东西，则通过如下的指导下载 <code>repo</code> 工具：<a href="http://source.android.com/source/downloading.html" target="_blank" rel="external">http://source.android.com/source/downloading.html</a>。</p>
+<p>然后你可以在 shell 中使用如下命令检出源码：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">$</span> mkdir studio-master-dev</div><div class="line"><span class="symbol">$</span> cd studio-master-dev</div><div class="line"><span class="symbol">$</span> repo init -u https:<span class="comment">//android.googlesource.com/platform/manifest -b studio-master-dev</span></div><div class="line"><span class="symbol">$</span> repo sync</div></pre></td></tr></table></figure></p>
+<p>（顶级目录的名字你可以随意确定；我们中那些检出多个分支的同学可以根据分支的名字来命名目录。）</p>
+<p>在 <code>repo init</code> 期间，它将询问你你的名字和 e-mail 地址；后面如果你决定检入修改集并上传它们以 review，这些信息将被用到。</p>
+<p>如果你想检出并构建 2.3 发布版标签，则使用如下的命令：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ repo init -u https://<span class="keyword">android.googlesource.com/platform/manifest </span>-<span class="keyword">b </span>studio-<span class="number">3</span>.<span class="number">0</span></div></pre></td></tr></table></figure></p>
+<p>后面是 <code>repo sync</code>，就像前面看到的那样。</p>
+<h2 id="执行特定发布版的检出"><a href="#执行特定发布版的检出" class="headerlink" title="执行特定发布版的检出"></a>执行特定发布版的检出</h2><p>我们开始给发布版打标签。这意味着你可以使用标签来获得特定版本的源码。当前我们使用如下标签：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Gradle</th>
+<th style="text-align:right">gradle_x.y.z</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Studio</td>
+<td style="text-align:right">studio-x.y</td>
+</tr>
+</tbody>
+</table>
+<p>你可以在这里查看所有可用的标签：<a href="https://android.googlesource.com/platform/manifest/+refs" target="_blank" rel="external">https://android.googlesource.com/platform/manifest/+refs</a>。</p>
+<p>比如，你可以通过如下命令检出 3.0.0 版本的 Gradle 插件：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">$</span> repo init -u https:<span class="comment">//android.googlesource.com/platform/manifest -b gradle_3.0.0</span></div><div class="line"><span class="symbol">$</span> repo sync</div></pre></td></tr></table></figure></p>
+<h1 id="构建"><a href="#构建" class="headerlink" title="构建"></a>构建</h1><p>通过 <code>studio-*</code> 分支构建的 SDK 部分只有 IDE 组件和 SDK Tools。由于构建系统的不同，每个组件通过不同的方式构建。</p>
+<p>它们都不使用平台的基于 make 的构建系统。</p>
+<h1 id="构建-Android-Studio"><a href="#构建-Android-Studio" class="headerlink" title="构建 Android Studio"></a>构建 Android Studio</h1><p>在历史上，构建 Android 工具也需要构建完整的 Android SDK，因为，比如系统镜像所需的模拟器。</p>
+<p>然而，我们已经很好地迁移了工具源码为一个更独立的设置，现在你可以构建 Android Studio IDE 而无需一个完整 Android 检出及 C 编译器等等。</p>
+<h2 id="设置-IntelliJ-以开发-Android-Studio"><a href="#设置-IntelliJ-以开发-Android-Studio" class="headerlink" title="设置 IntelliJ 以开发 Android Studio"></a>设置 IntelliJ 以开发 Android Studio</h2><ul>
+<li>下载最新的 IJ 社区版。</li>
+<li><p>给它添加一个 JDK：Project Structure | SDKs | 添加一个新的 SDK，并命名为 “IDEA jdk”。（<strong>注意这个 SDK 应该是一个标准的 JDK，而不是一个“IntelliJ Platform Plugin SDK”</strong>）</p>
+<ul>
+<li>请使用 <strong>JDK 1.6</strong>，因为我们依然支持将 IDE 运行在 Java 6上。你可以使用更新版本的 JDK，但是你可能偶然地访问 1.6 版不可用的 APIs，因此如果你打算上传你的改动的话，请确保你使用的是 JDK 1.6 作为你的 IDEA 的 jdk。</li>
+</ul>
+</li>
+<li><p>如果你不是在 Mac OSX 上，<strong>请把你的 JDK 中的 tools.jar 也添加</strong> 到你的 IDEA jdk 的 classpath 中。（位于 <strong><jdk path="">/lib/tools.jar</jdk></strong>）</p>
+</li>
+<li><p>（注意：你必须已经启用了 Groovy 和 UI Designer。它们应该是，默认情况下，但是如果你在 .groovy 文件中遇到了编译错误。）</p>
+</li>
+</ul>
+<p>通过上面的步骤检出代码之后，Android 插件的代码位于 <code>tools/adt/idea</code>，IntelliJ IDE 的源码位于 <code>tools/idea/</code>，及大量的共享库位于 <code>tools/base/</code>。</p>
+<h2 id="编译-IDEA"><a href="#编译-IDEA" class="headerlink" title="编译 IDEA"></a>编译 IDEA</h2><p>在 IntelliJ 中，通过选择 Open Project  并选择文件夹 <strong>tools/idea/</strong>，来打开 Android Studio 工程。现在你可以编译、运行及调试工程了。</p>
+<p>通过如下命令来编译：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>cd tools/idea</div><div class="line"><span class="variable">$ </span>./build_studio.sh</div></pre></td></tr></table></figure></p>
+<p>（如果是在 Windows 上，且无法运行 .sh 脚本，则运行 “ant” 来替代；脚本将首先设置一些环境变量。）</p>
+<p>在 <strong>out/artifacts</strong> 中查看编译结果。</p>
+<h1 id="构建插件"><a href="#构建插件" class="headerlink" title="构建插件"></a>构建插件</h1><p>检出代码之后，Gradle Plugin 的代码位于 <strong>tools/base</strong>。</p>
+<p>所有的工程在一个多模块 Gradle 工程中一起构建。那个工程的根目录是 <strong>tools/</strong>。</p>
+<p>当前的 Gradle Plugin 以 Gradle 4.0 构建。为了确认你正在使用正确的版本，请在工程的根目录中构建时，使用 gradle 包装脚本（<strong>gradlew</strong>）。</p>
+<p>你可以通过如下命令构建 Gradle 插件（及相关的库）：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>./gradlew assemble</div></pre></td></tr></table></figure></p>
+<p>如果第一次 <strong>assemble</strong> 执行失败，则试一下如下命令：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>./gradlew clean assemble</div></pre></td></tr></table></figure></p>
+<p>要测试插件，你需要运行如下的命令：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>./gradlew check</div></pre></td></tr></table></figure></p>
+<p>此外，你应该把一个设备连接到你的工作站并运行：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>./gradlew connectedIntegrationTest</div></pre></td></tr></table></figure></p>
+<p>为了运行特定的 connectedIntegrationTest，则运行：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ./gradlew connectedIntegrationTest -<span class="string">D:</span><span class="string">base:</span>integration-<span class="string">test:</span>connectedIntegrationTest.single=BasicTest</div></pre></td></tr></table></figure></p>
+<p>原文：</p>
+<p><a href="http://tools.android.com/build" target="_blank" rel="external">Build Overview</a><br><a href="http://tools.android.com/build/studio" target="_blank" rel="external">Building Android Studio</a><br><a href="http://tools.android.com/build/gradleplugin" target="_blank" rel="external">Building the Android Gradle Plugin</a></p>
+<h3 id="打赏"><a href="#打赏" class="headerlink" title="打赏"></a><a href="https://www.wolfcstech.com/about/donate.html">打赏</a></h3><p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/Android开发/" rel="tag"># Android开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/23/qemu_android_kernel/" rel="next" title="如何预编译 Android 模拟器专用内核">
+                <i class="fa fa-chevron-left"></i> 如何预编译 Android 模拟器专用内核
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/08/anbox_analysis001_entrance/" rel="prev" title="Anbox 实现分析 1：程序入口">
+                Anbox 实现分析 1：程序入口 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#获得源码"><span class="nav-number">1.</span> <span class="nav-text">获得源码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分支"><span class="nav-number">1.1.</span> <span class="nav-text">分支</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发分支"><span class="nav-number">1.2.</span> <span class="nav-text">开发分支</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标签"><span class="nav-number">1.3.</span> <span class="nav-text">标签</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码检出"><span class="nav-number">1.4.</span> <span class="nav-text">代码检出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行特定发布版的检出"><span class="nav-number">1.5.</span> <span class="nav-text">执行特定发布版的检出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建"><span class="nav-number">2.</span> <span class="nav-text">构建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建-Android-Studio"><span class="nav-number">3.</span> <span class="nav-text">构建 Android Studio</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置-IntelliJ-以开发-Android-Studio"><span class="nav-number">3.1.</span> <span class="nav-text">设置 IntelliJ 以开发 Android Studio</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译-IDEA"><span class="nav-number">3.2.</span> <span class="nav-text">编译 IDEA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建插件"><span class="nav-number">4.</span> <span class="nav-text">构建插件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#打赏"><span class="nav-number">4.0.1.</span> <span class="nav-text">打赏</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

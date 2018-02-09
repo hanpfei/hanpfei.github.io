@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="虚拟化," />
+
+
+<meta name="description" content="Anbox 通过一个可执行文件，实现多个不同的应该用逻辑。在启动 Anbox 可执行文件时，通过为它提供不同的命令行参数来确定具体执行哪个命令。Anbox 中这些不同的命令实例之间，整体的通信架构如下图这样：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Anbox 实现分析 3：会话管理器与容器管理器的通信">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/01/15/anbox_analysis003_sessionmanager_and_containermanager/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Anbox 通过一个可执行文件，实现多个不同的应该用逻辑。在启动 Anbox 可执行文件时，通过为它提供不同的命令行参数来确定具体执行哪个命令。Anbox 中这些不同的命令实例之间，整体的通信架构如下图这样：">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-beb1c58a9988124d.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-3e7dadf1f085f0a7.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-38cf3ff3ad5de78e.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-d15316f4575c0a1b.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-3963e61469988d3b.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-c7ecc094bd317088.png">
+<meta property="og:updated_time" content="2018-01-16T08:39:32.377Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Anbox 实现分析 3：会话管理器与容器管理器的通信">
+<meta name="twitter:description" content="Anbox 通过一个可执行文件，实现多个不同的应该用逻辑。在启动 Anbox 可执行文件时，通过为它提供不同的命令行参数来确定具体执行哪个命令。Anbox 中这些不同的命令实例之间，整体的通信架构如下图这样：">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-beb1c58a9988124d.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/01/15/anbox_analysis003_sessionmanager_and_containermanager/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Anbox 实现分析 3：会话管理器与容器管理器的通信 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/15/anbox_analysis003_sessionmanager_and_containermanager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Anbox 实现分析 3：会话管理器与容器管理器的通信</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-15T20:05:49+08:00">2018-01-15</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/虚拟化/" itemprop="url" rel="index"><span itemprop="name">虚拟化</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/15/anbox_analysis003_sessionmanager_and_containermanager/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/01/15/anbox_analysis003_sessionmanager_and_containermanager/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/01/15/anbox_analysis003_sessionmanager_and_containermanager/" class="leancloud_visitors" data-flag-title="Anbox 实现分析 3：会话管理器与容器管理器的通信">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Anbox 通过一个可执行文件，实现多个不同的应该用逻辑。在启动 Anbox 可执行文件时，通过为它提供不同的命令行参数来确定具体执行哪个命令。Anbox 中这些不同的命令实例之间，整体的通信架构如下图这样：<br><a id="more"></a><br><img src="https://www.wolfcstech.com/images/1315506-beb1c58a9988124d.png" alt="Communication in Anbox"></p>
+<p>这些不同的命令实例之间通信的过程大体如下：</p>
+<ul>
+<li>容器管理器实例首先运行起来，监听在特定位置的 Unix 域 Socket 上；</li>
+<li>随后会话管理器启动，监听在另外的一些 Unix 域 Socket 上；</li>
+<li>会话管理器同时连接容器管理器监听的 Unix 域 Socket 上的服务；</li>
+<li>会话管理器与容器管理器通过 Unix 域 Socket 成功建立连接之后，会话管理器向容器管理器发送命令，请求容器管理器启动 Android 容器；</li>
+<li>容器管理器收到会话管理器发来的命令后，先给会话管理器一个响应，然后通过 LXC 启动一个 Android 容器，并将会话管理器监听的 Unix 域 Socket 的文件路径映射进 Android 容器的 <code>/dev/</code> 目录下；</li>
+<li>Android 容器启动之后，容器内的 Android 进程，通过映射进来的 Unix 域 Socket 与会话管理器建立连接；</li>
+<li>Android 容器启动时，会话管理器与 ADB 守护进程建立连接；</li>
+<li>Anbox 的 install 和 launch 命令主要用于对 Android 容器做一些控制，它们分别用于向 Android 容器中安装应用程序 APK 以及启动容器内的特定 Activity，它们通过 D-Bus 与会话管理器通信。</li>
+</ul>
+<p>在 Anbox 中，会话管理器和容器管理器之间是比较重要的一条通信通道。会话管理器和容器管理器之间通过 Unix 域 Socket 进行通信，容器管理器监听在特定位置的 Unix 域 Socket 上，会话管理器发起与容器管理器之间的连接，连接建立之后，两者通过这条连接进行通信。</p>
+<h1 id="容器管理器接受-RPC-调用"><a href="#容器管理器接受-RPC-调用" class="headerlink" title="容器管理器接受 RPC 调用"></a>容器管理器接受 RPC 调用</h1><p>代码层面，在容器管理器一端，通过 <code>anbox::container::Service</code> 启动对 Unix 域 Socket 的监听。<code>anbox::container::Service</code> 的定义（位于<code>anbox/src/anbox/container/service.h</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> container &#123;</div><div class="line"><span class="keyword">class</span> Service : <span class="keyword">public</span> <span class="built_in">std</span>::enable_shared_from_this&lt;Service&gt; &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Service&gt; create(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Runtime&gt; &amp;rt, <span class="keyword">bool</span> privileged);</div><div class="line"></div><div class="line">  ~Service();</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  Service(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Runtime&gt; &amp;rt, <span class="keyword">bool</span> privileged);</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">int</span> <span class="title">next_id</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">new_client</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;</span></span></div><div class="line">                  boost::asio::local::stream_protocol::socket&gt; <span class="keyword">const</span> &amp;socket);</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;common::Dispatcher&gt; dispatcher_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::PublishedSocketConnector&gt; connector_;</div><div class="line">  <span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; next_connection_id_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::Connections&lt;network::SocketConnection&gt;&gt; connections_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Container&gt; backend_;</div><div class="line">  <span class="keyword">bool</span> privileged_;</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace container</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><strong><em><code>dispatcher_</code> 看起来没有实际的用处。</em></strong> <code>anbox::container::Service</code> 的实现（位于 <code>anbox/src/anbox/container/service.cpp</code>）如下：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">namespace anbox &#123;</div><div class="line">namespace container &#123;</div><div class="line">std::shared_ptr&lt;Service&gt; Service::create(<span class="keyword">const</span> std::shared_ptr&lt;Runtime&gt; &amp;rt, <span class="keyword">bool</span> privileged) &#123;</div><div class="line">  auto sp = std::shared_ptr&lt;Service&gt;(new Service(rt, privileged));</div><div class="line"></div><div class="line">  auto wp = std::weak_ptr&lt;Service&gt;(sp);</div><div class="line">  auto delegate_connector = std::make_shared&lt;network::DelegateConnectionCreator&lt;boost::asio::local::stream_protocol&gt;&gt;(</div><div class="line">      [wp](std::shared_ptr&lt;boost::asio::local::stream_protocol::socket&gt; <span class="keyword">const</span> &amp;socket) &#123;</div><div class="line">        <span class="keyword">if</span> (auto service = wp.lock())</div><div class="line">          service-&gt;new_client(socket);</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  <span class="keyword">const</span> auto container_socket_path = SystemConfiguration::instance().container_socket_path();</div><div class="line">  sp-&gt;connector_ = std::make_shared&lt;network::PublishedSocketConnector&gt;(container_socket_path, rt, delegate_connector);</div><div class="line"></div><div class="line">  <span class="comment">// Make sure others can connect to our socket</span></div><div class="line">  ::chmod(container_socket_path.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);</div><div class="line"></div><div class="line">  DEBUG(<span class="string">"Everything setup. Waiting for incoming connections."</span>);</div><div class="line"></div><div class="line">  <span class="keyword">return</span> sp;</div><div class="line">&#125;</div><div class="line"></div><div class="line">Service::Service(<span class="keyword">const</span> std::shared_ptr&lt;Runtime&gt; &amp;rt, <span class="keyword">bool</span> privileged)</div><div class="line">    : dispatcher_(anbox::common::create_dispatcher_for_runtime(rt)),</div><div class="line">      next_connection_id_(<span class="number">0</span>),</div><div class="line">      connections_(std::make_shared&lt;network::Connections&lt;network::SocketConnection&gt;&gt;()),</div><div class="line">      privileged_(privileged) &#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line">Service::~Service() &#123;</div><div class="line">  connections_-&gt;clear();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> Service::next_id() &#123; <span class="keyword">return</span> next_connection_id_++; &#125;</div><div class="line"></div><div class="line">void Service::new_client(std::shared_ptr&lt;boost::asio::local::stream_protocol::socket&gt; <span class="keyword">const</span></div><div class="line">        &amp;socket) &#123;</div><div class="line">  <span class="keyword">if</span> (connections_-&gt;size() &gt;= <span class="number">1</span>) &#123;</div><div class="line">    socket-&gt;close();</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  auto <span class="keyword">const</span> messenger = std::make_shared&lt;network::LocalSocketMessenger&gt;(socket);</div><div class="line"></div><div class="line">  DEBUG(<span class="string">"Got connection from pid %d"</span>, messenger-&gt;creds().pid());</div><div class="line"></div><div class="line">  auto pending_calls = std::make_shared&lt;rpc::PendingCallCache&gt;();</div><div class="line">  auto rpc_channel = std::make_shared&lt;rpc::Channel&gt;(pending_calls, messenger);</div><div class="line">  auto server = std::make_shared&lt;container::ManagementApiSkeleton&gt;(</div><div class="line">      pending_calls, std::make_shared&lt;LxcContainer&gt;(privileged_, messenger-&gt;creds()));</div><div class="line">  auto processor = std::make_shared&lt;container::ManagementApiMessageProcessor&gt;(</div><div class="line">      messenger, pending_calls, server);</div><div class="line"></div><div class="line">  auto <span class="keyword">const</span> &amp;connection = std::make_shared&lt;network::SocketConnection&gt;(</div><div class="line">      messenger, messenger, next_id(), connections_, processor);</div><div class="line">  connection-&gt;set_name(<span class="string">"container-service"</span>);</div><div class="line"></div><div class="line">  connections_-&gt;add(connection);</div><div class="line">  connection-&gt;read_next_message();</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace container</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p>在 <code>anbox::container::Service</code> 的构造函数中，通过 <code>anbox::network::PublishedSocketConnector</code> 及 <code>anbox::network::DelegateConnectionCreator</code> 等组件，启动对 Unix 域 Socket 的监听。Anbox 中处理 Unix 域 Socket 监听的基本方法/模型，请参考 <a href="https://www.wolfcstech.com/2018/01/11/anbox_analysis002_io_model/">Anbox 实现分析 2：I/O 模型</a> 一文中的相关部分。</p>
+<p><code>anbox::container::Service</code> 通过 <code>anbox::network::Connections</code> 和<br> <code>anbox::network::SocketConnection</code> 等管理新接受的连接，它限制只与一个会话管理器实例建立一条连接。<code>anbox::container::Service</code> 将处理收到的消息的组件 <code>anbox::container::ManagementApiMessageProcessor</code> 与底层的连接粘起来。</p>
+<p>Anbox 的容器管理器和会话管理器通过基于 Protobuf 设计的 RPC 进行通信。<code>anbox::container::Service</code> 中处理收到的消息及接受 RPC 调用的相关组件的设计框架如下：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-3e7dadf1f085f0a7.png" alt="Anbox Container Service"></p>
+<p><strong><em>在 Anbox 的设计中，<code>anbox::rpc::Channel</code> 及 <code>anbox::rpc::PendingCallCache</code> 本来主要用于 RPC 调用发起端的消息收发，但在 <code>anbox::container::Service::new_client()</code> 中，同样为新连接创建了这两个类的对象，这显得有点多次一举。</em></strong></p>
+<p><code>anbox::container::Service</code> 通过 <code>anbox::network::SocketConnection</code> 收到消息之后，首先交给 <code>anbox::rpc::MessageProcessor</code> 的 <code>process_data()</code> 处理。</p>
+<p> <code>anbox::rpc::MessageProcessor</code> 的定义（位于 <code>anbox/src/anbox/rpc/message_processor.h</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> MessageProcessor : <span class="keyword">public</span> network::MessageProcessor &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  MessageProcessor(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt;&amp; sender,</div><div class="line">                   <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;PendingCallCache&gt;&amp; pending_calls);</div><div class="line">  ~MessageProcessor();</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">process_data</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="keyword">uint8_t</span>&gt;&amp; data)</span> override</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">send_response</span><span class="params">(::google::protobuf::uint32 id,</span></span></div><div class="line">                     google::protobuf::MessageLite* response);</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">dispatch</span><span class="params">(Invocation <span class="keyword">const</span>&amp;)</span> </span>&#123;&#125;</div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">process_event_sequence</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;)</span> </span>&#123;&#125;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt; sender_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="keyword">uint8_t</span>&gt; buffer_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;PendingCallCache&gt; pending_calls_;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p> <code>anbox::rpc::MessageProcessor</code> 的实现（位于 <code>anbox/src/anbox/rpc/message_processor.cpp</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line">MessageProcessor::MessageProcessor(</div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt; &amp;sender,</div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;PendingCallCache&gt; &amp;pending_calls)</div><div class="line">    : sender_(sender), pending_calls_(pending_calls) &#123;&#125;</div><div class="line"></div><div class="line">MessageProcessor::~MessageProcessor() &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> MessageProcessor::process_data(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="keyword">uint8_t</span>&gt; &amp;data) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;byte : data) buffer_.push_back(byte);</div><div class="line"></div><div class="line">  <span class="keyword">while</span> (buffer_.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> high = buffer_[<span class="number">0</span>];</div><div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> low = buffer_[<span class="number">1</span>];</div><div class="line">    <span class="keyword">size_t</span> <span class="keyword">const</span> message_size = (high &lt;&lt; <span class="number">8</span>) + low;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> message_type = buffer_[<span class="number">2</span>];</div><div class="line"></div><div class="line">    <span class="comment">// If we don't have yet all bytes for a new message return and wait</span></div><div class="line">    <span class="comment">// until we have all.</span></div><div class="line">    <span class="keyword">if</span> (buffer_.size() - header_size &lt; message_size) <span class="keyword">break</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (message_type == MessageType::invocation) &#123;</div><div class="line">      anbox::protobuf::rpc::Invocation raw_invocation;</div><div class="line">      raw_invocation.ParseFromArray(buffer_.data() + header_size, message_size);</div><div class="line"></div><div class="line">      dispatch(Invocation(raw_invocation));</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (message_type == MessageType::response) &#123;</div><div class="line">      <span class="keyword">auto</span> result = make_protobuf_object&lt;protobuf::rpc::Result&gt;();</div><div class="line">      result-&gt;ParseFromArray(buffer_.data() + header_size, message_size);</div><div class="line"></div><div class="line">      <span class="keyword">if</span> (result-&gt;has_id()) &#123;</div><div class="line">        pending_calls_-&gt;populate_message_for_result(*result,</div><div class="line">                                                    [&amp;](google::protobuf::MessageLite *result_message) &#123;</div><div class="line">                                                      result_message-&gt;ParseFromString(result-&gt;response());</div><div class="line">                                                    &#125;);</div><div class="line">        pending_calls_-&gt;complete_response(*result);</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">0</span>; n &lt; result-&gt;events_size(); n++)</div><div class="line">        process_event_sequence(result-&gt;events(n));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    buffer_.erase(buffer_.begin(),</div><div class="line">                  buffer_.begin() + header_size + message_size);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> MessageProcessor::send_response(::google::protobuf::uint32 id,</div><div class="line">                                     google::protobuf::MessageLite *response) &#123;</div><div class="line">  VariableLengthArray&lt;serialization_buffer_size&gt; send_response_buffer(</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">size_t</span>&gt;(response-&gt;ByteSize()));</div><div class="line"></div><div class="line">  response-&gt;SerializeWithCachedSizesToArray(send_response_buffer.data());</div><div class="line"></div><div class="line">  anbox::protobuf::rpc::Result send_response_result;</div><div class="line">  send_response_result.set_id(id);</div><div class="line">  send_response_result.set_response(send_response_buffer.data(),</div><div class="line">                                    send_response_buffer.size());</div><div class="line"></div><div class="line">  send_response_buffer.resize(send_response_result.ByteSize());</div><div class="line">  send_response_result.SerializeWithCachedSizesToArray(</div><div class="line">      send_response_buffer.data());</div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> size = send_response_buffer.size();</div><div class="line">  <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> header_bytes[header_size] = &#123;</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">char</span>&gt;((size &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>),</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">char</span>&gt;((size &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xff</span>), MessageType::response,</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="keyword">uint8_t</span>&gt; send_buffer(<span class="keyword">sizeof</span>(header_bytes) + size);</div><div class="line">  <span class="built_in">std</span>::copy(header_bytes, header_bytes + <span class="keyword">sizeof</span>(header_bytes),</div><div class="line">            send_buffer.begin());</div><div class="line">  <span class="built_in">std</span>::copy(send_response_buffer.data(),</div><div class="line">            send_response_buffer.data() + send_response_buffer.size(),</div><div class="line">            send_buffer.begin() + <span class="keyword">sizeof</span>(header_bytes));</div><div class="line"></div><div class="line">  sender_-&gt;send(<span class="keyword">reinterpret_cast</span>&lt;<span class="keyword">const</span> <span class="keyword">char</span> *&gt;(send_buffer.data()),</div><div class="line">                send_buffer.size());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在会话管理器与容器管理器之间的 RPC 通信中，<code>anbox::rpc::MessageProcessor</code> 是一个同时用于 RPC 调用发起端和接受端的组件。容器管理器作为 RPC 调用的接受端，接收发自于会话管理器的类型为 <code>MessageType::invocation</code> 的消息。</p>
+<p>会话管理器与容器管理器之间的 RPC 通信的消息格式为：<strong>[3 个字节的消息头]</strong> + <strong>[经由 Protobuf MessageLite 对象序列化得到的消息体]</strong>，其中消息头的前两个字节为 16 位的消息体长度的大尾端表示，第 3 个字节为消息的类型。RPC 消息的具体定义在 <code>anbox/src/anbox/protobuf/anbox_rpc.proto</code> 文件中：<br><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">option</span> optimize_for = LITE_RUNTIME;</div><div class="line"></div><div class="line"><span class="keyword">package</span> anbox.protobuf.rpc;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">message</span> <span class="title">Invocation</span> </span>&#123;</div><div class="line">    <span class="keyword">required</span> <span class="built_in">uint32</span> id = <span class="number">1</span>;</div><div class="line">    <span class="keyword">required</span> <span class="built_in">string</span> method_name = <span class="number">2</span>;</div><div class="line">    <span class="keyword">required</span> <span class="built_in">bytes</span> parameters = <span class="number">3</span>;</div><div class="line">    <span class="keyword">required</span> <span class="built_in">uint32</span> protocol_version = <span class="number">4</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">message</span> <span class="title">Result</span> </span>&#123;</div><div class="line">    <span class="keyword">optional</span> <span class="built_in">uint32</span> id = <span class="number">1</span>;</div><div class="line">    <span class="keyword">optional</span> <span class="built_in">bytes</span> response = <span class="number">2</span>;</div><div class="line">    <span class="keyword">repeated</span> <span class="built_in">bytes</span> events = <span class="number">3</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">message</span> <span class="title">StructuredError</span> </span>&#123;</div><div class="line">  <span class="keyword">optional</span> <span class="built_in">uint32</span> domain = <span class="number">1</span>;</div><div class="line">  <span class="keyword">optional</span> <span class="built_in">uint32</span> code = <span class="number">2</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">message</span> <span class="title">Void</span> </span>&#123;</div><div class="line">  <span class="keyword">optional</span> <span class="built_in">string</span> error = <span class="number">127</span>;</div><div class="line">  <span class="keyword">optional</span> StructuredError structured_error = <span class="number">128</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>Invocation</code> 消息用于发起 RPC 调用，<code>Result</code>、<code>Void</code> 和 <code>StructuredError</code> 用于返回响应或错误消息。</p>
+<p>对于容器管理器而言，<code>anbox::rpc::MessageProcessor</code> 在其 <code>process_data()</code> 中首先提取消息头，得到消息体的长度和类型，然后提取消息体并反序列化得到 Protobuf 消息 <code>anbox::protobuf::rpc::Invocation</code>，随后将该 Protobuf 消息封装为 <code>anbox::rpc::Invocation</code> 类的对象，并调用 <code>dispatch(Invocation const&amp;)</code> 将消息派发出去。</p>
+<p><code>anbox::rpc::Invocation</code> 类的定义（位于 <code>anbox/src/anbox/rpc/message_processor.h</code> 中）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> Invocation &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  Invocation(anbox::protobuf::rpc::Invocation <span class="keyword">const</span>&amp; invocation)</div><div class="line">      : invocation_(invocation) &#123;&#125;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> ::<span class="built_in">std</span>::<span class="function"><span class="built_in">string</span>&amp; <span class="title">method_name</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line">  <span class="keyword">const</span> ::<span class="built_in">std</span>::<span class="function"><span class="built_in">string</span>&amp; <span class="title">parameters</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line">  google::protobuf::<span class="function">uint32 <span class="title">id</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  anbox::protobuf::rpc::Invocation <span class="keyword">const</span>&amp; invocation_;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p><code>anbox::rpc::Invocation</code> 类的实现（位于 <code>anbox/src/anbox/rpc/message_processor.cpp</code> 中）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> ::<span class="built_in">std</span>::<span class="built_in">string</span> &amp;Invocation::method_name() <span class="keyword">const</span> &#123;</div><div class="line">  <span class="keyword">return</span> invocation_.method_name();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">const</span> ::<span class="built_in">std</span>::<span class="built_in">string</span> &amp;Invocation::parameters() <span class="keyword">const</span> &#123;</div><div class="line">  <span class="keyword">return</span> invocation_.parameters();</div><div class="line">&#125;</div><div class="line"></div><div class="line">google::protobuf::uint32 Invocation::id() <span class="keyword">const</span> &#123; <span class="keyword">return</span> invocation_.id(); &#125;</div></pre></td></tr></table></figure></p>
+<p><code>anbox::rpc::Invocation</code> 类只是对 <code>anbox::protobuf::rpc::Invocation</code> 的简单包装。</p>
+<p><code>anbox::rpc::MessageProcessor</code> 的 <code>dispatch(Invocation const&amp;)</code> 是一个虚函数，其实际的实现位于 <code>ManagementApiMessageProcessor</code> 中。<code>anbox::container::ManagementApiMessageProcessor</code> 的定义（位于 <code>anbox/src/anbox/container/management_api_message_processor.h</code> 中）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> container &#123;</div><div class="line"><span class="keyword">class</span> ManagementApiSkeleton;</div><div class="line"><span class="keyword">class</span> ManagementApiMessageProcessor : <span class="keyword">public</span> rpc::MessageProcessor &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  ManagementApiMessageProcessor(</div><div class="line">      <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt; &amp;sender,</div><div class="line">      <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;rpc::PendingCallCache&gt; &amp;pending_calls,</div><div class="line">      <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;ManagementApiSkeleton&gt; &amp;server);</div><div class="line">  ~ManagementApiMessageProcessor();</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">dispatch</span><span class="params">(rpc::Invocation <span class="keyword">const</span> &amp;invocation)</span> override</span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">process_event_sequence</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;event)</span> override</span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;ManagementApiSkeleton&gt; server_;</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace container</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><code>anbox::container::ManagementApiMessageProcessor</code> 的实现（位于 <code>anbox/src/anbox/container/management_api_message_processor.cpp</code> 中）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> container &#123;</div><div class="line">ManagementApiMessageProcessor::ManagementApiMessageProcessor(</div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt; &amp;sender,</div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;rpc::PendingCallCache&gt; &amp;pending_calls,</div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;ManagementApiSkeleton&gt; &amp;server)</div><div class="line">    : rpc::MessageProcessor(sender, pending_calls), server_(server) &#123;&#125;</div><div class="line"></div><div class="line">ManagementApiMessageProcessor::~ManagementApiMessageProcessor() &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> ManagementApiMessageProcessor::dispatch(rpc::Invocation <span class="keyword">const</span> &amp;invocation) &#123;</div><div class="line">  <span class="keyword">if</span> (invocation.method_name() == <span class="string">"start_container"</span>)</div><div class="line">    invoke(<span class="keyword">this</span>, server_.get(), &amp;ManagementApiSkeleton::start_container, invocation);</div><div class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (invocation.method_name() == <span class="string">"stop_container"</span>)</div><div class="line">    invoke(<span class="keyword">this</span>, server_.get(), &amp;ManagementApiSkeleton::stop_container, invocation);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> ManagementApiMessageProcessor::process_event_sequence(</div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;) &#123;&#125;</div><div class="line">&#125;  <span class="comment">// namespace container</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><code>anbox::container::ManagementApiMessageProcessor</code> 的实现很简单，只支持两种 RPC 调用，分别为启动 Android 容器和停止 Android 容器，在它的 <code>dispatch()</code> 函数中，根据方法名，调用对应的函数。</p>
+<p>函数调用通过一个函数模板 <code>invoke()</code> 完成，该函数模板定义（位于 <code>anbox/src/anbox/rpc/template_message_processor.h</code>）如下：<br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> rpc &#123;</div><div class="line"><span class="comment">// Utility metafunction result_ptr_t&lt;&gt; allows invoke() to pick the right</span></div><div class="line"><span class="comment">// send_response() overload. The base template resolves to the prototype</span></div><div class="line"><span class="comment">// "send_response(::google::protobuf::uint32 id, ::google::protobuf::Message*</span></div><div class="line"><span class="comment">// response)"</span></div><div class="line"><span class="comment">// Client code may specialize result_ptr_t to resolve to another overload.</span></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> ResultType&gt;</div><div class="line"><span class="keyword">struct</span> result_ptr_t &#123;</div><div class="line">  <span class="keyword">typedef</span> ::google::protobuf::MessageLite* type;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Boiler plate for unpacking a parameter message, invoking a server function,</span></div><div class="line"><span class="comment">// and</span></div><div class="line"><span class="comment">// sending the result message. Assumes the existence of Self::send_response().</span></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> Self, <span class="keyword">class</span> <span class="built_in">Bridge</span>, <span class="keyword">class</span> BridgeX, <span class="keyword">class</span> ParameterMessage,</div><div class="line">          <span class="keyword">class</span> ResultMessage&gt;</div><div class="line"><span class="keyword">void</span> invoke(Self* self, <span class="built_in">Bridge</span>* rpc,</div><div class="line">            <span class="keyword">void</span> (BridgeX::*function)(ParameterMessage <span class="keyword">const</span>* request,</div><div class="line">                                      ResultMessage* response,</div><div class="line">                                      ::google::protobuf::Closure* done),</div><div class="line">            Invocation <span class="keyword">const</span>&amp; invocation) &#123;</div><div class="line">  ParameterMessage parameter_message;</div><div class="line">  <span class="built_in">if</span> (!parameter_message.ParseFromString(invocation.parameters()))</div><div class="line">    <span class="keyword">throw</span> std::runtime_error(<span class="string">"Failed to parse message parameters!"</span>);</div><div class="line">  ResultMessage result_message;</div><div class="line"></div><div class="line">  <span class="built_in">try</span> &#123;</div><div class="line">    std::unique_ptr&lt;google::protobuf::Closure&gt; callback(</div><div class="line">        google::protobuf::NewPermanentCallback&lt;</div><div class="line">            Self, ::google::protobuf::uint32,</div><div class="line">            <span class="keyword">typename</span> result_ptr_t&lt;ResultMessage&gt;::type&gt;(</div><div class="line">            self, &amp;Self::send_response, invocation.id(), &amp;result_message));</div><div class="line"></div><div class="line">    (rpc-&gt;*function)(&amp;parameter_message, &amp;result_message, callback.<span class="built_in">get</span>());</div><div class="line">  &#125; <span class="built_in">catch</span> (std::exception <span class="keyword">const</span>&amp; x) &#123;</div><div class="line">    result_message.set_error(std::<span class="keyword">string</span>(<span class="string">"Error processing request: "</span>) +</div><div class="line">                             x.what());</div><div class="line">    self-&gt;send_response(invocation.id(), &amp;result_message);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace rpc</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p>直接启动和停止 Android 容器的职责，由 <code>anbox::container::ManagementApiSkeleton</code> 完成，这个类的定义（位于 <code>anbox/src/anbox/container/management_api_skeleton.h</code>）如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">class Container;</div><div class="line">class ManagementApiSkeleton &#123;</div><div class="line"> <span class="symbol">public:</span></div><div class="line">  ManagementApiSkeleton(</div><div class="line">      const <span class="symbol">std:</span><span class="symbol">:shared_ptr&lt;rpc</span><span class="symbol">:</span><span class="symbol">:PendingCallCache&gt;</span> &amp;pending_calls,</div><div class="line">      const <span class="symbol">std:</span><span class="symbol">:shared_ptr&lt;Container&gt;</span> &amp;container);</div><div class="line">  ~ManagementApiSkeleton();</div><div class="line"></div><div class="line">  void start_container(</div><div class="line">      <span class="symbol">anbox:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:container</span><span class="symbol">:</span><span class="symbol">:StartContainer</span> const *request,</div><div class="line">      <span class="symbol">anbox:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:rpc</span><span class="symbol">:</span><span class="symbol">:Void</span> *response, <span class="symbol">google:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:Closure</span> *done);</div><div class="line"></div><div class="line">  void stop_container(</div><div class="line">      <span class="symbol">anbox:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:container</span><span class="symbol">:</span><span class="symbol">:StopContainer</span> const *request,</div><div class="line">      <span class="symbol">anbox:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:rpc</span><span class="symbol">:</span><span class="symbol">:Void</span> *response, <span class="symbol">google:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:Closure</span> *done);</div><div class="line"></div><div class="line"> <span class="symbol">private:</span></div><div class="line">  <span class="symbol">std:</span><span class="symbol">:shared_ptr&lt;rpc</span><span class="symbol">:</span><span class="symbol">:PendingCallCache&gt;</span> pending_calls<span class="number">_</span>;</div><div class="line">  <span class="symbol">std:</span><span class="symbol">:shared_ptr&lt;Container&gt;</span> container<span class="number">_</span>;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>这个类的定义很简单，其实现（位于 <code>anbox/src/anbox/container/management_api_skeleton.cpp</code>）如下：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">namespace anbox &#123;</div><div class="line">namespace container &#123;</div><div class="line">ManagementApiSkeleton::ManagementApiSkeleton(</div><div class="line">    <span class="keyword">const</span> std::shared_ptr&lt;rpc::PendingCallCache&gt; &amp;pending_calls,</div><div class="line">    <span class="keyword">const</span> std::shared_ptr&lt;Container&gt; &amp;container)</div><div class="line">    : pending_calls_(pending_calls), container_(container) &#123;&#125;</div><div class="line"></div><div class="line">ManagementApiSkeleton::~ManagementApiSkeleton() &#123;&#125;</div><div class="line"></div><div class="line">void ManagementApiSkeleton::start_container(</div><div class="line">    anbox::protobuf::container::StartContainer <span class="keyword">const</span> *request,</div><div class="line">    anbox::protobuf::rpc::Void *response, google::protobuf::Closure *done) &#123;</div><div class="line">  <span class="keyword">if</span> (container_-&gt;state() == Container::State::running) &#123;</div><div class="line">    response-&gt;set_error(<span class="string">"Container is already running"</span>);</div><div class="line">    done-&gt;Run();</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  Configuration container_configuration;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> auto configuration = request-&gt;configuration();</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">0</span>; n &lt; configuration.bind_mounts_size(); n++) &#123;</div><div class="line">    <span class="keyword">const</span> auto bind_mount = configuration.bind_mounts(n);</div><div class="line">    container_configuration.bind_mounts.insert(</div><div class="line">        &#123;bind_mount.source(), bind_mount.target()&#125;);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  try &#123;</div><div class="line">    container_-&gt;start(container_configuration);</div><div class="line">  &#125; catch (std::exception &amp;err) &#123;</div><div class="line">    response-&gt;set_error(utils::string_format(<span class="string">"Failed to start container: %s"</span>, err.what()));</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  done-&gt;Run();</div><div class="line">&#125;</div><div class="line"></div><div class="line">void ManagementApiSkeleton::stop_container(</div><div class="line">    anbox::protobuf::container::StopContainer <span class="keyword">const</span> *request,</div><div class="line">    anbox::protobuf::rpc::Void *response, google::protobuf::Closure *done) &#123;</div><div class="line"></div><div class="line">  (void)request;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (container_-&gt;state() != Container::State::running) &#123;</div><div class="line">    response-&gt;set_error(<span class="string">"Container is not running"</span>);</div><div class="line">    done-&gt;Run();</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  try &#123;</div><div class="line">    container_-&gt;stop();</div><div class="line">  &#125; catch (std::exception &amp;err) &#123;</div><div class="line">    response-&gt;set_error(utils::string_format(<span class="string">"Failed to stop container: %s"</span>, err.what()));</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  done-&gt;Run();</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace container</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><code>anbox::container::ManagementApiSkeleton</code> 通过 <code>Container</code> 类启动或停止 Android 容器。配合函数模板 <code>invoke()</code> 的定义，及 Protobuf 的相关方法实现，不难理解， <code>start_container()</code> 和 <code>stop_container()</code> 函数的参数消息，在 <code>invoke()</code> 函数中由 <code>Invocation</code> 消息的参数字段的字节数组反序列化得到，这两个函数的执行过程，都是向 <code>response</code> 参数中填入返回给调用者的响应，并通过 <code>done-&gt;Run()</code> 将响应通过 <code>ManagementApiMessageProcessor::send_response()</code> 函数，即<br> <code>anbox::rpc::MessageProcessor::send_response()</code> 函数发送回调用端。</p>
+<p>在 <code>anbox::rpc::MessageProcessor::send_response()</code> 函数中，先将响应序列化，然后将序列化之后的响应放进 <code>anbox::protobuf::rpc::Result</code> Protobuf 消息中，最后再将 <code>anbox::protobuf::rpc::Result</code> 包装为 Anbox 的 RPC 消息发送回调用端。</p>
+<p><code>anbox::container::ManagementApiSkeleton</code> 的 <code>pending_calls_</code> 似乎也没有实际的用处。</p>
+<p>至此整个 RPC 调用接受处理流程结束。整个流程如下图所示：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-38cf3ff3ad5de78e.png" alt="Anbox RPC - Service Process"></p>
+<h1 id="会话管理器发起-RPC-调用"><a href="#会话管理器发起-RPC-调用" class="headerlink" title="会话管理器发起 RPC 调用"></a>会话管理器发起 RPC 调用</h1><p>在 Anbox 的会话管理器中，通过 <code>anbox::container::Client</code> 发起与容器管理器之间的连接，并处理双方之间的 RPC 通信，这个类的定义（位于 <code>anbox/src/anbox/container/client.h</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> Client &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="keyword">typedef</span> <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; TerminateCallback;</div><div class="line"></div><div class="line">  Client(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Runtime&gt; &amp;rt);</div><div class="line">  ~Client();</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">(<span class="keyword">const</span> Configuration &amp;configuration)</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">register_terminate_handler</span><span class="params">(<span class="keyword">const</span> TerminateCallback &amp;callback)</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">read_next_message</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">on_read_size</span><span class="params">(<span class="keyword">const</span> boost::system::error_code &amp;ec,</span></span></div><div class="line">                    <span class="built_in">std</span>::<span class="keyword">size_t</span> bytes_read);</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::LocalSocketMessenger&gt; messenger_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;rpc::PendingCallCache&gt; pending_calls_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;rpc::Channel&gt; rpc_channel_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;ManagementApiStub&gt; management_api_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;rpc::MessageProcessor&gt; processor_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="built_in">std</span>::<span class="keyword">uint8_t</span>, 8192&gt; buffer_;</div><div class="line">  TerminateCallback terminate_callback_;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p><code>anbox::container::Client</code> 主要向外部暴露了两个接口，一是启动容器，二是停止容器，<code>SessionManager</code> 通过这两个接口来控制容器的启动与停止。<code>anbox::container::Client</code> 类的实现（位于 <code>anbox/src/anbox/container/client.cpp</code>）如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">Client:</span><span class="symbol">:Client</span>(const <span class="symbol">std:</span><span class="symbol">:shared_ptr&lt;Runtime&gt;</span> &amp;rt)</div><div class="line">    : messenger<span class="number">_</span>(<span class="symbol">std:</span><span class="symbol">:make_shared&lt;network</span><span class="symbol">:</span><span class="symbol">:LocalSocketMessenger&gt;</span>(</div><div class="line">          <span class="symbol">SystemConfiguration:</span><span class="symbol">:instance</span>().container_socket_path(), rt)),</div><div class="line">      pending_calls<span class="number">_</span>(<span class="symbol">std:</span><span class="symbol">:make_shared&lt;rpc</span><span class="symbol">:</span><span class="symbol">:PendingCallCache&gt;</span>()),</div><div class="line">      rpc_channel<span class="number">_</span>(<span class="symbol">std:</span><span class="symbol">:make_shared&lt;rpc</span><span class="symbol">:</span><span class="symbol">:Channel&gt;</span>(pending_calls<span class="number">_</span>, messenger<span class="number">_</span>)),</div><div class="line">      management_api<span class="number">_</span>(<span class="symbol">std:</span><span class="symbol">:make_shared&lt;ManagementApiStub&gt;</span>(rpc_channel<span class="number">_</span>)),</div><div class="line">      processor<span class="number">_</span>(</div><div class="line">          <span class="symbol">std:</span><span class="symbol">:make_shared&lt;rpc</span><span class="symbol">:</span><span class="symbol">:MessageProcessor&gt;</span>(messenger<span class="number">_</span>, pending_calls<span class="number">_</span>)) &#123;</div><div class="line">  read_next_message();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="symbol">Client:</span><span class="symbol">:~Client</span>() &#123;&#125;</div><div class="line"></div><div class="line">void <span class="symbol">Client:</span><span class="symbol">:start</span>(const Configuration &amp;configuration) &#123;</div><div class="line">  try &#123;</div><div class="line">    management_api<span class="number">_</span>-&gt;start_container(configuration);</div><div class="line">  &#125; catch (const <span class="symbol">std:</span><span class="symbol">:exception</span> &amp;e) &#123;</div><div class="line">    ERROR(<span class="string">"Failed to start container: %s"</span>, e.what());</div><div class="line">    if (terminate_callback<span class="number">_</span>)</div><div class="line">      terminate_callback<span class="number">_</span>();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void <span class="symbol">Client:</span><span class="symbol">:stop</span>() &#123;</div><div class="line">  management_api<span class="number">_</span>-&gt;stop_container();</div><div class="line">&#125;</div><div class="line"></div><div class="line">void <span class="symbol">Client:</span><span class="symbol">:register_terminate_handler</span>(const TerminateCallback &amp;callback) &#123;</div><div class="line">  terminate_callback<span class="number">_</span> = callback;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void <span class="symbol">Client:</span><span class="symbol">:read_next_message</span>() &#123;</div><div class="line">  auto callback = <span class="symbol">std:</span><span class="symbol">:bind</span>(&amp;<span class="symbol">Client:</span><span class="symbol">:on_read_size</span>, this, <span class="symbol">std:</span><span class="symbol">:placeholders</span><span class="symbol">:</span><span class="symbol">:_1</span>,</div><div class="line">                            <span class="symbol">std:</span><span class="symbol">:placeholders</span><span class="symbol">:</span><span class="symbol">:_2</span>);</div><div class="line">  messenger<span class="number">_</span>-&gt;async_receive_msg(callback, <span class="symbol">ba:</span><span class="symbol">:buffer</span>(buffer<span class="number">_</span>));</div><div class="line">&#125;</div><div class="line"></div><div class="line">void <span class="symbol">Client:</span><span class="symbol">:on_read_size</span>(const <span class="symbol">boost:</span><span class="symbol">:system</span><span class="symbol">:</span><span class="symbol">:error_code</span> &amp;error,</div><div class="line">                          <span class="symbol">std:</span><span class="symbol">:size_t</span> bytes_read) &#123;</div><div class="line">  if (error) &#123;</div><div class="line">    if (terminate_callback<span class="number">_</span>)</div><div class="line">      terminate_callback<span class="number">_</span>();</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="symbol">std:</span><span class="symbol">:vector&lt;std</span><span class="symbol">:</span><span class="symbol">:uint8_t&gt;</span> data(bytes_read);</div><div class="line">  <span class="symbol">std:</span><span class="symbol">:copy</span>(buffer<span class="number">_</span>.data(), buffer<span class="number">_</span>.data() + bytes_read, data.data());</div><div class="line"></div><div class="line">  if (processor<span class="number">_</span>-&gt;process_data(data)) read_next_message();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>anbox::container::Client</code> 类在其构造函数中，即通过 Unix 域 Socket 建立了与容器管理器的连接，它通过 <code>ManagementApiStub</code> 发起 RPC 调用。<code>ManagementApiStub</code> 是容器管理器与会话管理器间 RPC 进程间通信在 RPC 调用发起端的接口层，它提供了 <strong><em>启动 Android 容器</em></strong> 及 <strong><em>关闭 Android 容器</em></strong> 这样的抽象。在 <code>ManagementApiStub</code> 之下，是容器管理器与会话管理器间 RPC 进程间通信的 RPC 层，即 <code>anbox::rpc::Channel</code>，主要用于处理消息的发送。</p>
+<p><code>anbox::container::Client</code> 类本身处理连接中原始数据的接收，这里直接用了裸 <code>SocketMessenger</code>，而没有再用 <code>SocketConnection</code> 封装。<code>anbox::container::Client</code> 收到数据之后，会将数据丢给 <code>anbox::rpc::MessageProcessor</code> 处理。类型为<code>anbox::rpc::PendingCallCache</code> 的 <code>pending_calls_</code> 主要用于处理 RPC 的异步调用。在 <code>anbox::rpc::Channel</code> 中，消息发送之后，并不会等待响应的接收，而是在 <code>pending_calls_</code> 中为 RPC 调用注册一个完成回调。在 <code>anbox::rpc::MessageProcessor</code> 中收到响应的消息之后，前面的完成回调被调用，RPC 调用的发起者得到通知。</p>
+<p><code>anbox::container::Client</code> 中处理 RPC 调用的发起的相关组件的设计框架如下：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-d15316f4575c0a1b.png" alt="Anbox Container Client"></p>
+<p><code>anbox::container::Client</code> 直接使用 <code>anbox::container::ManagementApiStub</code> 执行 RPC 调用，这个类的定义（位于 <code>anbox/src/anbox/container/management_api_stub.h</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> ManagementApiStub : <span class="keyword">public</span> DoNotCopyOrMove &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  ManagementApiStub(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;rpc::Channel&gt; &amp;channel);</div><div class="line">  ~ManagementApiStub();</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">start_container</span><span class="params">(<span class="keyword">const</span> Configuration &amp;configuration)</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">stop_container</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Response&gt;</div><div class="line">  <span class="keyword">struct</span> Request &#123;</div><div class="line">    Request() : response(<span class="built_in">std</span>::make_shared&lt;Response&gt;()), success(<span class="literal">true</span>) &#123;&#125;</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Response&gt; response;</div><div class="line">    <span class="keyword">bool</span> success;</div><div class="line">    common::WaitHandle wh;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">container_started</span><span class="params">(Request&lt;protobuf::rpc::Void&gt; *request)</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">container_stopped</span><span class="params">(Request&lt;protobuf::rpc::Void&gt; *request)</span></span>;</div><div class="line"></div><div class="line">  <span class="keyword">mutable</span> <span class="built_in">std</span>::mutex mutex_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;rpc::Channel&gt; channel_;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p><code>anbox::container::ManagementApiStub</code> 定义了启动容器和停止容器的接口，并定义了容器启动完成和容器停止完成之后的回调，它还定义了 <code>Request</code> 类，用于封装请求的响应，及一个 <code>WaitHandle</code>。<code>WaitHandle</code> 由 RPC 调用的发起端用于等待请求的结束。</p>
+<p><code>anbox::container::ManagementApiStub</code> 类的实现（位于 <code>anbox/src/anbox/container/management_api_stub.cpp</code>）如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">ManagementApiStub:</span><span class="symbol">:ManagementApiStub</span>(</div><div class="line">    const <span class="symbol">std:</span><span class="symbol">:shared_ptr&lt;rpc</span><span class="symbol">:</span><span class="symbol">:Channel&gt;</span> &amp;channel)</div><div class="line">    : channel<span class="number">_</span>(channel) &#123;&#125;</div><div class="line"></div><div class="line"><span class="symbol">ManagementApiStub:</span><span class="symbol">:~ManagementApiStub</span>() &#123;&#125;</div><div class="line"></div><div class="line">void <span class="symbol">ManagementApiStub:</span><span class="symbol">:start_container</span>(const Configuration &amp;configuration) &#123;</div><div class="line">  auto c = <span class="symbol">std:</span><span class="symbol">:make_shared&lt;Request&lt;protobuf</span><span class="symbol">:</span><span class="symbol">:rpc</span><span class="symbol">:</span><span class="symbol">:Void&gt;&gt;</span>();</div><div class="line"></div><div class="line">  <span class="symbol">protobuf:</span><span class="symbol">:container</span><span class="symbol">:</span><span class="symbol">:StartContainer</span> message;</div><div class="line">  auto message_configuration = new <span class="symbol">protobuf:</span><span class="symbol">:container</span><span class="symbol">:</span><span class="symbol">:Configuration</span>;</div><div class="line"></div><div class="line">  <span class="keyword">for</span> (const auto &amp;item : configuration.bind_mounts) &#123;</div><div class="line">    auto bind_mount_message = message_configuration-&gt;add_bind_mounts();</div><div class="line">    bind_mount_message-&gt;set_source(item.first);</div><div class="line">    bind_mount_message-&gt;set_target(item.second);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  message.set_allocated_configuration(message_configuration);</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    <span class="symbol">std:</span><span class="symbol">:lock_guard&lt;decltype</span>(mutex<span class="number">_</span>)&gt; lock(mutex<span class="number">_</span>);</div><div class="line">    c-&gt;wh.expect_result();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  channel<span class="number">_</span>-&gt;call_method(<span class="string">"start_container"</span>, &amp;message, c-&gt;response.get(),</div><div class="line">      <span class="symbol">google:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:NewCallback</span>(this, &amp;<span class="symbol">ManagementApiStub:</span><span class="symbol">:container_started</span>, c.get()));</div><div class="line"></div><div class="line">  c-&gt;wh.wait_for_all();</div><div class="line"></div><div class="line">  if (c-&gt;response-&gt;has_error()) throw <span class="symbol">std:</span><span class="symbol">:runtime_error</span>(c-&gt;response-&gt;error());</div><div class="line">&#125;</div><div class="line"></div><div class="line">void <span class="symbol">ManagementApiStub:</span><span class="symbol">:container_started</span>(Request&lt;<span class="symbol">protobuf:</span><span class="symbol">:rpc</span><span class="symbol">:</span><span class="symbol">:Void&gt;</span> *request) &#123;</div><div class="line">  request-&gt;wh.result_received();</div><div class="line">&#125;</div><div class="line"></div><div class="line">void <span class="symbol">ManagementApiStub:</span><span class="symbol">:stop_container</span>() &#123;</div><div class="line">  auto c = <span class="symbol">std:</span><span class="symbol">:make_shared&lt;Request&lt;protobuf</span><span class="symbol">:</span><span class="symbol">:rpc</span><span class="symbol">:</span><span class="symbol">:Void&gt;&gt;</span>();</div><div class="line"></div><div class="line">  <span class="symbol">protobuf:</span><span class="symbol">:container</span><span class="symbol">:</span><span class="symbol">:StopContainer</span> message;</div><div class="line">  message.set_force(<span class="keyword">false</span>);</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    <span class="symbol">std:</span><span class="symbol">:lock_guard&lt;decltype</span>(mutex<span class="number">_</span>)&gt; lock(mutex<span class="number">_</span>);</div><div class="line">    c-&gt;wh.expect_result();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  channel<span class="number">_</span>-&gt;call_method(<span class="string">"stop_container"</span>, &amp;message, c-&gt;response.get(),</div><div class="line">      <span class="symbol">google:</span><span class="symbol">:protobuf</span><span class="symbol">:</span><span class="symbol">:NewCallback</span>(this, &amp;<span class="symbol">ManagementApiStub:</span><span class="symbol">:container_stopped</span>, c.get()));</div><div class="line"></div><div class="line">  c-&gt;wh.wait_for_all();</div><div class="line"></div><div class="line">  if (c-&gt;response-&gt;has_error()) throw <span class="symbol">std:</span><span class="symbol">:runtime_error</span>(c-&gt;response-&gt;error());</div><div class="line">&#125;</div><div class="line"></div><div class="line">void <span class="symbol">ManagementApiStub:</span><span class="symbol">:container_stopped</span>(Request&lt;<span class="symbol">protobuf:</span><span class="symbol">:rpc</span><span class="symbol">:</span><span class="symbol">:Void&gt;</span> *request) &#123;</div><div class="line">  request-&gt;wh.result_received();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>尽管实际的 RPC 调用是异步的，但 <code>anbox::container::ManagementApiStub</code> 类通过条件变量为其调用者提供了一种同步执行的假象。启动容器和停止容器的行为通过另外的 Protobuf 消息来描述，这些消息的定义（位于 <code>anbox/src/anbox/protobuf/anbox_container.proto</code>）如下：<br><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> anbox.protobuf.container;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">message</span> <span class="title">Configuration</span> </span>&#123;</div><div class="line">    <span class="class"><span class="keyword">message</span> <span class="title">BindMount</span> </span>&#123;</div><div class="line">        <span class="keyword">required</span> <span class="built_in">string</span> source = <span class="number">1</span>;</div><div class="line">        <span class="keyword">required</span> <span class="built_in">string</span> target = <span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">repeated</span> BindMount bind_mounts = <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">message</span> <span class="title">StartContainer</span> </span>&#123;</div><div class="line">    <span class="keyword">required</span> Configuration configuration = <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">message</span> <span class="title">StopContainer</span> </span>&#123;</div><div class="line">    <span class="keyword">optional</span> <span class="built_in">bool</span> force = <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 <code>ManagementApiStub::start_container()</code> 和 <code>ManagementApiStub::stop_container()</code> 函数中，将参数封装进对应的 Protobuf 消息中，然后更新 <code>Request</code> 的 <code>WaitHandle</code> 中用于表示期待接收到的响应的状态，随后通过 <code>anbox::rpc::Channel</code> 发起 RPC 调用并注册完成回调，最后等待在 <code>Request</code> 的 <code>WaitHandle</code> 上。</p>
+<p>启动容器和停止容器的 RPC 调用完成之后，对应的回调被调用，它们通过相应的请求的 <code>WaitHandle</code> 通知调用结束，<code>ManagementApiStub::start_container()</code> 和 <code>ManagementApiStub::stop_container()</code> 函数返回。</p>
+<p><strong><em><code>ManagementApiStub</code> 的设计实际上有几处问题。首先是定义的 <code>mutex_</code> 成员，看上去毫无意义；其次是等待的方法 <code>wait_for_all()</code>，这个函数会一直等待条件成立，如果容器管理器进程意外终止，或者由于其它什么原因，无法给会话管理器发回响应消息，则会话管理器会一直等在那里无法结束，正确的做法应该用有超时的等待，等待一段时间之后，就假设启动容器失败，并退出。</em></strong></p>
+<p>可以看一下 <code>WaitHandle</code> 的设计与实现。这个类的定义（位于 <code>anbox/src/anbox/common/wait_handle.h</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> common &#123;</div><div class="line"><span class="keyword">struct</span> WaitHandle &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  WaitHandle();</div><div class="line">  ~WaitHandle();</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">expect_result</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">result_received</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">wait_for_all</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">wait_for_one</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">wait_for_pending</span><span class="params">(<span class="built_in">std</span>::chrono::milliseconds limit)</span></span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">has_result</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">is_pending</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="built_in">std</span>::mutex guard;</div><div class="line">  <span class="built_in">std</span>::condition_variable wait_condition;</div><div class="line"></div><div class="line">  <span class="keyword">int</span> expecting;</div><div class="line">  <span class="keyword">int</span> received;</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace common</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><code>WaitHandle</code> 封装标准库的 <code>std::mutex</code> 和 <code>std::condition_variable</code> 来构造等待设施。这个类的实现（位于 <code>anbox/src/anbox/common/wait_handle.cpp</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> common &#123;</div><div class="line">WaitHandle::WaitHandle()</div><div class="line">    : guard(), wait_condition(), expecting(<span class="number">0</span>), received(<span class="number">0</span>) &#123;&#125;</div><div class="line"></div><div class="line">WaitHandle::~WaitHandle() &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> WaitHandle::expect_result() &#123;</div><div class="line">  <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(guard);</div><div class="line"></div><div class="line">  expecting++;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> WaitHandle::result_received() &#123;</div><div class="line">  <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(guard);</div><div class="line"></div><div class="line">  received++;</div><div class="line">  wait_condition.notify_all();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> WaitHandle::wait_for_all()  <span class="comment">// wait for all results you expect</span></div><div class="line">&#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(guard);</div><div class="line"></div><div class="line">  wait_condition.wait(lock, [&amp;] &#123; <span class="keyword">return</span> received == expecting; &#125;);</div><div class="line"></div><div class="line">  received = <span class="number">0</span>;</div><div class="line">  expecting = <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> WaitHandle::wait_for_pending(<span class="built_in">std</span>::chrono::milliseconds limit) &#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(guard);</div><div class="line"></div><div class="line">  wait_condition.wait_for(lock, limit, [&amp;] &#123; <span class="keyword">return</span> received == expecting; &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> WaitHandle::wait_for_one()  <span class="comment">// wait for any single result</span></div><div class="line">&#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(guard);</div><div class="line"></div><div class="line">  wait_condition.wait(lock, [&amp;] &#123; <span class="keyword">return</span> received != <span class="number">0</span>; &#125;);</div><div class="line"></div><div class="line">  --received;</div><div class="line">  --expecting;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> WaitHandle::has_result() &#123;</div><div class="line">  <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(guard);</div><div class="line"></div><div class="line">  <span class="keyword">return</span> received &gt; <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> WaitHandle::is_pending() &#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(guard);</div><div class="line">  <span class="keyword">return</span> expecting &gt; <span class="number">0</span> &amp;&amp; received != expecting;</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace common</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p>需要等待的一端，通过调用 <code>expect_result()</code> 来告诉 <code>WaitHandle</code>，需要等待多接收一个响应，并通过 <code>wait_for_all()</code>、<code>wait_for_pending()</code> 和 <code>wait_for_one()</code> 来等待结果的出现。处理收到的消息的线程，通过 <code>result_received()</code> 通知等待的线程。</p>
+<p><code>anbox::rpc::PendingCallCache</code> 是一个容器，用于保存已经发送了请求消息，已经发起但还没有得到响应的 RPC 调用的描述及完成回调，这个类的定义（位于 <code>anbox/src/anbox/rpc/pending_call_cache.h</code>）如下：<br><figure class="highlight zephir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">PendingCallCache</span> </span>&#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  PendingCallCache();</div><div class="line"></div><div class="line">  void save_completion_details(</div><div class="line">      anbox::protobuf::rpc::Invocation <span class="keyword">const</span> &amp;invocation,</div><div class="line">      google::protobuf::MessageLite *response,</div><div class="line">      google::protobuf::Closure *complete);</div><div class="line">  void populate_message_for_result(</div><div class="line">      anbox::protobuf::rpc::Result &amp;result,</div><div class="line">      std::function&lt;void(google::protobuf::MessageLite *)&gt; <span class="keyword">const</span> &amp;populator);</div><div class="line">  void complete_response(anbox::protobuf::rpc::Result &amp;result);</div><div class="line">  void force_completion();</div><div class="line">  <span class="keyword">bool</span> <span class="keyword">empty</span>() <span class="keyword">const</span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  struct PendingCall &#123;</div><div class="line">    PendingCall(google::protobuf::MessageLite *response,</div><div class="line">                google::protobuf::Closure *target)</div><div class="line">        : response(response), complete(target) &#123;&#125;</div><div class="line"></div><div class="line">    PendingCall() : response(<span class="number">0</span>), complete() &#123;&#125;</div><div class="line"></div><div class="line">    google::protobuf::MessageLite *response;</div><div class="line">    google::protobuf::Closure *complete;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  std::mutex mutable mutex_;</div><div class="line">  std::map&lt;<span class="keyword">int</span>, PendingCall&gt; pending_calls_;</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace rpc</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><code>anbox::rpc::PendingCallCache</code> 类还定义一个 <code>PendingCall</code> 用于封装请求的响应对象及完成回调，它用一个 map 保存 <code>PendingCall</code>，由于需要在 <code>anbox::rpc::MessageProcessor::process_data()</code> 和 <code>anbox::rpc::Channel</code> 的线程中访问，为了线程安全计，每次访问都有锁进行保护。</p>
+<p><code>anbox::rpc::PendingCallCache</code> 类的实现（位于 <code>anbox/src/anbox/rpc/pending_call_cache.cpp</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> rpc &#123;</div><div class="line">PendingCallCache::PendingCallCache() &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> PendingCallCache::save_completion_details(</div><div class="line">    anbox::protobuf::rpc::Invocation <span class="keyword">const</span>&amp; invocation,</div><div class="line">    google::protobuf::MessageLite* response,</div><div class="line">    google::protobuf::Closure* complete) &#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</div><div class="line">  pending_calls_[invocation.id()] = PendingCall(response, complete);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> PendingCallCache::populate_message_for_result(</div><div class="line">    anbox::protobuf::rpc::Result&amp; result,</div><div class="line">    <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>(google::protobuf::MessageLite*)&gt; <span class="keyword">const</span>&amp; populator) &#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</div><div class="line">  populator(pending_calls_.at(result.id()).response);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> PendingCallCache::complete_response(anbox::protobuf::rpc::Result&amp; result) &#123;</div><div class="line">  PendingCall completion;</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</div><div class="line">    <span class="keyword">auto</span> call = pending_calls_.find(result.id());</div><div class="line">    <span class="keyword">if</span> (call != pending_calls_.end()) &#123;</div><div class="line">      completion = call-&gt;second;</div><div class="line">      pending_calls_.erase(call);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (completion.complete) completion.complete-&gt;Run();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> PendingCallCache::force_completion() &#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; call : pending_calls_) &#123;</div><div class="line">    <span class="keyword">auto</span>&amp; completion = call.second;</div><div class="line">    completion.complete-&gt;Run();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  pending_calls_.erase(pending_calls_.begin(), pending_calls_.end());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> PendingCallCache::empty() <span class="keyword">const</span> &#123;</div><div class="line">  <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</div><div class="line">  <span class="keyword">return</span> pending_calls_.empty();</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace rpc</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><code>save_completion_details()</code> 用于向 <code>anbox::rpc::PendingCallCache</code> 中放入调用，<code>populate_message_for_result()</code> 用于把返回的响应消息塞给调用，<code>complete_response()</code> 则用于通知结果的返回，调用对应的完成回调。</p>
+<p><code>anbox::rpc::Channel</code> 用于序列化消息，并发送出去，其定义（位于 <code>anbox/src/anbox/rpc/channel.h</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> Channel &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  Channel(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;PendingCallCache&gt; &amp;pending_calls,</div><div class="line">          <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt; &amp;sender);</div><div class="line">  ~Channel();</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">call_method</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> <span class="keyword">const</span> &amp;method_name,</span></span></div><div class="line">                   google::protobuf::MessageLite <span class="keyword">const</span> *parameters,</div><div class="line">                   google::protobuf::MessageLite *response,</div><div class="line">                   google::protobuf::Closure *complete);</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">send_event</span><span class="params">(google::protobuf::MessageLite <span class="keyword">const</span> &amp;event)</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  protobuf::rpc::<span class="function">Invocation <span class="title">invocation_for</span><span class="params">(</span></span></div><div class="line">      <span class="built_in">std</span>::<span class="built_in">string</span> <span class="keyword">const</span> &amp;method_name,</div><div class="line">      google::protobuf::MessageLite <span class="keyword">const</span> *request);</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">send_message</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="keyword">uint8_t</span> &amp;type,</span></span></div><div class="line">                    google::protobuf::MessageLite <span class="keyword">const</span> &amp;message);</div><div class="line">  <span class="built_in">std</span>::<span class="keyword">uint32_t</span> next_id();</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">notify_disconnected</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;PendingCallCache&gt; pending_calls_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt; sender_;</div><div class="line">  <span class="built_in">std</span>::mutex write_mutex_;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p><code>anbox::rpc::Channel</code> 负责为每个调用消息分配 ID。<code>anbox::rpc::Channel</code> 实现（位于 <code>anbox/src/anbox/rpc/channel.cpp</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> anbox &#123;</div><div class="line"><span class="keyword">namespace</span> rpc &#123;</div><div class="line">Channel::Channel(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;PendingCallCache&gt; &amp;pending_calls,</div><div class="line">                 <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;network::MessageSender&gt; &amp;sender)</div><div class="line">    : pending_calls_(pending_calls), sender_(sender) &#123;&#125;</div><div class="line"></div><div class="line">Channel::~Channel() &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Channel::call_method(<span class="built_in">std</span>::<span class="built_in">string</span> <span class="keyword">const</span> &amp;method_name,</div><div class="line">                          google::protobuf::MessageLite <span class="keyword">const</span> *parameters,</div><div class="line">                          google::protobuf::MessageLite *response,</div><div class="line">                          google::protobuf::Closure *complete) &#123;</div><div class="line">  <span class="keyword">auto</span> <span class="keyword">const</span> &amp;invocation = invocation_for(method_name, parameters);</div><div class="line">  pending_calls_-&gt;save_completion_details(invocation, response, complete);</div><div class="line">  send_message(MessageType::invocation, invocation);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Channel::send_event(google::protobuf::MessageLite <span class="keyword">const</span> &amp;event) &#123;</div><div class="line">  VariableLengthArray&lt;<span class="number">2048</span>&gt; buffer&#123;<span class="keyword">static_cast</span>&lt;<span class="keyword">size_t</span>&gt;(event.ByteSize())&#125;;</div><div class="line">  event.SerializeWithCachedSizesToArray(buffer.data());</div><div class="line"></div><div class="line">  anbox::protobuf::rpc::Result response;</div><div class="line">  response.add_events(buffer.data(), buffer.size());</div><div class="line"></div><div class="line">  send_message(MessageType::response, response);</div><div class="line">&#125;</div><div class="line"></div><div class="line">protobuf::rpc::Invocation Channel::invocation_for(</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> <span class="keyword">const</span> &amp;method_name,</div><div class="line">    google::protobuf::MessageLite <span class="keyword">const</span> *request) &#123;</div><div class="line">  anbox::VariableLengthArray&lt;<span class="number">2048</span>&gt; buffer&#123;</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">size_t</span>&gt;(request-&gt;ByteSize())&#125;;</div><div class="line"></div><div class="line">  request-&gt;SerializeWithCachedSizesToArray(buffer.data());</div><div class="line"></div><div class="line">  anbox::protobuf::rpc::Invocation invoke;</div><div class="line"></div><div class="line">  invoke.set_id(next_id());</div><div class="line">  invoke.set_method_name(method_name);</div><div class="line">  invoke.set_parameters(buffer.data(), buffer.size());</div><div class="line">  invoke.set_protocol_version(<span class="number">1</span>);</div><div class="line"></div><div class="line">  <span class="keyword">return</span> invoke;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Channel::send_message(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="keyword">uint8_t</span> &amp;type,</div><div class="line">                           google::protobuf::MessageLite <span class="keyword">const</span> &amp;message) &#123;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> size = message.ByteSize();</div><div class="line">  <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> header_bytes[header_size] = &#123;</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">char</span>&gt;((size &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>),</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">char</span>&gt;((size &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xff</span>), type,</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="keyword">uint8_t</span>&gt; send_buffer(<span class="keyword">sizeof</span>(header_bytes) + size);</div><div class="line">  <span class="built_in">std</span>::copy(header_bytes, header_bytes + <span class="keyword">sizeof</span>(header_bytes),</div><div class="line">            send_buffer.begin());</div><div class="line">  message.SerializeToArray(send_buffer.data() + <span class="keyword">sizeof</span>(header_bytes), size);</div><div class="line"></div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(write_mutex_);</div><div class="line">    sender_-&gt;send(<span class="keyword">reinterpret_cast</span>&lt;<span class="keyword">const</span> <span class="keyword">char</span> *&gt;(send_buffer.data()),</div><div class="line">                  send_buffer.size());</div><div class="line">  &#125; <span class="keyword">catch</span> (<span class="built_in">std</span>::runtime_error <span class="keyword">const</span> &amp;) &#123;</div><div class="line">    notify_disconnected();</div><div class="line">    <span class="keyword">throw</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Channel::notify_disconnected() &#123; pending_calls_-&gt;force_completion(); &#125;</div><div class="line"></div><div class="line"><span class="built_in">std</span>::<span class="keyword">uint32_t</span> Channel::next_id() &#123;</div><div class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::<span class="keyword">uint32_t</span> next_message_id = <span class="number">0</span>;</div><div class="line">  <span class="keyword">return</span> next_message_id++;</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace rpc</span></div><div class="line">&#125;  <span class="comment">// namespace anbox</span></div></pre></td></tr></table></figure></p>
+<p><code>call_method()</code> 用于发起 RPC 调用，这个函数将 RPC 调用描述及完成回调保存进 <code>pending_calls_</code> 中，随后发送消息。<code>anbox::rpc::Channel</code> 主要在操作 Protobuf 消息的序列化，此处不再赘述。</p>
+<p>可以再看一下 RPC 调用发起端收到响应消息时的处理，主要是 <code>anbox::rpc::MessageProcessor</code> 的下面这一段（位于 <code>anbox/src/anbox/rpc/message_processor.cpp</code>）：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (message_type == MessageType::response) &#123;</div><div class="line">    auto result = make_protobuf_object&lt;protobuf::rpc::<span class="built_in">Result</span>&gt;();</div><div class="line">    result-&gt;ParseFromArray(buffer_.data() + header_size, message_size);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (result-&gt;has_id()) &#123;</div><div class="line">      pending_calls_-&gt;populate_message_for_result(*result,</div><div class="line">                                                  [&amp;](google::protobuf::MessageLite *result_message) &#123;</div><div class="line">                                                    result_message-&gt;ParseFromString(result-&gt;response());</div><div class="line">                                                  &#125;);</div><div class="line">      pending_calls_-&gt;complete_response(*result);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">0</span>; n &lt; result-&gt;events_size(); n++)</div><div class="line">      process_event_sequence(result-&gt;events(n));</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  buffer_.erase(buffer_.begin(),</div><div class="line">                buffer_.begin() + header_size + message_size);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这段代码将响应消息塞给 <code>pending_calls_</code> 中保存的对应的 <code>Invocation</code>，并调用完成回调。</p>
+<p>Anbox 中会话管理器与容器管理器通过两个 RPC 调用进行通信，在调用发起端的整个处理过程如下图：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-3963e61469988d3b.png" alt="Start Container Process"></p>
+<p><img src="https://www.wolfcstech.com/images/1315506-c7ecc094bd317088.png" alt="Stop Container Process"></p>
+<h3 id="打赏"><a href="#打赏" class="headerlink" title="打赏"></a><a href="https://www.wolfcstech.com/about/donate.html">打赏</a></h3><p>Done。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/虚拟化/" rel="tag"># 虚拟化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/13/chinese_tech_site/" rel="next" title="中文技术网站排名">
+                <i class="fa fa-chevron-left"></i> 中文技术网站排名
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/19/projects_operation/" rel="prev" title="个人项目推广">
+                个人项目推广 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#容器管理器接受-RPC-调用"><span class="nav-number">1.</span> <span class="nav-text">容器管理器接受 RPC 调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#会话管理器发起-RPC-调用"><span class="nav-number">2.</span> <span class="nav-text">会话管理器发起 RPC 调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#打赏"><span class="nav-number">2.0.1.</span> <span class="nav-text">打赏</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

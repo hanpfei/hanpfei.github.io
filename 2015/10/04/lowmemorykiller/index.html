@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Android开发," />
+
+
+<meta name="description" content="Android中，进程的生命周期都是由系统控制的。即使用户在界面上关掉一个应用，切换到了别的应用，那个应用的进程依然是存在于内存之中的。这样设计的目的是为了下次启动应用能更加快速。当然，随着系统运行时间的增长，内存中的进程可能会越来越多，而可用的内存则将会越来越少。Android Kernel会定时执行一次检查，杀死一些进程，释放掉内存。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android low memory killer 机制">
+<meta property="og:url" content="https://www.wolfcstech.com/2015/10/04/lowmemorykiller/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Android中，进程的生命周期都是由系统控制的。即使用户在界面上关掉一个应用，切换到了别的应用，那个应用的进程依然是存在于内存之中的。这样设计的目的是为了下次启动应用能更加快速。当然，随着系统运行时间的增长，内存中的进程可能会越来越多，而可用的内存则将会越来越少。Android Kernel会定时执行一次检查，杀死一些进程，释放掉内存。">
+<meta property="og:updated_time" content="2018-02-04T05:00:12.037Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android low memory killer 机制">
+<meta name="twitter:description" content="Android中，进程的生命周期都是由系统控制的。即使用户在界面上关掉一个应用，切换到了别的应用，那个应用的进程依然是存在于内存之中的。这样设计的目的是为了下次启动应用能更加快速。当然，随着系统运行时间的增长，内存中的进程可能会越来越多，而可用的内存则将会越来越少。Android Kernel会定时执行一次检查，杀死一些进程，释放掉内存。">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2015/10/04/lowmemorykiller/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Android low memory killer 机制 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2015/10/04/lowmemorykiller/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android low memory killer 机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-10-04T16:05:49+08:00">2015-10-04</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/10/04/lowmemorykiller/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2015/10/04/lowmemorykiller/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/10/04/lowmemorykiller/" class="leancloud_visitors" data-flag-title="Android low memory killer 机制">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Android中，进程的生命周期都是由系统控制的。即使用户在界面上关掉一个应用，切换到了别的应用，那个应用的进程依然是存在于内存之中的。这样设计的目的是为了下次启动应用能更加快速。当然，随着系统运行时间的增长，内存中的进程可能会越来越多，而可用的内存则将会越来越少。Android Kernel会定时执行一次检查，杀死一些进程，释放掉内存。<br><a id="more"></a><br>那么，如何来判断，哪些进程是需要杀死的呢？答案就是：low memory killer 机制。</p>
+<p>Android 的 low memory killer 是基于 linux 的OOM（out of memory）规则改进而来的。OOM 通过一些比较复杂的评分机制，对进程进行打分，然后将分数高的进程判定为 bad进程，杀死进程并释放内存。OOM 只有当系统内存不足的时候才会启动检查，而 low memory killer 则不仅是在应用程序分配内存发现内存不足时启动检查，它也会定时地进行检查。</p>
+<p>Low memory killer 主要是通过进程的 oom_adj 来判定进程的重要程度的。oom_adj 的大小和进程的类型以及进程被调度的次序有关。</p>
+<p>Low memory killer 的具体实现在 kernel，比如对于 android 4.4.3 所用的 kernel_3.4，代码在：<code>linux/kernel/drivers/staging/android/lowmemorykiller.c</code>。</p>
+<p>其原理很简单，‍<strong>在 linux 中，存在一个名为 kswapd 的内核线程，当linux回收存放分页的时候，kswapd 线程将会遍历一张 shrinker 链表，并执行回调，或者某个app分配内存，发现可用内存不足时，则内核会阻塞请求分配内存的进程分配内存的过程，并在该进程中去执行lowmemorykiller来释放内存</strong>。</p>
+<p>struct shrinker 的定义在 <code>linux/kernel/include/linux/shrinker.h</code>，具体如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> shrinker &#123;</div><div class="line">    <span class="keyword">int</span> (*shrink)(<span class="keyword">struct</span> shrinker *, <span class="keyword">struct</span> shrink_control *sc);</div><div class="line">    <span class="keyword">int</span> seeks;<span class="comment">/* seeks to recreate an obj */</span></div><div class="line">    <span class="keyword">long</span> batch;<span class="comment">/* reclaim batch size, 0 = default */</span></div><div class="line"></div><div class="line">    <span class="comment">/* These are for internal use */</span></div><div class="line">    <span class="keyword">struct</span> list_head <span class="built_in">list</span>;</div><div class="line">    <span class="keyword">atomic_long_t</span> nr_in_batch; <span class="comment">/* objs pending delete */</span></div><div class="line">&#125;;</div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> DEFAULT_SEEKS 2 <span class="comment">/* A good number if you don't know better. */</span></span></div><div class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">register_shrinker</span><span class="params">(<span class="keyword">struct</span> shrinker *)</span></span>;</div><div class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">unregister_shrinker</span><span class="params">(<span class="keyword">struct</span> shrinker *)</span></span>;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure></p>
+<p>‍所以，<strong>只要注册 shrinker，就可以在内存分页回收时根据规则释放内存</strong>。下面我们来看看lowmemorykiller 的具体实现。首先是定义 shrinker 结构体，lowmem_shrink 为回调函数的指针，当有内存分页回收的时候，获其他有需要的时机，这个函数将会被调用。<br><figure class="highlight capnproto"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">static <span class="class"><span class="keyword">struct</span> <span class="title">shrinker</span> lowmem_shrinker = </span>&#123;</div><div class="line">    .shrink = lowmem_shrink,</div><div class="line">    .seeks = DEFAULT_SEEKS * <span class="number">16</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>初始化模块时进行注册，模块退出时注销。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">int</span> __<span class="function">init <span class="title">lowmem_init</span><span class="params">(<span class="keyword">void</span>)</span></span></div><div class="line">&#123;</div><div class="line">    register_shrinker(&amp;lowmem_shrinker);</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">static</span> <span class="keyword">void</span> __<span class="function"><span class="built_in">exit</span> <span class="title">lowmem_exit</span><span class="params">(<span class="keyword">void</span>)</span></span></div><div class="line">&#123;</div><div class="line">    unregister_shrinker(&amp;lowmem_shrinker);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Android 中，存在着一张内存阈值表，这张阈值表是可以在 init.rc 中进行配置的，合理配置这张表，对于小内存设备有非常重要的作用。我们来看 lowmemorykiller.c 中这张默认的阈值表：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">static int lowmem_adj[<span class="number">6</span>] = &#123;</div><div class="line">    <span class="number">0</span>,</div><div class="line">    <span class="number">1</span>,</div><div class="line">    <span class="number">6</span>,</div><div class="line">    <span class="number">12</span>,</div><div class="line">&#125;;</div><div class="line">static int lowmem_adj_size = <span class="number">4</span>;</div><div class="line">static int lowmem_minfree[<span class="number">6</span>] = &#123;</div><div class="line">    <span class="number">3</span> * <span class="number">512</span>,<span class="comment">/* 6MB */</span></div><div class="line">    <span class="number">2</span> * <span class="number">1024</span>,<span class="comment">/* 8MB */</span></div><div class="line">    <span class="number">4</span> * <span class="number">1024</span>,<span class="comment">/* 16MB */</span></div><div class="line">    <span class="number">16</span> * <span class="number">1024</span>,<span class="comment">/* 64MB */</span></div><div class="line">&#125;;</div><div class="line">static int lowmem_minfree_size = <span class="number">4</span>;</div></pre></td></tr></table></figure></p>
+<p>lowmem_adj 中各项数值代表阈值的警戒级数，lowmem_minfree 代表对应级数的剩余内存。也就是说，当系统的可用内存小于6MB时，警戒级数为0；当系统可用内存小于8M而大于6M时，警戒级数为1；当可用内存小于64M大于16MB时，警戒级数为12。Low memory killer的规则就是根据当前系统的可用内存多少来获取当前的警戒级数，如果进程的oom_adj大于警戒级数并且最大，进程将会被杀死（具有相同omm_adj的进程，则杀死占用内存较多的）。omm_adj越小，代表进程越重要。一些前台的进程，oom_adj会比较小，而后台的服务，omm_adj会比较大，所以当内存不足的时候，Low memory killer必然先杀掉的是后台服务而不是前台的进程。</p>
+<p>OK，现在我们来看具体代码，也就是lowmem_shrink这个回调函数，先来：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">int</span> lowmem_minfree_size = <span class="number">4</span>;</div><div class="line"></div><div class="line"><span class="keyword">static</span> unsigned long lowmem_deathpending_timeout;</div><div class="line"></div><div class="line">#define lowmem_print(level, x...)\</div><div class="line">    <span class="keyword">do</span> &#123;\</div><div class="line">        <span class="keyword">if</span> (lowmem_debug_level &gt;= (level))\</div><div class="line">            printk(x);\</div><div class="line">    &#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">int</span> lowmem_shrink(<span class="class"><span class="keyword">struct</span> <span class="title">shrinker</span></span> *s, <span class="class"><span class="keyword">struct</span> <span class="title">shrink_control</span></span> *sc)</div><div class="line">&#123;</div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span></span> *tsk;</div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span></span> *selected = NULL;</div><div class="line">    <span class="keyword">int</span> rem = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> tasksize;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">int</span> min_score_adj = OOM_SCORE_ADJ_MAX + <span class="number">1</span>;</div><div class="line">    <span class="keyword">int</span> selected_tasksize = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> selected_oom_score_adj;</div><div class="line">    <span class="keyword">int</span> array_size = ARRAY_SIZE(lowmem_adj);</div><div class="line">    <span class="keyword">int</span> other_free = global_page_state(NR_FREE_PAGES) - totalreserve_pages;</div><div class="line">    <span class="keyword">int</span> other_file = global_page_state(NR_FILE_PAGES) - global_page_state(NR_SHMEM);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (lowmem_adj_size &lt; array_size)</div><div class="line">        array_size = lowmem_adj_size;</div><div class="line">    <span class="keyword">if</span> (lowmem_minfree_size &lt; array_size)</div><div class="line">        array_size = lowmem_minfree_size;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; array_size; i++) &#123;</div><div class="line">        <span class="keyword">if</span> (other_free &lt; lowmem_minfree[i] &amp;&amp;</div><div class="line">            other_file &lt; lowmem_minfree[i]) &#123;</div><div class="line">            min_score_adj = lowmem_adj[i];</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (sc-&gt;nr_to_scan &gt; <span class="number">0</span>)</div><div class="line">        lowmem_print(<span class="number">3</span>, <span class="string">"lowmem_shrink %lu, %x, ofree %d %d, ma %d\n"</span>,</div><div class="line">            sc-&gt;nr_to_scan, sc-&gt;gfp_mask, other_free,</div><div class="line">            other_file, min_score_adj);</div><div class="line">    rem = global_page_state(NR_ACTIVE_ANON) +</div><div class="line">        global_page_state(NR_ACTIVE_FILE) +</div><div class="line">        global_page_state(NR_INACTIVE_ANON) +</div><div class="line">        global_page_state(NR_INACTIVE_FILE);</div><div class="line">    <span class="keyword">if</span> (sc-&gt;nr_to_scan &lt;= <span class="number">0</span> || min_score_adj == OOM_SCORE_ADJ_MAX + <span class="number">1</span>) &#123;</div><div class="line">        lowmem_print(<span class="number">5</span>, <span class="string">"lowmem_shrink %lu, %x, return %d\n"</span>,</div><div class="line">             sc-&gt;nr_to_scan, sc-&gt;gfp_mask, rem);</div><div class="line">        <span class="keyword">return</span> rem;</div><div class="line">    &#125;</div><div class="line">    selected_oom_score_adj = min_score_adj;</div><div class="line"></div><div class="line">    rcu_read_lock();</div><div class="line">    for_each_process(tsk) &#123;</div><div class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span></span> *p;</div><div class="line">        <span class="keyword">int</span> oom_score_adj;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (tsk-&gt;flags &amp; PF_KTHREAD)</div><div class="line">            <span class="keyword">continue</span>;</div><div class="line"></div><div class="line">        p = find_lock_task_mm(tsk);</div><div class="line">        <span class="keyword">if</span> (!p)</div><div class="line">            <span class="keyword">continue</span>;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (test_tsk_thread_flag(p, TIF_MEMDIE) &amp;&amp;</div><div class="line">          time_before_eq(jiffies, lowmem_deathpending_timeout)) &#123;</div><div class="line">            task_unlock(p);</div><div class="line">            rcu_read_unlock();</div><div class="line">            <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">        &#125;</div><div class="line">        oom_score_adj = p-&gt;signal-&gt;oom_score_adj;</div><div class="line">        <span class="keyword">if</span> (oom_score_adj &lt; min_score_adj) &#123;</div><div class="line">            task_unlock(p);</div><div class="line">            <span class="keyword">continue</span>;</div><div class="line">        &#125;</div><div class="line">        tasksize = get_mm_rss(p-&gt;mm);</div><div class="line">        task_unlock(p);</div><div class="line">        <span class="keyword">if</span> (tasksize &lt;= <span class="number">0</span>)</div><div class="line">            <span class="keyword">continue</span>;</div><div class="line">        <span class="keyword">if</span> (selected) &#123;</div><div class="line">            <span class="keyword">if</span> (oom_score_adj &lt; selected_oom_score_adj)</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            <span class="keyword">if</span> (oom_score_adj == selected_oom_score_adj &amp;&amp;</div><div class="line">                tasksize &lt;= selected_tasksize)</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">        &#125;</div><div class="line">        selected = p;</div><div class="line">        selected_tasksize = tasksize;</div><div class="line">        selected_oom_score_adj = oom_score_adj;</div><div class="line">        lowmem_print(<span class="number">2</span>, <span class="string">"select %d (%s), adj %d, size %d, to kill\n"</span>,</div><div class="line">             p-&gt;pid, p-&gt;comm, oom_score_adj, tasksize);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (selected) &#123;</div><div class="line">        lowmem_print(<span class="number">1</span>, <span class="string">"send sigkill to %d (%s), adj %d, size %d\n"</span>,</div><div class="line">         selected-&gt;pid, selected-&gt;comm,</div><div class="line">         selected_oom_score_adj, selected_tasksize);</div><div class="line">        lowmem_deathpending_timeout = jiffies + HZ;</div><div class="line">        send_sig(SIGKILL, selected, <span class="number">0</span>);</div><div class="line">        set_tsk_thread_flag(selected, TIF_MEMDIE);</div><div class="line">        rem -= selected_tasksize;</div><div class="line">    &#125;</div><div class="line">    lowmem_print(<span class="number">4</span>, <span class="string">"lowmem_shrink %lu, %x, return %d\n"</span>,</div><div class="line">         sc-&gt;nr_to_scan, sc-&gt;gfp_mask, rem);</div><div class="line">    rcu_read_unlock();</div><div class="line">    <span class="keyword">return</span> rem;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>第22行至第35行。通过global_page_state()函数获取系统当前可用的内存大小，然后根据可用内存大小及内存阈值表，来计算系统当前的警戒等级。</p>
+<p>第40行，计算rem值。</p>
+<p>第44行至第48行这个if-block，发现此时系统的内存状况还是很不错的，于是就什麽也不做，直接返回了。</p>
+<p>第49行至第90行，遍历系统中所有的进程，选中将要杀掉的那个进程。第56行，跳过内核线程，内核线程不参加这个杀进程的游戏。第69行至第73行，进程的oom_score_adj小于警戒阈值，则无视。第74行，获取进程所占用的内存大小，RSS值。第78行至第84行，如果这个进程的oom_score_adj小于我们已经选中的那个进程的oom_score_adj，或者这个进程的oom_score_adj等于我们已经选中的那个进程的oom_score_adj，但其所占用的内存大小tasksize小于我们已经选中的那个进程所占用内存大小，则继续寻找下一个进程。第85至第89行，选中正在遍历的这个的进程，更新selected_tasksize为这个进程所占用的内存大小tasksize，更新selected_oom_score_adj为这个进程的oom_score_adj。</p>
+<p>第91行至第99行，杀死选中的进程。先是更新lowmem_deathpending_timeout，然后便是给进程发送一个signal SIGKILL，接下来是设置进程的标记为TIF_MEMDIE，最后则是更新一下rem的值。</p>
+<h1 id="adj值的设置"><a href="#adj值的设置" class="headerlink" title="adj值的设置"></a>adj值的设置</h1><p>在 lowmemorykiller 的code中我们有看到一个默认的阈值表。如我们前面所提到的那样，各种各样的设备、产品也可以自己定制这个值。这种定制主要是通过导出一些内核变量来实现的，具体代码如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES</span></div><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">lowmem_oom_adj_to_oom_score_adj</span><span class="params">(<span class="keyword">int</span> oom_adj)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (oom_adj == OOM_ADJUST_MAX)</div><div class="line">        <span class="keyword">return</span> OOM_SCORE_ADJ_MAX;</div><div class="line">    <span class="keyword">else</span></div><div class="line">        <span class="keyword">return</span> (oom_adj * OOM_SCORE_ADJ_MAX) / -OOM_DISABLE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">lowmem_autodetect_oom_adj_values</span><span class="params">(<span class="keyword">void</span>)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">int</span> oom_adj;</div><div class="line">    <span class="keyword">int</span> oom_score_adj;</div><div class="line">    <span class="keyword">int</span> array_size = ARRAY_SIZE(lowmem_adj);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (lowmem_adj_size &lt; array_size)</div><div class="line">        array_size = lowmem_adj_size;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (array_size &lt;= <span class="number">0</span>)</div><div class="line">        <span class="keyword">return</span>;</div><div class="line"></div><div class="line">    oom_adj = lowmem_adj[array_size - <span class="number">1</span>];</div><div class="line">    <span class="keyword">if</span> (oom_adj &gt; OOM_ADJUST_MAX)</div><div class="line">        <span class="keyword">return</span>;</div><div class="line"></div><div class="line">    oom_score_adj = lowmem_oom_adj_to_oom_score_adj(oom_adj);</div><div class="line">    <span class="keyword">if</span> (oom_score_adj &lt;= OOM_ADJUST_MAX)</div><div class="line">        <span class="keyword">return</span>;</div><div class="line"></div><div class="line">    lowmem_print(<span class="number">1</span>, <span class="string">"lowmem_shrink: convert oom_adj to oom_score_adj:\n"</span>);</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; array_size; i++) &#123;</div><div class="line">        oom_adj = lowmem_adj[i];</div><div class="line">        oom_score_adj = lowmem_oom_adj_to_oom_score_adj(oom_adj);</div><div class="line">        lowmem_adj[i] = oom_score_adj;</div><div class="line">        lowmem_print(<span class="number">1</span>, <span class="string">"oom_adj %d =&gt; oom_score_adj %d\n"</span>,</div><div class="line">             oom_adj, oom_score_adj);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">lowmem_adj_array_set</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *val, <span class="keyword">const</span> <span class="keyword">struct</span> kernel_param *kp)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> ret;</div><div class="line"></div><div class="line">    ret = param_array_ops.<span class="built_in">set</span>(val, kp);</div><div class="line"></div><div class="line">    <span class="comment">/* HACK: Autodetect oom_adj values in lowmem_adj array */</span></div><div class="line">    lowmem_autodetect_oom_adj_values();</div><div class="line"></div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">lowmem_adj_array_get</span><span class="params">(<span class="keyword">char</span> *buffer, <span class="keyword">const</span> <span class="keyword">struct</span> kernel_param *kp)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> param_array_ops.get(buffer, kp);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">lowmem_adj_array_free</span><span class="params">(<span class="keyword">void</span> *arg)</span></span></div><div class="line">&#123;</div><div class="line">    param_array_ops.<span class="built_in">free</span>(arg);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">struct</span> kernel_param_ops lowmem_adj_array_ops = &#123;</div><div class="line">    .<span class="built_in">set</span> = lowmem_adj_array_set,</div><div class="line">    .get = lowmem_adj_array_get,</div><div class="line">    .<span class="built_in">free</span> = lowmem_adj_array_free,</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">struct</span> kparam_array __param_arr_adj = &#123;</div><div class="line">    .max = ARRAY_SIZE(lowmem_adj),</div><div class="line">    .num = &amp;lowmem_adj_size,</div><div class="line">    .ops = &amp;param_ops_int,</div><div class="line">    .elemsize = <span class="keyword">sizeof</span>(lowmem_adj[<span class="number">0</span>]),</div><div class="line">    .elem = lowmem_adj,</div><div class="line">&#125;;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"></div><div class="line">module_param_named(cost, lowmem_shrinker.seeks, <span class="keyword">int</span>, S_IRUGO | S_IWUSR);</div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES</span></div><div class="line">__module_param_call(MODULE_PARAM_PREFIX, adj,</div><div class="line">        &amp;lowmem_adj_array_ops,</div><div class="line">        .arr = &amp;__param_arr_adj,</div><div class="line">        S_IRUGO | S_IWUSR, <span class="number">-1</span>);</div><div class="line">__MODULE_PARM_TYPE(adj, <span class="string">"array of int"</span>);</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">module_param_array_named(adj, lowmem_adj, <span class="keyword">int</span>, &amp;lowmem_adj_size,</div><div class="line">         S_IRUGO | S_IWUSR);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">module_param_array_named(minfree, lowmem_minfree, uint, &amp;lowmem_minfree_size,</div><div class="line">         S_IRUGO | S_IWUSR);</div><div class="line">module_param_named(debug_level, lowmem_debug_level, uint, S_IRUGO | S_IWUSR);</div></pre></td></tr></table></figure></p>
+<p>lowmemorykiller 在此处总共导出了4个内核变量，其中两个是内核数组。我们可以在如下位置访问到这些内核变量：<code>/sys/module/lowmemorykiller/parameters</code>。在 init.rc 文件中会设置这些内核变量的属性(system/core/rootdir/init.rc)，以便于后面系统对这些值进行修改：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="number">281</span>    chown root <span class="keyword">system</span> /sys/module/lowmemorykiller/<span class="keyword">parameters</span>/adj</div><div class="line"><span class="number">282</span>    chmod <span class="number">0664</span> /sys/module/lowmemorykiller/parameters/adj</div><div class="line">283    chown root system /sys/module/lowmemorykiller/<span class="keyword">parameters</span>/minfree</div><div class="line"><span class="number">284</span>    chmod <span class="number">0664</span> /sys/module/lowmemorykiller/parameters/minfree</div></pre></td></tr></table></figure></p>
+<p>那通常情况下，比如在Nexus 7或类似的设备上，adj值又是在什麽时候设置的呢？设置的那些值依据是什麽呢，是一个经验值呢还是有什麽算法来算出那些值？</p>
+<p>搜索android4.4.3_r1.1的整个codebase，我们发现lowmemorykiller所导出的那些值只在ProcessList.updateOomLevels()方法中被修改了。接着我们就来具体看一下这个方法的实现(实现此方法的文件位置为frameworks/base/services/java/com/android/server/am/ProcessList.java)：<br><figure class="highlight processing"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div></pre></td><td class="code"><pre><div class="line">    <span class="comment">// OOM adjustments for processes in various states:</span></div><div class="line"></div><div class="line">    <span class="comment">// Adjustment used in certain places where we don't know it yet.</span></div><div class="line">    <span class="comment">// (Generally this is something that is going to be cached, but we</span></div><div class="line">    <span class="comment">// don't know the exact value in the cached range to assign yet.)</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> UNKNOWN_ADJ = <span class="number">16</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a process only hosting activities that are not visible,</span></div><div class="line">    <span class="comment">// so it can be killed without any disruption.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> CACHED_APP_MAX_ADJ = <span class="number">15</span>;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> CACHED_APP_MIN_ADJ = <span class="number">9</span>;</div><div class="line"></div><div class="line">    <span class="comment">// The B list of SERVICE_ADJ -- these are the old and decrepit</span></div><div class="line">    <span class="comment">// services that aren't as shiny and interesting as the ones in the A list.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> SERVICE_B_ADJ = <span class="number">8</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is the process of the previous application that the user was in.</span></div><div class="line">    <span class="comment">// This process is kept above other things, because it is very common to</span></div><div class="line">    <span class="comment">// switch back to the previous app.  This is important both for recent</span></div><div class="line">    <span class="comment">// task switch (toggling between the two top recent apps) as well as normal</span></div><div class="line">    <span class="comment">// UI flow such as clicking on a URI in the e-mail app to view in the browser,</span></div><div class="line">    <span class="comment">// and then pressing back to return to e-mail.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> PREVIOUS_APP_ADJ = <span class="number">7</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a process holding the home application -- we want to try</span></div><div class="line">    <span class="comment">// avoiding killing it, even if it would normally be in the background,</span></div><div class="line">    <span class="comment">// because the user interacts with it so much.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> HOME_APP_ADJ = <span class="number">6</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a process holding an application service -- killing it will not</span></div><div class="line">    <span class="comment">// have much of an impact as far as the user is concerned.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> SERVICE_ADJ = <span class="number">5</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a process with a heavy-weight application.  It is in the</span></div><div class="line">    <span class="comment">// background, but we want to try to avoid killing it.  Value set in</span></div><div class="line">    <span class="comment">// system/rootdir/init.rc on startup.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> HEAVY_WEIGHT_APP_ADJ = <span class="number">4</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a process currently hosting a backup operation.  Killing it</span></div><div class="line">    <span class="comment">// is not entirely fatal but is generally a bad idea.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> BACKUP_APP_ADJ = <span class="number">3</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a process only hosting components that are perceptible to the</span></div><div class="line">    <span class="comment">// user, and we really want to avoid killing them, but they are not</span></div><div class="line">    <span class="comment">// immediately visible. An example is background music playback.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> PERCEPTIBLE_APP_ADJ = <span class="number">2</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a process only hosting activities that are visible to the</span></div><div class="line">    <span class="comment">// user, so we'd prefer they don't disappear.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> VISIBLE_APP_ADJ = <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is the process running the current foreground app.  We'd really</span></div><div class="line">    <span class="comment">// rather not kill it!</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> FOREGROUND_APP_ADJ = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="comment">// This is a system persistent process, such as telephony.  Definitely</span></div><div class="line">    <span class="comment">// don't want to kill it, but doing so is not completely fatal.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> PERSISTENT_PROC_ADJ = <span class="number">-12</span>;</div><div class="line"></div><div class="line">    <span class="comment">// The system process runs at the default adjustment.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> SYSTEM_ADJ = <span class="number">-16</span>;</div><div class="line"></div><div class="line">    <span class="comment">// Special code for native processes that are not being managed by the system (so</span></div><div class="line">    <span class="comment">// don't have an oom adj assigned by the system).</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> NATIVE_ADJ = <span class="number">-17</span>;</div><div class="line"></div><div class="line">    <span class="comment">// Memory pages are 4K.</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> PAGE_SIZE = <span class="number">4</span>*<span class="number">1024</span>;</div><div class="line"></div><div class="line">    <span class="comment">// These are the various interesting memory levels that we will give to</span></div><div class="line">    <span class="comment">// the OOM killer.  Note that the OOM killer only supports 6 slots, so we</span></div><div class="line">    <span class="comment">// can't give it a different value for every possible kind of process.</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="built_in">int</span>[] mOomAdj = <span class="keyword">new</span> <span class="built_in">int</span>[] &#123;</div><div class="line">            FOREGROUND_APP_ADJ, VISIBLE_APP_ADJ, PERCEPTIBLE_APP_ADJ,</div><div class="line">            BACKUP_APP_ADJ, CACHED_APP_MIN_ADJ, CACHED_APP_MAX_ADJ</div><div class="line">    &#125;;</div><div class="line">    <span class="comment">// These are the low-end OOM level limits.  This is appropriate for an</span></div><div class="line">    <span class="comment">// HVGA or smaller phone with less than 512MB.  Values are in KB.</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span>[] mOomMinFreeLow = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;</div><div class="line">            <span class="number">8192</span>, <span class="number">12288</span>, <span class="number">16384</span>,</div><div class="line">            <span class="number">24576</span>, <span class="number">28672</span>, <span class="number">32768</span></div><div class="line">    &#125;;</div><div class="line">    <span class="comment">// These are the high-end OOM level limits.  This is appropriate for a</span></div><div class="line">    <span class="comment">// 1280x800 or larger screen with around 1GB RAM.  Values are in KB.</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span>[] mOomMinFreeHigh = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;</div><div class="line">            <span class="number">49152</span>, <span class="number">61440</span>, <span class="number">73728</span>,</div><div class="line">            <span class="number">86016</span>, <span class="number">98304</span>, <span class="number">122880</span></div><div class="line">    &#125;;</div><div class="line">    <span class="comment">// The actual OOM killer memory levels we are using.</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span>[] mOomMinFree = <span class="keyword">new</span> <span class="keyword">long</span>[mOomAdj.length];</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> mTotalMemMb;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">void</span> updateOomLevels(<span class="built_in">int</span> <span class="built_in">displayWidth</span>, <span class="built_in">int</span> <span class="built_in">displayHeight</span>, <span class="built_in">boolean</span> write) &#123;</div><div class="line">        <span class="comment">// Scale buckets from avail memory: at 300MB we use the lowest values to</span></div><div class="line">        <span class="comment">// 700MB or more for the top values.</span></div><div class="line">        <span class="built_in">float</span> scaleMem = ((<span class="built_in">float</span>)(mTotalMemMb<span class="number">-300</span>))/(<span class="number">700</span><span class="number">-300</span>);</div><div class="line"></div><div class="line">        <span class="comment">// Scale buckets from screen size.</span></div><div class="line">        <span class="built_in">int</span> minSize = <span class="number">480</span>*<span class="number">800</span>;  <span class="comment">//  384000</span></div><div class="line">        <span class="built_in">int</span> maxSize = <span class="number">1280</span>*<span class="number">800</span>; <span class="comment">// 1024000  230400 870400  .264</span></div><div class="line">        <span class="built_in">float</span> scaleDisp = ((<span class="built_in">float</span>)(<span class="built_in">displayWidth</span>*<span class="built_in">displayHeight</span>)-minSize)/(maxSize-minSize);</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</div><div class="line">            Slog.i(<span class="string">"XXXXXX"</span>, <span class="string">"scaleMem="</span> + scaleMem);</div><div class="line">            Slog.i(<span class="string">"XXXXXX"</span>, <span class="string">"scaleDisp="</span> + scaleDisp + <span class="string">" dw="</span> + <span class="built_in">displayWidth</span></div><div class="line">                    + <span class="string">" dh="</span> + <span class="built_in">displayHeight</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        StringBuilder adjString = <span class="keyword">new</span> StringBuilder();</div><div class="line">        StringBuilder memString = <span class="keyword">new</span> StringBuilder();</div><div class="line"></div><div class="line">        <span class="built_in">float</span> <span class="built_in">scale</span> = scaleMem &gt; scaleDisp ? scaleMem : scaleDisp;</div><div class="line">        <span class="keyword">if</span> (<span class="built_in">scale</span> &lt; <span class="number">0</span>) <span class="built_in">scale</span> = <span class="number">0</span>;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">scale</span> &gt; <span class="number">1</span>) <span class="built_in">scale</span> = <span class="number">1</span>;</div><div class="line">        <span class="built_in">int</span> minfree_adj = Resources.getSystem().getInteger(</div><div class="line">                com.android.internal.R.integer.config_lowMemoryKillerMinFreeKbytesAdjust);</div><div class="line">        <span class="built_in">int</span> minfree_abs = Resources.getSystem().getInteger(</div><div class="line">                com.android.internal.R.integer.config_lowMemoryKillerMinFreeKbytesAbsolute);</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</div><div class="line">            Slog.i(<span class="string">"XXXXXX"</span>, <span class="string">"minfree_adj="</span> + minfree_adj + <span class="string">" minfree_abs="</span> + minfree_abs);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;mOomAdj.length; i++) &#123;</div><div class="line">            <span class="keyword">long</span> low = mOomMinFreeLow[i];</div><div class="line">            <span class="keyword">long</span> high = mOomMinFreeHigh[i];</div><div class="line">            mOomMinFree[i] = (<span class="keyword">long</span>)(low + ((high-low)*<span class="built_in">scale</span>));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (minfree_abs &gt;= <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;mOomAdj.length; i++) &#123;</div><div class="line">                mOomMinFree[i] = (<span class="keyword">long</span>)((<span class="built_in">float</span>)minfree_abs * mOomMinFree[i] / mOomMinFree[mOomAdj.length - <span class="number">1</span>]);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (minfree_adj != <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;mOomAdj.length; i++) &#123;</div><div class="line">                mOomMinFree[i] += (<span class="keyword">long</span>)((<span class="built_in">float</span>)minfree_adj * mOomMinFree[i] / mOomMinFree[mOomAdj.length - <span class="number">1</span>]);</div><div class="line">                <span class="keyword">if</span> (mOomMinFree[i] &lt; <span class="number">0</span>) &#123;</div><div class="line">                    mOomMinFree[i] = <span class="number">0</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// The maximum size we will restore a process from cached to background, when under</span></div><div class="line">        <span class="comment">// memory duress, is 1/3 the size we have reserved for kernel caches and other overhead</span></div><div class="line">        <span class="comment">// before killing background processes.</span></div><div class="line">        mCachedRestoreLevel = (getMemLevel(ProcessList.CACHED_APP_MAX_ADJ)/<span class="number">1024</span>) / <span class="number">3</span>;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;mOomAdj.length; i++) &#123;</div><div class="line">            <span class="keyword">if</span> (i &gt; <span class="number">0</span>) &#123;</div><div class="line">                adjString.<span class="built_in">append</span>(<span class="string">','</span>);</div><div class="line">                memString.<span class="built_in">append</span>(<span class="string">','</span>);</div><div class="line">            &#125;</div><div class="line">            adjString.<span class="built_in">append</span>(mOomAdj[i]);</div><div class="line">            memString.<span class="built_in">append</span>((mOomMinFree[i]*<span class="number">1024</span>)/PAGE_SIZE);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// Ask the kernel to try to keep enough memory free to allocate 3 full</span></div><div class="line">        <span class="comment">// screen 32bpp buffers without entering direct reclaim.</span></div><div class="line">        <span class="built_in">int</span> reserve = <span class="built_in">displayWidth</span> * <span class="built_in">displayHeight</span> * <span class="number">4</span> * <span class="number">3</span> / <span class="number">1024</span>;</div><div class="line">        <span class="built_in">int</span> reserve_adj = Resources.getSystem().getInteger(com.android.internal.R.integer.config_extraFreeKbytesAdjust);</div><div class="line">        <span class="built_in">int</span> reserve_abs = Resources.getSystem().getInteger(com.android.internal.R.integer.config_extraFreeKbytesAbsolute);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (reserve_abs &gt;= <span class="number">0</span>) &#123;</div><div class="line">            reserve = reserve_abs;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (reserve_adj != <span class="number">0</span>) &#123;</div><div class="line">            reserve += reserve_adj;</div><div class="line">            <span class="keyword">if</span> (reserve &lt; <span class="number">0</span>) &#123;</div><div class="line">                reserve = <span class="number">0</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//Slog.i("XXXXXXX", "******************************* MINFREE: " + memString);</span></div><div class="line">        <span class="keyword">if</span> (write) &#123;</div><div class="line">            writeFile(<span class="string">"/sys/module/lowmemorykiller/parameters/adj"</span>, adjString.toString());</div><div class="line">            writeFile(<span class="string">"/sys/module/lowmemorykiller/parameters/minfree"</span>, memString.toString());</div><div class="line">            SystemProperties.<span class="built_in">set</span>(<span class="string">"sys.sysctl.extra_free_kbytes"</span>, Integer.toString(reserve));</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// GB: 2048,3072,4096,6144,7168,8192</span></div><div class="line">        <span class="comment">// HC: 8192,10240,12288,14336,16384,20480</span></div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>adj值是一组写死的固定的值，具体可以参考mOomAdj的定义。</p>
+<p>第123行至第127行，是第一轮计算各个adj所对应的minimum free memory阈值。计算各个值的算式为(long)(low + ((high-low)<em>scale))。low值和high值都是预定义的固定的经验值，比较关键的是那个scale值。在前面计算scale的部分，我们可以看到，它会先计算一个memory的scale值(为((float)(mTotalMemMb-300))/(700-300))，再计算一个屏幕分辨率的scale值(((float)(displayWidth</em>displayHeight)-minSize)/(maxSize-minSize))，首先取scale值为这两个scale值中较大的那一个。再然后是一些容错处理，将scale值限制在0～1之间，以防止设备内存小于300MB，同时设备分辨率小于480<em>800；或者，设备内存大于700MB，或设备分辨率大于1280</em>800的情况出现时，出现太不合理的阈值。</p>
+<p>第129行至133行，是第二轮计算各个adj所对应的minimum free memory阈值。计算各个值的算式为(long)((float)minfree_abs * mOomMinFree[i] / mOomMinFree[mOomAdj.length - 1])。此处给了各设备对low memory阈值进行定制的机会。各个设备可以在framework的config文件中定义config_lowMemoryKillerMinFreeKbytesAbsolute，以指定最大的adj所对应的free memory阈值，其他各个adj所对应的free memory阈值将依比例算出。</p>
+<p>第135行至第142行，是第三轮计算各个adj所对应的minimum free memory阈值。计算各个值的算式为mOomMinFree[i] += (long)((float)minfree_adj <em> mOomMinFree[i] / mOomMinFree[mOomAdj.length - 1])。此处是给特定设备微调low memory的阈值提供机会。不过我们仔细来看第二轮和第三轮的计算，这两轮计算似乎是可以合并为：(long)((float)(minfree_abs + minfree_adj)  </em> mOomMinFree[i] / mOomMinFree[mOomAdj.length - 1])。</p>
+<p>后面则是构造适合设置给lowmemorykiller导出参数的字符串，并最终将构造的这组参数设置进去。</p>
+<p>那这个ProcessList.updateOomLevels()方法又是在什麽时候会被调用到呢？是在ProcessList.applyDisplaySize()方法中：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">applyDisplaySize</span><span class="params">(WindowManagerService wm)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!mHaveDisplaySize) &#123;</div><div class="line">            Point p = <span class="keyword">new</span> Point();</div><div class="line">            wm.getBaseDisplaySize(Display.DEFAULT_DISPLAY, p);</div><div class="line">            <span class="keyword">if</span> (p.x != <span class="number">0</span> &amp;&amp; p.y != <span class="number">0</span>) &#123;</div><div class="line">                updateOomLevels(p.x, p.y, <span class="literal">true</span>);</div><div class="line">                mHaveDisplaySize = <span class="literal">true</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>在这个方法中，当能够从WMS中获取有效的屏幕分辨率时，会去更新oom levels，并且更新之后就不会再次去更新。我们再来追查ProcessList.applyDisplaySize()，是在ActivityManagerService.updateConfiguration()：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateConfiguration</span><span class="params">(Configuration values)</span> </span>&#123;</div><div class="line">        enforceCallingPermission(android.Manifest.permission.CHANGE_CONFIGURATION,</div><div class="line">                <span class="string">"updateConfiguration()"</span>);</div><div class="line"></div><div class="line">        <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (values == <span class="keyword">null</span> &amp;&amp; mWindowManager != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="comment">// sentinel: fetch the current configuration from the window manager</span></div><div class="line">                values = mWindowManager.computeNewConfiguration();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (mWindowManager != <span class="keyword">null</span>) &#123;</div><div class="line">                mProcessList.applyDisplaySize(mWindowManager);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> origId = Binder.clearCallingIdentity();</div><div class="line">            <span class="keyword">if</span> (values != <span class="keyword">null</span>) &#123;</div><div class="line">                Settings.System.clearConfiguration(values);</div><div class="line">            &#125;</div><div class="line">            updateConfigurationLocked(values, <span class="keyword">null</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</div><div class="line">            Binder.restoreCallingIdentity(origId);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>我们总结一下OOM levels的更新：时机是在系统启动后，第一个configuration change的消息到AMS的时候；adj值为一组固定的预定义的值；各个adj所对应的min free阈值则根据系统的内存大小和屏幕的分辨率计算得出，各个设备还可以通过framework的config config_lowMemoryKillerMinFreeKbytesAdjust和config_lowMemoryKillerMinFreeKbytesAbsolute来定制最终各个adj所对应的min free阈值。</p>
+<p>我们可以根据系统所吐出来的log看一下，事实是否如我们上面对code的分析那样。由某个设备抓到的系统内核吐出来的log，可以发现如下的这些行(只出现一次)：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">I/KERNEL  (  <span class="number">609</span>): [   <span class="number">14.064905</span>] <span class="string">lowmemorykiller:</span> <span class="string">lowmem_shrink:</span> convert oom_adj to <span class="string">oom_score_adj:</span></div><div class="line">I/KERNEL  (  <span class="number">609</span>): [   <span class="number">14.064932</span>] <span class="string">lowmemorykiller:</span> oom_adj <span class="number">0</span> =&gt; oom_score_adj <span class="number">0</span></div><div class="line">I/KERNEL  (  <span class="number">609</span>): [   <span class="number">14.064938</span>] <span class="string">lowmemorykiller:</span> oom_adj <span class="number">1</span> =&gt; oom_score_adj <span class="number">58</span></div><div class="line">I/KERNEL  (  <span class="number">609</span>): [   <span class="number">14.064942</span>] <span class="string">lowmemorykiller:</span> oom_adj <span class="number">2</span> =&gt; oom_score_adj <span class="number">117</span></div><div class="line">I/KERNEL  (  <span class="number">609</span>): [   <span class="number">14.064947</span>] <span class="string">lowmemorykiller:</span> oom_adj <span class="number">3</span> =&gt; oom_score_adj <span class="number">176</span></div><div class="line">I/KERNEL  (  <span class="number">609</span>): [   <span class="number">14.064951</span>] <span class="string">lowmemorykiller:</span> oom_adj <span class="number">9</span> =&gt; oom_score_adj <span class="number">529</span></div><div class="line">I/KERNEL  (  <span class="number">609</span>): [   <span class="number">14.064956</span>] <span class="string">lowmemorykiller:</span> oom_adj <span class="number">15</span> =&gt; oom_score_adj <span class="number">1000</span></div></pre></td></tr></table></figure></p>
+<p>由前面lowmemorykiller的code不难看出，这些log在lowmem_autodetect_oom_adj_values()函数中吐出，是在内核空间吐出来的。吐出这些log的进程的pid为609。我们再来看一下这个进程到底是何方神圣：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">desktop:~/develop_tools$ adb <span class="keyword">shell</span> <span class="keyword">ps</span> | <span class="keyword">grep</span> <span class="number">609</span></div><div class="line"><span class="built_in">system</span>    <span class="number">609</span>   <span class="number">235</span>   <span class="number">1031532</span> <span class="number">94240</span> ffffffff ffffe430 S system_server</div></pre></td></tr></table></figure></p>
+<p>谜底揭晓，是system_server。不难推测出来，这应当是在系统启动之后，AMS第一次接到configuration change的消息，去更新OOM level，lowmemorykiller的lowmem_autodetect_oom_adj_values()函数被调到，更新lowmemorykiller的lowmem_adj时而吐出来的。与我们前面对AMS code的分析基本一致。</p>
+<p>还需要我们厘清的问题，lowmemorykiller的lowmem_shrink具体在什麽时机会被执行？</p>
+<p>Done。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android开发/" rel="tag"># Android开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/09/18/UDT协议实现分析——数据发送控制/" rel="next" title="UDT协议实现分析——数据发送控制">
+                <i class="fa fa-chevron-left"></i> UDT协议实现分析——数据发送控制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/04/javacameraview_in_opencv4android/" rel="prev" title="OpenCV4Android JavaCameraView实现">
+                OpenCV4Android JavaCameraView实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#adj值的设置"><span class="nav-number">1.</span> <span class="nav-text">adj值的设置</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

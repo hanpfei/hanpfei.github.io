@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,图形图像,Python," />
+
+
+<meta name="description" content="PyCairo 教程的这个部分，我们绘制一些基本的元素。我们将使用填充和 stroke 操作，长划，线帽和线连接。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyCairo 中的基本绘图">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/01/12/pycairo03_basicdrawing/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="PyCairo 教程的这个部分，我们绘制一些基本的元素。我们将使用填充和 stroke 操作，长划，线帽和线连接。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-f62a0f03708d4020.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-243253cc4b6cb342.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-2de941a54c040745.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-4a7b54fd6eb09897.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-a88f470bf54056d2.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-3dd2d6df15ac9833.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-610e5f9b8892f031.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-dbc0e4bca3fd7d30.png">
+<meta property="og:updated_time" content="2018-02-09T07:59:38.813Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyCairo 中的基本绘图">
+<meta name="twitter:description" content="PyCairo 教程的这个部分，我们绘制一些基本的元素。我们将使用填充和 stroke 操作，长划，线帽和线连接。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-f62a0f03708d4020.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/01/12/pycairo03_basicdrawing/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>PyCairo 中的基本绘图 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo03_basicdrawing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PyCairo 中的基本绘图</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-12T15:16:49+08:00">2018-01-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo03_basicdrawing/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/01/12/pycairo03_basicdrawing/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/01/12/pycairo03_basicdrawing/" class="leancloud_visitors" data-flag-title="PyCairo 中的基本绘图">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>PyCairo 教程的这个部分，我们绘制一些基本的元素。我们将使用填充和 stroke 操作，长划，线帽和线连接。<br><a id="more"></a></p>
+<h1 id="直线"><a href="#直线" class="headerlink" title="直线"></a>直线</h1><p>直线是非常基本的向量对象。为了绘制一条直线，我们使用两个方法调用。起始点通过 <code>move_to()</code> 调用指定。线的终点通过 <code>line_to()</code> 调用指定。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="string">'''</span></div><div class="line">ZetCode PyCairo tutorial</div><div class="line"></div><div class="line">In this program, we connect all mouse</div><div class="line">clicks with a line.</div><div class="line"></div><div class="line">Author: Jan Bodnar</div><div class="line">Website: zetcode.com</div><div class="line">Last edited: April 2018</div><div class="line">'''</div><div class="line"><span class="keyword">import</span> gi</div><div class="line">gi.require_version(<span class="string">'Gtk'</span>, <span class="string">'3.0'</span>)</div><div class="line"><span class="keyword">from</span> gi.repository <span class="keyword">import</span> Gtk, Gdk</div><div class="line"><span class="keyword">import</span> cairo</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MouseButtons</span>:</span></div><div class="line">    LEFT_BUTTON = <span class="number">1</span></div><div class="line">    RIGHT_BUTTON = <span class="number">3</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(Gtk.Window)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super(Example, self).__init__()</div><div class="line"></div><div class="line">        self.init_ui()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_ui</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        self.darea = Gtk.DrawingArea()</div><div class="line">        self.darea.connect(<span class="string">"draw"</span>, self.on_draw)</div><div class="line">        self.darea.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)</div><div class="line">        self.add(self.darea)</div><div class="line"></div><div class="line">        self.coords = []</div><div class="line"></div><div class="line">        self.darea.connect(<span class="string">"button-press-event"</span>, self.on_button_press)</div><div class="line"></div><div class="line">        self.set_title(<span class="string">"Lines"</span>)</div><div class="line">        self.resize(<span class="number">300</span>, <span class="number">200</span>)</div><div class="line">        self.set_position(Gtk.WindowPosition.CENTER)</div><div class="line">        self.connect(<span class="string">"delete-event"</span>, Gtk.main_quit)</div><div class="line">        self.show_all()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">        cr.set_source_rgb(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</div><div class="line">        cr.set_line_width(<span class="number">0.5</span>)</div><div class="line"></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> self.coords:</div><div class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> self.coords:</div><div class="line">                cr.move_to(i[<span class="number">0</span>], i[<span class="number">1</span>])</div><div class="line">                cr.line_to(j[<span class="number">0</span>], j[<span class="number">1</span>])</div><div class="line">                cr.stroke()</div><div class="line"></div><div class="line">        <span class="keyword">del</span> self.coords[:]</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_button_press</span><span class="params">(self, w, e)</span>:</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> e.type == Gdk.EventType.BUTTON_PRESS \</div><div class="line">                <span class="keyword">and</span> e.button == MouseButtons.LEFT_BUTTON:</div><div class="line">            self.coords.append([e.x, e.y])</div><div class="line"></div><div class="line">        <span class="keyword">if</span> e.type == Gdk.EventType.BUTTON_PRESS \</div><div class="line">                <span class="keyword">and</span> e.button == MouseButtons.RIGHT_BUTTON:</div><div class="line">            self.darea.queue_draw()</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    app = Example()</div><div class="line">    Gtk.main()</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    main()</div></pre></td></tr></table></figure></p>
+<p>在我们的例子中，我们用鼠标左键在窗口中随机地点击。每次点击都被存进一个列表。当我们在窗口点击鼠标右键时，列表中每一个点都与其它所有点连接起来。此外，点击鼠标右键清空窗口。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MouseButtons</span>:</span></div><div class="line">    <span class="type">LEFT_BUTTON = 1</span></div><div class="line">    RIGHT_BUTTON = <span class="number">3</span></div></pre></td></tr></table></figure>
+<p>GTK 文档简单地声明了鼠标左键为数字 1，鼠标右键为数字 3。我们创建一个定制的类为鼠标的键提供标识。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self<span class="selector-class">.darea</span><span class="selector-class">.set_events</span>(Gdk<span class="selector-class">.EventMask</span><span class="selector-class">.BUTTON_PRESS_MASK</span>)</div></pre></td></tr></table></figure>
+<p>默认情况下某些事件是不启用的；鼠标点击事件即属其中。然而，我们需要通过 <code>set_event()</code> 方法启用鼠标点击事件。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self<span class="selector-class">.darea</span><span class="selector-class">.connect</span>(<span class="string">"button-press-event"</span>, self.on_button_press)</div></pre></td></tr></table></figure>
+<p>在这个例子中，我们对鼠标点击事件作出响应。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cr.set_source_rgb(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</div><div class="line">cr.set_line_width(<span class="number">0.5</span>)</div></pre></td></tr></table></figure>
+<p>直线将用黑色墨水和 0.5 点宽度来画。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> <span class="selector-tag">i</span> <span class="keyword">in</span> self<span class="selector-class">.coords</span>:</div><div class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> self<span class="selector-class">.coords</span>:</div><div class="line">        cr.move_to(<span class="selector-tag">i</span>[<span class="number">0</span>], <span class="selector-tag">i</span>[<span class="number">1</span>])</div><div class="line">        cr.line_to(j[<span class="number">0</span>], j[<span class="number">1</span>])</div><div class="line">        cr.stroke()</div></pre></td></tr></table></figure>
+<p>我们把列表中的每个点连接到其它的每个点。<code>stroke()</code> 调用绘制直线。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">del</span> self<span class="selector-class">.coords</span>[:]</div></pre></td></tr></table></figure>
+<p>最后，删除所有坐标。现在我们可以创建另一个对象了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_button_press</span><span class="params">(self, w, e)</span>:</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> e.type == Gdk.EventType.BUTTON_PRESS \</div><div class="line">            <span class="keyword">and</span> e.button == MouseButtons.LEFT_BUTTON:</div><div class="line">        self.coords.append([e.x, e.y])</div><div class="line">. . . . . .</div></pre></td></tr></table></figure>
+<p>如果按下鼠标左键，我们会把它的 x，y 坐标添加到 <code>self.coords</code> 列表中去。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> e<span class="selector-class">.type</span> == Gdk<span class="selector-class">.EventType</span><span class="selector-class">.BUTTON_PRESS</span> \</div><div class="line">        and e<span class="selector-class">.button</span> == MouseButtons<span class="selector-class">.RIGHT_BUTTON</span>:</div><div class="line">    self<span class="selector-class">.darea</span><span class="selector-class">.queue_draw</span>()</div></pre></td></tr></table></figure>
+<p>按下鼠标右键时，我们调用 <code>queue_draw()</code> 方法，它将重绘绘图区域。所有的点会连成线。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-f62a0f03708d4020.png" alt=""><br>图：直线</p>
+<h1 id="填充和stroke"><a href="#填充和stroke" class="headerlink" title="填充和stroke"></a>填充和stroke</h1><p>Stroke 操作绘制形状的轮廓，而填充操作则填充形状的内部。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="string">'''</span></div><div class="line">ZetCode PyCairo tutorial</div><div class="line"></div><div class="line">This code example draws a circle</div><div class="line">using the PyCairo library.</div><div class="line"></div><div class="line">Author: Jan Bodnar</div><div class="line">Website: zetcode.com</div><div class="line">Last edited: April 2018</div><div class="line">'''</div><div class="line"></div><div class="line"><span class="keyword">import</span> gi</div><div class="line">gi.require_version(<span class="string">'Gtk'</span>, <span class="string">'3.0'</span>)</div><div class="line"><span class="keyword">from</span> gi.repository <span class="keyword">import</span> Gtk</div><div class="line"><span class="keyword">import</span> cairo</div><div class="line"><span class="keyword">import</span> math</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(Gtk.Window)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super(Example, self).__init__()</div><div class="line"></div><div class="line">        self.init_ui()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_ui</span><span class="params">(self)</span>:</span></div><div class="line">        darea = Gtk.DrawingArea()</div><div class="line">        darea.connect(<span class="string">"draw"</span>, self.on_draw)</div><div class="line">        self.add(darea)</div><div class="line"></div><div class="line">        self.set_title(<span class="string">"Fill &amp; stroke"</span>)</div><div class="line">        self.resize(<span class="number">230</span>, <span class="number">150</span>)</div><div class="line">        self.set_position(Gtk.WindowPosition.CENTER)</div><div class="line">        self.connect(<span class="string">"delete-event"</span>, Gtk.main_quit)</div><div class="line">        self.show_all()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line">        cr.set_line_width(<span class="number">9</span>)</div><div class="line">        cr.set_source_rgb(<span class="number">0.7</span>, <span class="number">0.2</span>, <span class="number">0.0</span>)</div><div class="line"></div><div class="line">        w, h = self.get_size()</div><div class="line"></div><div class="line">        cr.translate(w / <span class="number">2</span>, h / <span class="number">2</span>)</div><div class="line">        cr.arc(<span class="number">0</span>, <span class="number">0</span>, <span class="number">50</span>, <span class="number">0</span>, <span class="number">2</span> * math.pi)</div><div class="line">        cr.stroke_preserve()</div><div class="line"></div><div class="line">        cr.set_source_rgb(<span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.6</span>)</div><div class="line">        cr.fill()</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    app = Example()</div><div class="line">    Gtk.main()</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    main()</div></pre></td></tr></table></figure></p>
+<p>在这个例子中，我们绘制一个圆圈，并用纯色填充它。</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> math</div></pre></td></tr></table></figure>
+<p><code>pi</code> 常量需要这个模块，后面在绘制圆圈时会用到 <code>pi</code>。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(9)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_source_rgb</span>(0<span class="selector-class">.7</span>, 0<span class="selector-class">.2</span>, 0<span class="selector-class">.0</span>)</div></pre></td></tr></table></figure>
+<p>我们用 <code>set_line_width()</code> 方法设置线的宽度。我们使用 <code>set_source_rgb()</code> 方法把 source 设置为某种暗红色。</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">w, h = <span class="keyword">self</span>.get_size()</div></pre></td></tr></table></figure>
+<p>此处我们获取窗口的宽度和高度。我们需要这些值来把圆圈放到窗口的中心。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cr.translate(w / <span class="number">2</span>, h / <span class="number">2</span>)</div><div class="line">cr.arc(<span class="number">0</span>, <span class="number">0</span>, <span class="number">50</span>, <span class="number">0</span>, <span class="number">2</span> * math.pi)</div><div class="line">cr.stroke_preserve()</div></pre></td></tr></table></figure>
+<p>通过 <code>translate()</code> 方法，我们把绘制原点移动到窗口的中心。我们想要我们的圆圈位于中心位置。<code>arc()</code> 方法向 Cairo 绘制上下文添加一个新的圆圈 path。最后，<code>stroke_preserve()</code> 方法绘制圆圈的轮廓。不像 <code>stroke()</code> 方法那样，它还会保留形状以用于后面的绘制。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_source_rgb</span>(0<span class="selector-class">.3</span>, 0<span class="selector-class">.4</span>, 0<span class="selector-class">.6</span>)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.fill</span>()</div></pre></td></tr></table></figure>
+<p>我们修改绘制的颜色，并使用 <code>fill()</code> 方法以一种新的颜色填充圆圈。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-243253cc4b6cb342.jpg" alt=""><br>图：填充 &amp; Stroke</p>
+<h1 id="笔破折号"><a href="#笔破折号" class="headerlink" title="笔破折号"></a>笔破折号</h1><p>每条直线都可以用不同的笔破折号来画。笔破折号定义了直线的风格。破折号模式通过 <code>set_dash()</code> 方法指定。模式通过一个以浮点值组成的破折号列表设置。它们设置破折号模式的 on 和 off 部分。<code>stroke()</code> 方法使用破折号创建一条直线。如果破折号的数量为 0，则禁用破折号。如果破折号的数量为 1，则假设是对称模式，其中 on 和 off 部分交替出现，它们的大小由破折号中的单独的值指定。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">def</span> <span class="selector-tag">on_draw</span>(<span class="selector-tag">self</span>, <span class="selector-tag">wid</span>, <span class="selector-tag">cr</span>):</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_source_rgba</span>(0, 0, 0, 1)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(2)</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_dash</span>(<span class="selector-attr">[4.0, 21.0, 2.0]</span>)</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(40, 30)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(250, 30)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_dash</span>(<span class="selector-attr">[14.0, 6.0]</span>)</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(40, 50)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(250, 50)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_dash</span>(<span class="selector-attr">[1.0]</span>)</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(40, 70)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(250, 70)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div></pre></td></tr></table></figure>
+<p>我们在三个不同的笔破折号中绘制三条直线。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cr.set_dash([<span class="number">4.0</span>, <span class="number">21.0</span>, <span class="number">2.0</span>])</div></pre></td></tr></table></figure>
+<p>我们定义了具有三个数字的模式。我们画 4 个点，21 个不画，画 2 个点，然后 4 个点不画，21 个点画，2 个点不画。这个模式如此交替，直到直线的终点。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_dash</span>(<span class="selector-attr">[14.0, 6.0]</span>)</div></pre></td></tr></table></figure>
+<p>在这个模式中，我们总是画 14 个点，6 个不画。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_dash</span>(<span class="selector-attr">[1.0]</span>)</div></pre></td></tr></table></figure>
+<p>我们在这儿创建一个对称的笔破折号模式，交替的一个点画，一个点不画。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-2de941a54c040745.jpg" alt=""><br>图：笔破折号</p>
+<h1 id="线帽"><a href="#线帽" class="headerlink" title="线帽"></a>线帽</h1><p>线帽是直线的终止点。</p>
+<ul>
+<li>cairo.LINE_CAP_BUTT</li>
+<li>cairo.LINE_CAP_ROUND</li>
+<li>cairo.LINE_CAP_SQUARE</li>
+</ul>
+<p>Cairo 中有三种不同的线帽风格。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-4a7b54fd6eb09897.png" alt=""><br>图：方形，圆形和 butt 盖</p>
+<p>相对于线帽为 <code>cairo.LINE_CAP_BUTT</code> 的直线，线帽为 <code>cairo.LINE_CAP_SQUARE</code> 的直线具有不同的大小。如果直线是 x 单元宽的，线帽为 <code>cairo.LINE_CAP_SQUARE</code> 的直线在大小上要大整整 x 个单元；开始处 x/2 个单元，结尾处 x/2 个单元。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">def</span> <span class="selector-tag">on_draw</span>(<span class="selector-tag">self</span>, <span class="selector-tag">wid</span>, <span class="selector-tag">cr</span>):</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.set_source_rgba</span>(0, 0, 0, 1)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(12)</div><div class="line">        </div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.set_line_cap</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_CAP_BUTT</span>)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(30, 50)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(150, 50)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line">        </div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.set_line_cap</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_CAP_ROUND</span>)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(30, 90)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(150, 90)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line">        </div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.set_line_cap</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_CAP_SQUARE</span>)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(30, 130)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(150, 130)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line">        </div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(1<span class="selector-class">.5</span>)</div><div class="line">        </div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(30, 35)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(30, 145)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line">        </div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(150, 35)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(150, 145)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line">        </div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(155, 35)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(155, 145)</div><div class="line">        <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div></pre></td></tr></table></figure></p>
+<p>这个例子画了三条具有不同线帽的直线。它还通过画出三条额外的垂直方向的细线生动地演示了直线的不同大小。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(12)</div></pre></td></tr></table></figure>
+<p>我们的直线 12 个单元宽。默认的直线宽度为 2。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_line_cap</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_CAP_ROUND</span>)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(30, 90)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(150, 90)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div></pre></td></tr></table></figure>
+<p>此处我们画了一条线帽为 <code>cairo.LINE_CAP_ROUND</code> 的水平直线。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(1<span class="selector-class">.5</span>)</div><div class="line"></div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(30, 35)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.line_to</span>(30, 145)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div></pre></td></tr></table></figure>
+<p>这是用于演示不同直线大小的三条垂直直线中的一条。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-a88f470bf54056d2.jpg" alt=""><br>图：线帽</p>
+<h1 id="线连接"><a href="#线连接" class="headerlink" title="线连接"></a>线连接</h1><p>直线可以用三种不同的风格来连接。</p>
+<ul>
+<li>cairo.LINE_JOIN_MITER</li>
+<li>cairo.LINE_JOIN_BEVEL</li>
+<li>cairo.LINE_JOIN_ROUND</li>
+</ul>
+<p><img src="https://www.wolfcstech.com/images/1315506-3dd2d6df15ac9833.jpg" alt=""><br>图：Bevel，Round，Miter 线连接</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">def</span> <span class="selector-tag">on_draw</span>(<span class="selector-tag">self</span>, <span class="selector-tag">wid</span>, <span class="selector-tag">cr</span>):</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(14)</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.rectangle</span>(30, 30, 100, 100)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_line_join</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_JOIN_MITER</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.rectangle</span>(160, 30, 100, 100)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_line_join</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_JOIN_BEVEL</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.rectangle</span>(100, 160, 100, 100)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_line_join</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_JOIN_ROUND</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div></pre></td></tr></table></figure>
+<p>在这个例子中，我们画了三个具有不同线连接的厚矩形。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_line_width</span>(14)</div></pre></td></tr></table></figure>
+<p>直线是 14 个单元宽的。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.rectangle</span>(30, 30, 100, 100)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_line_join</span>(<span class="selector-tag">cairo</span><span class="selector-class">.LINE_JOIN_MITER</span>)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.stroke</span>()</div></pre></td></tr></table></figure>
+<p>此处我们绘制了一个线连接风格为 <code>cairo.LINE_JOIN_MITER</code> 的矩形。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-610e5f9b8892f031.jpg" alt=""><br>图：线连接</p>
+<h1 id="贝塞尔曲线"><a href="#贝塞尔曲线" class="headerlink" title="贝塞尔曲线"></a>贝塞尔曲线</h1><p>贝塞尔曲线是由数学公式定义的曲线。</p>
+<p>PyCairo指南的这一章中，我们做了一些基本的绘图。绘制曲线的数学方法是 Pierre Bézier 在1960 年代晚期，在雷诺为了汽车制造而创建的。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="title">curve_to</span><span class="params">(x1, y1, x2, y2, x3, y3)</span></span></div></pre></td></tr></table></figure></p>
+<p><code>curve_to()</code> 方法向 path 添加一条三次贝塞尔样条曲线。参数是第一个控制点的 x 和 y 坐标，第二个控制点的 x 和 y 坐标，及曲线的终点的 x 和 y 坐标。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">    cr.move_to(<span class="number">20</span>, <span class="number">40</span>)</div><div class="line">    cr.curve_to(<span class="number">320</span>, <span class="number">200</span>, <span class="number">330</span>, <span class="number">110</span>, <span class="number">450</span>, <span class="number">40</span>)</div><div class="line">    cr.stroke()</div></pre></td></tr></table></figure>
+<p>在这个例子中，通过 <code>curve_to()</code> 方法绘制一条贝塞尔曲线。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-dbc0e4bca3fd7d30.png" alt=""><br>图：贝塞尔曲线</p>
+<p>PyCairo 教程的这一章，我们做了一些基本的绘制。</p>
+<p><a href="http://zetcode.com/gfx/pycairo/basicdrawing/" target="_blank" rel="external">原文</a></p>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/图形图像/" rel="tag"># 图形图像</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/12/pycairo02_backends/" rel="next" title="PyCairo 后端">
+                <i class="fa fa-chevron-left"></i> PyCairo 后端
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/12/pycairo04_shapesfills/" rel="prev" title="PyCairo 中的形状和填充">
+                PyCairo 中的形状和填充 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#直线"><span class="nav-number">1.</span> <span class="nav-text">直线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#填充和stroke"><span class="nav-number">2.</span> <span class="nav-text">填充和stroke</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#笔破折号"><span class="nav-number">3.</span> <span class="nav-text">笔破折号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线帽"><span class="nav-number">4.</span> <span class="nav-text">线帽</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线连接"><span class="nav-number">5.</span> <span class="nav-text">线连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#贝塞尔曲线"><span class="nav-number">6.</span> <span class="nav-text">贝塞尔曲线</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

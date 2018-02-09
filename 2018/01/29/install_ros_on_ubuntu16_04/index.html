@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="ROS," />
+
+
+<meta name="description" content="Robot Operating System (ROS) 是一个得到广泛应用机器人系统的软件框架，它包含了一系列的软件库和工具用于构建机器人应用。从驱动到最先进的算法，以及强大的开发者工具，ROS 包含了开发一个机器人项目所需要的所有东西。且它们都是开源的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu 16.04 安装 ROS">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/01/29/install_ros_on_ubuntu16_04/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Robot Operating System (ROS) 是一个得到广泛应用机器人系统的软件框架，它包含了一系列的软件库和工具用于构建机器人应用。从驱动到最先进的算法，以及强大的开发者工具，ROS 包含了开发一个机器人项目所需要的所有东西。且它们都是开源的。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-0fb6e90c3631d23c.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-82755b8ea03fe580.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-000c62e7a4440c3f.png">
+<meta property="og:updated_time" content="2018-02-02T08:16:08.565Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ubuntu 16.04 安装 ROS">
+<meta name="twitter:description" content="Robot Operating System (ROS) 是一个得到广泛应用机器人系统的软件框架，它包含了一系列的软件库和工具用于构建机器人应用。从驱动到最先进的算法，以及强大的开发者工具，ROS 包含了开发一个机器人项目所需要的所有东西。且它们都是开源的。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-0fb6e90c3631d23c.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/01/29/install_ros_on_ubuntu16_04/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Ubuntu 16.04 安装 ROS | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/29/install_ros_on_ubuntu16_04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Ubuntu 16.04 安装 ROS</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-29T21:05:49+08:00">2018-01-29</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/29/install_ros_on_ubuntu16_04/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/01/29/install_ros_on_ubuntu16_04/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/01/29/install_ros_on_ubuntu16_04/" class="leancloud_visitors" data-flag-title="Ubuntu 16.04 安装 ROS">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Robot Operating System (ROS) 是一个得到广泛应用机器人系统的软件框架，它包含了一系列的软件库和工具用于构建机器人应用。从驱动到最先进的算法，以及强大的开发者工具，ROS 包含了开发一个机器人项目所需要的所有东西。且它们都是开源的。<br><a id="more"></a><br>ROS 虽然名为机器人操作系统，但它与我们一般概念中的操作系统，如 Windows，Linux，iOS 和 Android 这些不同。Windows，Linux，iOS 和 Android 这些操作系统为我们管理计算机的物理硬件资源，如 CPU、内存、磁盘、网络及外设，提供如进程、线程和文件这样的抽象，并提供如读文件、写文件、创建进程、创建线程及启动线程这样的操作。ROS 所工作的层级并没有这么低，它基于一般概念中的操作系统来运行，官方推荐基于 Ubuntu Linux 运行，并在 Ubuntu Linux 操作系统提供的抽象和操作的基础之上，提供了更高层的抽象，如节点、服务、消息、主题等，以及更高层的操作，如主题的发布、主题的订阅、服务的查询与连接等。同时 ROS 还提供开发机器人项目所需的工具和功能库。</p>
+<p>ROS 发行版是一个版本标识的 ROS 包集合，这些与 Linux 发行版（如 Ubuntu）类似。ROS 发行版的目的是让开发者可以基于一个相对稳定的代码库来工作，直到他们可以平稳地向前演进。一旦发行版发布，官方就会限制对其的改动，而仅仅提供对于核心包的 bug fixes 和非破坏性的增强。</p>
+<p>当前（2018-01-28） ROS 系统已经发布了多个版本。ROS 最新的一些版本如下：</p>
+<table>
+<thead>
+<tr>
+<th>ROS 系统版本</th>
+<th>时间发布</th>
+<th>支持时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://wiki.ros.org/lunar/Installation" target="_blank" rel="external">ROS Lunar Loggerhead</a></td>
+<td>May 23rd, 2017</td>
+<td>May, 2019</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://wiki.ros.org/kinetic/Installation" target="_blank" rel="external">ROS Kinetic Kame</a></td>
+<td>May 23rd, 2016</td>
+<td>LTS，April, 2021 (Xenial EOL)</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://wiki.ros.org/jade/Installation" target="_blank" rel="external">ROS Jade Turtle</a></td>
+<td>May 23rd, 2015</td>
+<td>May, 2017</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://wiki.ros.org/indigo/Installation" target="_blank" rel="external">ROS Indigo Igloo</a></td>
+<td>July 22nd, 2014</td>
+<td>LTS，April, 2019(Trusty EOL)</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://wiki.ros.org/hydro/Installation" target="_blank" rel="external">ROS Hydro Medusa</a></td>
+<td>September 4th, 2013</td>
+<td>May, 2015</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>ROS 基本上保持每年一个新版本，每两年一个长期发行版的发布节奏。关于 ROS 版本发布的更多内容，如更多的发行版的介绍，发布的计划等，可以参考 ROS 官方站点的 <a href="http://wiki.ros.org/Distributions" target="_blank" rel="external">Distributions</a> 主页。</p>
+<p>目前官方推荐使用最近的一个长期支持版本，即 <a href="http://wiki.ros.org/kinetic/Installation" target="_blank" rel="external">ROS Kinetic Kame</a>，求新的同时兼顾稳定性无疑应该采用这一版本，如果想要尝试最新的功能特性则可以使用最新的发行版 <a href="http://wiki.ros.org/lunar/Installation" target="_blank" rel="external">ROS Lunar Loggerhead</a>。</p>
+<p>ROS 的安装步骤如下。</p>
+<h2 id="配置-Ubuntu-仓库"><a href="#配置-Ubuntu-仓库" class="headerlink" title="配置 Ubuntu 仓库"></a>配置 Ubuntu 仓库</h2><p>配置 Ubuntu 仓库，以允许 “restricted”，”universe” 和 “multiverse”。打开 新立得包管理器，如下图：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-0fb6e90c3631d23c.png" alt="新立得包管理器"></p>
+<p>选择 设置 -&gt; 软件库(R)，弹出如下对话框：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-82755b8ea03fe580.png" alt="Ubuntu 仓库"></p>
+<p>打开 “Ubuntu 软件” Tab 页，勾选 “restricted”，”universe” 和 “multiverse” 等选项，如上图所示。通常情况下，这些选项都是默认选中的，因此这一步一般不会遇到什么问题。</p>
+<h2 id="设置-sources-list"><a href="#设置-sources-list" class="headerlink" title="设置 sources.list"></a>设置 sources.list</h2><p>为 Ubuntu 的包管理器增加源，设置计算机接受来自于 packages.ros.org 的软件。<br><figure class="highlight sml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo sh -c <span class="symbol">'echo</span> <span class="string">"deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main"</span> &gt; /etc/apt/sources.<span class="built_in">list</span>.d/ros-latest.list'</div></pre></td></tr></table></figure></p>
+<p>这一步会根据 Ubuntu Linux 发行版本的不同，添加不同的源。Ubuntu 的版本通过 <code>lsb_release -sc</code> 获得。</p>
+<p>一旦添加了正确的软件库，操作系统就知道去哪里下载程序，并根据命令自动安装软件。</p>
+<h2 id="设置密钥"><a href="#设置密钥" class="headerlink" title="设置密钥"></a>设置密钥</h2><p>这一步是为了确认源代码是正确的，并且没有人在未经所有者授权的情况下，修改任何程序代码。通常情况下，当添加完软件库时，已经添加了软件库的密钥，并将其添加到操作系统的可信任列表中。</p>
+<p>设置密钥的命令如下：<br><figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment">sudo</span> <span class="comment">apt</span><span class="literal">-</span><span class="comment">key</span> <span class="comment">adv</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">keyserver</span> <span class="comment">hkp://ha</span><span class="string">.</span><span class="comment">pool</span><span class="string">.</span><span class="comment">sks</span><span class="literal">-</span><span class="comment">keyservers</span><span class="string">.</span><span class="comment">net:80</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">recv</span><span class="literal">-</span><span class="comment">key</span> <span class="comment">421C365BD9FF1F717815A3895523BAEEB01FA116</span></div></pre></td></tr></table></figure></p>
+<p>如果在连接密钥服务器时遇到了问题，可以尝试在上面的命令中用 <code>hkp://pgp.mit.edu:80</code> 或 <code>hkp://keyserver.ubuntu.com:80</code> 来替换。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>首先，需要确保包管理器的索引已经更新至最新：<br><figure class="highlight q"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="built_in">get</span> <span class="keyword">update</span></div></pre></td></tr></table></figure></p>
+<p>ROS 中有非常多不同的库和工具。官方提供了四种默认的配置来安装 ROS。也可以独立地安装 ROS 包。</p>
+<p><strong>桌面完整安装（推荐采用）</strong>：ROS，<a href="http://wiki.ros.org/rqt" target="_blank" rel="external">rqt</a>, <a href="http://wiki.ros.org/rviz" target="_blank" rel="external">rviz</a>，机器人通用库，2D/3D 仿真器，导航及 2D/3D 感知</p>
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div><div class="line">282</div><div class="line">283</div><div class="line">284</div><div class="line">285</div><div class="line">286</div><div class="line">287</div><div class="line">288</div><div class="line">289</div><div class="line">290</div><div class="line">291</div><div class="line">292</div><div class="line">293</div><div class="line">294</div><div class="line">295</div><div class="line">296</div><div class="line">297</div><div class="line">298</div><div class="line">299</div><div class="line">300</div><div class="line">301</div><div class="line">302</div><div class="line">303</div><div class="line">304</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get install ros-kinetic-desktop-full</div><div class="line">正在读取软件包列表... 完成</div><div class="line">正在分析软件包的依赖关系树       </div><div class="line">正在读取状态信息... 完成       </div><div class="line">. . . . . .</div><div class="line">将会同时安装下列软件：</div><div class="line">  binfmt-support blt cpp<span class="number">-5</span> docutils-common docutils-doc fltk1<span class="number">.3</span>-doc fluid fonts-lyx freeglut3 freeglut3-dev g++<span class="number">-5</span></div><div class="line">  g++<span class="number">-5</span>-multilib gazebo7 gazebo7-common gazebo7-plugin-base gcc<span class="number">-5</span> gcc<span class="number">-5</span>-base gcc<span class="number">-5</span>-base:i386 gcc<span class="number">-5</span>-multilib</div><div class="line">  gfortran gfortran<span class="number">-5</span> hddtemp hdf5-helpers lib32asan2 lib32atomic1 lib32cilkrts5 lib32gcc<span class="number">-5</span>-dev lib32gomp1</div><div class="line">  lib32itm1 lib32mpx0 lib32quadmath0 lib32stdc++<span class="number">-5</span>-dev lib32stdc++<span class="number">6</span> lib32ubsan0 libaec-dev libaec0 libapr1-dev</div><div class="line">  libaprutil1-dev libarmadillo6 libarpack2 libasan2 libassimp-dev libassimp3v5 libatomic1 libavcodec-dev</div><div class="line">  libavformat-dev libavutil-dev libblas-dev libboost-all-dev libboost-atomic-dev libboost-atomic1<span class="number">.58</span>-dev</div><div class="line">  libboost-atomic1<span class="number">.58</span><span class="number">.0</span> libboost-chrono-dev libboost-chrono1<span class="number">.58</span>-dev libboost-chrono1<span class="number">.58</span><span class="number">.0</span> libboost-context-dev</div><div class="line">  libboost-context1<span class="number">.58</span>-dev libboost-context1<span class="number">.58</span><span class="number">.0</span> libboost-coroutine-dev libboost-coroutine1<span class="number">.58</span>-dev</div><div class="line">  libboost-coroutine1<span class="number">.58</span><span class="number">.0</span> libboost-date-<span class="keyword">time</span>-dev libboost-date-time1<span class="number">.58</span>-dev libboost-dev libboost-exception-dev</div><div class="line">  libboost-exception1<span class="number">.58</span>-dev libboost-filesystem-dev libboost-filesystem1<span class="number">.58</span>-dev libboost-graph-dev</div><div class="line">  libboost-graph-parallel-dev libboost-graph-parallel1<span class="number">.58</span>-dev libboost-graph-parallel1<span class="number">.58</span><span class="number">.0</span></div><div class="line">  libboost-graph1<span class="number">.58</span>-dev libboost-graph1<span class="number">.58</span><span class="number">.0</span> libboost-iostreams-dev libboost-iostreams1<span class="number">.58</span>-dev</div><div class="line">  libboost-locale-dev libboost-locale1<span class="number">.58</span>-dev libboost-locale1<span class="number">.58</span><span class="number">.0</span> libboost-log-dev libboost-log1<span class="number">.58</span>-dev</div><div class="line">  libboost-log1<span class="number">.58</span><span class="number">.0</span> libboost-math-dev libboost-math1<span class="number">.58</span>-dev libboost-math1<span class="number">.58</span><span class="number">.0</span> libboost-mpi-dev</div><div class="line">  libboost-mpi-python-dev libboost-mpi-python1<span class="number">.58</span>-dev libboost-mpi-python1<span class="number">.58</span><span class="number">.0</span> libboost-mpi1<span class="number">.58</span>-dev</div><div class="line">  libboost-mpi1<span class="number">.58</span><span class="number">.0</span> libboost-program-options-dev libboost-program-options1<span class="number">.58</span>-dev libboost-python-dev</div><div class="line">  libboost-python1<span class="number">.58</span>-dev libboost-python1<span class="number">.58</span><span class="number">.0</span> libboost-random-dev libboost-random1<span class="number">.58</span>-dev libboost-random1<span class="number">.58</span><span class="number">.0</span></div><div class="line">  libboost-regex-dev libboost-regex1<span class="number">.58</span>-dev libboost-regex1<span class="number">.58</span><span class="number">.0</span> libboost-serialization-dev</div><div class="line">  libboost-serialization1<span class="number">.58</span>-dev libboost-serialization1<span class="number">.58</span><span class="number">.0</span> libboost-signals-dev libboost-signals1<span class="number">.58</span>-dev</div><div class="line">  libboost-signals1<span class="number">.58</span><span class="number">.0</span> libboost-system-dev libboost-system1<span class="number">.58</span>-dev libboost-test-dev libboost-test1<span class="number">.58</span>-dev</div><div class="line">  libboost-test1<span class="number">.58</span><span class="number">.0</span> libboost-thread-dev libboost-thread1<span class="number">.58</span>-dev libboost-timer-dev libboost-timer1<span class="number">.58</span>-dev</div><div class="line">  libboost-timer1<span class="number">.58</span><span class="number">.0</span> libboost-tools-dev libboost-wave-dev libboost-wave1<span class="number">.58</span>-dev libboost-wave1<span class="number">.58</span><span class="number">.0</span></div><div class="line">  libboost1<span class="number">.58</span>-dev libboost1<span class="number">.58</span>-tools-dev libbulletcollision2<span class="number">.83</span><span class="number">.6</span> libbulletdynamics2<span class="number">.83</span><span class="number">.6</span> libcc1<span class="number">-0</span> libcilkrts5</div><div class="line">  libcollada-dom2<span class="number">.4</span>-dp-dev libcollada-dom2<span class="number">.4</span>-dp0 libconsole-bridge-dev libconsole-bridge0<span class="number">.2</span>v5</div><div class="line">  libcurl4-openssl-dev libdap-dev libdap17v5 libdapclient6v5 libdapserver7v5 libeigen3-dev libepsilon1</div><div class="line">  libflann-dev libflann1<span class="number">.8</span> libfltk-cairo1<span class="number">.3</span> libfltk-forms1<span class="number">.3</span> libfltk-gl1<span class="number">.3</span> libfltk-images1<span class="number">.3</span> libfltk1<span class="number">.3</span></div><div class="line">  libfltk1<span class="number">.3</span>-dev libfreeimage-dev libfreeimage3 libfreexl1 libgazebo7 libgazebo7-dev libgcc<span class="number">-5</span>-dev libgdal-dev</div><div class="line">  libgdal1i libgeos<span class="number">-3.5</span><span class="number">.0</span> libgeos-c1v5 libgeos-dev libgfortran<span class="number">-5</span>-dev libgfortran3 libgif-dev libgl2ps-dev</div><div class="line">  libgl2ps0 libglade2<span class="number">-0</span> libgomp1 libgtest-dev libgts<span class="number">-0.7</span><span class="number">-5</span> libgts-bin libgts-dev libhdf4<span class="number">-0</span>-alt libhdf4-alt-dev</div><div class="line">  libhdf5<span class="number">-10</span> libhdf5-cpp<span class="number">-11</span> libhdf5-dev libhdf5-mpi-dev libhdf5-openmpi<span class="number">-10</span> libhdf5-openmpi-dev libhwloc-dev</div><div class="line">  libhwloc-plugins libhwloc5 libibverbs-dev libibverbs1 libignition-math2 libignition-math2-dev libinput-bin</div><div class="line">  libinput-dev libinput10 libitm1 libjasper-dev libjbig-dev libjs-jquery-ui libjsoncpp-dev libjxr0 libkmlbase1</div><div class="line">  libkmldom1 libkmlengine1 liblapack-dev libldap2-dev liblinearmath2<span class="number">.83</span><span class="number">.6</span> liblog4cxx-dev liblog4cxx10-dev</div><div class="line">  liblog4cxx10v5 liblsan0 liblz4-dev liblzma-dev libminizip1 libmpx0 libmysqlclient-dev libmysqlclient20</div><div class="line">  libnetcdf-c++<span class="number">4</span> libnetcdf-cxx-legacy-dev libnetcdf-dev libnetcdf11 libnuma-dev libodbc1 libogdi3<span class="number">.2</span> libogg-dev</div><div class="line">  libogre<span class="number">-1.9</span>-dev libogre<span class="number">-1.9</span><span class="number">.0</span>v5 libopenjp2<span class="number">-7</span> libopenmpi-dev libopenmpi1<span class="number">.10</span> libopenni-dev</div><div class="line">  libopenni-sensor-pointclouds0 libopenni0 libpcl-apps1<span class="number">.7</span> libpcl-common1<span class="number">.7</span> libpcl-dev libpcl-features1<span class="number">.7</span></div><div class="line">  libpcl-filters1<span class="number">.7</span> libpcl-io1<span class="number">.7</span> libpcl-kdtree1<span class="number">.7</span> libpcl-keypoints1<span class="number">.7</span> libpcl-octree1<span class="number">.7</span> libpcl-outofcore1<span class="number">.7</span></div><div class="line">  libpcl-people1<span class="number">.7</span> libpcl-recognition1<span class="number">.7</span> libpcl-registration1<span class="number">.7</span> libpcl-sample-consensus1<span class="number">.7</span> libpcl-search1<span class="number">.7</span></div><div class="line">  libpcl-segmentation1<span class="number">.7</span> libpcl-surface1<span class="number">.7</span> libpcl-tracking1<span class="number">.7</span> libpcl-visualization1<span class="number">.7</span> libpcl1<span class="number">.7</span> libpoco-dev</div><div class="line">  libpococrypto9v5 libpocodata9v5 libpocofoundation9v5 libpocomysql9v5 libpoconet9v5 libpoconetssl9v5</div><div class="line">  libpocoodbc9v5 libpocosqlite9v5 libpocoutil9v5 libpocoxml9v5 libpocozip9v5 libpq-dev libproj-dev libproj9</div><div class="line">  libprotoc-dev libprotoc9v5 libpyside-py3<span class="number">-2.0</span> libpyside2-dev libpyside2<span class="number">.0</span> libqhull-dev libqhull7 libqt4-dev</div><div class="line">  libqt4-dev-bin libqt4-help libqt4-opengl-dev libqt4-scripttools libqt4-test libqt5clucene5 libqt5concurrent5</div><div class="line">  libqt5core5a libqt5dbus5 libqt5designer5 libqt5designercomponents5 libqt5gui5 libqt5help5</div><div class="line">  libqt5multimediaquick-p5 libqt5network5 libqt5opengl5 libqt5opengl5-dev libqt5printsupport5</div><div class="line">  libqt5quickparticles5 libqt5scripttools5 libqt5sql5 libqt5svg5-dev libqt5test5 libqt5webkit5-dev libqt5widgets5</div><div class="line">  libqt5x11extras5-dev libqt5xml5 libqt5xmlpatterns5 libqt5xmlpatterns5-dev libqt5xmlpatterns5-private-dev</div><div class="line">  libqtwebkit-dev libquadmath0 libsdformat4 libsdformat4-dev libshiboken-py3<span class="number">-2.0</span> libshiboken2-dev libshiboken2<span class="number">.0</span></div><div class="line">  libsimbody-dev libsimbody3<span class="number">.5</span>v5 libspatialite-dev libspatialite7 libspnav0 libstdc++<span class="number">-5</span>-dev libstdc++<span class="number">6</span></div><div class="line">  libstdc++<span class="number">6</span>:i386 libsuperlu4 libswresample-dev libswscale-dev libsz2 libtar-dev libtar0 libtbb-dev libtheora-dev</div><div class="line">  libtiff5-dev libtiffxx5 libtinyxml-dev libtinyxml2<span class="number">-2</span>v5 libtinyxml2-dev libtsan0 libubsan0 liburdfdom-dev</div><div class="line">  liburdfdom-headers-dev liburdfdom-model-state0<span class="number">.4</span> liburdfdom-model0<span class="number">.4</span> liburdfdom-sensor0<span class="number">.4</span> liburdfdom-tools</div><div class="line">  liburdfdom-world0<span class="number">.4</span> liburiparser1 libusb<span class="number">-1.0</span><span class="number">-0</span>-dev libusb<span class="number">-1.0</span>-doc libuuid1 libvtk-java libvtk5<span class="number">.10</span> libvtk6-dev</div><div class="line">  libvtk6-java libvtk6-qt-dev libvtk6<span class="number">.2</span> libvtk6<span class="number">.2</span>-qt libwacom-bin libwacom-common libwacom2 libwebp-dev</div><div class="line">  libwebpdemux1 libx32asan2 libx32atomic1 libx32cilkrts5 libx32gcc<span class="number">-5</span>-dev libx32gomp1 libx32itm1 libx32quadmath0</div><div class="line">  libx32stdc++<span class="number">-5</span>-dev libx32stdc++<span class="number">6</span> libx32ubsan0 libxerces-c-dev libxerces-c3<span class="number">.1</span> libxmu-dev libxmu-headers</div><div class="line">  libyaml-cpp-dev libzzip<span class="number">-0</span><span class="number">-13</span> mpi-default-bin mpi-default-dev ocl-icd-libopencl1 odbcinst odbcinst1debian2</div><div class="line">  openmpi-bin openmpi-common openni-utils proj-bin proj-data pyqt5-dev python-attr python-autobahn</div><div class="line">  python-catkin-pkg python-catkin-pkg-modules python-chardet python-concurrent.futures python-cycler</div><div class="line">  python-defusedxml python-docutils python-ecdsa python-empy python-glade2 python-gobject<span class="number">-2</span> python-gtk2</div><div class="line">  python-imaging python-lz4 python-matplotlib python-matplotlib-data python-mpi4py python-msgpack</div><div class="line">  python-netifaces python-nose python-opengl python-pam python-paramiko python-pil python-pyasn1-modules</div><div class="line">  python-pydot python-pygments python-pyqt5 python-pyqt5.qtopengl python-pyqt5.qtsvg python-pyqt5.qtwebkit</div><div class="line">  python-pyside2 python-pyside2.qtconcurrent python-pyside2.qtcore python-pyside2.qtgui python-pyside2.qthelp</div><div class="line">  python-pyside2.qtnetwork python-pyside2.qtprintsupport python-pyside2.qtqml python-pyside2.qtquick</div><div class="line">  python-pyside2.qtquickwidgets python-pyside2.qtscript python-pyside2.qtsql python-pyside2.qtsvg</div><div class="line">  python-pyside2.qttest python-pyside2.qtuitools python-pyside2.qtwebkit python-pyside2.qtwebkitwidgets</div><div class="line">  python-pyside2.qtwidgets python-pyside2.qtx11extras python-pyside2.qtxml python-roman python-rosdep</div><div class="line">  python-rosdistro python-rosdistro-modules python-rospkg python-rospkg-modules python-serial</div><div class="line">  python-service-identity python-sip python-sip-dev python-snappy python-tk python-trollius python-twisted</div><div class="line">  python-twisted-bin python-twisted-core python-txaio python-vtk6 python-wxgtk3<span class="number">.0</span> python-wxtools python-wxversion</div><div class="line">  python-zope.interface qt4-linguist-tools qt4-qmake qt5-qmake qtbase5-dev qtbase5-dev-tools qtbase5-private-dev</div><div class="line">  qtdeclarative5-dev qtdeclarative5-private-dev qtmultimedia5-dev qtscript5-dev qtscript5-private-dev</div><div class="line">  qttools5-dev qttools5-dev-tools qttools5-private-dev ros-kinetic-actionlib ros-kinetic-actionlib-msgs</div><div class="line">  ros-kinetic-actionlib-tutorials ros-kinetic-angles ros-kinetic-bond ros-kinetic-bond-core ros-kinetic-bondcpp</div><div class="line">  ros-kinetic-bondpy ros-kinetic-camera-calibration ros-kinetic-camera-calibration-parsers</div><div class="line">  ros-kinetic-camera-<span class="keyword">info</span>-manager ros-kinetic-catkin ros-kinetic-class-loader ros-kinetic-cmake-modules</div><div class="line">  ros-kinetic-collada-parser ros-kinetic-collada-urdf ros-kinetic-common-msgs ros-kinetic-common-tutorials</div><div class="line">  ros-kinetic-compressed-depth-image-transport ros-kinetic-compressed-image-transport ros-kinetic-control-msgs</div><div class="line">  ros-kinetic-cpp-common ros-kinetic-cv-bridge ros-kinetic-depth-image-<span class="keyword">proc</span><span class="title"> ros-kinetic-desktop</span></div><div class="line"><span class="title">  ros-kinetic-diagnostic-aggregator</span> ros-kinetic-diagnostic-analysis<span class="title"> ros-kinetic-diagnostic-common-diagnostics</span></div><div class="line"><span class="title">  ros-kinetic-diagnostic-msgs</span> ros-kinetic-diagnostic-updater<span class="title"> ros-kinetic-diagnostics</span></div><div class="line"><span class="title">  ros-kinetic-dynamic-reconfigure</span> ros-kinetic-eigen-conversions<span class="title"> ros-kinetic-eigen-stl-containers</span></div><div class="line"><span class="title">  ros-kinetic-executive-smach</span> ros-kinetic-filters<span class="title"> ros-kinetic-gazebo-dev</span> ros-kinetic-gazebo-msgs<span class="title"></span></div><div class="line">  ros-kinetic-gazebo-plugins ros-kinetic-gazebo-ros<span class="title"> ros-kinetic-gazebo-ros-pkgs</span> ros-kinetic-gencpp<span class="title"></span></div><div class="line">  ros-kinetic-geneus ros-kinetic-genlisp<span class="title"> ros-kinetic-genmsg</span> ros-kinetic-gennodejs<span class="title"> ros-kinetic-genpy</span></div><div class="line"><span class="title">  ros-kinetic-geometric-shapes</span> ros-kinetic-geometry<span class="title"> ros-kinetic-geometry-msgs</span> ros-kinetic-geometry-tutorials<span class="title"></span></div><div class="line">  ros-kinetic-gl-dependency ros-kinetic-image-common<span class="title"> ros-kinetic-image-geometry</span> ros-kinetic-image-pipeline<span class="title"></span></div><div class="line">  ros-kinetic-image-proc ros-kinetic-image-publisher<span class="title"> ros-kinetic-image-rotate</span> ros-kinetic-image-transport<span class="title"></span></div><div class="line">  ros-kinetic-image-transport-plugins ros-kinetic-image-view<span class="title"> ros-kinetic-interactive-marker-tutorials</span></div><div class="line"><span class="title">  ros-kinetic-interactive-markers</span> ros-kinetic-joint-state-publisher<span class="title"> ros-kinetic-kdl-conversions</span></div><div class="line"><span class="title">  ros-kinetic-kdl-parser</span> ros-kinetic-laser-assembler<span class="title"> ros-kinetic-laser-filters</span> ros-kinetic-laser-geometry<span class="title"></span></div><div class="line">  ros-kinetic-laser-pipeline ros-kinetic-librviz-tutorial<span class="title"> ros-kinetic-map-msgs</span> ros-kinetic-media-export<span class="title"></span></div><div class="line">  ros-kinetic-message-filters ros-kinetic-message-generation<span class="title"> ros-kinetic-message-runtime</span> ros-kinetic-mk<span class="title"></span></div><div class="line">  ros-kinetic-nav-msgs ros-kinetic-nodelet<span class="title"> ros-kinetic-nodelet-core</span> ros-kinetic-nodelet-topic-tools<span class="title"></span></div><div class="line">  ros-kinetic-nodelet-tutorial-math ros-kinetic-octomap<span class="title"> ros-kinetic-opencv3</span> ros-kinetic-orocos-kdl<span class="title"></span></div><div class="line">  ros-kinetic-pcl-conversions ros-kinetic-pcl-msgs<span class="title"> ros-kinetic-pcl-ros</span> ros-kinetic-perception<span class="title"></span></div><div class="line">  ros-kinetic-perception-pcl ros-kinetic-pluginlib<span class="title"> ros-kinetic-pluginlib-tutorials</span> ros-kinetic-polled-camera<span class="title"></span></div><div class="line">  ros-kinetic-python-orocos-kdl ros-kinetic-python-qt-binding<span class="title"> ros-kinetic-qt-dotgraph</span> ros-kinetic-qt-gui<span class="title"></span></div><div class="line">  ros-kinetic-qt-gui-cpp ros-kinetic-qt-gui-py-common<span class="title"> ros-kinetic-qwt-dependency</span> ros-kinetic-random-numbers<span class="title"></span></div><div class="line">  ros-kinetic-resource-retriever ros-kinetic-robot<span class="title"> ros-kinetic-robot-model</span> ros-kinetic-robot-state-publisher<span class="title"></span></div><div class="line">  ros-kinetic-ros ros-kinetic-ros-base<span class="title"> ros-kinetic-ros-comm</span> ros-kinetic-ros-core<span class="title"> ros-kinetic-ros-tutorials</span></div><div class="line"><span class="title">  ros-kinetic-rosbag</span> ros-kinetic-rosbag-migration-rule<span class="title"> ros-kinetic-rosbag-storage</span> ros-kinetic-rosbash<span class="title"></span></div><div class="line">  ros-kinetic-rosboost-cfg ros-kinetic-rosbuild<span class="title"> ros-kinetic-rosclean</span> ros-kinetic-rosconsole<span class="title"></span></div><div class="line">  ros-kinetic-rosconsole-bridge ros-kinetic-roscpp<span class="title"> ros-kinetic-roscpp-core</span> ros-kinetic-roscpp-serialization<span class="title"></span></div><div class="line">  ros-kinetic-roscpp-traits ros-kinetic-roscpp-tutorials<span class="title"> ros-kinetic-roscreate</span> ros-kinetic-rosgraph<span class="title"></span></div><div class="line">  ros-kinetic-rosgraph-msgs ros-kinetic-roslang<span class="title"> ros-kinetic-roslaunch</span> ros-kinetic-roslib<span class="title"> ros-kinetic-roslint</span></div><div class="line"><span class="title">  ros-kinetic-roslisp</span> ros-kinetic-roslz4<span class="title"> ros-kinetic-rosmake</span> ros-kinetic-rosmaster<span class="title"> ros-kinetic-rosmsg</span></div><div class="line"><span class="title">  ros-kinetic-rosnode</span> ros-kinetic-rosout<span class="title"> ros-kinetic-rospack</span> ros-kinetic-rosparam<span class="title"> ros-kinetic-rospy</span></div><div class="line"><span class="title">  ros-kinetic-rospy-tutorials</span> ros-kinetic-rosservice<span class="title"> ros-kinetic-rostest</span> ros-kinetic-rostime<span class="title"> ros-kinetic-rostopic</span></div><div class="line"><span class="title">  ros-kinetic-rosunit</span> ros-kinetic-roswtf<span class="title"> ros-kinetic-rqt-action</span> ros-kinetic-rqt-bag<span class="title"> ros-kinetic-rqt-bag-plugins</span></div><div class="line"><span class="title">  ros-kinetic-rqt-common-plugins</span> ros-kinetic-rqt-console<span class="title"> ros-kinetic-rqt-dep</span> ros-kinetic-rqt-graph<span class="title"></span></div><div class="line">  ros-kinetic-rqt-gui ros-kinetic-rqt-gui-cpp<span class="title"> ros-kinetic-rqt-gui-py</span> ros-kinetic-rqt-image-view<span class="title"></span></div><div class="line">  ros-kinetic-rqt-launch ros-kinetic-rqt-logger-level<span class="title"> ros-kinetic-rqt-moveit</span> ros-kinetic-rqt-msg<span class="title"></span></div><div class="line">  ros-kinetic-rqt-nav-view ros-kinetic-rqt-plot<span class="title"> ros-kinetic-rqt-pose-view</span> ros-kinetic-rqt-publisher<span class="title"></span></div><div class="line">  ros-kinetic-rqt-py-common ros-kinetic-rqt-py-console<span class="title"> ros-kinetic-rqt-reconfigure</span></div><div class="line"><span class="title">  ros-kinetic-rqt-robot-dashboard</span> ros-kinetic-rqt-robot-monitor<span class="title"> ros-kinetic-rqt-robot-plugins</span></div><div class="line"><span class="title">  ros-kinetic-rqt-robot-steering</span> ros-kinetic-rqt-runtime-monitor<span class="title"> ros-kinetic-rqt-rviz</span></div><div class="line"><span class="title">  ros-kinetic-rqt-service-caller</span> ros-kinetic-rqt-shell<span class="title"> ros-kinetic-rqt-srv</span> ros-kinetic-rqt-tf-tree<span class="title"></span></div><div class="line">  ros-kinetic-rqt-top ros-kinetic-rqt-topic<span class="title"> ros-kinetic-rqt-web</span> ros-kinetic-rviz<span class="title"></span></div><div class="line">  ros-kinetic-rviz-plugin-tutorials ros-kinetic-rviz-python-tutorial<span class="title"> ros-kinetic-self-test</span></div><div class="line"><span class="title">  ros-kinetic-sensor-msgs</span> ros-kinetic-shape-msgs<span class="title"> ros-kinetic-simulators</span> ros-kinetic-smach<span class="title"> ros-kinetic-smach-msgs</span></div><div class="line"><span class="title">  ros-kinetic-smach-ros</span> ros-kinetic-smclib<span class="title"> ros-kinetic-stage</span> ros-kinetic-stage-ros<span class="title"> ros-kinetic-std-msgs</span></div><div class="line"><span class="title">  ros-kinetic-std-srvs</span> ros-kinetic-stereo-image-<span class="keyword">proc</span><span class="title"> ros-kinetic-stereo-msgs</span> ros-kinetic-tf<span class="title"></span></div><div class="line">  ros-kinetic-tf-conversions ros-kinetic-tf2<span class="title"> ros-kinetic-tf2-eigen</span> ros-kinetic-tf2-geometry-msgs<span class="title"></span></div><div class="line">  ros-kinetic-tf2-kdl ros-kinetic-tf2-msgs<span class="title"> ros-kinetic-tf2-py</span> ros-kinetic-tf2-ros<span class="title"></span></div><div class="line">  ros-kinetic-theora-image-transport ros-kinetic-topic-tools<span class="title"> ros-kinetic-trajectory-msgs</span></div><div class="line"><span class="title">  ros-kinetic-turtle-actionlib</span> ros-kinetic-turtle-tf<span class="title"> ros-kinetic-turtle-tf2</span> ros-kinetic-turtlesim<span class="title"></span></div><div class="line">  ros-kinetic-urdf ros-kinetic-urdf-parser-plugin<span class="title"> ros-kinetic-urdf-tutorial</span> ros-kinetic-vision-opencv<span class="title"></span></div><div class="line">  ros-kinetic-visualization-marker-tutorials ros-kinetic-visualization-msgs<span class="title"> ros-kinetic-visualization-tutorials</span></div><div class="line"><span class="title">  ros-kinetic-viz</span> ros-kinetic-webkit-dependency<span class="title"> ros-kinetic-xacro</span> ros-kinetic-xmlrpcpp<span class="title"> sbcl</span> sdformat-sdf<span class="title"></span></div><div class="line">  shiboken2 sip-dev<span class="title"> tango-icon-theme</span> tcl-dev<span class="title"> tcl-vtk6</span> tcl8.6-dev<span class="title"> tk-dev</span> tk8.6-blt2.5<span class="title"> tk8.6-dev</span> ttf-bitstream-vera<span class="title"></span></div><div class="line">  ttf-liberation unixodbc<span class="title"> unixodbc-dev</span> uuid-dev<span class="title"> vtk6</span></div><div class="line">建议安装：<span class="title"></span></div><div class="line">  blt-demo gcc-5-locales<span class="title"> gcc-5-doc</span> libstdc++6-5-dbg<span class="title"> lib32stdc++6-5-dbg</span> libx32stdc++6-5-dbg<span class="title"> gazebo7-doc</span></div><div class="line"><span class="title">  libgomp1-dbg</span> libitm1-dbg<span class="title"> libatomic1-dbg</span> libasan2-dbg<span class="title"> liblsan0-dbg</span> libtsan0-dbg<span class="title"> libubsan0-dbg</span> libcilkrts5-dbg<span class="title"></span></div><div class="line">  libmpx0-dbg libquadmath0-dbg<span class="title"> gfortran-multilib</span> gfortran-doc<span class="title"> gfortran-5-multilib</span> gfortran-5-doc<span class="title"> libgfortran3-dbg</span></div><div class="line"><span class="title">  ksensors</span> liblapack-doc-man<span class="title"> liblapack-doc</span> libboost-doc<span class="title"> libboost1.58-doc</span> gccxml<span class="title"> libmpfrc++-dev</span> libntl-dev<span class="title"> doxygen</span></div><div class="line"><span class="title">  default-jdk</span> fop<span class="title"> libbullet2-dev</span> libbullet2<span class="title"> libcurl4-doc</span> libcurl3-dbg<span class="title"> libidn11-dev</span> librtmp-dev<span class="title"> libeigen3-doc</span></div><div class="line"><span class="title">  libmrpt-dev</span> libgdal-doc<span class="title"> libgts-doc</span> libhdf4-doc<span class="title"> hdf4-tools</span> libnetcdf4<span class="title"> libhdf5-doc</span> libhwloc-contrib-plugins<span class="title"></span></div><div class="line">  libjs-jquery-ui-docs liblog4cxx-doc<span class="title"> liblzma-doc</span> netcdf-bin<span class="title"> netcdf-doc</span> libmyodbc<span class="title"> odbc-postgresql</span> tdsodbc<span class="title"></span></div><div class="line">  unixodbc-bin ogdi-bin<span class="title"> ogre-1.9-doc</span> libogre-1.9.0v5-dbg<span class="title"> opennmpi-doc</span> openni-doc<span class="title"> libpcl-doc</span> libpoco-doc<span class="title"></span></div><div class="line">  libpococrypto9v5-dbg libpocodata9v5-dbg<span class="title"> libpocofoundation9v5-dbg</span> libpocomysql9v5-dbg<span class="title"> libpoconet9v5-dbg</span></div><div class="line"><span class="title">  libpoconetssl9v5-dbg</span> libpocoodbc9v5-dbg<span class="title"> libpocosqlite9v5-dbg</span> libpocoutil9v5-dbg<span class="title"> libpocoxml9v5-dbg</span></div><div class="line"><span class="title">  libpocozip9v5-dbg</span> postgresql-doc-9.5<span class="title"> firebird-dev</span> libsqlite0-dev<span class="title"> qt4-dev-tools</span> qt4-doc<span class="title"> libqt5libqgtk2</span></div><div class="line"><span class="title">  qt5-image-formats-plugins</span> spacenavd<span class="title"> libstdc++-5-doc</span> tbb-examples<span class="title"> libtbb-doc</span> libtinyxml-doc<span class="title"> java-virtual-machine</span></div><div class="line"><span class="title">  libvtk5-dev</span> vtk-doc<span class="title"> vtk-examples</span> vtk6-doc<span class="title"> vtk6-examples</span> libxerces-c-doc<span class="title"> opencl-icd</span> openmpi-checkpoint<span class="title"></span></div><div class="line">  texlive-latex-recommended texlive-latex-base<span class="title"> texlive-lang-french</span> fonts-linuxlibertine |<span class="title"> ttf-linux-libertine</span></div><div class="line"><span class="title">  python-gtk2-doc</span> python-gobject-2-dbg<span class="title"> dvipng</span> inkscape<span class="title"> ipython</span> python-cairocffi<span class="title"> python-configobj</span></div><div class="line"><span class="title">  python-excelerator</span> python-gobject<span class="title"> python-matplotlib-doc</span> python-qt4<span class="title"> python-scipy</span> python-tornado<span class="title"> python-traits</span></div><div class="line"><span class="title">  texlive-extra-utils</span> texlive-latex-extra<span class="title"> ttf-staypuft</span> python-coverage<span class="title"> python-nose-doc</span> libgle3<span class="title"> python-pam-dbg</span></div><div class="line"><span class="title">  python-pil-doc</span> python-pil-dbg<span class="title"> python-pyqt5-dbg</span> python-sip-doc<span class="title"> tix</span> python-tk-dbg<span class="title"> python-twisted-bin-dbg</span></div><div class="line"><span class="title">  python-qt3</span> python-txaio-doc<span class="title"> mayavi2</span> sbcl-doc<span class="title"> sbcl-source</span> slime<span class="title"> gnome-icon-theme</span> kdelibs-data<span class="title"> tcl-doc</span> tcl8.6-doc<span class="title"></span></div><div class="line">  tk-doc tk8.6-doc</div><div class="line">下列软件包将被【卸载】：<span class="title"></span></div><div class="line">  libcurl4-gnutls-dev</div><div class="line">下列【新】软件包将被安装：<span class="title"></span></div><div class="line">  binfmt-support blt<span class="title"> docutils-common</span> docutils-doc<span class="title"> fltk1.3-doc</span> fluid<span class="title"> fonts-lyx</span> freeglut3<span class="title"> freeglut3-dev</span> gazebo7<span class="title"></span></div><div class="line">  gazebo7-common gazebo7-plugin-base<span class="title"> gfortran</span> gfortran-5<span class="title"> hddtemp</span> hdf5-helpers<span class="title"> libaec-dev</span> libaec0<span class="title"> libapr1-dev</span></div><div class="line"><span class="title">  libaprutil1-dev</span> libarmadillo6<span class="title"> libarpack2</span> libassimp-dev<span class="title"> libassimp3v5</span> libavcodec-dev<span class="title"> libavformat-dev</span></div><div class="line"><span class="title">  libavutil-dev</span> libblas-dev<span class="title"> libboost-all-dev</span> libboost-atomic-dev<span class="title"> libboost-atomic1.58-dev</span> libboost-atomic1.58.0<span class="title"></span></div><div class="line">  libboost-chrono-dev libboost-chrono1.58-dev<span class="title"> libboost-chrono1.58.0</span> libboost-context-dev<span class="title"> libboost-context1.58-dev</span></div><div class="line"><span class="title">  libboost-context1.58.0</span> libboost-coroutine-dev<span class="title"> libboost-coroutine1.58-dev</span> libboost-coroutine1.58.0<span class="title"></span></div><div class="line">  libboost-date-time-dev libboost-date-time1.58-dev<span class="title"> libboost-dev</span> libboost-exception-dev<span class="title"></span></div><div class="line">  libboost-exception1.58-dev libboost-filesystem-dev<span class="title"> libboost-filesystem1.58-dev</span> libboost-graph-dev<span class="title"></span></div><div class="line">  libboost-graph-parallel-dev libboost-graph-parallel1.58-dev<span class="title"> libboost-graph-parallel1.58.0</span></div><div class="line"><span class="title">  libboost-graph1.58-dev</span> libboost-graph1.58.0<span class="title"> libboost-iostreams-dev</span> libboost-iostreams1.58-dev<span class="title"></span></div><div class="line">  libboost-locale-dev libboost-locale1.58-dev<span class="title"> libboost-locale1.58.0</span> libboost-log-dev<span class="title"> libboost-log1.58-dev</span></div><div class="line"><span class="title">  libboost-log1.58.0</span> libboost-math-dev<span class="title"> libboost-math1.58-dev</span> libboost-math1.58.0<span class="title"> libboost-mpi-dev</span></div><div class="line"><span class="title">  libboost-mpi-python-dev</span> libboost-mpi-python1.58-dev<span class="title"> libboost-mpi-python1.58.0</span> libboost-mpi1.58-dev<span class="title"></span></div><div class="line">  libboost-mpi1.58.0 libboost-program-options-dev<span class="title"> libboost-program-options1.58-dev</span> libboost-python-dev<span class="title"></span></div><div class="line">  libboost-python1.58-dev libboost-python1.58.0<span class="title"> libboost-random-dev</span> libboost-random1.58-dev<span class="title"> libboost-random1.58.0</span></div><div class="line"><span class="title">  libboost-regex-dev</span> libboost-regex1.58-dev<span class="title"> libboost-regex1.58.0</span> libboost-serialization-dev<span class="title"></span></div><div class="line">  libboost-serialization1.58-dev libboost-serialization1.58.0<span class="title"> libboost-signals-dev</span> libboost-signals1.58-dev<span class="title"></span></div><div class="line">  libboost-signals1.58.0 libboost-system-dev<span class="title"> libboost-system1.58-dev</span> libboost-test-dev<span class="title"> libboost-test1.58-dev</span></div><div class="line"><span class="title">  libboost-test1.58.0</span> libboost-thread-dev<span class="title"> libboost-thread1.58-dev</span> libboost-timer-dev<span class="title"> libboost-timer1.58-dev</span></div><div class="line"><span class="title">  libboost-timer1.58.0</span> libboost-tools-dev<span class="title"> libboost-wave-dev</span> libboost-wave1.58-dev<span class="title"> libboost-wave1.58.0</span></div><div class="line"><span class="title">  libboost1.58-dev</span> libboost1.58-tools-dev<span class="title"> libbulletcollision2.83.6</span> libbulletdynamics2.83.6<span class="title"></span></div><div class="line">  libcollada-dom2.4-dp-dev libcollada-dom2.4-dp0<span class="title"> libconsole-bridge-dev</span> libconsole-bridge0.2v5<span class="title"></span></div><div class="line">  libcurl4-openssl-dev libdap-dev<span class="title"> libdap17v5</span> libdapclient6v5<span class="title"> libdapserver7v5</span> libeigen3-dev<span class="title"> libepsilon1</span></div><div class="line"><span class="title">  libflann-dev</span> libflann1.8<span class="title"> libfltk-cairo1.3</span> libfltk-forms1.3<span class="title"> libfltk-gl1.3</span> libfltk-images1.3<span class="title"> libfltk1.3</span></div><div class="line"><span class="title">  libfltk1.3-dev</span> libfreeimage-dev<span class="title"> libfreeimage3</span> libfreexl1<span class="title"> libgazebo7</span> libgazebo7-dev<span class="title"> libgdal-dev</span> libgdal1i<span class="title"></span></div><div class="line">  libgeos-3.5.0 libgeos-c1v5<span class="title"> libgeos-dev</span> libgfortran-5-dev<span class="title"> libgif-dev</span> libgl2ps-dev<span class="title"> libgl2ps0</span> libglade2-0<span class="title"></span></div><div class="line">  libgtest-dev libgts-0.7-5<span class="title"> libgts-bin</span> libgts-dev<span class="title"> libhdf4-0-alt</span> libhdf4-alt-dev<span class="title"> libhdf5-10</span> libhdf5-cpp-11<span class="title"></span></div><div class="line">  libhdf5-dev libhdf5-mpi-dev<span class="title"> libhdf5-openmpi-10</span> libhdf5-openmpi-dev<span class="title"> libhwloc-dev</span> libhwloc-plugins<span class="title"> libhwloc5</span></div><div class="line"><span class="title">  libibverbs-dev</span> libibverbs1<span class="title"> libignition-math2</span> libignition-math2-dev<span class="title"> libinput-bin</span> libinput-dev<span class="title"> libjasper-dev</span></div><div class="line"><span class="title">  libjbig-dev</span> libjs-jquery-ui<span class="title"> libjsoncpp-dev</span> libjxr0<span class="title"> libkmlbase1</span> libkmldom1<span class="title"> libkmlengine1</span> liblapack-dev<span class="title"></span></div><div class="line">  libldap2-dev liblinearmath2.83.6<span class="title"> liblog4cxx-dev</span> liblog4cxx10-dev<span class="title"> liblog4cxx10v5</span> liblz4-dev<span class="title"> liblzma-dev</span></div><div class="line"><span class="title">  libminizip1</span> libmysqlclient-dev<span class="title"> libmysqlclient20</span> libnetcdf-c++4<span class="title"> libnetcdf-cxx-legacy-dev</span> libnetcdf-dev<span class="title"></span></div><div class="line">  libnetcdf11 libnuma-dev<span class="title"> libodbc1</span> libogdi3.2<span class="title"> libogg-dev</span> libogre-1.9-dev<span class="title"> libogre-1.9.0v5</span> libopenjp2-7<span class="title"></span></div><div class="line">  libopenmpi-dev libopenmpi1.10<span class="title"> libopenni-dev</span> libopenni-sensor-pointclouds0<span class="title"> libopenni0</span> libpcl-apps1.7<span class="title"></span></div><div class="line">  libpcl-common1.7 libpcl-dev<span class="title"> libpcl-features1.7</span> libpcl-filters1.7<span class="title"> libpcl-io1.7</span> libpcl-kdtree1.7<span class="title"></span></div><div class="line">  libpcl-keypoints1.7 libpcl-octree1.7<span class="title"> libpcl-outofcore1.7</span> libpcl-people1.7<span class="title"> libpcl-recognition1.7</span></div><div class="line"><span class="title">  libpcl-registration1.7</span> libpcl-sample-consensus1.7<span class="title"> libpcl-search1.7</span> libpcl-segmentation1.7<span class="title"> libpcl-surface1.7</span></div><div class="line"><span class="title">  libpcl-tracking1.7</span> libpcl-visualization1.7<span class="title"> libpcl1.7</span> libpoco-dev<span class="title"> libpococrypto9v5</span> libpocodata9v5<span class="title"></span></div><div class="line">  libpocofoundation9v5 libpocomysql9v5<span class="title"> libpoconet9v5</span> libpoconetssl9v5<span class="title"> libpocoodbc9v5</span> libpocosqlite9v5<span class="title"></span></div><div class="line">  libpocoutil9v5 libpocoxml9v5<span class="title"> libpocozip9v5</span> libpq-dev<span class="title"> libproj-dev</span> libproj9<span class="title"> libprotoc-dev</span> libprotoc9v5<span class="title"></span></div><div class="line">  libpyside-py3-2.0 libpyside2-dev<span class="title"> libpyside2.0</span> libqhull-dev<span class="title"> libqhull7</span> libqt4-dev<span class="title"> libqt4-dev-bin</span> libqt4-help<span class="title"></span></div><div class="line">  libqt4-opengl-dev libqt4-scripttools<span class="title"> libqt4-test</span> libqt5clucene5<span class="title"> libqt5concurrent5</span> libqt5designer5<span class="title"></span></div><div class="line">  libqt5designercomponents5 libqt5help5<span class="title"> libqt5multimediaquick-p5</span> libqt5opengl5-dev<span class="title"> libqt5quickparticles5</span></div><div class="line"><span class="title">  libqt5scripttools5</span> libqt5svg5-dev<span class="title"> libqt5webkit5-dev</span> libqt5x11extras5-dev<span class="title"> libqt5xmlpatterns5</span></div><div class="line"><span class="title">  libqt5xmlpatterns5-dev</span> libqt5xmlpatterns5-private-dev<span class="title"> libqtwebkit-dev</span> libsdformat4<span class="title"> libsdformat4-dev</span></div><div class="line"><span class="title">  libshiboken-py3-2.0</span> libshiboken2-dev<span class="title"> libshiboken2.0</span> libsimbody-dev<span class="title"> libsimbody3.5v5</span> libspatialite-dev<span class="title"></span></div><div class="line">  libspatialite7 libspnav0<span class="title"> libsuperlu4</span> libswresample-dev<span class="title"> libswscale-dev</span> libsz2<span class="title"> libtar-dev</span> libtar0<span class="title"> libtbb-dev</span></div><div class="line"><span class="title">  libtheora-dev</span> libtiff5-dev<span class="title"> libtiffxx5</span> libtinyxml-dev<span class="title"> libtinyxml2-2v5</span> libtinyxml2-dev<span class="title"> liburdfdom-dev</span></div><div class="line"><span class="title">  liburdfdom-headers-dev</span> liburdfdom-model-state0.4<span class="title"> liburdfdom-model0.4</span> liburdfdom-sensor0.4<span class="title"> liburdfdom-tools</span></div><div class="line"><span class="title">  liburdfdom-world0.4</span> liburiparser1<span class="title"> libusb-1.0-0-dev</span> libusb-1.0-doc<span class="title"> libvtk-java</span> libvtk5.10<span class="title"> libvtk6-dev</span></div><div class="line"><span class="title">  libvtk6-java</span> libvtk6-qt-dev<span class="title"> libvtk6.2</span> libvtk6.2-qt<span class="title"> libwebp-dev</span> libwebpdemux1<span class="title"> libxerces-c-dev</span> libxerces-c3.1<span class="title"></span></div><div class="line">  libxmu-dev libxmu-headers<span class="title"> libyaml-cpp-dev</span> libzzip-0-13<span class="title"> mpi-default-bin</span> mpi-default-dev<span class="title"> ocl-icd-libopencl1</span></div><div class="line"><span class="title">  odbcinst</span> odbcinst1debian2<span class="title"> openmpi-bin</span> openmpi-common<span class="title"> openni-utils</span> proj-bin<span class="title"> proj-data</span> pyqt5-dev<span class="title"> python-attr</span></div><div class="line"><span class="title">  python-autobahn</span> python-catkin-pkg<span class="title"> python-catkin-pkg-modules</span> python-chardet<span class="title"> python-concurrent.futures</span></div><div class="line"><span class="title">  python-cycler</span> python-defusedxml<span class="title"> python-docutils</span> python-ecdsa<span class="title"> python-empy</span> python-glade2<span class="title"> python-gobject-2</span></div><div class="line"><span class="title">  python-gtk2</span> python-imaging<span class="title"> python-lz4</span> python-matplotlib<span class="title"> python-matplotlib-data</span> python-mpi4py<span class="title"> python-msgpack</span></div><div class="line"><span class="title">  python-netifaces</span> python-nose<span class="title"> python-opengl</span> python-pam<span class="title"> python-paramiko</span> python-pil<span class="title"> python-pyasn1-modules</span></div><div class="line"><span class="title">  python-pydot</span> python-pygments<span class="title"> python-pyqt5</span> python-pyqt5.qtopengl<span class="title"> python-pyqt5.qtsvg</span> python-pyqt5.qtwebkit<span class="title"></span></div><div class="line">  python-pyside2 python-pyside2.qtconcurrent<span class="title"> python-pyside2.qtcore</span> python-pyside2.qtgui<span class="title"> python-pyside2.qthelp</span></div><div class="line"><span class="title">  python-pyside2.qtnetwork</span> python-pyside2.qtprintsupport<span class="title"> python-pyside2.qtqml</span> python-pyside2.qtquick<span class="title"></span></div><div class="line">  python-pyside2.qtquickwidgets python-pyside2.qtscript<span class="title"> python-pyside2.qtsql</span> python-pyside2.qtsvg<span class="title"></span></div><div class="line">  python-pyside2.qttest python-pyside2.qtuitools<span class="title"> python-pyside2.qtwebkit</span> python-pyside2.qtwebkitwidgets<span class="title"></span></div><div class="line">  python-pyside2.qtwidgets python-pyside2.qtx11extras<span class="title"> python-pyside2.qtxml</span> python-roman<span class="title"> python-rosdep</span></div><div class="line"><span class="title">  python-rosdistro</span> python-rosdistro-modules<span class="title"> python-rospkg</span> python-rospkg-modules<span class="title"> python-serial</span></div><div class="line"><span class="title">  python-service-identity</span> python-sip<span class="title"> python-sip-dev</span> python-snappy<span class="title"> python-tk</span> python-trollius<span class="title"> python-twisted</span></div><div class="line"><span class="title">  python-twisted-bin</span> python-twisted-core<span class="title"> python-txaio</span> python-vtk6<span class="title"> python-wxgtk3.0</span> python-wxtools<span class="title"> python-wxversion</span></div><div class="line"><span class="title">  python-zope.interface</span> qt4-linguist-tools<span class="title"> qt4-qmake</span> qt5-qmake<span class="title"> qtbase5-dev</span> qtbase5-dev-tools<span class="title"> qtbase5-private-dev</span></div><div class="line"><span class="title">  qtdeclarative5-dev</span> qtdeclarative5-private-dev<span class="title"> qtmultimedia5-dev</span> qtscript5-dev<span class="title"> qtscript5-private-dev</span></div><div class="line"><span class="title">  qttools5-dev</span> qttools5-dev-tools<span class="title"> qttools5-private-dev</span> ros-kinetic-actionlib<span class="title"> ros-kinetic-actionlib-msgs</span></div><div class="line"><span class="title">  ros-kinetic-actionlib-tutorials</span> ros-kinetic-angles<span class="title"> ros-kinetic-bond</span> ros-kinetic-bond-core<span class="title"> ros-kinetic-bondcpp</span></div><div class="line"><span class="title">  ros-kinetic-bondpy</span> ros-kinetic-camera-calibration<span class="title"> ros-kinetic-camera-calibration-parsers</span></div><div class="line"><span class="title">  ros-kinetic-camera-info-manager</span> ros-kinetic-catkin<span class="title"> ros-kinetic-class-loader</span> ros-kinetic-cmake-modules<span class="title"></span></div><div class="line">  ros-kinetic-collada-parser ros-kinetic-collada-urdf<span class="title"> ros-kinetic-common-msgs</span> ros-kinetic-common-tutorials<span class="title"></span></div><div class="line">  ros-kinetic-compressed-depth-image-transport ros-kinetic-compressed-image-transport<span class="title"> ros-kinetic-control-msgs</span></div><div class="line"><span class="title">  ros-kinetic-cpp-common</span> ros-kinetic-cv-bridge<span class="title"> ros-kinetic-depth-image-proc</span> ros-kinetic-desktop<span class="title"></span></div><div class="line">  ros-kinetic-desktop-full ros-kinetic-diagnostic-aggregator<span class="title"> ros-kinetic-diagnostic-analysis</span></div><div class="line"><span class="title">  ros-kinetic-diagnostic-common-diagnostics</span> ros-kinetic-diagnostic-msgs<span class="title"> ros-kinetic-diagnostic-updater</span></div><div class="line"><span class="title">  ros-kinetic-diagnostics</span> ros-kinetic-dynamic-reconfigure<span class="title"> ros-kinetic-eigen-conversions</span></div><div class="line"><span class="title">  ros-kinetic-eigen-stl-containers</span> ros-kinetic-executive-smach<span class="title"> ros-kinetic-filters</span> ros-kinetic-gazebo-dev<span class="title"></span></div><div class="line">  ros-kinetic-gazebo-msgs ros-kinetic-gazebo-plugins<span class="title"> ros-kinetic-gazebo-ros</span> ros-kinetic-gazebo-ros-pkgs<span class="title"></span></div><div class="line">  ros-kinetic-gencpp ros-kinetic-geneus<span class="title"> ros-kinetic-genlisp</span> ros-kinetic-genmsg<span class="title"> ros-kinetic-gennodejs</span></div><div class="line"><span class="title">  ros-kinetic-genpy</span> ros-kinetic-geometric-shapes<span class="title"> ros-kinetic-geometry</span> ros-kinetic-geometry-msgs<span class="title"></span></div><div class="line">  ros-kinetic-geometry-tutorials ros-kinetic-gl-dependency<span class="title"> ros-kinetic-image-common</span> ros-kinetic-image-geometry<span class="title"></span></div><div class="line">  ros-kinetic-image-pipeline ros-kinetic-image-<span class="keyword">proc</span><span class="title"> ros-kinetic-image-publisher</span> ros-kinetic-image-rotate<span class="title"></span></div><div class="line">  ros-kinetic-image-transport ros-kinetic-image-transport-plugins<span class="title"> ros-kinetic-image-view</span></div><div class="line"><span class="title">  ros-kinetic-interactive-marker-tutorials</span> ros-kinetic-interactive-markers<span class="title"> ros-kinetic-joint-state-publisher</span></div><div class="line"><span class="title">  ros-kinetic-kdl-conversions</span> ros-kinetic-kdl-parser<span class="title"> ros-kinetic-laser-assembler</span> ros-kinetic-laser-filters<span class="title"></span></div><div class="line">  ros-kinetic-laser-geometry ros-kinetic-laser-pipeline<span class="title"> ros-kinetic-librviz-tutorial</span> ros-kinetic-map-msgs<span class="title"></span></div><div class="line">  ros-kinetic-media-export ros-kinetic-message-filters<span class="title"> ros-kinetic-message-generation</span> ros-kinetic-message-runtime<span class="title"></span></div><div class="line">  ros-kinetic-mk ros-kinetic-nav-msgs<span class="title"> ros-kinetic-nodelet</span> ros-kinetic-nodelet-core<span class="title"></span></div><div class="line">  ros-kinetic-nodelet-topic-tools ros-kinetic-nodelet-tutorial-math<span class="title"> ros-kinetic-octomap</span> ros-kinetic-opencv3<span class="title"></span></div><div class="line">  ros-kinetic-orocos-kdl ros-kinetic-pcl-conversions<span class="title"> ros-kinetic-pcl-msgs</span> ros-kinetic-pcl-ros<span class="title"></span></div><div class="line">  ros-kinetic-perception ros-kinetic-perception-pcl<span class="title"> ros-kinetic-pluginlib</span> ros-kinetic-pluginlib-tutorials<span class="title"></span></div><div class="line">  ros-kinetic-polled-camera ros-kinetic-python-orocos-kdl<span class="title"> ros-kinetic-python-qt-binding</span> ros-kinetic-qt-dotgraph<span class="title"></span></div><div class="line">  ros-kinetic-qt-gui ros-kinetic-qt-gui-cpp<span class="title"> ros-kinetic-qt-gui-py-common</span> ros-kinetic-qwt-dependency<span class="title"></span></div><div class="line">  ros-kinetic-random-numbers ros-kinetic-resource-retriever<span class="title"> ros-kinetic-robot</span> ros-kinetic-robot-model<span class="title"></span></div><div class="line">  ros-kinetic-robot-state-publisher ros-kinetic-ros<span class="title"> ros-kinetic-ros-base</span> ros-kinetic-ros-comm<span class="title"></span></div><div class="line">  ros-kinetic-ros-core ros-kinetic-ros-tutorials<span class="title"> ros-kinetic-rosbag</span> ros-kinetic-rosbag-migration-rule<span class="title"></span></div><div class="line">  ros-kinetic-rosbag-storage ros-kinetic-rosbash<span class="title"> ros-kinetic-rosboost-cfg</span> ros-kinetic-rosbuild<span class="title"></span></div><div class="line">  ros-kinetic-rosclean ros-kinetic-rosconsole<span class="title"> ros-kinetic-rosconsole-bridge</span> ros-kinetic-roscpp<span class="title"></span></div><div class="line">  ros-kinetic-roscpp-core ros-kinetic-roscpp-serialization<span class="title"> ros-kinetic-roscpp-traits</span> ros-kinetic-roscpp-tutorials<span class="title"></span></div><div class="line">  ros-kinetic-roscreate ros-kinetic-rosgraph<span class="title"> ros-kinetic-rosgraph-msgs</span> ros-kinetic-roslang<span class="title"> ros-kinetic-roslaunch</span></div><div class="line"><span class="title">  ros-kinetic-roslib</span> ros-kinetic-roslint<span class="title"> ros-kinetic-roslisp</span> ros-kinetic-roslz4<span class="title"> ros-kinetic-rosmake</span></div><div class="line"><span class="title">  ros-kinetic-rosmaster</span> ros-kinetic-rosmsg<span class="title"> ros-kinetic-rosnode</span> ros-kinetic-rosout<span class="title"> ros-kinetic-rospack</span></div><div class="line"><span class="title">  ros-kinetic-rosparam</span> ros-kinetic-rospy<span class="title"> ros-kinetic-rospy-tutorials</span> ros-kinetic-rosservice<span class="title"> ros-kinetic-rostest</span></div><div class="line"><span class="title">  ros-kinetic-rostime</span> ros-kinetic-rostopic<span class="title"> ros-kinetic-rosunit</span> ros-kinetic-roswtf<span class="title"> ros-kinetic-rqt-action</span></div><div class="line"><span class="title">  ros-kinetic-rqt-bag</span> ros-kinetic-rqt-bag-plugins<span class="title"> ros-kinetic-rqt-common-plugins</span> ros-kinetic-rqt-console<span class="title"></span></div><div class="line">  ros-kinetic-rqt-dep ros-kinetic-rqt-graph<span class="title"> ros-kinetic-rqt-gui</span> ros-kinetic-rqt-gui-cpp<span class="title"> ros-kinetic-rqt-gui-py</span></div><div class="line"><span class="title">  ros-kinetic-rqt-image-view</span> ros-kinetic-rqt-launch<span class="title"> ros-kinetic-rqt-logger-level</span> ros-kinetic-rqt-moveit<span class="title"></span></div><div class="line">  ros-kinetic-rqt-msg ros-kinetic-rqt-nav-view<span class="title"> ros-kinetic-rqt-plot</span> ros-kinetic-rqt-pose-view<span class="title"></span></div><div class="line">  ros-kinetic-rqt-publisher ros-kinetic-rqt-py-common<span class="title"> ros-kinetic-rqt-py-console</span> ros-kinetic-rqt-reconfigure<span class="title"></span></div><div class="line">  ros-kinetic-rqt-robot-dashboard ros-kinetic-rqt-robot-monitor<span class="title"> ros-kinetic-rqt-robot-plugins</span></div><div class="line"><span class="title">  ros-kinetic-rqt-robot-steering</span> ros-kinetic-rqt-runtime-monitor<span class="title"> ros-kinetic-rqt-rviz</span></div><div class="line"><span class="title">  ros-kinetic-rqt-service-caller</span> ros-kinetic-rqt-shell<span class="title"> ros-kinetic-rqt-srv</span> ros-kinetic-rqt-tf-tree<span class="title"></span></div><div class="line">  ros-kinetic-rqt-top ros-kinetic-rqt-topic<span class="title"> ros-kinetic-rqt-web</span> ros-kinetic-rviz<span class="title"></span></div><div class="line">  ros-kinetic-rviz-plugin-tutorials ros-kinetic-rviz-python-tutorial<span class="title"> ros-kinetic-self-test</span></div><div class="line"><span class="title">  ros-kinetic-sensor-msgs</span> ros-kinetic-shape-msgs<span class="title"> ros-kinetic-simulators</span> ros-kinetic-smach<span class="title"> ros-kinetic-smach-msgs</span></div><div class="line"><span class="title">  ros-kinetic-smach-ros</span> ros-kinetic-smclib<span class="title"> ros-kinetic-stage</span> ros-kinetic-stage-ros<span class="title"> ros-kinetic-std-msgs</span></div><div class="line"><span class="title">  ros-kinetic-std-srvs</span> ros-kinetic-stereo-image-<span class="keyword">proc</span><span class="title"> ros-kinetic-stereo-msgs</span> ros-kinetic-tf<span class="title"></span></div><div class="line">  ros-kinetic-tf-conversions ros-kinetic-tf2<span class="title"> ros-kinetic-tf2-eigen</span> ros-kinetic-tf2-geometry-msgs<span class="title"></span></div><div class="line">  ros-kinetic-tf2-kdl ros-kinetic-tf2-msgs<span class="title"> ros-kinetic-tf2-py</span> ros-kinetic-tf2-ros<span class="title"></span></div><div class="line">  ros-kinetic-theora-image-transport ros-kinetic-topic-tools<span class="title"> ros-kinetic-trajectory-msgs</span></div><div class="line"><span class="title">  ros-kinetic-turtle-actionlib</span> ros-kinetic-turtle-tf<span class="title"> ros-kinetic-turtle-tf2</span> ros-kinetic-turtlesim<span class="title"></span></div><div class="line">  ros-kinetic-urdf ros-kinetic-urdf-parser-plugin<span class="title"> ros-kinetic-urdf-tutorial</span> ros-kinetic-vision-opencv<span class="title"></span></div><div class="line">  ros-kinetic-visualization-marker-tutorials ros-kinetic-visualization-msgs<span class="title"> ros-kinetic-visualization-tutorials</span></div><div class="line"><span class="title">  ros-kinetic-viz</span> ros-kinetic-webkit-dependency<span class="title"> ros-kinetic-xacro</span> ros-kinetic-xmlrpcpp<span class="title"> sbcl</span> sdformat-sdf<span class="title"></span></div><div class="line">  shiboken2 sip-dev<span class="title"> tango-icon-theme</span> tcl-dev<span class="title"> tcl-vtk6</span> tcl8.6-dev<span class="title"> tk-dev</span> tk8.6-blt2.5<span class="title"> tk8.6-dev</span> ttf-bitstream-vera<span class="title"></span></div><div class="line">  ttf-liberation unixodbc<span class="title"> unixodbc-dev</span> uuid-dev<span class="title"> vtk6</span></div><div class="line">下列软件包将被升级：<span class="title"></span></div><div class="line">  cpp-5 g++-5<span class="title"> g++-5-multilib</span> gcc-5<span class="title"> gcc-5-base</span> gcc-5-base:i386<span class="title"> gcc-5-multilib</span> lib32asan2<span class="title"> lib32atomic1</span></div><div class="line"><span class="title">  lib32cilkrts5</span> lib32gcc-5-dev<span class="title"> lib32gomp1</span> lib32itm1<span class="title"> lib32mpx0</span> lib32quadmath0<span class="title"> lib32stdc++-5-dev</span> lib32stdc++6<span class="title"></span></div><div class="line">  lib32ubsan0 libasan2<span class="title"> libatomic1</span> libcc1-0<span class="title"> libcilkrts5</span> libgcc-5-dev<span class="title"> libgfortran3</span> libgomp1<span class="title"> libinput10</span> libitm1<span class="title"></span></div><div class="line">  liblsan0 libmpx0<span class="title"> libqt5core5a</span> libqt5dbus5<span class="title"> libqt5gui5</span> libqt5network5<span class="title"> libqt5opengl5</span> libqt5printsupport5<span class="title"></span></div><div class="line">  libqt5sql5 libqt5test5<span class="title"> libqt5widgets5</span> libqt5xml5<span class="title"> libquadmath0</span> libstdc++-5-dev<span class="title"> libstdc++6</span> libstdc++6:i386<span class="title"></span></div><div class="line">  libtsan0 libubsan0<span class="title"> libuuid1</span> libwacom-bin<span class="title"> libwacom-common</span> libwacom2<span class="title"> libx32asan2</span> libx32atomic1<span class="title"> libx32cilkrts5</span></div><div class="line"><span class="title">  libx32gcc-5-dev</span> libx32gomp1<span class="title"> libx32itm1</span> libx32quadmath0<span class="title"> libx32stdc++-5-dev</span> libx32stdc++6<span class="title"> libx32ubsan0</span></div><div class="line">升级了 59 个软件包，新安装了 653 个软件包，要卸载 1 个软件包，有 394 个软件包未被升级。</div><div class="line">需要下载 445<span class="title"> MB</span> 的归档。</div><div class="line">解压缩后会消耗 2,139<span class="title"> MB</span> 的额外空间。</div><div class="line">您希望继续执行吗？ [Y/n]<span class="title"> Y</span></div></pre></td></tr></table></figure>
+<p>这种方式的安装，所需要安装的包非常多。</p>
+<p><strong>桌面安装</strong>：ROS，<a href="http://wiki.ros.org/rqt" target="_blank" rel="external">rqt</a>, <a href="http://wiki.ros.org/rviz" target="_blank" rel="external">rviz</a>，机器人通用库<br><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="keyword">get</span> install ros-kinetic-desktop</div></pre></td></tr></table></figure></p>
+<p><strong>ROS-Base (Bare Bones)</strong>：ROS 包，构建和通信库。没有 GUI 工具。<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="keyword">get</span> install ros-kinetic-ros-<span class="keyword">base</span></div></pre></td></tr></table></figure></p>
+<p><strong>独立的包安装</strong>：可以安装一个特定的 ROS 包（用实际的包名来替换下面的命令中的 “PACKAGE”）。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get <span class="keyword">install</span> ros-kinetic-<span class="keyword">PACKAGE</span></div></pre></td></tr></table></figure></p>
+<p>如：<br><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="keyword">get</span> install ros-kinetic-slam-gmapping</div></pre></td></tr></table></figure></p>
+<p>要找到可用的包，可以使用：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-<span class="keyword">cache</span> <span class="keyword">search</span> ros-kinetic</div></pre></td></tr></table></figure></p>
+<p>通常在做开发时，采用 <strong>桌面完整安装</strong> 比较方便一点，可以一股脑将所有有可能用到的软件包都安装进来。对于实际的机器，则通常采用 <strong>ROS-Base (Bare Bones)</strong> + <strong>独立的包</strong> 的方式进行安装。</p>
+<h2 id="初始化-rosdep"><a href="#初始化-rosdep" class="headerlink" title="初始化 rosdep"></a>初始化 rosdep</h2><p>在使用 ROS 之前，需要先初始化 <code>rosdep</code>。<code>rosdep</code> 使得你可以为你想要编译的源码，以及需要运行的 ROS 核心组件，简单地安装系统依赖。<br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">sudo rosdep init</span></div><div class="line">rosdep update</div></pre></td></tr></table></figure></p>
+<h2 id="环境设置"><a href="#环境设置" class="headerlink" title="环境设置"></a>环境设置</h2><p>如果在每次一个新的终端启动时，ROS 环境变量都能自动地添加进你的 bash 会话是非常方便，这可以通过如下命令来实现：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> <span class="string">"source /opt/ros/kinetic/setup.bash"</span> &gt;&gt; ~/.bashrc</div><div class="line"><span class="built_in">source</span> ~/.bashrc</div></pre></td></tr></table></figure></p>
+<p>如果安装了多个 ROS 发行版，则 <code>~/.bashrc</code> 必须只 <code>source</code> 当前正在使用的那一版的 <code>setup.bash</code>。</p>
+<p>如果你只想要修改当前 shell 的环境，则输入如下的命令来替换上面的命令：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">source</span> <span class="regexp">/opt/</span>ros<span class="regexp">/kinetic/</span>setup.bash</div></pre></td></tr></table></figure></p>
+<h2 id="构建包所需的依赖"><a href="#构建包所需的依赖" class="headerlink" title="构建包所需的依赖"></a>构建包所需的依赖</h2><p>到这一步，应该已经安装好了运行核心 ROS 包的所有东西。要创建和管理你自己的 ROS workspace，还有单独发布的许多的工具。比如，<a href="http://wiki.ros.org/rosinstall" target="_blank" rel="external">rosinstall</a> 是一个常用的命令行工具，使你可以通过一个命令为 ROS 包简单地下载许多源码树。</p>
+<p>要安装这个工具及其它的依赖以构建 ROS 包，则运行：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="built_in">get</span> install <span class="keyword">python</span>-rosinstall <span class="keyword">python</span>-rosinstall-generator <span class="keyword">python</span>-wstool build-essential</div></pre></td></tr></table></figure></p>
+<p>完成完整的 ROS 安装之后，可以对安装做一个简单的测试。可以通过 <code>roscore</code> 和 <code>turtlesim</code> 来做测试。</p>
+<p><code>roscore</code> 测试如下：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">$</span> roscore</div><div class="line">... logging to /home/hanpfei0306/.ros/<span class="built-in">log</span>/<span class="number">3e61</span>b674<span class="number">-03</span>cf<span class="number">-11e8</span>-ac54<span class="number">-9</span>cb70ddc3658/roslaunch-hanpfei0306<span class="number">-31481.</span><span class="built-in">log</span></div><div class="line">Checking <span class="built-in">log</span> directory <span class="keyword">for</span> disk usage. This may take awhile.</div><div class="line">Press Ctrl-C to interrupt</div><div class="line">Done checking <span class="built-in">log</span> <span class="keyword">file</span> disk usage. Usage is &lt;<span class="number">1</span>GB.</div><div class="line"></div><div class="line">started roslaunch server http:<span class="comment">//hanpfei0306:44979/</span></div><div class="line">ros_comm version <span class="number">1.12</span><span class="number">.12</span></div><div class="line"></div><div class="line"></div><div class="line">SUMMARY</div><div class="line">========</div><div class="line"></div><div class="line"><span class="keyword">PARAMETERS</span></div><div class="line"> * /rosdistro: kinetic</div><div class="line"> * /rosversion: 1.12.12</div><div class="line"></div><div class="line">NODES</div><div class="line"></div><div class="line">auto-starting <span class="comment">new master</span></div><div class="line">process[master]: started <span class="comment">with pid [31495]</span></div><div class="line">ROS_MASTER_URI=http:<span class="comment">//hanpfei0306:11311/</span></div><div class="line"></div><div class="line">setting /run_id to <span class="number">3e61</span>b674<span class="number">-03</span>cf<span class="number">-11e8</span>-ac54<span class="number">-9</span>cb70ddc3658</div><div class="line">process[rosout<span class="number">-1</span>]: started with pid [<span class="number">31508</span>]</div><div class="line">started core service [/<span class="comment">rosout]</span></div></pre></td></tr></table></figure></p>
+<p><code>turtlesim</code> 测试如下：<br><img src="https://www.wolfcstech.com/images/1315506-000c62e7a4440c3f.png" alt="Turtlesim"></p>
+<p>注意 <code>turtlesim</code> 的运行依赖于 <code>roscore</code> 的运行，因此在测试 <code>turtlesim</code> 需要同时运行 <code>roscore</code>。</p>
+<p>参考文档<br><a href="http://wiki.ros.org/Distributions" target="_blank" rel="external">ROS Distributions</a><br><a href="http://wiki.ros.org/kinetic/Installation/Ubuntu" target="_blank" rel="external">Ubuntu install of ROS Kinetic</a></p>
+<p>Done.</p>
+<h3 id="打赏"><a href="#打赏" class="headerlink" title="打赏"></a><a href="https://www.wolfcstech.com/about/donate.html">打赏</a></h3><p>Done。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ROS/" rel="tag"># ROS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/19/projects_operation/" rel="next" title="个人项目推广">
+                <i class="fa fa-chevron-left"></i> 个人项目推广
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置-Ubuntu-仓库"><span class="nav-number">1.</span> <span class="nav-text">配置 Ubuntu 仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置-sources-list"><span class="nav-number">2.</span> <span class="nav-text">设置 sources.list</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置密钥"><span class="nav-number">3.</span> <span class="nav-text">设置密钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">4.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化-rosdep"><span class="nav-number">5.</span> <span class="nav-text">初始化 rosdep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境设置"><span class="nav-number">6.</span> <span class="nav-text">环境设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建包所需的依赖"><span class="nav-number">7.</span> <span class="nav-text">构建包所需的依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#打赏"><span class="nav-number">7.1.</span> <span class="nav-text">打赏</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

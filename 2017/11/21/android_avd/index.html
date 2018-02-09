@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="虚拟化,Android开发," />
+
+
+<meta name="description" content="Android AVD 的文件Android AVD 的文件由两大部分，一部分是由所有的 AVD 共享的 AVD 系统文件；另一部分是每个 AVD 特有的 AVD 数据文件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android AVD">
+<meta property="og:url" content="https://www.wolfcstech.com/2017/11/21/android_avd/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Android AVD 的文件Android AVD 的文件由两大部分，一部分是由所有的 AVD 共享的 AVD 系统文件；另一部分是每个 AVD 特有的 AVD 数据文件。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-bf4704dc8fafa1a5.png">
+<meta property="og:updated_time" content="2017-12-24T02:42:06.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android AVD">
+<meta name="twitter:description" content="Android AVD 的文件Android AVD 的文件由两大部分，一部分是由所有的 AVD 共享的 AVD 系统文件；另一部分是每个 AVD 特有的 AVD 数据文件。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-bf4704dc8fafa1a5.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2017/11/21/android_avd/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Android AVD | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/11/21/android_avd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android AVD</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-21T19:05:49+08:00">2017-11-21</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/虚拟化/" itemprop="url" rel="index"><span itemprop="name">虚拟化</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/21/android_avd/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2017/11/21/android_avd/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/11/21/android_avd/" class="leancloud_visitors" data-flag-title="Android AVD">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Android-AVD-的文件"><a href="#Android-AVD-的文件" class="headerlink" title="Android AVD 的文件"></a>Android AVD 的文件</h1><p>Android AVD 的文件由两大部分，一部分是由所有的 AVD 共享的 AVD 系统文件；另一部分是每个 AVD 特有的 AVD 数据文件。<br><a id="more"></a><br>AVD 系统文件位于 AVD 系统目录下，其中包含了模拟器用于仿真操作系统的 Android 系统镜像。它具有平台特有的、只读的为所有相同类型的 AVD 共享的文件，包括 API level，CPU 架构，和 Android variant。默认的位置如下：</p>
+<ul>
+<li>Mac OS X 和 Linux - ~/Library/Android/sdk/system-images/android-<strong><em>apiLevel</em></strong>/<strong><em>variant</em></strong>/<strong><em>arch</em></strong>/</li>
+<li>Microsoft Windows XP - C:\Documents and Settings\<strong><em>user</em></strong>\Library\Android\sdk\system-images\android-<strong><em>apiLevel</em></strong>\<strong><em>variant</em></strong>\<strong><em>arch</em></strong>\</li>
+<li>Windows Vista - C:\Users\<strong><em>user</em></strong>\Library\Android\sdk\system-images\android-<strong><em>apiLevel</em></strong>\<strong><em>variant</em></strong>\<strong><em>arch</em></strong>\</li>
+</ul>
+<p>其中：</p>
+<ul>
+<li><strong><em>apiLevel</em></strong> 是数字 API level。</li>
+<li><strong><em>variant</em></strong> 是一个名字，对应于系统镜像实现的特定功能；比如，<strong><em>google_apis</em></strong> 或 <strong><em>android-wear</em></strong>。</li>
+<li><strong><em>arch</em></strong> 是目标 CPU 架构；比如，x86。</li>
+</ul>
+<p>使用 <code>-sysdir</code> 选项来为 AVD 指定一个不同的系统目录。</p>
+<p>AVD 系统目录下包含如下这些 AVD 系统文件：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">kernel-qemu</div><div class="line">kernel-ranchu</div><div class="line">system<span class="selector-class">.img</span></div><div class="line">userdata<span class="selector-class">.img</span></div><div class="line">ramdisk<span class="selector-class">.img</span></div><div class="line"></div><div class="line">advancedFeatures<span class="selector-class">.ini</span></div><div class="line"></div><div class="line">build<span class="selector-class">.prop</span></div><div class="line">NOTICE<span class="selector-class">.txt</span></div><div class="line">package<span class="selector-class">.xml</span></div><div class="line">source<span class="selector-class">.properties</span></div><div class="line">data/</div></pre></td></tr></table></figure>
+<p>这些文件又分为三类，第一类是系统镜像文件；第二类是模拟器选项配置文件；第三类是与系统镜像本身有关的其它文件。</p>
+<p>第一类系统镜像文件主要包括如下这些：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>描述</th>
+<th>指定一个不同的文件的选项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kernel-qemu 或 kernel-ranchu</td>
+<td>AVD 的二进制内核镜像。<code>kernel-ranchu</code> 是 QEMU 2 模拟器，即最新版本</td>
+<td><code>-kernel</code></td>
+</tr>
+<tr>
+<td>system.img</td>
+<td>系统镜像的只读初始版本；特别地，该分区包含对应于 API level 和 variant 的系统库和数据</td>
+<td><code>-system</code></td>
+</tr>
+<tr>
+<td>ramdisk.img</td>
+<td>启动分区镜像。它是在系统镜像挂载之前，内核最初加载的 <code>system.img</code> 的子集。它典型地只包含一些二进制文件和初始化脚本</td>
+<td><code>-ramdisk</code></td>
+</tr>
+<tr>
+<td>userdata.img</td>
+<td><code>data</code> 分区的 <em>初始</em> 版本，在模拟的系统中它以 <code>data/</code> 呈现，并包含 AVD 所有可写的数据。当你创建一个新的 AVD 或使用 <code>‑wipe-data</code> 选项时，模拟器使用该文件。更多信息，请参考后面描述的 <code>userdata-qemu.img</code> 文件</td>
+<td><code>-initdata</code> 或 <code>-init-data</code></td>
+</tr>
+</tbody>
+</table>
+<p>第二类模拟器选项配置文件包括如下这些：</p>
+<ul>
+<li><p>advancedFeatures.ini：高级功能选项配置文件</p>
+<p>第三类与系统镜像本身有关的其它文件包括如下这些：</p>
+</li>
+<li><p>build.prop：系统镜像 <code>system.img</code>中包含有 <code>build.prop</code> 文件。这里的 <code>build.prop</code> 文件，与客户 Android 系统使用的 <code>build.prop</code> 无关。</p>
+</li>
+<li>NOTICE.txt：文件系统镜像文件的注意事项</li>
+<li>package.xml：Android SDK 许可证协议文件</li>
+<li>source.properties：该文件主要保存了系统镜像下载相关的信息</li>
+<li>data/：无用</li>
+</ul>
+<p>Android AVD 的另一部分文件为 AVD 特有的文件，它们位于 AVD 数据目录，也被称为内容目录，它们包括 AVD 所有可修改的数据。</p>
+<p>默认的位置如下，其中 <strong><em>name</em></strong> 是 AVD 的名字：</p>
+<ul>
+<li>Mac OS X 和 Linux - ~/.android/avd/name.avd/</li>
+<li>Microsoft Windows XP - C:\Documents and Settings\<strong><em>user</em></strong>.android\<strong><em>name</em></strong>.avd\</li>
+<li>Windows Vista, and higher - C:\Users\<strong><em>user</em></strong>.android\<strong><em>name</em></strong>.avd\</li>
+</ul>
+<p>使用 <code>-datadir</code> 选项来指定一个不同的 AVD 数据目录。</p>
+<p><strong><em>用户数据隔离设计：为每个用户创建单独的用户数据目录；在用户数据目录下，创建 AVD 的数据目录；为用户启动 AVD 时，通过 <code>-datadir</code>选项来指定 AVD 数据目录的路径。</em></strong></p>
+<p>在 AVD 刚刚创建好时，AVD 数据目录包含如下这些文件：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">config<span class="selector-class">.ini</span></div><div class="line">sdcard<span class="selector-class">.img</span></div><div class="line">userdata.img</div></pre></td></tr></table></figure></p>
+<p>创建 AVD 时，伴随 AVD 数据目录一起，且位于系统 AVD 管理目录下，还会有一个 AVD 的信息文件被创建出来，如 <code>~/.android/avd/Nexus_5_API_25.ini</code>，其内容如下：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">avd<span class="selector-class">.ini</span><span class="selector-class">.encoding</span>=UTF-<span class="number">8</span></div><div class="line">path=/home/hanpfei0306/.android/avd/Nexus_5_API_25<span class="selector-class">.avd</span></div><div class="line">path.rel=avd/Nexus_5_API_25<span class="selector-class">.avd</span></div><div class="line">target=android-<span class="number">25</span></div></pre></td></tr></table></figure></p>
+<p>这个文件描述了 AVD 数据目录等信息。AVD 数据目录下，在创建 AVD 时，也会有一个配置文件 <code>config.ini</code> 被创建出来，这个文件描述了 AVD 的硬件配置等信息，模拟器在启动 AVD 时将加载这个文件，以为 AVD 虚拟适当的硬件等。</p>
+<p>随着 AVD 的运行，AVD 数据目录下将会有一些新的文件创建出来。最终将包括如下这些文件：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">config<span class="selector-class">.ini</span></div><div class="line">emulator-user<span class="selector-class">.ini</span></div><div class="line">hardware-qemu<span class="selector-class">.ini</span></div><div class="line">cache<span class="selector-class">.img</span></div><div class="line">cache<span class="selector-class">.img</span><span class="selector-class">.qcow2</span></div><div class="line">sdcard<span class="selector-class">.img</span></div><div class="line">sdcard<span class="selector-class">.img</span><span class="selector-class">.qcow2</span></div><div class="line">system<span class="selector-class">.img</span><span class="selector-class">.qcow2</span></div><div class="line">userdata<span class="selector-class">.img</span></div><div class="line">userdata-qemu<span class="selector-class">.img</span></div><div class="line">userdata-qemu<span class="selector-class">.img</span><span class="selector-class">.qcow2</span></div><div class="line">version_num.cache</div></pre></td></tr></table></figure></p>
+<p>最重要的是一些镜像文件，如下：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>描述</th>
+<th>指定一个不同的文件的选项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>userdata-qemu.img</td>
+<td><code>data</code> 分区的内容，在模拟的系统中，它以 <code>data/</code> 呈现。当你创建一个新的 AVD，或当你使用 <code>-wipe-data</code> 选项复位 AVD 为出厂状态时，模拟器拷贝系统目录下的 <code>userdata.img</code> 文件来创建该文件。    每个虚拟的设备实例使用一个可写的用户数据镜像来存储用户和会话特有的数据。比如，它使用镜像存储唯一的用户的已安装应用数据，设置，数据库和文件。每个用户具有一个不同的 <code>ANDROID_SDK_HOME</code> 目录，其为用户创建的 AVDs 存储数据目录；每个 AVD 具有一个单独的 <code>userdata-qemu.img</code> 文件</td>
+<td><code>-data</code></td>
+</tr>
+<tr>
+<td>cache.img</td>
+<td><code>cache</code> 分区镜像，在模拟的系统中，它以 <code>cache/</code> 呈现。当你首次创建一个 AVD 或使用 <code>-wipe-data</code> 选项时它是空的。它存储临时下载的文件，由下载管理器，而有时是系统放置，比如，在模拟器运行期间浏览器使用它缓存下载的 web 页和图像。当你关闭虚拟设备时，文件被删除。你可以通过使用 <code>-cache</code> 选项来持久化文件。</td>
+<td><code>-cache</code></td>
+</tr>
+<tr>
+<td>sdcard.img</td>
+<td>（可选的）一个 SD 卡分区镜像，让你在一个虚拟设备上模拟一个 SD 卡。你可以在 AVD Manager 中，或使用<code>mksdcard</code> 工具创建一个 SD 卡镜像文件。这个文件存储在你的开发电脑上，且必须在启动时加载。  当在 AVD Manager 中定义一个 AVD 时，有选项让你选择自动管理的 SD 卡文件，或你通过 <code>mksdcard</code> 工具创建的文件。你可以在 AVD Manager 中查看与 AVD 关联的 <code>sdcard.img</code> 文件。<code>-sdcard</code> 选项覆盖 AVD 中指定的 SD 卡文件。    你可以在虚拟设备运行的时候，使用模拟器 UI 或 adb 工具来浏览，发送文件到仿真的 SD，从仿真的 SD 卡拷贝和移除文件。你不能从一个运行中的虚拟设备中移除仿真的 SD 卡。   要在 SD 卡文件挂载之前向它拷贝文件，你可以把镜像文件挂载为一个 loop 设备，然后拷贝文件。或者使用实用程序，比如 <code>mtools</code> 包直接拷贝文件到镜像。    模拟器将文件作为字节的 pool，因而 SD 卡的格式无关紧要。   注意 <code>-wipe-data</code> 选项选项不影响这个文件。如果你想要清除这个文件，你需要删除文件并使用 AVD Manager 或 <code>mksdcard</code> 工具重建它。改变文件的大小也将删除文件并重建一个新的。</td>
+<td><code>-sdcard</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong><em>AVD 数据目录下为什么要有一份 userdata.img 文件呢？</em></strong></p>
+<h1 id="客户-Android-系统中的分区与-AVD-的磁盘镜像文件之间的对应关系"><a href="#客户-Android-系统中的分区与-AVD-的磁盘镜像文件之间的对应关系" class="headerlink" title="客户 Android 系统中的分区与 AVD 的磁盘镜像文件之间的对应关系"></a>客户 Android 系统中的分区与 AVD 的磁盘镜像文件之间的对应关系</h1><table>
+<thead>
+<tr>
+<th>客户 Android 系统中的分区</th>
+<th>磁盘镜像文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/cache</td>
+<td>cache.img</td>
+</tr>
+<tr>
+<td>/cache</td>
+<td>cache.img.qcow2</td>
+</tr>
+<tr>
+<td>/system</td>
+<td>system.img</td>
+</tr>
+<tr>
+<td>/system</td>
+<td>system.img.qcow2</td>
+</tr>
+<tr>
+<td>/data</td>
+<td>userdata.img</td>
+</tr>
+<tr>
+<td>/data</td>
+<td>userdata-qemu.img</td>
+</tr>
+<tr>
+<td>/data</td>
+<td>userdata-qemu.img.qcow2</td>
+</tr>
+<tr>
+<td>/sdcard</td>
+<td>/data/media/0/</td>
+</tr>
+</tbody>
+</table>
+<p>默认情况下，<code>sdcard.img</code> 和 <code>sdcard.img.qcow2</code> 似乎并没有呈现为模拟的系统中的 <code>/sdcard</code>。模拟的系统中的 <code>/sdcard</code> 目录实际上是 <code>/data/media/0/</code>，因而其中的文件是存储在 <code>userdata-qemu.img</code> 中的。</p>
+<h1 id="命令行创建及启动-AVD-的方法"><a href="#命令行创建及启动-AVD-的方法" class="headerlink" title="命令行创建及启动 AVD 的方法"></a>命令行创建及启动 AVD 的方法</h1><p>Android SDK 提供了命令行工具 <code>android</code> 用于 SDK，AVD，和项目管理。它提供的所有功能，可以从它支持的命令看出来：<br><figure class="highlight markdown"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">$ android list</div><div class="line"><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="emphasis">***</span></div><div class="line">The "android" command is deprecated.</div><div class="line">For manual SDK, AVD, and project management, please use Android Studio.</div><div class="line">For command-line tools, use tools/bin/sdkmanager and tools/bin/avdmanager</div><div class="line"><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="emphasis">***</span></div><div class="line">Invalid or unsupported command "list"</div><div class="line"></div><div class="line">Supported commands are:</div><div class="line">android list target</div><div class="line">android list avd</div><div class="line">android list device</div><div class="line">android create avd</div><div class="line">android move avd</div><div class="line">android delete avd</div><div class="line">android list sdk</div><div class="line">android update sdk</div></pre></td></tr></table></figure></p>
+<p>命令行工具 <code>android</code> 是位于 <code>Sdk/tools/</code> 目录下的一个脚本。AVD 管理相关的功能通过另一个脚本，即位于 <code>Sdk/tools/bin/</code> 目录下的 <code>avdmanager</code> 来完成。<code>avdmanager</code> 实际上是 Java 工具的一个包装，它最终执行的命令类似下面这样：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -Dcom.android.sdkmanager.toolsdir=<span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools -classpath <span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>dvlib<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>jimfs<span class="number">-1.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>jsr305<span class="number">-1.3</span><span class="number">.9</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>repository<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>j2objc-annotations<span class="number">-1.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>layoutlib-api<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>gson<span class="number">-2.3</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>httpcore<span class="number">-4.2</span><span class="number">.5</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>commons-logging<span class="number">-1.1</span><span class="number">.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>commons-compress<span class="number">-1.12</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>annotations<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>error_prone_annotations<span class="number">-2.0</span><span class="number">.18</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>animal-sniffer-annotations<span class="number">-1.14</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>httpclient<span class="number">-4.2</span><span class="number">.6</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>commons-codec<span class="number">-1.6</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>common<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>kxml2<span class="number">-2.3</span><span class="number">.0</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>httpmime<span class="number">-4.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>annotations<span class="number">-12.0</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>sdklib<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>guava<span class="number">-22.0</span>.jar com.android.sdklib.tool.AvdManagerCli list device</div></pre></td></tr></table></figure></p>
+<p>其中该 Java 应用的入口类 <code>com.android.sdklib.tool.AvdManagerCli</code> 位于 <code>/media/data/dev_tools/Android/Sdk/tools/lib/sdklib-26.0.0-dev.jar</code> 中。这个 jar 包的源码位于 Android 源码库中。</p>
+<p>我们通过如下命令下载 AOSP 的 studio-master-dev branch：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">$</span> mkdir studio-master-dev</div><div class="line"><span class="symbol">$</span> cd studio-master-dev</div><div class="line"><span class="symbol">$</span> repo init -u https:<span class="comment">//android.googlesource.com/platform/manifest -b studio-master-dev</span></div><div class="line"><span class="symbol">$</span> repo sync -j8</div></pre></td></tr></table></figure></p>
+<p>sdklib-26.0.0-dev.jar 的源码位于 <code>studio-master-dev/tools/base/sdklib</code>。切换到 <code>studio-master-dev/tools</code> 目录下，我们可以通过 gradle 编译源码。<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>cd tools</div><div class="line"><span class="variable">$ </span>./gradlew assemble</div></pre></td></tr></table></figure></p>
+<p>最终生成的 jar 包将位于 <code>studio-master-dev/out/build/base/sdklib/build/libs/</code> 目录下。</p>
+<p>关于 AVD 创建，avdmanager，即 sdklib 提供了如下功能：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">$ android <span class="keyword">create</span> avd</div><div class="line">*************************************************************************</div><div class="line">The <span class="string">"android"</span> command <span class="keyword">is</span> deprecated.</div><div class="line"><span class="keyword">For</span> <span class="keyword">manual</span> SDK, AVD, <span class="keyword">and</span> <span class="keyword">project</span> <span class="keyword">management</span>, please <span class="keyword">use</span> Android Studio.</div><div class="line"><span class="keyword">For</span> command-line tools, <span class="keyword">use</span> tools/<span class="keyword">bin</span>/sdkmanager <span class="keyword">and</span> tools/<span class="keyword">bin</span>/avdmanager</div><div class="line">*************************************************************************</div><div class="line">Running /media/<span class="keyword">data</span>/dev_tools/Android/Sdk/tools/<span class="keyword">bin</span>/avdmanager <span class="keyword">create</span> avd</div><div class="line"></div><div class="line"><span class="keyword">Error</span>: The parameter <span class="comment">--name must be defined for action 'create avd'</span></div><div class="line"></div><div class="line"><span class="keyword">Usage</span>:</div><div class="line">      avdmanager [<span class="keyword">global</span> options] <span class="keyword">create</span> avd [<span class="keyword">action</span> options]</div><div class="line">      <span class="keyword">Global</span> options:</div><div class="line">  -s <span class="comment">--silent     : Silent mode, shows errors only.</span></div><div class="line">  -v <span class="comment">--verbose    : Verbose mode, shows errors, warnings and all messages.</span></div><div class="line">     <span class="comment">--clear-cache: Clear the SDK Manager repository manifest cache.</span></div><div class="line">  -h <span class="comment">--help       : Help on a specific command.</span></div><div class="line"></div><div class="line"><span class="keyword">Action</span> <span class="string">"create avd"</span>:</div><div class="line">  Creates a <span class="keyword">new</span> Android <span class="keyword">Virtual</span> Device.</div><div class="line">Options:</div><div class="line">  -a <span class="comment">--snapshot: Place a snapshots file in the AVD, to enable persistence.</span></div><div class="line">  -c <span class="comment">--sdcard  : Path to a shared SD card image, or size of a new sdcard for</span></div><div class="line">                 the <span class="keyword">new</span> AVD.</div><div class="line">  -g <span class="comment">--tag     : The sys-img tag to use for the AVD. The default is to</span></div><div class="line">                 <span class="keyword">auto</span>-<span class="keyword">select</span> <span class="keyword">if</span> the platform has <span class="keyword">only</span> one tag <span class="keyword">for</span> its <span class="keyword">system</span></div><div class="line">                 images.</div><div class="line">  -p <span class="comment">--path    : Directory where the new AVD will be created.</span></div><div class="line">  -k <span class="comment">--package : Package path of the system image for this AVD (e.g.</span></div><div class="line">                 <span class="string">'system-images;android-19;google_apis;x86'</span>).</div><div class="line">  -n <span class="comment">--name    : Name of the new AVD. [required]</span></div><div class="line">  -f <span class="comment">--force   : Forces creation (overwrites an existing AVD)</span></div><div class="line">  -b <span class="comment">--abi     : The ABI to use for the AVD. The default is to auto-select the</span></div><div class="line">                 ABI <span class="keyword">if</span> the platform has <span class="keyword">only</span> one ABI <span class="keyword">for</span> its <span class="keyword">system</span> images.</div><div class="line">  -d <span class="comment">--device  : The optional device definition to use. Can be a device index</span></div><div class="line">                 <span class="keyword">or</span> id.</div></pre></td></tr></table></figure></p>
+<p><code>-n</code> 参数用于指定 AVD 的名字。<code>-p</code> 参数用于指定 AVD 数据目录的路径，每个 AVD 特有的镜像文件等将保存在这个目录下，不指定时，AVD 数据将如前面提到的默认路径那样，位于系统 AVD 管理目录下。<code>-k</code> 参数用于指定 AVD 的系统镜像的路径，在不提供时，sdklib 会提供一个默认值。<code>-d</code> 参数用与指定要使用的设备定义，即 AVD 的硬件配置，不提供时，sdklib 将使用默认值，或逐个询问用户获得硬件配置，而具体可以为 AVD 做哪些硬件配置，决定于 <code>Sdk/emulator/lib/hardware-properties.ini</code> 。</p>
+<p>sdklib 在创建 AVD 时，提供的获得硬件配置的方式只有如下简单粗暴的 3 种：</p>
+<ul>
+<li>全部采用默认的硬件配置。</li>
+<li>全部的硬件配置都通过询问获得</li>
+<li>全部的硬件配置都通过预先定义的一个硬件配置文件中获得。</li>
+</ul>
+<p>对于第三种方式，硬件配置文件可以描述的硬件配置选项比较有限，比如 GPU 模式，内存大小，用户数据镜像大小等都无法描述。</p>
+<p>在命令行中，比较理想的为创建的 AVD 配置硬件的方式，应该为，提供一个硬件配置文件，并通过另外的一个参数提供额外的一些配置信息。因此而扩展 sdklib 的功能，为 <code>com.android.sdklib.tool.AvdManagerCli</code> 添加对另外一个参数的支持，即 <code>-h</code> 参数，以支持从命令行中为创建 AVD<br> 提供额外的硬件配置。</p>
+<p>最终在命令中创建 AVD 的方式将类似下面这样该：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -Dcom.android.sdkmanager.toolsdir=<span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools -classpath <span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>dvlib<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>jimfs<span class="number">-1.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>jsr305<span class="number">-1.3</span><span class="number">.9</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>repository<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>j2objc-annotations<span class="number">-1.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>layoutlib-api<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>gson<span class="number">-2.3</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>httpcore<span class="number">-4.2</span><span class="number">.5</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>commons-logging<span class="number">-1.1</span><span class="number">.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>commons-compress<span class="number">-1.12</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>annotations<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>error_prone_annotations<span class="number">-2.0</span><span class="number">.18</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>animal-sniffer-annotations<span class="number">-1.14</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>httpclient<span class="number">-4.2</span><span class="number">.6</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>commons-codec<span class="number">-1.6</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>common<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>kxml2<span class="number">-2.3</span><span class="number">.0</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>httpmime<span class="number">-4.1</span>.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>annotations<span class="number">-12.0</span>.<span class="string">jar:</span><span class="regexp">/home/</span>hanpfei0306<span class="regexp">/data/</span>Androids<span class="regexp">/studio-master-dev/</span>out<span class="regexp">/build/</span>base<span class="regexp">/sdklib/</span>build<span class="regexp">/libs/</span>sdklib<span class="number">-26.0</span><span class="number">.0</span>-dev.<span class="string">jar:</span><span class="regexp">/media/</span>data<span class="regexp">/dev_tools/</span>Android<span class="regexp">/Sdk/</span>tools<span class="regexp">/lib/</span>guava<span class="number">-22.0</span>.jar com.android.sdklib.tool.AvdManagerCli create avd --name test1 -k <span class="string">"system-images;android-25;google_apis;arm64-v8a"</span> -p <span class="regexp">/home/</span>hanpfei0306<span class="regexp">/data/</span>AndroidVirtualDevices/hanpfei1 -d GameEmuHardware -h hw.ramSize=<span class="number">2048</span>,hw.gpu.enabled=yes,disk.dataPartition.size=<span class="number">10240</span>M,hw.cpu.ncore=<span class="number">4</span>,hw.gpu.mode=auto,hw.initialOrientation=landscape,hw.keyboard=yes,vm.heapSize=<span class="number">256</span></div></pre></td></tr></table></figure></p>
+<p>其中最为关键的是，<code>sdklib-26.0.0-dev.jar</code> 被替换为了我们自己编译的位于 <code>studio-master-dev/out/build/base/sdklib/build/libs/</code> 下的版本。</p>
+<p>Android Studio 中，菜单栏的 Toos -&gt; Android -&gt; AVD Manager 相关的代码，同样位于 <code>studio-master-dev</code>，目测具体位置为 <code>studio-master-dev/tools/adt/idea/android/src/com/android/tools/idea/avdmanager</code>。</p>
+<h1 id="QEMU-根据-AVD-ID-名称搜索-AVD-相关文件的过程"><a href="#QEMU-根据-AVD-ID-名称搜索-AVD-相关文件的过程" class="headerlink" title="QEMU 根据 AVD ID/名称搜索 AVD 相关文件的过程"></a>QEMU 根据 AVD ID/名称搜索 AVD 相关文件的过程</h1><p>QEMU 从 Android SDK 目录下查找 AVD 的系统镜像文件，并从 <code>~/.android/avd/</code> 目录下 AVD 对应的配置文件中读取 AVD 数据目录的地址，然后加载该 AVD 的用户数据镜像及硬件配置等信息。</p>
+<p>从代码层面来看，模拟器中查找相关目录路径的代码位于 <code>emulator_2.3_release/android/android-emu/android/emulation/ConfigDirs.cpp</code>：<br><figure class="highlight zephir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Name of the Android configuration directory under $HOME.</span></div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> kAndroidSubDir[] = <span class="string">".android"</span>;</div><div class="line"><span class="comment">// Subdirectory for AVD data files.</span></div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> kAvdSubDir[] = <span class="string">"avd"</span>;</div><div class="line"></div><div class="line"><span class="comment">// static</span></div><div class="line">std::string ConfigDirs::getUserDirectory() &#123;</div><div class="line">    System* system = System::get();</div><div class="line">    std::string home = system-&gt;envGet(<span class="string">"ANDROID_EMULATOR_HOME"</span>);</div><div class="line">    <span class="keyword">if</span> (!home.<span class="keyword">empty</span>()) &#123;</div><div class="line">        <span class="keyword">return</span> home;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    home = system-&gt;envGet(<span class="string">"ANDROID_SDK_HOME"</span>);</div><div class="line">    <span class="keyword">if</span> (!home.<span class="keyword">empty</span>()) &#123;</div><div class="line">        <span class="comment">// In v1.9 emulator was changed to use $ANDROID_SDK_HOME/.android</span></div><div class="line">        <span class="comment">// directory, but Android Studio has always been using $ANDROID_SDK_HOME</span></div><div class="line">        <span class="comment">// directly. Put a workaround here to make sure it works both ways,</span></div><div class="line">        <span class="comment">// preferring the one from AS.</span></div><div class="line">        auto homeOldWay = PathUtils::join(home, kAndroidSubDir);</div><div class="line">        <span class="keyword">return</span> system-&gt;pathIsDir(homeOldWay) ? homeOldWay : home;</div><div class="line">    &#125;</div><div class="line">    home = system-&gt;getHomeDirectory();</div><div class="line">    <span class="keyword">if</span> (home.<span class="keyword">empty</span>()) &#123;</div><div class="line">        home = system-&gt;getTempDir();</div><div class="line">        <span class="keyword">if</span> (home.<span class="keyword">empty</span>()) &#123;</div><div class="line">            home = <span class="string">"/tmp"</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> PathUtils::join(home, kAndroidSubDir);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// static</span></div><div class="line">std::string ConfigDirs::getAvdRootDirectory() &#123;</div><div class="line">    System* system = System::get();</div><div class="line"></div><div class="line">    std::string avdRoot = system-&gt;envGet(<span class="string">"ANDROID_AVD_HOME"</span>);</div><div class="line">    <span class="keyword">if</span> ( !avdRoot.<span class="keyword">empty</span>() &amp;&amp; system-&gt;pathIsDir(avdRoot) ) &#123;</div><div class="line">        <span class="keyword">return</span> avdRoot;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// No luck with ANDROID_AVD_HOME, try ANDROID_SDK_HOME</span></div><div class="line">    avdRoot = system-&gt;envGet(<span class="string">"ANDROID_SDK_HOME"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ( !avdRoot.<span class="keyword">empty</span>() ) &#123;</div><div class="line">        <span class="comment">// ANDROID_SDK_HOME is defined</span></div><div class="line">        avdRoot = PathUtils::join(avdRoot, kAndroidSubDir);</div><div class="line">        <span class="keyword">if</span> (isValidAvdRoot(avdRoot)) &#123;</div><div class="line">            <span class="comment">// ANDROID_SDK_HOME is good</span></div><div class="line">            <span class="keyword">return</span> PathUtils::join(avdRoot, kAvdSubDir);</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// ANDROID_SDK_HOME is defined but bad. In this case,</span></div><div class="line">        <span class="comment">// Android Studio tries $USER_HOME and $HOME. We'll</span></div><div class="line">        <span class="comment">// do the same.</span></div><div class="line">        avdRoot = system-&gt;envGet(<span class="string">"USER_HOME"</span>);</div><div class="line">        <span class="keyword">if</span> ( !avdRoot.<span class="keyword">empty</span>() ) &#123;</div><div class="line">            avdRoot = PathUtils::join(avdRoot, kAndroidSubDir);</div><div class="line">            <span class="keyword">if</span> (isValidAvdRoot(avdRoot)) &#123;</div><div class="line">                <span class="keyword">return</span> PathUtils::join(avdRoot, kAvdSubDir);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        avdRoot = system-&gt;envGet(<span class="string">"HOME"</span>);</div><div class="line">        <span class="keyword">if</span> ( !avdRoot.<span class="keyword">empty</span>() ) &#123;</div><div class="line">            avdRoot = PathUtils::join(avdRoot, kAndroidSubDir);</div><div class="line">            <span class="keyword">if</span> (isValidAvdRoot(avdRoot)) &#123;</div><div class="line">                <span class="keyword">return</span> PathUtils::join(avdRoot, kAvdSubDir);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// No luck with ANDROID_SDK_HOME / USER_HOME / HOME</span></div><div class="line">    <span class="comment">// Try even more.</span></div><div class="line">    avdRoot = PathUtils::join(getUserDirectory(), kAvdSubDir);</div><div class="line">    <span class="keyword">return</span> avdRoot;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// static</span></div><div class="line">std::string ConfigDirs::getSdkRootDirectoryByEnv() &#123;</div><div class="line">    auto system = System::get();</div><div class="line"></div><div class="line">    std::string sdkRoot = system-&gt;envGet(<span class="string">"ANDROID_HOME"</span>);</div><div class="line">    <span class="keyword">if</span> ( isValidSdkRoot(sdkRoot) ) &#123;</div><div class="line">        <span class="keyword">return</span> sdkRoot;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// ANDROID_HOME is not good. Try ANDROID_SDK_ROOT.</span></div><div class="line">    sdkRoot = system-&gt;envGet(<span class="string">"ANDROID_SDK_ROOT"</span>);</div><div class="line">    <span class="keyword">if</span> (sdkRoot.size()) &#123;</div><div class="line">        <span class="comment">// Unquote a possibly "quoted" path.</span></div><div class="line">        <span class="keyword">if</span> (sdkRoot[<span class="number">0</span>] == <span class="string">'"'</span>) &#123;</div><div class="line">            assert(sdkRoot.back() == <span class="string">'"'</span>);</div><div class="line">            sdkRoot.erase(<span class="number">0</span>, <span class="number">1</span>);</div><div class="line">            sdkRoot.pop_back();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (isValidSdkRoot(sdkRoot)) &#123;</div><div class="line">            <span class="keyword">return</span> sdkRoot;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> std::string();</div><div class="line">&#125;</div><div class="line"></div><div class="line">std::string ConfigDirs::getSdkRootDirectoryByPath() &#123;</div><div class="line">    auto system = System::get();</div><div class="line"></div><div class="line">    auto parts = PathUtils::decompose(system-&gt;getLauncherDirectory());</div><div class="line">    parts.push_back(<span class="string">".."</span>);</div><div class="line">    PathUtils::simplifyComponents(&amp;parts);</div><div class="line"></div><div class="line">    std::string sdkRoot = PathUtils::recompose(parts);</div><div class="line">    <span class="keyword">if</span> ( isValidSdkRoot(sdkRoot) ) &#123;</div><div class="line">        <span class="keyword">return</span> sdkRoot;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> std::string();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// static</span></div><div class="line">std::string ConfigDirs::getSdkRootDirectory() &#123;</div><div class="line">    std::string sdkRoot = getSdkRootDirectoryByEnv();</div><div class="line">    <span class="keyword">if</span> (!sdkRoot.<span class="keyword">empty</span>()) &#123;</div><div class="line">        <span class="keyword">return</span> sdkRoot;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Otherwise, infer from the path of the emulator's binary.</span></div><div class="line">    <span class="keyword">return</span> getSdkRootDirectoryByPath();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// static</span></div><div class="line"><span class="keyword">bool</span> ConfigDirs::isValidSdkRoot(<span class="keyword">const</span> android::base::StringView&amp; rootPath) &#123;</div><div class="line">    <span class="keyword">if</span> (rootPath.<span class="keyword">empty</span>()) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    System* system = System::get();</div><div class="line">    <span class="keyword">if</span> ( !system-&gt;pathIsDir(rootPath) || !system-&gt;pathCanRead(rootPath) ) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    std::string platformsPath = PathUtils::join(rootPath, <span class="string">"platforms"</span>);</div><div class="line">    <span class="keyword">if</span> ( !system-&gt;pathIsDir(platformsPath) ) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    std::string platformToolsPath = PathUtils::join(rootPath, <span class="string">"platform-tools"</span>);</div><div class="line">    <span class="keyword">if</span> ( !system-&gt;pathIsDir(platformToolsPath) ) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// static</span></div><div class="line"><span class="keyword">bool</span> ConfigDirs::isValidAvdRoot(<span class="keyword">const</span> android::base::StringView&amp; avdPath) &#123;</div><div class="line">    <span class="keyword">if</span> (avdPath.<span class="keyword">empty</span>()) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    System* system = System::get();</div><div class="line">    <span class="keyword">if</span> ( !system-&gt;pathIsDir(avdPath) || !system-&gt;pathCanRead(avdPath) ) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    std::string avdAvdPath = PathUtils::join(avdPath, <span class="string">"avd"</span>);</div><div class="line">    <span class="keyword">if</span> ( !system-&gt;pathIsDir(avdAvdPath) ) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>模拟器需要获得的两个主要目录是 SDK 的根目录路径，和 AVD 根目录路径。模拟器需要通过 SDK 的根目录路径，查找到系统镜像文件；并通过 AVD 根目录路径查找到特定 AVD 的 数据目录路径。</p>
+<p>模拟器查找 SDK 的根目录路径的顺序如下：<br><strong><em>$ANDROID_HOME</em></strong>  —&gt;<br><strong><em>$ANDROID_SDK_ROOT</em></strong> ===&gt;<br><strong><em>模拟器的启动目录的上一级目录</em></strong></p>
+<p>模拟器查找 AVD 根目录路径的顺序如下：<br><strong><em>$ANDROID_AVD_HOME</em></strong>  ===&gt;<br><strong><em>$ANDROID_SDK_HOME/.android/avd/</em></strong> —&gt;<br><strong><em>$USER_HOME/.android/avd/</em></strong> —&gt;<br><strong><em>$HOME/.android/avd/</em></strong> —&gt;<br><strong><em>$ANDROID_EMULATOR_HOME/avd/</em></strong> ===&gt;<br><strong><em>$ANDROID_SDK_HOME/.android/avd/</em></strong> —&gt;<br><strong><em>$ANDROID_SDK_HOME/avd/</em></strong> —&gt;<br><strong><em>~/.android/avd/</em></strong> </p>
+<p>将 AVD 的数据目录移动位置，同时修改 <code>~/.android/avd</code> 目录下，该 AVD 的 <code>*.ini</code> 配置文件的 <code>path</code> 使其指向新的位置，但在启动该 AVD 时，将报出找不到镜像文件的错误。</p>
+<p>如将名为 <code>Nexus_5_API_25_X86</code> 的 AVD 的数据目录，从 <code>/home/hanpfei0306/.android/avd/Nexus_5_API_25_X86.avd</code> 移动到 <code>/home/hanpfei0306/.android/Nexus_5_API_25_X86.avd</code>，同时 <code>/home/hanpfei0306/.android/avd/Nexus_5_API_25_X86.ini</code> 修改如下：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">avd<span class="selector-class">.ini</span><span class="selector-class">.encoding</span>=UTF-<span class="number">8</span></div><div class="line">path=/home/hanpfei0306/.android/Nexus_5_API_25_X86<span class="selector-class">.avd</span></div><div class="line">target=android-<span class="number">25</span></div></pre></td></tr></table></figure></p>
+<p>但在启动该 AVD 时，将报出如下错误：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ objs/emulator -avd Nexus_5_API_25_X86</div><div class="line">qemu-system-i386: -drive if=none,overlap-<span class="keyword">check</span>=<span class="keyword">none</span>,<span class="keyword">cache</span>=<span class="keyword">unsafe</span>,<span class="keyword">index</span>=<span class="number">1</span>,<span class="keyword">id</span>=<span class="keyword">cache</span>,<span class="keyword">file</span>=/home/hanpfei0306/Nexus_5_API_25_X86.avd/cache.img.qcow2,l2-<span class="keyword">cache</span>-<span class="keyword">size</span>=<span class="number">1048576</span>: Could <span class="keyword">not</span> <span class="keyword">open</span> backing <span class="keyword">file</span>: Could <span class="keyword">not</span> <span class="keyword">open</span> <span class="string">'/home/hanpfei0306/.android/avd/Nexus_5_API_25_X86.avd/cache.img'</span>: 没有那个文件或目录</div></pre></td></tr></table></figure></p>
+<p>即提示找不到 <code>cache.img</code> 文件。这是由于 <code>cache.img.qcow2</code> 镜像文件中写入了其原始的镜像文件 <code>cache.img</code> 的绝对路径。通过十六进制编辑器 <code>hexedit</code> 打开 <code>/home/hanpfei0306/Nexus_5_API_25_X86.avd/cache.img.qcow2</code>，可以看到如下的内容：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="number">00000000</span>   <span class="number">51</span> <span class="number">46</span> <span class="number">49</span> FB  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">03</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">01</span> <span class="number">18</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">3</span>F  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">10</span>  QFI................?....</div><div class="line"><span class="number">00000018</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">04</span> <span class="number">20</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">01</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">03</span> <span class="number">00</span> <span class="number">00</span>  ..... ..................</div><div class="line"><span class="number">00000030</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">01</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">01</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div><div class="line"><span class="number">00000048</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div><div class="line"><span class="number">00000060</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">04</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">68</span>  E2 <span class="number">79</span> <span class="number">2</span>A CA  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">03</span>  <span class="number">72</span> <span class="number">61</span> <span class="number">77</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  .......h.y*.....raw.....</div><div class="line"><span class="number">00000078</span>   <span class="number">68</span> <span class="number">03</span> F8 <span class="number">57</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">90</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">64</span> <span class="number">69</span>  <span class="number">72</span> <span class="number">74</span> <span class="number">79</span> <span class="number">20</span>  <span class="number">62</span> <span class="number">69</span> <span class="number">74</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  h..W......dirty bit.....</div><div class="line"><span class="number">00000090</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div><div class="line"><span class="number">000000</span>A8   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">01</span> <span class="number">63</span> <span class="number">6</span>F  <span class="number">72</span> <span class="number">72</span> <span class="number">75</span> <span class="number">70</span>  <span class="number">74</span> <span class="number">20</span> <span class="number">62</span> <span class="number">69</span>  <span class="number">74</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ..........corrupt bit...</div><div class="line"><span class="number">000000</span>C0   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div><div class="line"><span class="number">000000</span>D8   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">01</span> <span class="number">00</span> <span class="number">6</span>C <span class="number">61</span>  <span class="number">7</span>A <span class="number">79</span> <span class="number">20</span> <span class="number">72</span>  <span class="number">65</span> <span class="number">66</span> <span class="number">63</span> <span class="number">6</span>F  <span class="number">75</span> <span class="number">6</span>E <span class="number">74</span> <span class="number">73</span>  ..........lazy refcounts</div><div class="line"><span class="number">000000</span>F0   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div><div class="line"><span class="number">00000108</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">2</span>F <span class="number">68</span> <span class="number">6</span>F <span class="number">6</span>D  <span class="number">65</span> <span class="number">2</span>F <span class="number">68</span> <span class="number">61</span>  ................/home/ha</div><div class="line"><span class="number">00000120</span>   <span class="number">6</span>E <span class="number">70</span> <span class="number">66</span> <span class="number">65</span>  <span class="number">69</span> <span class="number">30</span> <span class="number">33</span> <span class="number">30</span>  <span class="number">36</span> <span class="number">2</span>F <span class="number">2</span>E <span class="number">61</span>  <span class="number">6</span>E <span class="number">64</span> <span class="number">72</span> <span class="number">6</span>F  <span class="number">69</span> <span class="number">64</span> <span class="number">2</span>F <span class="number">61</span>  <span class="number">76</span> <span class="number">64</span> <span class="number">2</span>F <span class="number">4</span>E  npfei0306/.android/avd/N</div><div class="line"><span class="number">00000138</span>   <span class="number">65</span> <span class="number">78</span> <span class="number">75</span> <span class="number">73</span>  <span class="number">5</span>F <span class="number">35</span> <span class="number">5</span>F <span class="number">41</span>  <span class="number">50</span> <span class="number">49</span> <span class="number">5</span>F <span class="number">32</span>  <span class="number">35</span> <span class="number">5</span>F <span class="number">58</span> <span class="number">38</span>  <span class="number">36</span> <span class="number">2</span>E <span class="number">61</span> <span class="number">76</span>  <span class="number">64</span> <span class="number">2</span>F <span class="number">63</span> <span class="number">61</span>  exus_5_API_25_X86.avd/ca</div><div class="line"><span class="number">00000150</span>   <span class="number">63</span> <span class="number">68</span> <span class="number">65</span> <span class="number">2</span>E  <span class="number">69</span> <span class="number">6</span>D <span class="number">67</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  che.img.................</div><div class="line"><span class="number">00000168</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div><div class="line"><span class="number">00000180</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div><div class="line"><span class="number">00000198</span>   <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>  ........................</div></pre></td></tr></table></figure></p>
+<p>尽管 <code>avdmanager</code> 或者说 <code>sdklib</code> 提供了 move avd 的功能，但该功能也仅限于将 AVD 的数据目录换一个位置，并修改 <code>~/.android/avd/</code> 目录下 AVD 的配置文件指向新的 AVD 数据目录，AVD 数据目录下的 <code>*.qcow2</code> 镜像文件中写入的其对应的原始镜像文件的路径并没有改变。</p>
+<p>由此可见，AVD 一旦启动过，就不再适合移动位置了，除非删掉之前生成的 <code>*.qcow2</code> 镜像文件。</p>
+<p>需要预先创建 AVD，并启动它进入 Launcher。在 Android 设备第一次启动时，将为预装的 Android 系统应用生成 odex 等用于优化应用性能的文件。</p>
+<h1 id="AVD-实例管理及用户数据隔离"><a href="#AVD-实例管理及用户数据隔离" class="headerlink" title="AVD 实例管理及用户数据隔离"></a>AVD 实例管理及用户数据隔离</h1><p><img src="https://www.wolfcstech.com/images/1315506-bf4704dc8fafa1a5.png" alt="image.png"></p>
+<p>根据不同的场景，创建不同类型的 AVD 实例：可复用的 AVD 实例，即这种 AVD 实例仅提供试玩，每次 AVD 结束之后，生成的用户数据将被清除，下次有新的用户需要试玩时，可以复用这种 AVD 实例；用户 AVD 实例，即专门为特定用户分配的 AVD 实例，每次在 AVD 结束之后，用户数据将保存。</p>
+<p><strong><em>AVD 第一次启动时，由于需要为系统应用生成 dex 的优化文件等，因而过程极为耗时。</em></strong>通过如下方式优化 AVD 启动时间：</p>
+<ul>
+<li>AVD 管理服务检测 AVD 实例的使用情况，并在需要的时候，预先创建 AVD 实例，启动它进入 Laucher 并结束它</li>
+<li>请求 AVD 资源时，需要为用户分配预先创建好，并启动过的 AVD。</li>
+<li>移除客户 Android 系统中非必须的系统应用：Browser2、Calendar、DeskClock、Email、ExactCalculator、HTMLViewer、LatinIME、Music、OpenWnn、messaging。这一优化同时也将减少单个 AVD 的磁盘消耗。</li>
+<li>预装部分应用：搜狗输入法、游戏应用</li>
+</ul>
+<p>AVD 管理服务管理的 AVD 池中，将包含三种 AVD 实例：</p>
+<ul>
+<li>AVD 管理服务预先分配，还没有被使用的 AVD</li>
+<li>可复用的 AVD 实例</li>
+<li>特定用户专属 AVD 实例</li>
+</ul>
+<p>AVD 实例相关镜像的创建：</p>
+<ul>
+<li>环境中定义 <strong><em>$ANDROID_HOME</em></strong> 环境变量，指向定制的系统镜像文件的安装目录。自己编译的系统镜像文件安装到这个目录下。</li>
+<li>环境中定义 <strong><em>$ANDROID_AVD_HOME</em></strong> 环境变量，指向定制的 AVD 根目录。创建的所有 AVD 的根配置文件都将保存在该目录下。</li>
+<li>创建一个专门的目录，用于保存各个 AVD 的AVD 数据。</li>
+</ul>
+<p>即每个 AVD 的数据将包含三个部分：系统镜像位于系统镜像目录下；AVD 用户数据镜像位于 AVD 数据目录下；AVD 信息文件位于 AVD 主目录下。</p>
+<p>参考资料<br><a href="https://developer.android.com/studio/run/managing-avds.html" target="_blank" rel="external">创建和管理虚拟设备</a><br><a href="https://developer.android.com/studio/run/emulator-commandline.html" target="_blank" rel="external">Start the Emulator from the Command Line</a></p>
+<h3 id="打赏"><a href="#打赏" class="headerlink" title="打赏"></a><a href="https://www.wolfcstech.com/about/donate.html">打赏</a></h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/虚拟化/" rel="tag"># 虚拟化</a>
+          
+            <a href="/tags/Android开发/" rel="tag"># Android开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/20/adb_overview/" rel="next" title="关于 ADB 实现的说明">
+                <i class="fa fa-chevron-left"></i> 关于 ADB 实现的说明
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/21/android_adb_performance_issue/" rel="prev" title="模拟器性能问题分析与解决">
+                模拟器性能问题分析与解决 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-AVD-的文件"><span class="nav-number">1.</span> <span class="nav-text">Android AVD 的文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客户-Android-系统中的分区与-AVD-的磁盘镜像文件之间的对应关系"><span class="nav-number">2.</span> <span class="nav-text">客户 Android 系统中的分区与 AVD 的磁盘镜像文件之间的对应关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令行创建及启动-AVD-的方法"><span class="nav-number">3.</span> <span class="nav-text">命令行创建及启动 AVD 的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#QEMU-根据-AVD-ID-名称搜索-AVD-相关文件的过程"><span class="nav-number">4.</span> <span class="nav-text">QEMU 根据 AVD ID/名称搜索 AVD 相关文件的过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AVD-实例管理及用户数据隔离"><span class="nav-number">5.</span> <span class="nav-text">AVD 实例管理及用户数据隔离</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#打赏"><span class="nav-number">5.0.1.</span> <span class="nav-text">打赏</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

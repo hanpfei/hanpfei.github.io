@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="虚拟化,翻译,Linux内核," />
+
+
+<meta name="description" content="I. 辅助脚本我们现在提供了一个辅助脚本来重新构建内核，其位于 $AOSP/prebuilts/qemu-kernel/build-kernel.sh。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何预编译 Android 模拟器专用内核">
+<meta property="og:url" content="https://www.wolfcstech.com/2017/12/23/qemu_android_kernel/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="I. 辅助脚本我们现在提供了一个辅助脚本来重新构建内核，其位于 $AOSP/prebuilts/qemu-kernel/build-kernel.sh。">
+<meta property="og:updated_time" content="2017-12-24T02:20:03.297Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何预编译 Android 模拟器专用内核">
+<meta name="twitter:description" content="I. 辅助脚本我们现在提供了一个辅助脚本来重新构建内核，其位于 $AOSP/prebuilts/qemu-kernel/build-kernel.sh。">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2017/12/23/qemu_android_kernel/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>如何预编译 Android 模拟器专用内核 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/12/23/qemu_android_kernel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何预编译 Android 模拟器专用内核</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-23T19:05:49+08:00">2017-12-23</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/虚拟化/" itemprop="url" rel="index"><span itemprop="name">虚拟化</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/23/qemu_android_kernel/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2017/12/23/qemu_android_kernel/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/12/23/qemu_android_kernel/" class="leancloud_visitors" data-flag-title="如何预编译 Android 模拟器专用内核">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="I-辅助脚本"><a href="#I-辅助脚本" class="headerlink" title="I. 辅助脚本"></a>I. 辅助脚本</h2><p>我们现在提供了一个辅助脚本来重新构建内核，其位于 <code>$AOSP/prebuilts/qemu-kernel/build-kernel.sh</code>。<br><a id="more"></a><br>请确保使用了 <code>aosp/master</code> 的 checkout，而不是 <code>aosp/studio-XXX</code> 中的一个，后者不包含重新构建内核所需的预编译目标工具链二进制文件。</p>
+<p>你需要位于 <code>android.googlesource.com/kernel/goldfish.git</code> 的源文件的分支 <code>origin/android-goldfish-&lt;version&gt;</code>，其中 <code>&lt;version&gt;</code> 为应用于你的系统镜像的内核版本。</p>
+<p>大致说来：</p>
+<p>  2.6.27     -&gt; 任何 Gingerbread 之前的版本。(&lt;= Android 2.2)<br>  2.6.29     -&gt; Gingerbread (2.3) 直到 JellyBean MR2 (4.2.x)<br>  3.4        -&gt; KitKat (4.4.x) 和 Lollipop 32 位 (5.0/5.1)<br>  3.10       -&gt; Lollipop 64 位和 Marshmallow (6.0)<br>  3.18       -&gt; 当前的实验性版本。</p>
+<p>此外，你需要选择正确的 ‘config’，其对应于你想要支持的虚拟的板子。当前有两个可以考虑：</p>
+<ul>
+<li><p>传统的虚拟板子称为 ‘goldfish’，对应于由传统的 QEMU1 代码库所支持的虚拟硬件。</p>
+</li>
+<li><p>最新的虚拟板子称为 ‘ranchu’，对应于由 QEMU2 代码库所支持的虚拟硬件。</p>
+</li>
+</ul>
+<p>它们之间的主要差别在于 ‘goldfish’ 支持已经废弃的 goldfish 特有 NAND 和 eMMC 虚拟设备，它们在 QEMU2 中已经被 virtio-block 替代（为了好得多的性能和可靠性）。更多细节，请参考 <code>android/docs/GOLDFISH-VIRTUAL-HARDWARE.TXT</code>。</p>
+<p>通过 <code>--arch=&lt;name&gt;</code> 选项来指定要为哪个架构编译，其中 <code>&lt;name&gt;</code> 为模拟器的 CPU 架构名称（比如 ‘arm’，’mips’，’x86’，’x86_64’，’arm64’ 和 ‘mips64’）中的一个。</p>
+<p>每个架构都有默认的配置（典型的为 ‘goldfish’），你可以通过 <code>--config=&lt;name&gt;</code> 选项覆盖它，其中 <code>&lt;name&gt;</code> 是位于 <code>$KERNEL/arch/*/configs/</code> 下的子目录的名字。</p>
+<p>默认的输出目录将是 <code>/tmp/kernel-qemu/&lt;arch&gt;-&lt;kernel_version&gt;/</code>，但这可以通过 <code>--out=&lt;dir&gt;</code> 选项覆盖。</p>
+<p>默认情况下，脚本将试图从 <code>$AOSP/prebuilts/gcc/</code> 找到一个适当的工具链，但是你可以使用 <code>--cross=&lt;prefix&gt;</code> 选项指定一个不同的。</p>
+<p>查看 <code>build-kernel.sh --help</code> 来了解更多选项和细节。</p>
+<p>这里是重新构建流行的内核配置的选项的列表：</p>
+<p>  Goldfish:<br><figure class="highlight vhdl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="number">32</span>-<span class="built_in">bit</span> ARMv7-A     <span class="comment">--arch=arm</span></div><div class="line"><span class="number">32</span>-<span class="built_in">bit</span> i386        <span class="comment">--arch=x86</span></div><div class="line"><span class="number">32</span>-<span class="built_in">bit</span> MIPS        <span class="comment">--arch=mips</span></div><div class="line"><span class="number">64</span>-<span class="built_in">bit</span> x86_64      <span class="comment">--arch=x86_64</span></div></pre></td></tr></table></figure></p>
+<p>  Ranchu:<br><figure class="highlight vhdl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="number">32</span>-<span class="built_in">bit</span> ARMv7-A     <span class="comment">--arch=arm --config=ranchu</span></div><div class="line"><span class="number">32</span>-<span class="built_in">bit</span> i386        <span class="comment">--arch=x86 --config=i386_ranchu</span></div><div class="line"><span class="number">32</span>-<span class="built_in">bit</span> MIPS        <span class="comment">--arch=mips --config=ranchu</span></div><div class="line"><span class="number">64</span>-<span class="built_in">bit</span> ARMv8       <span class="comment">--arch=arm64</span></div><div class="line"><span class="number">64</span>-<span class="built_in">bit</span> x86_64      <span class="comment">--arch=x86_64 --config=x86_64_ranchu</span></div><div class="line"><span class="number">64</span>-<span class="built_in">bit</span> MIPS        <span class="comment">--arch=mip64 --config=ranchu</span></div></pre></td></tr></table></figure></p>
+<p>脚本将在它的输出目录生成如下的文件：</p>
+<pre><code>kernel-qemu            与 QEMU 一起使用的内核镜像，使用模拟器的 &apos;-kernel &lt;file&gt;&apos; 选项来使用它，其中 `&lt;file&gt;` 为该文件的路径。
+
+vmlinux-qemu           用于以 GDB 调试内核的符号文件（参考下文）。
+
+LINUX_KERNEL_COPYING   内核的许可文件，必须与二进制文件的每份拷贝一起提供。
+
+README                 解释如何编译的小 README 文件。、
+</code></pre><h2 id="II-以-QEMU-调试内核"><a href="#II-以-QEMU-调试内核" class="headerlink" title="II. 以 QEMU 调试内核"></a>II. 以 QEMU 调试内核</h2><p>在你需要调试内核的情况下（比如检查内核 panics），你可以执行下面的过程：</p>
+<p>  1) 从源码重新构建内核（参考前面的小节）。</p>
+<p>  2) 以特殊的选项启动模拟器来使用新内核镜像，启动内核调试，且不要启动 vCPU 来等待 GDB：<br><figure class="highlight livescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">emulator -kernel /path/<span class="keyword">to</span>/kernel-qemu <span class="string">\</span></div><div class="line">         &lt;other-options&gt; <span class="string">\</span></div><div class="line">         -qemu -s -S</div></pre></td></tr></table></figure></p>
+<p>  3) 在另一个终端里，启动一个 GDB 客户端，它将 attach 到模拟器进程，读取内核符号文件之后：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$AOSP<span class="regexp">/prebuilts/</span>gdb<span class="regexp">/linux-x86/</span>bin/gdb</div><div class="line">file <span class="regexp">/path/</span>to/vmlinux-qemu</div><div class="line">target <span class="string">remote :</span><span class="number">1234</span></div><div class="line">b panic</div><div class="line">c</div></pre></td></tr></table></figure></p>
+<p>注意：位于 <code>$AOSP/prebuilts/</code> 下的 gdb 版本支持所有的 Android 目标架构。你的 ‘host’ gdb 可能只支持 x86/x86_64。</p>
+<p>注意：你可以在使用 ‘c’ 命令启动执行之前用 ‘b’ 命令打任意多个断点。</p>
+<p>一旦你命中了断点，使用 ‘bt’ 来打印栈追踪。参考 GDB 手册来了解更多信息。</p>
+<h2 id="III-从头开始重新构建"><a href="#III-从头开始重新构建" class="headerlink" title="III. 从头开始重新构建"></a>III. 从头开始重新构建</h2><p>如果你不想，或不能使用脚本，这里有一份手动的直到：</p>
+<p>你需要在你的 path 中有一份适当的交叉工具链（比如，’arm-eabi-gcc –version’ 必须能够工作）</p>
+<p>然后（对于版本2.6.29）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">git <span class="built_in">clone</span> https://android.googlesource.com/kernel/goldfish.git kernel-goldfish</div><div class="line"><span class="built_in">cd</span> kernel-goldfish</div><div class="line">git checkout origin/android-goldfish-2.6.29</div><div class="line"></div><div class="line"><span class="built_in">export</span> CROSS_COMPILE=arm-eabi-</div><div class="line"><span class="built_in">export</span> ARCH=arm</div><div class="line"><span class="built_in">export</span> SUBARCH=arm</div><div class="line">make goldfish_defconfig    <span class="comment"># configure the kernel</span></div><div class="line">make -j2                   <span class="comment"># build it</span></div></pre></td></tr></table></figure></p>
+<p>=&gt; 这将产生名为 <code>arch/arm/boot/zImage</code> 的文件</p>
+<p>注意：分支 android-goldfish-2.6.27 现在已经废弃。不要使用它。</p>
+<p>现在你可以这样使用它：<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">emulator -kernel path<span class="meta-keyword">/to/</span>your<span class="meta-keyword">/new/</span>zImage <span class="params">&lt;other-options&gt;</span></div></pre></td></tr></table></figure></p>
+<p>你可以通过在上面的指示中使用 <code>goldfish_armv7_defconfig</code> （而不是 <code>goldfish_defconfig</code>）来构建一个 ARMv7 兼容的内核镜像。注意，你将需要通过使用 <code>-cpu cortex-a8</code> 选项启用 ARMv7 模拟，如下：<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">emulator -kernel path<span class="meta-keyword">/to/</span>your<span class="meta-keyword">/new/</span>zImage <span class="params">&lt;other-options&gt;</span> -qemu -cpu cortex-a8</div></pre></td></tr></table></figure></p>
+<p>如果你的内核镜像的名字以 <code>-armv7</code> 结尾，则模拟器二进制文件将自动地为你启用 ARMv7 模拟，因此执行下面的命令应该是等价的：<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">emulator -kernel path<span class="meta-keyword">/to/</span>your/kernel-armv7 <span class="params">&lt;other-options&gt;</span></div></pre></td></tr></table></figure></p>
+<p>Voila !</p>
+<p>原文 $QEMU/android/docs/ANDROID-KERNEL.TXT</p>
+<h3 id="打赏"><a href="#打赏" class="headerlink" title="打赏"></a><a href="https://www.wolfcstech.com/about/donate.html">打赏</a></h3><p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/虚拟化/" rel="tag"># 虚拟化</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/Linux内核/" rel="tag"># Linux内核</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/22/qemu_audio/" rel="next" title="QEMU 中音频模拟如何工作">
+                <i class="fa fa-chevron-left"></i> QEMU 中音频模拟如何工作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/24/studio_build/" rel="prev" title="Android Studio 构建">
+                Android Studio 构建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-辅助脚本"><span class="nav-number">1.</span> <span class="nav-text">I. 辅助脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-以-QEMU-调试内核"><span class="nav-number">2.</span> <span class="nav-text">II. 以 QEMU 调试内核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-从头开始重新构建"><span class="nav-number">3.</span> <span class="nav-text">III. 从头开始重新构建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#打赏"><span class="nav-number">3.1.</span> <span class="nav-text">打赏</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

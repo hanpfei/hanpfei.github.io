@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Android开发,源码分析," />
+
+
+<meta name="description" content="OpenCV4Android中，主要用 org.opencv.android.JavaCameraView（后面用JavaCameraView 指代）、org.opencv.android.NativeCameraView（后面用NativeCameraView 指代）及 org.opencv.android.CameraBridgeViewBase（后面用CameraBridgeViewBase">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenCV4Android JavaCameraView实现">
+<meta property="og:url" content="https://www.wolfcstech.com/2015/11/04/javacameraview_in_opencv4android/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="OpenCV4Android中，主要用 org.opencv.android.JavaCameraView（后面用JavaCameraView 指代）、org.opencv.android.NativeCameraView（后面用NativeCameraView 指代）及 org.opencv.android.CameraBridgeViewBase（后面用CameraBridgeViewBase">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-3f340cdb398ce0e8.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-c6b6e787c435a7eb.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-df472fc92db931f1.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-2417a3efe87dcc85.png">
+<meta property="og:updated_time" content="2018-02-04T04:40:11.665Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenCV4Android JavaCameraView实现">
+<meta name="twitter:description" content="OpenCV4Android中，主要用 org.opencv.android.JavaCameraView（后面用JavaCameraView 指代）、org.opencv.android.NativeCameraView（后面用NativeCameraView 指代）及 org.opencv.android.CameraBridgeViewBase（后面用CameraBridgeViewBase">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-3f340cdb398ce0e8.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2015/11/04/javacameraview_in_opencv4android/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>OpenCV4Android JavaCameraView实现 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2015/11/04/javacameraview_in_opencv4android/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">OpenCV4Android JavaCameraView实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-11-04T16:05:49+08:00">2015-11-04</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/11/04/javacameraview_in_opencv4android/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2015/11/04/javacameraview_in_opencv4android/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/11/04/javacameraview_in_opencv4android/" class="leancloud_visitors" data-flag-title="OpenCV4Android JavaCameraView实现">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>OpenCV4Android中，主要用 <code>org.opencv.android.JavaCameraView</code>（后面用<code>JavaCameraView</code> 指代）、<code>org.opencv.android.NativeCameraView</code>（后面用<code>NativeCameraView</code> 指代）及 <code>org.opencv.android.CameraBridgeViewBase</code>（后面用<code>CameraBridgeViewBase</code> 指代）这几个类将应用程序的逻辑与 Camera 的图像捕捉及处理后的图像显示逻辑联系起来的。这几个类的结构大致如下图所示的这样：</p>
+<a id="more"></a>
+<p><img src="https://www.wolfcstech.com/images/1315506-3f340cdb398ce0e8.png" alt=""></p>
+<p>大体上可以认为，<code>CameraBridgeViewBase</code> 主要是借助于 <code>SurfaceView</code> 的功能，来完成图像显示相关的功能。而 <code>JavaCameraView</code> 则主要用于与 Camera 硬件设备进行交互。而从线程的角度来分析，则这里也是一种生产者消费这模型。生产者线程在<br> <code>onPreviewFrame()</code> 回调方法中将 camera preview 的一帧帧数据压缩进类型为 Mat 的缓冲区中。而消费者线程则取出这些 Mat 图像，先是传递给 app 注册的 listener 做一些特定于应用的图像处理操作，然后把处理后的图像显示出来。在此处，我们也主要从生产者-消费者模型的角度来分析相关这些类的实现。</p>
+<h1 id="生产者、消费者"><a href="#生产者、消费者" class="headerlink" title="生产者、消费者"></a>生产者、消费者</h1><p>对于生产者线程，我们可以简单的将它理解为，当 Camera preview 的一帧数据准备好了的时候，它会去调用 <code>onPreviewFrame()</code> 回调方法将一帧图像压缩进 Mat 的缓冲区。具体 <code>onPreviewFrame()</code> 回调方法的调用流程，则大致如下面的这个 backtrace 所示的那样：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-c6b6e787c435a7eb.png" alt=""></p>
+<p>由此我们不难理解，生产者这一角色其实是由应用程序的主线程来担任的。我们还可以看一下在 <code>JavaCameraView.onPreviewFrame(byte[], Camera)</code> 里面具体都做了些什么：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">byte</span> mBuffer[];</div><div class="line"><span class="keyword">private</span> Mat[] mFrameChain;</div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> mChainIdx = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">protected</span> Camera mCamera;</div><div class="line"><span class="keyword">protected</span> JavaCameraFrame[] mCameraFrame;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onPreviewFrame</span><span class="params">(<span class="keyword">byte</span>[] frame, Camera arg1)</span> </span>&#123;</div><div class="line">    Log.d(TAG, <span class="string">"Preview Frame received. Frame size: "</span> + frame.length);</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        mFrameChain[<span class="number">1</span> - mChainIdx].put(<span class="number">0</span>, <span class="number">0</span>, frame);</div><div class="line">        <span class="keyword">this</span>.notify();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (mCamera != <span class="keyword">null</span>)</div><div class="line">        mCamera.addCallbackBuffer(mBuffer);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>非常直接，将一帧 camera preview 数据压入 Mat 缓冲区中；通知在当前对象的等待队列上等待的线程；然后便是调用了 <code>mCamera.addCallbackBuffer(mBuffer)</code> (后续会进一步解释这一行)。</p>
+<p>接着我们来看消费者线程的前世今生。首先是消费者线程的创建及启动过程，在<code>JavaCameraView.connectCamera()</code> 方法中：<br><figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">Thread</span> mThread;</div><div class="line"><span class="keyword">private</span> <span class="built_in">boolean</span> mStopThread;</div><div class="line"></div><div class="line">@Override</div><div class="line"><span class="keyword">protected</span> <span class="built_in">boolean</span> connectCamera(int width, int height) &#123;</div><div class="line">    <span class="comment">/* 1. We need to instantiate camera</span></div><div class="line">     * 2. We need to start thread which will be getting frames</div><div class="line">     */</div><div class="line">    <span class="comment">/* First step - initialize camera connection */</span></div><div class="line">    <span class="keyword">Log</span>.d(<span class="built_in">TAG</span>, <span class="string">"Connecting to camera"</span>);</div><div class="line">    <span class="keyword">if</span> (!initializeCamera(width, height))</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* now we can start update thread */</span></div><div class="line">    <span class="keyword">Log</span>.d(<span class="built_in">TAG</span>, <span class="string">"Starting processing thread"</span>);</div><div class="line">    mStopThread = <span class="literal">false</span>;</div><div class="line">    mThread = <span class="literal">new</span> <span class="keyword">Thread</span>(<span class="literal">new</span> CameraWorker());</div><div class="line">    mThread.start();</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>整个过程可以看作两步，首先是完成对 Camera 硬件的初始化，为下一步消费者线程的创建及启动创造条件；然后便是创建一个线程，即消费者线程，来执行整个的图像处理及显示循环。那这个方法又是如何一步步被调到的呢？或者换句话说，camera图像的处理及显示循环会在什么样的情况下被启动呢？搜一下这个函数的callers，只有 <code>CameraBridgeViewBase.onEnterStartedState()</code> 的一处：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// <span class="doctag">NOTE:</span> The order of bitmap constructor and camera connection is important for android 4.1.x</span></div><div class="line"><span class="comment">// Bitmap must be constructed before surface</span></div><div class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">void</span> <span class="title">onEnterStartedState</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">/* Connect camera */</span></div><div class="line">    <span class="keyword">if</span> (!connectCamera(getWidth(), getHeight())) &#123;</div><div class="line">        AlertDialog ad = <span class="keyword">new</span> AlertDialog.Builder(getContext()).create();</div><div class="line">        ad.setCancelable(<span class="keyword">false</span>); <span class="comment">// This blocks the 'BACK' button</span></div><div class="line">        ad.setMessage(<span class="string">"It seems that you device does not support camera (or it is locked). Application will be closed."</span>);</div><div class="line">        ad.setButton(DialogInterface.BUTTON_NEUTRAL,  <span class="string">"OK"</span>, <span class="keyword">new</span> DialogInterface.OnClickListener() &#123;</div><div class="line">            <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onClick</span><span class="params">(DialogInterface dialog, <span class="keyword">int</span> which)</span> </span>&#123;</div><div class="line">                dialog.dismiss();</div><div class="line">                ((Activity) getContext()).finish();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        ad.show();</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个函数的功能只是调用 <code>connectCamera(getWidth(), getHeight())</code> + 对于调用执行出错时的处理，即显示一个 Dialog 给用户一些提示，并在用户点击了 Dialog 上的 Button 时退出应用。继续向上追，<code>onEnterStartedState()</code> 也只有一个 caller，为<code>CameraBridgeViewBase.processEnterState(int state)</code>：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">void</span> <span class="title">processEnterState</span><span class="params">(<span class="keyword">int</span> state)</span> </span>&#123;</div><div class="line">    <span class="keyword">switch</span>(state) &#123;</div><div class="line">    <span class="keyword">case</span> STARTED:</div><div class="line">        onEnterStartedState();</div><div class="line">        <span class="keyword">if</span> (mListener != <span class="keyword">null</span>) &#123;</div><div class="line">            mListener.onCameraViewStarted(mFrameWidth, mFrameHeight);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    <span class="keyword">case</span> STOPPED:</div><div class="line">        onEnterStoppedState();</div><div class="line">        <span class="keyword">if</span> (mListener != <span class="keyword">null</span>) &#123;</div><div class="line">            mListener.onCameraViewStopped();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个函数处理状态的进入，进入启动状态，或者进入退出状态。将要启动 camera 图像的处理及显示循环的是其中的进入启动状态部分。由此我们也不难发现，在camera图像的处理及显示循环被启动之后，OpenCV4Android 的<code>JavaCameraView(CameraBridgeViewBase)</code> 还会通过app注册的<br> <code>Listener(CvCameraViewListener2.onCameraViewStarted(int width, int height))</code> 给app一个通知。这个方法也还是一个 private 方法，似乎依然没有追到那种让我们可以很容易理解的地步。继续向上追，在 <code>CameraBridgeViewBase.checkCurrentState()</code>：<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Called when mSyncObject lock is held</div><div class="line"> */</div><div class="line">private void checkCurrentState() &#123;</div><div class="line">    int targetState;</div><div class="line"></div><div class="line">    if (mEnabled &amp;&amp; mSurfaceExist &amp;&amp; getVisibility() == VISIBLE) &#123;</div><div class="line">        targetState = STARTED;</div><div class="line">    &#125; else &#123;</div><div class="line">        targetState = STOPPED;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (targetState != mState) &#123;</div><div class="line">        /* The <span class="keyword">state</span> change detected. Need <span class="keyword">to</span> exit the current <span class="keyword">state</span> and enter target <span class="keyword">state</span> */</div><div class="line">        processExitState(mState);</div><div class="line">        mState = targetState;</div><div class="line">        processEnterState(mState);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在这个方法中，会检查这个 <code>View</code> 当前的状态，然后退出老的状态，更新当前状态，并进入新的状态。当状态由 <code>STOPPED</code> 转入 <code>STARTED</code> 状态时，会去启动 camera 图像的处理及显示循环。可是究竟什么样的动作会改变这个 <code>View</code> 的状态，并触发这个状态的切换呢？可以查一下这个方法的 callers：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">surfaceChanged</span><span class="params">(SurfaceHolder arg0, <span class="keyword">int</span> arg1, <span class="keyword">int</span> arg2, <span class="keyword">int</span> arg3)</span> </span>&#123;</div><div class="line">    Log.d(TAG, <span class="string">"call surfaceChanged event"</span>);</div><div class="line">    <span class="keyword">synchronized</span>(mSyncObject) &#123;</div><div class="line">        <span class="keyword">if</span> (!mSurfaceExist) &#123;</div><div class="line">            mSurfaceExist = <span class="keyword">true</span>;</div><div class="line">            checkCurrentState();</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">/** Surface changed. We need to stop camera and restart with new parameters */</span></div><div class="line">            <span class="comment">/* Pretend that old surface has been destroyed */</span></div><div class="line">            mSurfaceExist = <span class="keyword">false</span>;</div><div class="line">            checkCurrentState();</div><div class="line">            <span class="comment">/* Now use new surface. Say we have it now */</span></div><div class="line">            mSurfaceExist = <span class="keyword">true</span>;</div><div class="line">            checkCurrentState();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">surfaceCreated</span><span class="params">(SurfaceHolder holder)</span> </span>&#123;</div><div class="line">    <span class="comment">/* Do nothing. Wait until surfaceChanged delivered */</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">surfaceDestroyed</span><span class="params">(SurfaceHolder holder)</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span>(mSyncObject) &#123;</div><div class="line">        mSurfaceExist = <span class="keyword">false</span>;</div><div class="line">        checkCurrentState();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * This method is provided for clients, so they can enable the camera connection.</div><div class="line"> * The actual onCameraViewStarted callback will be delivered only after both this method is called and surface is available</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">enableView</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span>(mSyncObject) &#123;</div><div class="line">        mEnabled = <span class="keyword">true</span>;</div><div class="line">        checkCurrentState();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * This method is provided for clients, so they can disable camera connection and stop</div><div class="line"> * the delivery of frames even though the surface view itself is not destroyed and still stays on the scren</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">disableView</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span>(mSyncObject) &#123;</div><div class="line">        mEnabled = <span class="keyword">false</span>;</div><div class="line">        checkCurrentState();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>总结一下，系统在 <code>SurfaceView(CameraBridgeViewBase/JavaCameraView)</code> 的 surface状态发生改变时可能会去更新这个 View 的当前状态；同时也提供给 app 两个接口<code>enableView()</code> 和 <code>disableView()</code> 来主动的改变 <code>View</code> 的状态。当一个 <code>View</code> 进入了<code>STARTED</code> 状态时，camera 图像的处理及显示循环会被启动。</p>
+<p>消费者线程的启动过程大体如此。那么在消费线程的处理循环中又都会做些什么样的事情呢？来看 <code>JavaCameraView.CameraWorker</code> 类的实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">CameraWorker</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        do &#123;</div><div class="line">            <span class="keyword">synchronized</span> (JavaCameraView.<span class="keyword">this</span>) &#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    JavaCameraView.<span class="keyword">this</span>.wait();</div><div class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                    <span class="comment">// TODO Auto-generated catch block</span></div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (!mStopThread) &#123;</div><div class="line">                <span class="keyword">if</span> (!mFrameChain[mChainIdx].empty())</div><div class="line">                    deliverAndDrawFrame(mCameraFrame[mChainIdx]);</div><div class="line">                mChainIdx = <span class="number">1</span> - mChainIdx;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">while</span> (!mStopThread);</div><div class="line">        Log.d(TAG, <span class="string">"Finish processing thread"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可以看到，一个执行周期大体上为：先是等待被另外一个线程唤醒，然后在线程没有被终止的情况下，由 Mat 缓冲中取出一个 Mat，交由 app 进行图像处理，并显示处理之后图像，最后更新 <code>mChainIdx</code> 的值，以使得生产者线程能够了解那块缓冲是已经被使用过了的。配合前面 <code>JavaCameraView.onPreviewFrame(byte[], Camera)</code> 一起来看，消费者线程总是会先去等待生产者线程的通知，<code>onPreviewFrame()</code> 压入一帧图像之后，会去唤醒消费者线程去处理并显示图像。<code>mFrameChain</code> 是一个有着两个元素的数组，<code>mChainIdx</code> 为将要被处理的那一帧图像的 index。粗略的来看 code，似乎是当 <code>onPreviewFrame()</code> 向 index 为 0 的 frame 中压入一帧数据后，它会通知消费者线程去取出 index 为 1 的 frame 来处理，而不是它刚刚压入了数据的 index 为 0 的 frame；而当它向 index 为 1 的 frame 中压入数据时，则它实际上是通知消费者线程去处理它上一次压入图像的 index 为 0 的数据。因而，尽管这里使用了 synchronized-block，但这实际上似乎是一种无锁的并发。</p>
+<p>这种设计似乎还是有一些问题。比如，刚启动的时候，<code>mChainIdx</code> 为 0，消费者线程会先等待，生产者线程向 index 为 1 的一帧中压入数据，然后消费这线程被唤醒，去处理没有实际内容的 index 为 0 的那一帧，消费者线程可能还是要花一些时间，于是生产者线程可能又多次向 index 为 1 的一帧中压入数据。消费者线程在处理完之后，则会实际上去等待处理 index 为1的那一帧。但消费者线程具体是被生产者线程向 index 为 1 还是为 0 的那一帧中压入图像之后所通知的，还是有不同的可能。假设 <code>onPreviewFrame()</code> 压入一帧图像可能会花一些时间，消费者线程会在生产者线程在更新 index 为 1 的那一帧时，迅速将 mChainIdx 更新为 1，并进入等待状态，于是乎，消费者线程将要处理的那一帧将会是刚刚被 <code>onPreviewFrame()</code> 更新的那一帧；另外的可能是，<code>onPreviewFrame()</code> 先是发出了 notify，消费者线程丢失了这一次通知，<code>onPreviewFrame()</code> 会需要一段时间才会有下一帧数据到来，但消费者线程会一直执行，于是消费者线程会继续更新 <code>mChainIdx</code> 为 1，并进入等待状态，而当 <code>onPreviewFrame()</code> 下一次被调到时，则它将会去更新 index为 0 的那一帧，于是发生的 case 将是，<code>onPreviewFrame()</code> 更新 index 为 0 的那一帧之后通知消费者线程去处理 index 为 1 的那一帧。</p>
+<p>总结一下，此处是一种无锁并发的设计，使用了生产者-消费者模型，生产者生产的速度快于消费者消费速度时的丢弃策略为，丢掉之前的数据。消费者线程总是会轮流去处理缓冲区中的那两帧，而具体生产者是在更新完哪一帧时去通知的消费者线程则具有颇多的不确定性。比如在上一段的分析中，消费者线程要处理 index 为 1 的那一帧时，既有可能是<code>onPreviewFrame()</code> 刚刚第二(N) 次更新 index 为 1 的那一帧之后通知的，也可能是刚刚更新了一次或多次 index 为 0 的那一帧。这种设计总还是会丢弃掉很多帧不去处理及显示，当然这也是这样的应用场景下，非常 reasonable 的一种丢弃策略，即丢掉那些不能及时处理的数据，而只处理最新的那些。</p>
+<p>消费的执行周期中，最主要的还是对于 <code>deliverAndDrawFrame()</code> 的调用，都是在这个方法中对图像进行处理并绘制的嘛。接着我们就来看一下这个方法的实现：<br><figure class="highlight pony"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * This method shall be called by the subclasses when they have valid</div><div class="line"> * object and want it to be delivered to external client (via callback) and</div><div class="line"> * then displayed on the screen.</div><div class="line"> * @param frame - the current frame to be delivered</div><div class="line"> */</div><div class="line">protected void deliverAndDrawFrame(<span class="type">CvCameraViewFrame</span> frame) &#123;</div><div class="line">    <span class="type">Mat</span> modified;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (mListener != null) &#123;</div><div class="line">        modified = mListener.onCameraFrame(frame);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        modified = frame.rgba();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    boolean bmpValid = <span class="literal">true</span>;</div><div class="line">    <span class="keyword">if</span> (modified != null) &#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="type">Utils</span>.matToBitmap(modified, mCacheBitmap);</div><div class="line">        &#125; catch(<span class="type">Exception</span> e) &#123;</div><div class="line">            <span class="type">Log</span>.e(<span class="type">TAG</span>, <span class="string">"Mat type: "</span> + modified);</div><div class="line">            <span class="type">Log</span>.e(<span class="type">TAG</span>, <span class="string">"Bitmap type: "</span> + mCacheBitmap.getWidth() + <span class="string">"*"</span> + mCacheBitmap.getHeight());</div><div class="line">            <span class="type">Log</span>.e(<span class="type">TAG</span>, <span class="string">"Utils.matToBitmap() throws an exception: "</span> + e.getMessage());</div><div class="line">            bmpValid = <span class="literal">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (bmpValid &amp;&amp; mCacheBitmap != null) &#123;</div><div class="line">        <span class="type">Canvas</span> canvas = getHolder().lockCanvas();</div><div class="line">        <span class="keyword">if</span> (canvas != null) &#123;</div><div class="line">            canvas.drawColor(<span class="number">0</span>, android.graphics.<span class="type">PorterDuff</span>.<span class="type">Mode</span>.<span class="type">CLEAR</span>);</div><div class="line">            <span class="type">Log</span>.d(<span class="type">TAG</span>, <span class="string">"mStretch value: "</span> + mScale);</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (mScale != <span class="number">0</span>) &#123;</div><div class="line">                canvas.drawBitmap(mCacheBitmap, <span class="function"><span class="keyword">new</span> <span class="title">Rect</span>(<span class="number">0</span>,<span class="number">0</span>,mCacheBitmap.getWidth(), <span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>()),</span></div><div class="line">                     <span class="title">new</span> <span class="title">Rect</span>((int)((canvas.getWidth() - <span class="title">mScale</span>*<span class="title">mCacheBitmap</span>.<span class="title">getWidth</span>()) / 2),</div><div class="line">                     (int)((canvas.getHeight() - <span class="title">mScale</span>*<span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>()) / 2),</div><div class="line">                     (int)((canvas.getWidth() - <span class="title">mScale</span>*<span class="title">mCacheBitmap</span>.<span class="title">getWidth</span>()) / 2 + <span class="title">mScale</span>*<span class="title">mCacheBitmap</span>.<span class="title">getWidth</span>()),</div><div class="line">                     (int)((canvas.getHeight() - <span class="title">mScale</span>*<span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>()) / 2 + <span class="title">mScale</span>*<span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>())), <span class="title">null</span>);</div><div class="line">            &#125; <span class="title">else</span> &#123;</div><div class="line">                 <span class="title">canvas</span>.<span class="title">drawBitmap</span>(mCacheBitmap, new <span class="type">Rect</span>(<span class="number">0</span>,<span class="number">0</span>,mCacheBitmap.getWidth(), <span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>()),</div><div class="line">                     <span class="title">new</span> <span class="title">Rect</span>((canvas.getWidth() - <span class="title">mCacheBitmap</span>.<span class="title">getWidth</span>()) / 2,</div><div class="line">                     (canvas.getHeight() - <span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>()) / 2,</div><div class="line">                     (canvas.getWidth() - <span class="title">mCacheBitmap</span>.<span class="title">getWidth</span>()) / 2 + <span class="title">mCacheBitmap</span>.<span class="title">getWidth</span>(),</div><div class="line">                     (canvas.getHeight() - <span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>()) / 2 + <span class="title">mCacheBitmap</span>.<span class="title">getHeight</span>()), <span class="title">null</span>);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="title">if</span> (mFpsMeter != null) &#123;</div><div class="line">                <span class="title">mFpsMeter</span>.<span class="title">measure</span>();</div><div class="line">                <span class="title">mFpsMeter</span>.<span class="title">draw</span>(canvas, <span class="number">20</span>, <span class="number">30</span>);</div><div class="line">            &#125;</div><div class="line">            <span class="title">getHolder</span>().<span class="title">unlockCanvasAndPost</span>(canvas);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>前面唠叨了半天“图像的处理及绘制”，那“图像的处理”究竟指的是什么呢？实际上指的就是那个对于 listener 的回调方法 <code>mListener.onCameraFrame(frame)</code> 的调用。图像处理是应用程序的逻辑，因而这一职责也完全的是在应用程序端。图像处理完了之后呢？将 Mat 这种 android 不能直接处理的结构转化为 android 能直接处理的 Bitmap 结构喽。接下来便是绘制，将 Bitmap 绘制在 surface 的正中心位置，可能会放缩，也可能不会，具体要看mScale 的值。此处绘制的部分，也是充分体现了 <code>SurfaceView</code> 可以在非主线程中绘制的巨大优势。</p>
+<p>那消费者线程又是在什么时候终止的呢？在回到这个问题之前，当然是要先回答另一个问题，就是消费者线程是如何被终止的？由 <code>JavaCameraView.CameraWorker.run()</code> 还是不难看出，是通过标记 <code>mStopThread</code> 的设置来终止的。稍作搜索，不难发现，是在<code>JavaCameraView.disconnectCamera()</code>：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">releaseCamera</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (mCamera != <span class="keyword">null</span>) &#123;</div><div class="line">            mCamera.stopPreview();</div><div class="line">            mCamera.setPreviewCallback(<span class="keyword">null</span>);</div><div class="line">            mCamera.release();</div><div class="line">        &#125;</div><div class="line">        mCamera = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">if</span> (mFrameChain != <span class="keyword">null</span>) &#123;</div><div class="line">            mFrameChain[<span class="number">0</span>].release();</div><div class="line">            mFrameChain[<span class="number">1</span>].release();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (mCameraFrame != <span class="keyword">null</span>) &#123;</div><div class="line">            mCameraFrame[<span class="number">0</span>].release();</div><div class="line">            mCameraFrame[<span class="number">1</span>].release();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">disconnectCamera</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">/* 1. We need to stop thread which updating the frames</span></div><div class="line">     * 2. Stop camera and release it</div><div class="line">     */</div><div class="line">    Log.d(TAG, <span class="string">"Disconnecting from camera"</span>);</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        mStopThread = <span class="keyword">true</span>;</div><div class="line">        Log.d(TAG, <span class="string">"Notify thread"</span>);</div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            <span class="keyword">this</span>.notify();</div><div class="line">        &#125;</div><div class="line">        Log.d(TAG, <span class="string">"Wating for thread"</span>);</div><div class="line">        <span class="keyword">if</span> (mThread != <span class="keyword">null</span>)</div><div class="line">            mThread.join();</div><div class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        mThread =  <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/* Now release camera */</span></div><div class="line">    releaseCamera();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>再来看一下这个方法被调用到时的调用栈：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-df472fc92db931f1.png" alt=""></p>
+<p>对照前面调用 <code>connectCamera()</code> 的过程的分析，大概也不需要做过多的说明。</p>
+<h1 id="Camera"><a href="#Camera" class="headerlink" title="Camera"></a>Camera</h1><p>在 <code>JavaCameraView</code> 中，与 Camera 硬件的交互方式还是有一些独特性的。首先来看camera 的打开及初始化：<br><figure class="highlight processing"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> <span class="built_in">boolean</span> initializeCamera(<span class="built_in">int</span> <span class="built_in">width</span>, <span class="built_in">int</span> <span class="built_in">height</span>) &#123;</div><div class="line">    Log.d(TAG, <span class="string">"Initialize java camera"</span>);</div><div class="line">    <span class="built_in">boolean</span> result = <span class="keyword">true</span>;</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        mCamera = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (mCameraIndex == CAMERA_ID_ANY) &#123;</div><div class="line">            Log.d(TAG, <span class="string">"Trying to open camera with old open()"</span>);</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                mCamera = Camera.<span class="built_in">open</span>();</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">catch</span> (Exception e)&#123;</div><div class="line">                Log.e(TAG, <span class="string">"Camera is not available (in use or does not exist): "</span> + e.getLocalizedMessage());</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span>(mCamera == <span class="keyword">null</span> &amp;&amp; Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.GINGERBREAD) &#123;</div><div class="line">                <span class="built_in">boolean</span> connected = <span class="keyword">false</span>;</div><div class="line">                <span class="keyword">for</span> (<span class="built_in">int</span> camIdx = <span class="number">0</span>; camIdx &lt; Camera.getNumberOfCameras(); ++camIdx) &#123;</div><div class="line">                    Log.d(TAG, <span class="string">"Trying to open camera with new open("</span> + Integer.valueOf(camIdx) + <span class="string">")"</span>);</div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        mCamera = Camera.<span class="built_in">open</span>(camIdx);</div><div class="line">                        connected = <span class="keyword">true</span>;</div><div class="line">                    &#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</div><div class="line">                        Log.e(TAG, <span class="string">"Camera #"</span> + camIdx + <span class="string">"failed to open: "</span> + e.getLocalizedMessage());</div><div class="line">                    &#125;</div><div class="line">                    <span class="keyword">if</span> (connected) <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.GINGERBREAD) &#123;</div><div class="line">                <span class="built_in">int</span> localCameraIndex = mCameraIndex;</div><div class="line">                <span class="keyword">if</span> (mCameraIndex == CAMERA_ID_BACK) &#123;</div><div class="line">                    Log.i(TAG, <span class="string">"Trying to open back camera"</span>);</div><div class="line">                    Camera.CameraInfo cameraInfo = <span class="keyword">new</span> Camera.CameraInfo();</div><div class="line">                    <span class="keyword">for</span> (<span class="built_in">int</span> camIdx = <span class="number">0</span>; camIdx &lt; Camera.getNumberOfCameras(); ++camIdx) &#123;</div><div class="line">                        Camera.getCameraInfo( camIdx, cameraInfo );</div><div class="line">                        <span class="keyword">if</span> (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) &#123;</div><div class="line">                            localCameraIndex = camIdx;</div><div class="line">                            <span class="keyword">break</span>;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mCameraIndex == CAMERA_ID_FRONT) &#123;</div><div class="line">                    Log.i(TAG, <span class="string">"Trying to open front camera"</span>);</div><div class="line">                    Camera.CameraInfo cameraInfo = <span class="keyword">new</span> Camera.CameraInfo();</div><div class="line">                    <span class="keyword">for</span> (<span class="built_in">int</span> camIdx = <span class="number">0</span>; camIdx &lt; Camera.getNumberOfCameras(); ++camIdx) &#123;</div><div class="line">                        Camera.getCameraInfo( camIdx, cameraInfo );</div><div class="line">                        <span class="keyword">if</span> (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) &#123;</div><div class="line">                            localCameraIndex = camIdx;</div><div class="line">                            <span class="keyword">break</span>;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">if</span> (localCameraIndex == CAMERA_ID_BACK) &#123;</div><div class="line">                    Log.e(TAG, <span class="string">"Back camera not found!"</span>);</div><div class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (localCameraIndex == CAMERA_ID_FRONT) &#123;</div><div class="line">                    Log.e(TAG, <span class="string">"Front camera not found!"</span>);</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    Log.d(TAG, <span class="string">"Trying to open camera with new open("</span> + Integer.valueOf(localCameraIndex) + <span class="string">")"</span>);</div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        mCamera = Camera.<span class="built_in">open</span>(localCameraIndex);</div><div class="line">                    &#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</div><div class="line">                        Log.e(TAG, <span class="string">"Camera #"</span> + localCameraIndex + <span class="string">"failed to open: "</span> + e.getLocalizedMessage());</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (mCamera == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line"></div><div class="line">        <span class="comment">/* Now set camera parameters */</span></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Camera.Parameters params = mCamera.getParameters();</div><div class="line">            Log.d(TAG, <span class="string">"getSupportedPreviewSizes()"</span>);</div><div class="line">            List&lt;android.hardware.Camera.Size&gt; sizes = params.getSupportedPreviewSizes();</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (sizes != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="comment">/* Select the size that fits surface considering maximum size allowed */</span></div><div class="line">                Size frameSize = calculateCameraFrameSize(sizes, <span class="keyword">new</span> JavaCameraSizeAccessor(), <span class="built_in">width</span>, <span class="built_in">height</span>);</div><div class="line"></div><div class="line">                params.setPreviewFormat(ImageFormat.NV21);</div><div class="line">                Log.d(TAG, <span class="string">"Set preview size to "</span> + Integer.valueOf((<span class="built_in">int</span>)frameSize.<span class="built_in">width</span>) + <span class="string">"x"</span> + Integer.valueOf((<span class="built_in">int</span>)frameSize.<span class="built_in">height</span>));</div><div class="line">                params.setPreviewSize((<span class="built_in">int</span>)frameSize.<span class="built_in">width</span>, (<span class="built_in">int</span>)frameSize.<span class="built_in">height</span>);</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.ICE_CREAM_SANDWICH)</div><div class="line">                    params.setRecordingHint(<span class="keyword">true</span>);</div><div class="line"></div><div class="line">                List&lt;<span class="keyword">String</span>&gt; FocusModes = params.getSupportedFocusModes();</div><div class="line">                <span class="keyword">if</span> (FocusModes != <span class="keyword">null</span> &amp;&amp; FocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO))</div><div class="line">                &#123;</div><div class="line">                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                mCamera.setParameters(params);</div><div class="line">                params = mCamera.getParameters();</div><div class="line"></div><div class="line">                mFrameWidth = params.getPreviewSize().<span class="built_in">width</span>;</div><div class="line">                mFrameHeight = params.getPreviewSize().<span class="built_in">height</span>;</div><div class="line"></div><div class="line">                <span class="keyword">if</span> ((getLayoutParams().<span class="built_in">width</span> == LayoutParams.MATCH_PARENT) &amp;&amp; (getLayoutParams().<span class="built_in">height</span> == LayoutParams.MATCH_PARENT))</div><div class="line">                    mScale = Math.<span class="built_in">min</span>(((<span class="built_in">float</span>)<span class="built_in">height</span>)/mFrameHeight, ((<span class="built_in">float</span>)<span class="built_in">width</span>)/mFrameWidth);</div><div class="line">                <span class="keyword">else</span></div><div class="line">                    mScale = <span class="number">0</span>;</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (mFpsMeter != <span class="keyword">null</span>) &#123;</div><div class="line">                    mFpsMeter.setResolution(mFrameWidth, mFrameHeight);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="built_in">int</span> <span class="built_in">size</span> = mFrameWidth * mFrameHeight;</div><div class="line">                <span class="built_in">size</span>  = <span class="built_in">size</span> * ImageFormat.getBitsPerPixel(params.getPreviewFormat()) / <span class="number">8</span>;</div><div class="line">                mBuffer = <span class="keyword">new</span> <span class="built_in">byte</span>[<span class="built_in">size</span>];</div><div class="line"></div><div class="line">                mCamera.addCallbackBuffer(mBuffer);</div><div class="line">                mCamera.setPreviewCallbackWithBuffer(<span class="keyword">this</span>);</div><div class="line"></div><div class="line">                mFrameChain = <span class="keyword">new</span> Mat[<span class="number">2</span>];</div><div class="line">                mFrameChain[<span class="number">0</span>] = <span class="keyword">new</span> Mat(mFrameHeight + (mFrameHeight/<span class="number">2</span>), mFrameWidth, CvType.CV_8UC1);</div><div class="line">                mFrameChain[<span class="number">1</span>] = <span class="keyword">new</span> Mat(mFrameHeight + (mFrameHeight/<span class="number">2</span>), mFrameWidth, CvType.CV_8UC1);</div><div class="line"></div><div class="line">                AllocateCache();</div><div class="line"></div><div class="line">                mCameraFrame = <span class="keyword">new</span> JavaCameraFrame[<span class="number">2</span>];</div><div class="line">                mCameraFrame[<span class="number">0</span>] = <span class="keyword">new</span> JavaCameraFrame(mFrameChain[<span class="number">0</span>], mFrameWidth, mFrameHeight);</div><div class="line">                mCameraFrame[<span class="number">1</span>] = <span class="keyword">new</span> JavaCameraFrame(mFrameChain[<span class="number">1</span>], mFrameWidth, mFrameHeight);</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.HONEYCOMB) &#123;</div><div class="line">                    mSurfaceTexture = <span class="keyword">new</span> SurfaceTexture(MAGIC_TEXTURE_ID);</div><div class="line">                    mCamera.setPreviewTexture(mSurfaceTexture);</div><div class="line">                &#125; <span class="keyword">else</span></div><div class="line">                   mCamera.setPreviewDisplay(<span class="keyword">null</span>);</div><div class="line"></div><div class="line">                <span class="comment">/* Finally we are ready to start the preview */</span></div><div class="line">                Log.d(TAG, <span class="string">"startPreview"</span>);</div><div class="line">                mCamera.startPreview();</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span></div><div class="line">                result = <span class="keyword">false</span>;</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            result = <span class="keyword">false</span>;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>JavaCameraView</code> 允许 app 指定是使用前置摄像头还是后置摄像头。当 app 指定了要使用哪一种(前置或后置)摄像头时，此处会遍历所有的摄像头，找到符合要求的， cameraIndex 最小的那个来打开；没有指定时，则会先尝试打开设备上的第一个 back-facing 的 camera，如果失败，就找能用的 camera 中 cameraIndex 最小的那个来打开。然后就是设置 camera 的 parameters。比较值得关注的，一是获取 preview frame 的方式：此处是先调用 <code>mCamera.addCallbackBuffer(mBuffer)</code>，然后调用<code>mCamera.setPreviewCallbackWithBuffer(this)</code> 注册 preview 的 callback，这也就意味着camera 会把 preview 的数据填入我们传递给它的一个缓冲区中；同时我们注意到，在<code>onPreviewFrame()</code> 方法的最后会再次调用 <code>mCamera.addCallbackBuffer(mBuffer)</code>，如果没有这个调用的话，camera 传回 preview 数据的过程将因没有数据缓冲区可用而中止。另一个值得我们关注的是 camera preview 所用 <code>SurfaceTexture</code> 的来源问题：在此处是手动创建了一个 <code>SurfaceTexture</code> 并设置给 camera 以用于 preview。但此处这个手动创建的 <code>SurfaceTexture</code> 是不能直接交给一个 <code>TextureView</code> 来显示的。当我们像下面这样直接将这个 <code>SurfaceTexture</code> 交给 <code>TextureView</code> 来显示时：<br><figure class="highlight abnf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">mTextureView</span> = (TextureView)findViewById(R.id.texture)<span class="comment">;</span></div><div class="line"><span class="attribute">mSurfaceTexture</span> = new SurfaceTexture(MAGIC_TEXTURE_ID)<span class="comment">;</span></div><div class="line"></div><div class="line"><span class="attribute">mCamera</span> = Camera.open()<span class="comment">;</span></div><div class="line">try &#123;</div><div class="line">    mCamera.setPreviewTexture(mSurfaceTexture)<span class="comment">;</span></div><div class="line">&#125; catch (IOException ioe) &#123;</div><div class="line">    </div><div class="line">&#125;</div><div class="line"></div><div class="line">mTextureView.setSurfaceTexture(mSurfaceTexture)<span class="comment">;</span></div></pre></td></tr></table></figure></p>
+<p>就会出现一个像下面这样的Exception：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-2417a3efe87dcc85.png" alt=""></p>
+<p>在把 <code>SurfaceTexture</code> 交给 <code>TextureView</code> 显示之前，我们还需要先将<code>SurfaceTexture</code> detach from GL context，像下面这样：<br><figure class="highlight abnf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">mTextureView</span> = (TextureView)findViewById(R.id.texture)<span class="comment">;</span></div><div class="line"><span class="attribute">mSurfaceTexture</span> = new SurfaceTexture(MAGIC_TEXTURE_ID)<span class="comment">;</span></div><div class="line"></div><div class="line"><span class="attribute">mCamera</span> = Camera.open()<span class="comment">;</span></div><div class="line">try &#123;</div><div class="line">    mCamera.setPreviewTexture(mSurfaceTexture)<span class="comment">;</span></div><div class="line">&#125; catch (IOException ioe) &#123;</div><div class="line">    </div><div class="line">&#125;</div><div class="line"></div><div class="line">mSurfaceTexture.detachFromGLContext()<span class="comment">;</span></div><div class="line">mTextureView.setSurfaceTexture(mSurfaceTexture)<span class="comment">;</span></div><div class="line"></div><div class="line">mCamera.startPreview()<span class="comment">;</span></div></pre></td></tr></table></figure></p>
+<p>基本上就是这样。</p>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android开发/" rel="tag"># Android开发</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/04/lowmemorykiller/" rel="next" title="Android low memory killer 机制">
+                <i class="fa fa-chevron-left"></i> Android low memory killer 机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/06/标准STUN判断NAT类型的过程及改进/" rel="prev" title="标准STUN判断NAT类型的过程及改进">
+                标准STUN判断NAT类型的过程及改进 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#生产者、消费者"><span class="nav-number">1.</span> <span class="nav-text">生产者、消费者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Camera"><span class="nav-number">2.</span> <span class="nav-text">Camera</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
