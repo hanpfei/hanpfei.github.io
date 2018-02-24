@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,图形图像,Python," />
+
+
+<meta name="description" content="在 PyCairo 教程的这个部分，我们将讨论透明度。我们将提供一些基本的定义和三个有趣的透明度的例子。
+透明度是指透过一种材料能够看到的品质。理解透明度最简单的方法是想象一块玻璃或水。技术上来说，光线可以穿过玻璃，因而我们可以看到玻璃后面的物体。
+在计算机图形学中，我们可以用 alpha 合成 实现透明度效果。Alpha 合成是一个将一幅图片和背景结合起来创建部分透明的外观的过程。合成过程使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyCairo 中的透明度">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/01/12/pycairo07_transparency/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="在 PyCairo 教程的这个部分，我们将讨论透明度。我们将提供一些基本的定义和三个有趣的透明度的例子。
+透明度是指透过一种材料能够看到的品质。理解透明度最简单的方法是想象一块玻璃或水。技术上来说，光线可以穿过玻璃，因而我们可以看到玻璃后面的物体。
+在计算机图形学中，我们可以用 alpha 合成 实现透明度效果。Alpha 合成是一个将一幅图片和背景结合起来创建部分透明的外观的过程。合成过程使用">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-f61723c2c3f0ec24.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-b7498655449364d9.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-a31ab6a320e508f7.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-11696edaebc7c57d.jpg">
+<meta property="og:updated_time" content="2018-02-24T10:51:33.873Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyCairo 中的透明度">
+<meta name="twitter:description" content="在 PyCairo 教程的这个部分，我们将讨论透明度。我们将提供一些基本的定义和三个有趣的透明度的例子。
+透明度是指透过一种材料能够看到的品质。理解透明度最简单的方法是想象一块玻璃或水。技术上来说，光线可以穿过玻璃，因而我们可以看到玻璃后面的物体。
+在计算机图形学中，我们可以用 alpha 合成 实现透明度效果。Alpha 合成是一个将一幅图片和背景结合起来创建部分透明的外观的过程。合成过程使用">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-f61723c2c3f0ec24.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/01/12/pycairo07_transparency/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>PyCairo 中的透明度 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo07_transparency/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PyCairo 中的透明度</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-12T15:56:49+08:00">2018-01-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo07_transparency/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/01/12/pycairo07_transparency/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/01/12/pycairo07_transparency/" class="leancloud_visitors" data-flag-title="PyCairo 中的透明度">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在 PyCairo 教程的这个部分，我们将讨论透明度。我们将提供一些基本的定义和三个有趣的透明度的例子。</p>
+<p>透明度是指透过一种材料能够看到的品质。理解透明度最简单的方法是想象一块玻璃或水。技术上来说，光线可以穿过玻璃，因而我们可以看到玻璃后面的物体。</p>
+<p>在计算机图形学中，我们可以用 <em>alpha 合成</em> 实现透明度效果。Alpha 合成是一个将一幅图片和背景结合起来创建部分透明的外观的过程。合成过程使用 <em>alpha 通道</em>。在用于表达半透明（透明度）的图像文件格式中，alpha 通道是一个 8-bit 的layer。每像素额外的 8 bits 被用作一个 mask 并代表256级的半透明度。<br><a id="more"></a></p>
+<h1 id="透明的矩形"><a href="#透明的矩形" class="headerlink" title="透明的矩形"></a>透明的矩形</h1><p>第一个例子将绘制 10 个具有不同半透明度的矩形。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">11</span>):</div><div class="line">        cr.set_source_rgba(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, i * <span class="number">0.1</span>)</div><div class="line">        cr.rectangle(<span class="number">50</span> * i, <span class="number">20</span>, <span class="number">40</span>, <span class="number">40</span>)</div><div class="line">        cr.fill()</div></pre></td></tr></table></figure>
+<p><code>set_source_rgba()</code> 方法有一个 alpha 参数来提供透明度。</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">11</span>):</div><div class="line">    <span class="literal">cr</span>.set_source_rgba(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, i * <span class="number">0.1</span>)</div><div class="line">    <span class="literal">cr</span>.rectangle(<span class="number">50</span> * i, <span class="number">20</span>, <span class="number">40</span>, <span class="number">40</span>)</div><div class="line">    <span class="literal">cr</span>.fill()</div></pre></td></tr></table></figure>
+<p>这段代码创建了 10 个矩形，它们的 alpha 值分别为 0.1，…，1。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-f61723c2c3f0ec24.jpg" alt="图：透明的矩形"></p>
+<h1 id="Puff-效果"><a href="#Puff-效果" class="headerlink" title="Puff 效果"></a>Puff 效果</h1><p>在下面的例子中，我们创建一个 puff 效果。例子将显示一个增长的居中的文字，并从一些点开始逐渐褪色。这是一个非常常见的效果，我们经常可以在闪光动画中看到它。<code>paint_with_alpha()</code> 方法对于创建这个效果非常重要。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="string">'''</span></div><div class="line">ZetCode PyCairo tutorial</div><div class="line"></div><div class="line">This program creates a 'puff'</div><div class="line">effect.</div><div class="line"></div><div class="line">author: Jan Bodnar</div><div class="line">website: zetcode.com</div><div class="line">last edited: August 2012</div><div class="line">'''</div><div class="line"></div><div class="line"><span class="keyword">import</span> gi</div><div class="line">gi.require_version(<span class="string">'Gtk'</span>, <span class="string">'3.0'</span>)</div><div class="line"><span class="keyword">from</span> gi.repository <span class="keyword">import</span> Gtk, GLib</div><div class="line"><span class="keyword">import</span> cairo</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">cv</span><span class="params">(object)</span>:</span></div><div class="line">    SPEED = <span class="number">14</span></div><div class="line">    TEXT_SIZE_MAX = <span class="number">20</span></div><div class="line">    ALPHA_DECREASE = <span class="number">0.01</span></div><div class="line">    SIZE_INCREASE = <span class="number">0.8</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(Gtk.Window)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super(Example, self).__init__()</div><div class="line"></div><div class="line">        self.init_ui()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_ui</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        self.darea = Gtk.DrawingArea()</div><div class="line">        self.darea.connect(<span class="string">"draw"</span>, self.on_draw)</div><div class="line">        self.add(self.darea)</div><div class="line"></div><div class="line">        self.timer = <span class="keyword">True</span></div><div class="line">        self.alpha = <span class="number">1.0</span></div><div class="line">        self.size = <span class="number">1.0</span></div><div class="line"></div><div class="line">        GLib.timeout_add(cv.SPEED, self.on_timer)</div><div class="line"></div><div class="line">        self.set_title(<span class="string">"Puff"</span>)</div><div class="line">        self.resize(<span class="number">350</span>, <span class="number">200</span>)</div><div class="line">        self.set_position(Gtk.WindowPosition.CENTER)</div><div class="line">        self.connect(<span class="string">"delete-event"</span>, Gtk.main_quit)</div><div class="line">        self.show_all()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_timer</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.timer: <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line"></div><div class="line">        self.darea.queue_draw()</div><div class="line">        <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">        w, h = self.get_size()</div><div class="line"></div><div class="line">        cr.set_source_rgb(<span class="number">0.5</span>, <span class="number">0</span>, <span class="number">0</span>)</div><div class="line">        cr.paint()</div><div class="line"></div><div class="line">        cr.select_font_face(<span class="string">"Courier"</span>, cairo.FONT_SLANT_NORMAL,</div><div class="line">                            cairo.FONT_WEIGHT_BOLD)</div><div class="line"></div><div class="line">        self.size = self.size + cv.SIZE_INCREASE</div><div class="line"></div><div class="line">        <span class="keyword">if</span> self.size &gt; cv.TEXT_SIZE_MAX:</div><div class="line">            self.alpha = self.alpha - cv.ALPHA_DECREASE</div><div class="line"></div><div class="line">        cr.set_font_size(self.size)</div><div class="line">        cr.set_source_rgb(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)</div><div class="line"></div><div class="line">        (x, y, width, height, dx, dy) = cr.text_extents(<span class="string">"ZetCode"</span>)</div><div class="line"></div><div class="line">        cr.move_to(w / <span class="number">2</span> - width / <span class="number">2</span>, h / <span class="number">2</span>)</div><div class="line">        cr.text_path(<span class="string">"ZetCode"</span>)</div><div class="line">        cr.clip()</div><div class="line">        cr.paint_with_alpha(self.alpha)</div><div class="line"></div><div class="line">        <span class="keyword">if</span> self.alpha &lt;= <span class="number">0</span>:</div><div class="line">            self.timer = <span class="keyword">False</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    app = Example()</div><div class="line">    Gtk.main()</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    main()</div></pre></td></tr></table></figure>
+<p>这个例子在窗口中创建一段不断增长并褪色的文本。</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">class cv(object):</div><div class="line">    <span class="attr">SPEED</span> = <span class="number">14</span></div><div class="line">    <span class="attr">TEXT_SIZE_MAX</span> = <span class="number">20</span></div><div class="line">    <span class="attr">ALPHA_DECREASE</span> = <span class="number">0.01</span></div><div class="line">    <span class="attr">SIZE_INCREASE</span> = <span class="number">0.8</span></div></pre></td></tr></table></figure>
+<p>这里我们定义了一些将在例子中使用的常量。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">self<span class="selector-class">.alpha</span> = <span class="number">1.0</span></div><div class="line">self<span class="selector-class">.size</span> = <span class="number">1.0</span></div></pre></td></tr></table></figure>
+<p>这两个变量存储当前的 alpha 值和字体大小。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">GLib</span><span class="selector-class">.timeout_add</span>(<span class="selector-tag">cv</span><span class="selector-class">.SPEED</span>, <span class="selector-tag">self</span><span class="selector-class">.on_timer</span>)</div></pre></td></tr></table></figure>
+<p>每隔 14 ms，<code>on_timer()</code> 方法被调用一次。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_timer</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> self.timer: <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line"></div><div class="line">    self.darea.queue_draw()</div><div class="line">    <span class="keyword">return</span> <span class="keyword">True</span></div></pre></td></tr></table></figure>
+<p>在 <code>on_timer()</code> 方法中，我们通过 <code>queue_draw()</code> 方法重绘 DrawingArea widget。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">    w, h = self.get_size()</div><div class="line"></div><div class="line">    cr.set_source_rgb(<span class="number">0.5</span>, <span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    cr.paint()</div><div class="line"></div><div class="line">    cr.select_font_face(<span class="string">"Courier"</span>, cairo.FONT_SLANT_NORMAL,</div><div class="line">                        cairo.FONT_WEIGHT_BOLD)</div><div class="line">. . .</div></pre></td></tr></table></figure>
+<p>在 <code>on_draw()</code> 方法中，我们获取窗口的客户区域的宽度和高度。这些值被用于使文字居中。我们将以某种暗红色填充窗口的背景。我们为文字选择一个 Courier 字体。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(x, y, <span class="built_in">width</span>, <span class="built_in">height</span>, dx, dy) = cr.text_extents(<span class="string">"ZetCode"</span>)</div></pre></td></tr></table></figure>
+<p>我们获取文字的一些度量值。我们将只使用文字宽度。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cr.move_to(w / <span class="number">2</span> - width / <span class="number">2</span>, h / <span class="number">2</span>)</div></pre></td></tr></table></figure>
+<p>我们移动到一个可以使文字在窗口中居中的位置。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.text_path</span>("<span class="selector-tag">ZetCode</span>")</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.clip</span>()</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.paint_with_alpha</span>(<span class="selector-tag">self</span><span class="selector-class">.alpha</span>)</div></pre></td></tr></table></figure>
+<p>我们用 <code>text_path()</code> 方法获取文字的 path。我们用 <code>clip()</code> 方法将绘制限定在当前的path。<code>paint_with_alpha()</code> 方法使用一个 alpha 值的 mask，在当前的裁剪区域内，绘制当前的 source。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-b7498655449364d9.jpg" alt="图：Puff 效果"></p>
+<h1 id="图像倒影"><a href="#图像倒影" class="headerlink" title="图像倒影"></a>图像倒影</h1><p>在下一个例子中，我么将秀出一个倒影图像。这个效果创造了一种图像倒映在水中的感觉。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="string">'''</span></div><div class="line">ZetCode PyCairo tutorial</div><div class="line"></div><div class="line">This program creates an image reflection.</div><div class="line"></div><div class="line">author: Jan Bodnar</div><div class="line">website: zetcode.com</div><div class="line">last edited: August 2012</div><div class="line">'''</div><div class="line"></div><div class="line"><span class="keyword">import</span> gi</div><div class="line">gi.require_version(<span class="string">'Gtk'</span>, <span class="string">'3.0'</span>)</div><div class="line"><span class="keyword">from</span> gi.repository <span class="keyword">import</span> Gtk</div><div class="line"><span class="keyword">import</span> cairo</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(Gtk.Window)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super(Example, self).__init__()</div><div class="line"></div><div class="line">        self.init_ui()</div><div class="line">        self.load_image()</div><div class="line">        self.init_vars()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_ui</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        darea = Gtk.DrawingArea()</div><div class="line">        darea.connect(<span class="string">"draw"</span>, self.on_draw)</div><div class="line">        self.add(darea)</div><div class="line"></div><div class="line">        self.set_title(<span class="string">"Reflection"</span>)</div><div class="line">        self.resize(<span class="number">300</span>, <span class="number">350</span>)</div><div class="line">        self.set_position(Gtk.WindowPosition.CENTER)</div><div class="line">        self.connect(<span class="string">"delete-event"</span>, Gtk.main_quit)</div><div class="line">        self.show_all()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">load_image</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            self.s = cairo.ImageSurface.create_from_png(<span class="string">"slanec.png"</span>)</div><div class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</div><div class="line">            print(e)</div><div class="line">            sys.exit(<span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_vars</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        self.imageWidth = self.s.get_width()</div><div class="line">        self.imageHeight = self.s.get_height()</div><div class="line">        self.gap = <span class="number">40</span></div><div class="line">        self.border = <span class="number">20</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">        w, h = self.get_size()</div><div class="line"></div><div class="line">        lg = cairo.LinearGradient(w / <span class="number">2</span>, <span class="number">0</span>, w / <span class="number">2</span>, h * <span class="number">3</span>)</div><div class="line">        lg.add_color_stop_rgba(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>)</div><div class="line">        lg.add_color_stop_rgba(h, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">1</span>)</div><div class="line"></div><div class="line">        cr.set_source(lg)</div><div class="line">        cr.paint()</div><div class="line"></div><div class="line">        cr.set_source_surface(self.s, self.border, self.border)</div><div class="line">        cr.paint()</div><div class="line"></div><div class="line">        alpha = <span class="number">0.7</span></div><div class="line">        step = <span class="number">1.0</span> / self.imageHeight</div><div class="line"></div><div class="line">        cr.translate(<span class="number">0</span>, <span class="number">2</span> * self.imageHeight + self.gap)</div><div class="line">        cr.scale(<span class="number">1</span>, <span class="number">-1</span>)</div><div class="line"></div><div class="line">        i = <span class="number">0</span></div><div class="line"></div><div class="line">        <span class="keyword">while</span> (i &lt; self.imageHeight):</div><div class="line">            cr.rectangle(self.border, self.imageHeight - i,</div><div class="line">                         self.imageWidth, <span class="number">1</span>)</div><div class="line"></div><div class="line">            i = i + <span class="number">1</span></div><div class="line"></div><div class="line">            cr.save()</div><div class="line">            cr.clip()</div><div class="line">            cr.set_source_surface(self.s, self.border,</div><div class="line">                                  self.border)</div><div class="line"></div><div class="line">            alpha = alpha - step</div><div class="line"></div><div class="line">            cr.paint_with_alpha(alpha)</div><div class="line">            cr.restore()</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    app = Example()</div><div class="line">    Gtk.main()</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    main()</div></pre></td></tr></table></figure>
+<p>在语法方面，需要注意一下 Python 2.7 和 Python 3 在异常处理方面的差异。一个倒映的城堡的废墟就显示在窗口中了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_image</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        self.s = cairo.ImageSurface.create_from_png(<span class="string">"slanec.png"</span>)</div><div class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</div><div class="line">        print(e)</div><div class="line">        sys.exit(<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p>在 <code>load_image()</code> 方法中，由一幅 PNG 图片创建一个图像 surface。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init_vars</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">    self.imageWidth = self.s.get_width()</div><div class="line">    self.imageHeight = self.s.get_height()</div><div class="line">    self.gap = <span class="number">40</span></div><div class="line">    self.border = <span class="number">20</span></div></pre></td></tr></table></figure>
+<p>在 <code>init_vars()</code> 方法中，我们获取图像的宽度和高度。同时定义两个变量。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">lg = cairo.LinearGradient(w / <span class="number">2</span>, <span class="number">0</span>, w / <span class="number">2</span>, h * <span class="number">3</span>)</div><div class="line">lg.add_color_stop_rgba(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>)</div><div class="line">lg.add_color_stop_rgba(h, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">1</span>)</div><div class="line"></div><div class="line">cr.set_source(lg)</div><div class="line">cr.paint()</div></pre></td></tr></table></figure>
+<p>窗口的背景由一个渐变绘制填充。绘制是一个平滑的由黑色到深灰色的混合。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.translate</span>(0, 2 * <span class="selector-tag">self</span><span class="selector-class">.imageHeight</span> + <span class="selector-tag">self</span><span class="selector-class">.gap</span>)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.scale</span>(1, <span class="selector-tag">-1</span>)</div></pre></td></tr></table></figure>
+<p>这段代码翻转图像，并将它平移到原始图像的下方。平移操作是必须的，因为放缩操作使得图像翻转并将图像向上平移。为了理解发生了什么，可以简单地拍一张照片，将它放在桌子上，然后反转它。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">i</span> = <span class="number">0</span></div><div class="line"></div><div class="line">while (<span class="selector-tag">i</span> &lt; self.imageHeight):</div><div class="line">    cr.rectangle(self<span class="selector-class">.border</span>, self<span class="selector-class">.imageHeight</span> - <span class="selector-tag">i</span>,</div><div class="line">                 self<span class="selector-class">.imageWidth</span>, <span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="selector-tag">i</span> = <span class="selector-tag">i</span> + <span class="number">1</span></div><div class="line"></div><div class="line">    cr.save()</div><div class="line">    cr.<span class="attribute">clip</span>()</div><div class="line">    cr.set_source_surface(self<span class="selector-class">.s</span>, self<span class="selector-class">.border</span>,</div><div class="line">                          self.<span class="attribute">border</span>)</div><div class="line"></div><div class="line">    alpha = alpha - step</div><div class="line"></div><div class="line">    cr.paint_with_alpha(alpha)</div><div class="line">    cr.restore()</div></pre></td></tr></table></figure>
+<p>这是最后的部分。我们使第二幅图片变得透明。但透明度不是固定的。这幅图片渐渐地褪色。倒影图像是一行接一行绘制的。<code>clip()</code> 方法将绘制限定在高度为 1 的矩形中。<code>paint_with_alpha()</code> 在绘制图像 surface 的当前裁剪区域时会将透明度也考虑进来。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-a31ab6a320e508f7.jpg" alt="图：倒影图像"></p>
+<h1 id="等待效果-Demo"><a href="#等待效果-Demo" class="headerlink" title="等待效果 Demo"></a>等待效果 Demo</h1><p>在这个例子中，我们使用透明效果创建一个等待效果的 demo。我们将绘制 8 跳线，它们逐渐的淡出，以创造一种假象，好像线在移动一般。这种效果经常被用于告知用户，一个耗时比较久的任务正在后台运行。一个例子是 Interne 上的流视频。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="string">'''</span></div><div class="line">ZetCode PyCairo tutorial</div><div class="line"></div><div class="line">This program creates a 'waiting' effect.</div><div class="line"></div><div class="line">author: Jan Bodnar</div><div class="line">website: zetcode.com</div><div class="line">last edited: August 2012</div><div class="line">'''</div><div class="line"></div><div class="line"><span class="keyword">import</span> gi</div><div class="line">gi.require_version(<span class="string">'Gtk'</span>, <span class="string">'3.0'</span>)</div><div class="line"><span class="keyword">from</span> gi.repository <span class="keyword">import</span> Gtk, GLib</div><div class="line"><span class="keyword">import</span> cairo</div><div class="line"><span class="keyword">import</span> math</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">cv</span><span class="params">(object)</span>:</span></div><div class="line">    trs = (</div><div class="line">        (<span class="number">0.0</span>, <span class="number">0.15</span>, <span class="number">0.30</span>, <span class="number">0.5</span>, <span class="number">0.65</span>, <span class="number">0.80</span>, <span class="number">0.9</span>, <span class="number">1.0</span>),</div><div class="line">        (<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.15</span>, <span class="number">0.30</span>, <span class="number">0.5</span>, <span class="number">0.65</span>, <span class="number">0.8</span>, <span class="number">0.9</span>),</div><div class="line">        (<span class="number">0.9</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.15</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.65</span>, <span class="number">0.8</span>),</div><div class="line">        (<span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.15</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.65</span>),</div><div class="line">        (<span class="number">0.65</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.15</span>, <span class="number">0.3</span>, <span class="number">0.5</span>),</div><div class="line">        (<span class="number">0.5</span>, <span class="number">0.65</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.15</span>, <span class="number">0.3</span>),</div><div class="line">        (<span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.65</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.15</span>),</div><div class="line">        (<span class="number">0.15</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.65</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>, <span class="number">0.0</span>,)</div><div class="line">    )</div><div class="line"></div><div class="line">    SPEED = <span class="number">100</span></div><div class="line">    CLIMIT = <span class="number">1000</span></div><div class="line">    NLINES = <span class="number">8</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(Gtk.Window)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super(Example, self).__init__()</div><div class="line"></div><div class="line">        self.init_ui()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_ui</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        self.darea = Gtk.DrawingArea()</div><div class="line">        self.darea.connect(<span class="string">"draw"</span>, self.on_draw)</div><div class="line">        self.add(self.darea)</div><div class="line"></div><div class="line">        self.count = <span class="number">0</span></div><div class="line"></div><div class="line">        GLib.timeout_add(cv.SPEED, self.on_timer)</div><div class="line"></div><div class="line">        self.set_title(<span class="string">"Waiting"</span>)</div><div class="line">        self.resize(<span class="number">250</span>, <span class="number">150</span>)</div><div class="line">        self.set_position(Gtk.WindowPosition.CENTER)</div><div class="line">        self.connect(<span class="string">"delete-event"</span>, Gtk.main_quit)</div><div class="line">        self.show_all()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_timer</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        self.count = self.count + <span class="number">1</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> self.count &gt;= cv.CLIMIT:</div><div class="line">            self.count = <span class="number">0</span></div><div class="line"></div><div class="line">        self.darea.queue_draw()</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">        cr.set_line_width(<span class="number">3</span>)</div><div class="line">        cr.set_line_cap(cairo.LINE_CAP_ROUND)</div><div class="line"></div><div class="line">        w, h = self.get_size()</div><div class="line"></div><div class="line">        cr.translate(w / <span class="number">2</span>, h / <span class="number">2</span>)</div><div class="line"></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(cv.NLINES):</div><div class="line">            cr.set_source_rgba(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cv.trs[self.count % <span class="number">8</span>][i])</div><div class="line">            cr.move_to(<span class="number">0.0</span>, <span class="number">-10.0</span>)</div><div class="line">            cr.line_to(<span class="number">0.0</span>, <span class="number">-40.0</span>)</div><div class="line">            cr.rotate(math.pi / <span class="number">4</span>)</div><div class="line">            cr.stroke()</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    app = Example()</div><div class="line">    Gtk.main()</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    main()</div></pre></td></tr></table></figure>
+<p>我们以八个不同的 alpha 值绘制了八条直线。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> cv(<span class="title">object</span>):</span></div><div class="line">    trs = (</div><div class="line">        (0.0, 0.15, 0.30, 0.5, 0.65, 0.80, 0.9, 1.0),</div><div class="line">        (1.0, 0.0, 0.15, 0.30, 0.5, 0.65, 0.8, 0.9),</div><div class="line">        (0.9, 1.0, 0.0, 0.15, 0.3, 0.5, 0.65, 0.8),</div><div class="line">        (0.8, 0.9, 1.0, 0.0, 0.15, 0.3, 0.5, 0.65),</div><div class="line">        (0.65, 0.8, 0.9, 1.0, 0.0, 0.15, 0.3, 0.5),</div><div class="line">        (0.5, 0.65, 0.8, 0.9, 1.0, 0.0, 0.15, 0.3),</div><div class="line">        (0.3, 0.5, 0.65, 0.8, 0.9, 1.0, 0.0, 0.15),</div><div class="line">        (0.15, 0.3, 0.5, 0.65, 0.8, 0.9, 1.0, 0.0,)</div><div class="line">    )</div><div class="line">. . .</div></pre></td></tr></table></figure>
+<p>这是一个 Demo 中会用到的透明度值的二维元组。有 8 行，每一行表示一种状态。8 条直线中的每一条将连续使用这些值。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">SPEED</span> = <span class="number">100</span></div><div class="line"><span class="attr">CLIMIT</span> = <span class="number">1000</span></div><div class="line"><span class="attr">NLINES</span> = <span class="number">8</span></div></pre></td></tr></table></figure>
+<p><code>SPEED</code> 常量控制动画的速度。<code>CLIMIT</code> 是 <code>self.count</code> 变量的最大值。达到这个限制之后，变量会被重置为 0。<code>NLINES</code> 是这个例子中绘制的直线的条数。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">GLib</span><span class="selector-class">.timeout_add</span>(<span class="selector-tag">cv</span><span class="selector-class">.SPEED</span>, <span class="selector-tag">self</span><span class="selector-class">.on_timer</span>)</div></pre></td></tr></table></figure>
+<p>我们使用定时器函数创建动画。每一个 <code>cv.SPEED</code> ms，on_timer() 方法会被调用一次。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_timer</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">    self.count = self.count + <span class="number">1</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> self.count &gt;= cv.CLIMIT:</div><div class="line">        self.count = <span class="number">0</span></div><div class="line"></div><div class="line">    self.darea.queue_draw()</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">True</span></div></pre></td></tr></table></figure>
+<p>在 <code>on_timer()</code> 方法中，我们增加 <code>self.count</code> 变量。如果变量达到了 <code>cv.CLIMIT</code><br> 常量，它会被设置为 0。我们避免溢出，并且不使用非常大的数字。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">    cr.set_line_width(<span class="number">3</span>)</div><div class="line">    cr.set_line_cap(cairo.LINE_CAP_ROUND)</div><div class="line">. . .</div></pre></td></tr></table></figure>
+<p>我们使线更粗一点，以使得它们更容易被看到。我们用圆形的帽子绘制直线。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">w, h = self.get_size()</div><div class="line"></div><div class="line">cr.translate(w / <span class="number">2</span>, h / <span class="number">2</span>)</div></pre></td></tr></table></figure>
+<p>我们将我们的绘制定位在窗口的中心。</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(cv.NLINES):</div><div class="line">    <span class="literal">cr</span>.set_source_rgba(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cv.trs[self.count % <span class="number">8</span>][i])</div><div class="line">    <span class="literal">cr</span>.move_to(<span class="number">0.0</span>, <span class="number">-10.0</span>)</div><div class="line">    <span class="literal">cr</span>.line_to(<span class="number">0.0</span>, <span class="number">-40.0</span>)</div><div class="line">    <span class="literal">cr</span>.rotate(math.<span class="literal">pi</span> / <span class="number">4</span>)</div><div class="line">    <span class="literal">cr</span>.stroke()</div></pre></td></tr></table></figure>
+<p>在 <code>for</code> 循环中，我们用不同的透明度值，绘制了八条旋转的直线。线之间由 45 度角隔开。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-11696edaebc7c57d.jpg" alt="图：等待效果 demo"></p>
+<p>本章我们讨论了透明度。</p>
+<p><a href="http://zetcode.com/gfx/pycairo/transparency/" target="_blank" rel="external">原文</a></p>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/图形图像/" rel="tag"># 图形图像</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/12/pycairo06_clippingmasking/" rel="next" title="PyCairo 中的剪裁和屏蔽">
+                <i class="fa fa-chevron-left"></i> PyCairo 中的剪裁和屏蔽
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/13/harfbuzz_api_basic_usage/" rel="prev" title="Harfbuzz API 基本用法">
+                Harfbuzz API 基本用法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">163</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#透明的矩形"><span class="nav-number">1.</span> <span class="nav-text">透明的矩形</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Puff-效果"><span class="nav-number">2.</span> <span class="nav-text">Puff 效果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图像倒影"><span class="nav-number">3.</span> <span class="nav-text">图像倒影</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#等待效果-Demo"><span class="nav-number">4.</span> <span class="nav-text">等待效果 Demo</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
