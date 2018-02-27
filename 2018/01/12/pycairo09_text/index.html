@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,图形图像,Python," />
+
+
+<meta name="description" content="PyCairo 教程的这个部分，我们将与文本打交道。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyCairo 中的文本">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/01/12/pycairo09_text/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="PyCairo 教程的这个部分，我们将与文本打交道。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-3366e791a36703f3.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-729cd288af47698e.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-3d4461bb03ce4c15.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-e29fc022ca7b280e.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-af746100aa068168.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-1b147074abf88f9e.jpg">
+<meta property="og:updated_time" content="2018-02-26T08:12:13.665Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyCairo 中的文本">
+<meta name="twitter:description" content="PyCairo 教程的这个部分，我们将与文本打交道。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-3366e791a36703f3.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/01/12/pycairo09_text/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>PyCairo 中的文本 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo09_text/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PyCairo 中的文本</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-12T16:16:49+08:00">2018-01-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo09_text/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/01/12/pycairo09_text/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/01/12/pycairo09_text/" class="leancloud_visitors" data-flag-title="PyCairo 中的文本">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>PyCairo 教程的这个部分，我们将与文本打交道。<br><a id="more"></a></p>
+<h1 id="灵魂伴侣"><a href="#灵魂伴侣" class="headerlink" title="灵魂伴侣"></a>灵魂伴侣</h1><p>在第一个例子中，我们将在窗口中显示一些歌词。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">def</span> <span class="selector-tag">on_draw</span>(self, wid, cr):</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_source_rgb</span>(<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.1</span>)</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.select_font_face</span>(<span class="string">"Purisa"</span>, cairo.FONT_SLANT_NORMAL,</div><div class="line">                        cairo.FONT_WEIGHT_NORMAL)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.set_font_size</span>(<span class="number">13</span>)</div><div class="line"></div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(<span class="number">20</span>, <span class="number">30</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.show_text</span>(<span class="string">"Most relationships seem so transitory"</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(<span class="number">20</span>, <span class="number">60</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.show_text</span>(<span class="string">"They're all good but not the permanent one"</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(<span class="number">20</span>, <span class="number">120</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.show_text</span>(<span class="string">"Who doesn't long for someone to hold"</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(<span class="number">20</span>, <span class="number">150</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.show_text</span>(<span class="string">"Who knows how to love without being told"</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(<span class="number">20</span>, <span class="number">180</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.show_text</span>(<span class="string">"Somebody tell me why I'm on my own"</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(<span class="number">20</span>, <span class="number">210</span>)</div><div class="line">    <span class="selector-tag">cr</span><span class="selector-class">.show_text</span>(<span class="string">"If there's a soulmate for everyone"</span>)</div></pre></td></tr></table></figure>
+<p>这段代码中，我们显示了来自于 Natasha Bedingfields Soulmate 这首歌的歌词的一部分。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.select_font_face</span>("<span class="selector-tag">Purisa</span>", <span class="selector-tag">cairo</span><span class="selector-class">.FONT_SLANT_NORMAL</span>,</div><div class="line">                    <span class="selector-tag">cairo</span><span class="selector-class">.FONT_WEIGHT_NORMAL</span>)</div></pre></td></tr></table></figure>
+<p>此处我们选择 font face。这个方法接收三个参数，font family，font slant 和font weight.</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_font_size</span>(13)</div></pre></td></tr></table></figure>
+<p>此处我们指定字体大小。</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cr.move_to<span class="comment">(20, 30)</span></div><div class="line">cr.show_text<span class="comment">("Most relationships seem so transitory")</span></div></pre></td></tr></table></figure>
+<p>我们通过为文本指定位置并调用 <code>show_text()</code> 方法将文本显示在窗口中。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-3366e791a36703f3.jpg" alt="图：灵魂伴侣"></p>
+<h1 id="居中的文字"><a href="#居中的文字" class="headerlink" title="居中的文字"></a>居中的文字</h1><p>接下来我们将演示如何在窗口中居中显示文字。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">    w, h = self.get_size()</div><div class="line"></div><div class="line">    cr.select_font_face(<span class="string">"Courier"</span>, cairo.FONT_SLANT_NORMAL,</div><div class="line">                        cairo.FONT_WEIGHT_BOLD)</div><div class="line">    cr.set_font_size(<span class="number">60</span>)</div><div class="line"></div><div class="line">    (x, y, width, height, dx, dy) = cr.text_extents(<span class="string">"ZetCode"</span>)</div><div class="line"></div><div class="line">    cr.move_to(w / <span class="number">2</span> - width / <span class="number">2</span>, h / <span class="number">2</span>)</div><div class="line">    cr.show_text(<span class="string">"ZetCode"</span>)</div></pre></td></tr></table></figure>
+<p>这段代码将一段文字放在窗口的中心。即使调整了窗口的大小，也依然会位于中心。</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">w, h = <span class="keyword">self</span>.get_size()</div></pre></td></tr></table></figure>
+<p>为了使文字位于窗口的中心，需要获取窗口的客户区域的大小。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.select_font_face</span>("<span class="selector-tag">Courier</span>", <span class="selector-tag">cairo</span><span class="selector-class">.FONT_SLANT_NORMAL</span>,</div><div class="line">                    <span class="selector-tag">cairo</span><span class="selector-class">.FONT_WEIGHT_BOLD</span>)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_font_size</span>(60)</div></pre></td></tr></table></figure>
+<p>我们选择一个字体及字体大小用于显示。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(x, y, <span class="built_in">width</span>, <span class="built_in">height</span>, dx, dy) = cr.text_extents(<span class="string">"ZetCode"</span>)</div></pre></td></tr></table></figure>
+<p>我们获取文本 extents，这是一些用来描述文字的数字。我们的例子需要文字的宽度。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cr.move_to(w / <span class="number">2</span> - width / <span class="number">2</span>, h / <span class="number">2</span>)</div><div class="line">cr.show_text(<span class="string">"ZetCode"</span>)</div></pre></td></tr></table></figure>
+<p>我们将文字定位在窗口的中间，并用 <code>show_text()</code> 显示它。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-729cd288af47698e.jpg" alt="图：居中的文字"></p>
+<h1 id="阴影文字"><a href="#阴影文字" class="headerlink" title="阴影文字"></a>阴影文字</h1><p>现在我们将在窗口中创建一段阴影文字。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">    cr.select_font_face(<span class="string">"Serif"</span>, cairo.FONT_SLANT_NORMAL,</div><div class="line">                        cairo.FONT_WEIGHT_BOLD)</div><div class="line">    cr.set_font_size(<span class="number">50</span>)</div><div class="line"></div><div class="line">    cr.set_source_rgb(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    cr.move_to(<span class="number">40</span>, <span class="number">60</span>)</div><div class="line">    cr.show_text(<span class="string">"ZetCode"</span>)</div><div class="line"></div><div class="line">    cr.set_source_rgb(<span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>)</div><div class="line">    cr.move_to(<span class="number">43</span>, <span class="number">63</span>)</div><div class="line">    cr.show_text(<span class="string">"ZetCode"</span>)</div></pre></td></tr></table></figure>
+<p>为了创建阴影，我们以不同的颜色绘制文字两次。第二段文字向右下方移动了一点。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cr.set_source_rgb(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</div><div class="line">cr.move_to(<span class="number">40</span>, <span class="number">60</span>)</div><div class="line">cr.show_text(<span class="string">"ZetCode"</span>)</div></pre></td></tr></table></figure>
+<p>第一段文字用黑色墨水绘制。它做为阴影。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_source_rgb</span>(0<span class="selector-class">.5</span>, 0<span class="selector-class">.5</span>, 0<span class="selector-class">.5</span>)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.move_to</span>(43, 63)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.show_text</span>("<span class="selector-tag">ZetCode</span>")</div></pre></td></tr></table></figure>
+<p>第二段文字以一些灰色墨水绘制。它向右下边移动了 3px。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-3d4461bb03ce4c15.jpg" alt="图：阴影文字"></p>
+<h1 id="渐变填充文字"><a href="#渐变填充文字" class="headerlink" title="渐变填充文字"></a>渐变填充文字</h1><p>下面的例子将创建一个很棒的效果。我们将用线性渐变来填充文字。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">def on_draw(self, wid, <span class="keyword">cr</span>):</div><div class="line"></div><div class="line">    <span class="keyword">cr</span>.set_source_rgb(<span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>)</div><div class="line">    <span class="keyword">cr</span>.paint()</div><div class="line"></div><div class="line">    h = <span class="number">90</span></div><div class="line"></div><div class="line">    <span class="keyword">cr</span>.select_font_face(<span class="string">"Serif"</span>, cairo.FONT_SLANT_ITALIC,</div><div class="line">                        cairo.FONT_WEIGHT_BOLD)</div><div class="line">    <span class="keyword">cr</span>.set_font_size(h)</div><div class="line"></div><div class="line">    <span class="keyword">lg</span> = cairo.LinearGradient(<span class="number">0</span>, <span class="number">15</span>, <span class="number">0</span>, h * <span class="number">0.8</span>)</div><div class="line">    <span class="keyword">lg</span>.set_extend(cairo.EXTEND_REPEAT)</div><div class="line">    <span class="keyword">lg</span>.add_color_stop_rgb(<span class="number">0.0</span>, <span class="number">1</span>, <span class="number">0.6</span>, <span class="number">0</span>)</div><div class="line">    <span class="keyword">lg</span>.add_color_stop_rgb(<span class="number">0.5</span>, <span class="number">1</span>, <span class="number">0.3</span>, <span class="number">0</span>)</div><div class="line"></div><div class="line">    <span class="keyword">cr</span>.move_to(<span class="number">15</span>, <span class="number">80</span>)</div><div class="line">    <span class="keyword">cr</span>.text_path(<span class="string">"ZetCode"</span>)</div><div class="line">    <span class="keyword">cr</span>.set_source(<span class="keyword">lg</span>)</div><div class="line">    <span class="keyword">cr</span>.fill()</div></pre></td></tr></table></figure>
+<p>我们在窗口中绘制一段文字，并以线性渐变填充。颜色是一些桔黄色。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.set_source_rgb</span>(0<span class="selector-class">.2</span>, 0<span class="selector-class">.2</span>, 0<span class="selector-class">.2</span>)</div><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.paint</span>()</div></pre></td></tr></table></figure>
+<p>为了使它的视觉效果更吸引人，我们用深灰色来绘制背景。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">lg = cairo.LinearGradient(<span class="number">0</span>, <span class="number">15</span>, <span class="number">0</span>, h * <span class="number">0.8</span>)</div><div class="line">lg.set_extend(cairo.EXTEND_REPEAT)</div><div class="line">lg.add_color_stop_rgb(<span class="number">0.0</span>, <span class="number">1</span>, <span class="number">0.6</span>, <span class="number">0</span>)</div><div class="line">lg.add_color_stop_rgb(<span class="number">0.5</span>, <span class="number">1</span>, <span class="number">0.3</span>, <span class="number">0</span>)</div></pre></td></tr></table></figure>
+<p>创建线性渐变。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">cr</span>.move_to(<span class="number">15</span>, <span class="number">80</span>)</div><div class="line"><span class="keyword">cr</span>.text_path(<span class="string">"ZetCode"</span>)</div><div class="line"><span class="keyword">cr</span>.set_source(<span class="keyword">lg</span>)</div><div class="line"><span class="keyword">cr</span>.fill()</div></pre></td></tr></table></figure>
+<p>文字被显示于窗口中。我们用渐变作为 source 来绘制。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-e29fc022ca7b280e.jpg" alt="图：渐变填充文字"></p>
+<h1 id="逐字符显示"><a href="#逐字符显示" class="headerlink" title="逐字符显示"></a>逐字符显示</h1><p>在这个效果中，我们将逐字符显示一段文字。字符的显示将有一些延时。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="string">'''</span></div><div class="line">ZetCode PyCairo tutorial</div><div class="line"></div><div class="line">This program shows text letter by</div><div class="line">letter.</div><div class="line"></div><div class="line">author: Jan Bodnar</div><div class="line">website: zetcode.com</div><div class="line">last edited: August 2012</div><div class="line">'''</div><div class="line"></div><div class="line"><span class="keyword">import</span> gi</div><div class="line">gi.require_version(<span class="string">'Gtk'</span>, <span class="string">'3.0'</span>)</div><div class="line"><span class="keyword">from</span> gi.repository <span class="keyword">import</span> Gtk, GLib</div><div class="line"><span class="keyword">import</span> cairo</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">cv</span><span class="params">(object)</span>:</span></div><div class="line">    SPEED = <span class="number">800</span></div><div class="line">    TEXT_SIZE = <span class="number">35</span></div><div class="line">    COUNT_MAX = <span class="number">8</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(Gtk.Window)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super(Example, self).__init__()</div><div class="line"></div><div class="line">        self.init_ui()</div><div class="line">        self.init_vars()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_ui</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        self.darea = Gtk.DrawingArea()</div><div class="line">        self.darea.connect(<span class="string">"draw"</span>, self.on_draw)</div><div class="line">        self.add(self.darea)</div><div class="line"></div><div class="line">        GLib.timeout_add(cv.SPEED, self.on_timer)</div><div class="line"></div><div class="line">        self.set_title(<span class="string">"Letter by letter"</span>)</div><div class="line">        self.resize(<span class="number">350</span>, <span class="number">200</span>)</div><div class="line">        self.set_position(Gtk.WindowPosition.CENTER)</div><div class="line">        self.connect(<span class="string">"delete-event"</span>, Gtk.main_quit)</div><div class="line">        self.show_all()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_vars</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        self.timer = <span class="keyword">True</span></div><div class="line">        self.count = <span class="number">0</span></div><div class="line">        self.text = [<span class="string">"Z"</span>, <span class="string">"e"</span>, <span class="string">"t"</span>, <span class="string">"C"</span>, <span class="string">"o"</span>, <span class="string">"d"</span>, <span class="string">"e"</span>]</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_timer</span><span class="params">(self)</span>:</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.timer: <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line"></div><div class="line">        self.darea.queue_draw()</div><div class="line">        <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">        cr.select_font_face(<span class="string">"Courier"</span>, cairo.FONT_SLANT_NORMAL,</div><div class="line">                            cairo.FONT_WEIGHT_BOLD)</div><div class="line"></div><div class="line">        cr.set_font_size(cv.TEXT_SIZE)</div><div class="line"></div><div class="line">        dis = <span class="number">0</span></div><div class="line"></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(self.count):</div><div class="line">            (x, y, width, height, dx, dy) = cr.text_extents(self.text[i])</div><div class="line"></div><div class="line">            dis += width + <span class="number">2</span></div><div class="line">            cr.move_to(dis + <span class="number">30</span>, <span class="number">50</span>)</div><div class="line">            cr.show_text(self.text[i])</div><div class="line"></div><div class="line">        self.count += <span class="number">1</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> self.count == cv.COUNT_MAX:</div><div class="line">            self.timer = <span class="keyword">False</span></div><div class="line">            self.count = <span class="number">0</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    app = Example()</div><div class="line">    Gtk.main()</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    main()</div></pre></td></tr></table></figure>
+<p>在我们的例子中，我们以一定的延时，逐字符的在 GTK 窗口中显示 “ZetCode” 字串。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self<span class="selector-class">.text</span> = [<span class="string">"Z"</span>, <span class="string">"e"</span>, <span class="string">"t"</span>, <span class="string">"C"</span>, <span class="string">"o"</span>, <span class="string">"d"</span>, <span class="string">"e"</span>]</div></pre></td></tr></table></figure>
+<p>这是将在窗口中显示的字符的列表。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.select_font_face</span>("<span class="selector-tag">Courier</span>", <span class="selector-tag">cairo</span><span class="selector-class">.FONT_SLANT_NORMAL</span>,</div><div class="line">                    <span class="selector-tag">cairo</span><span class="selector-class">.FONT_WEIGHT_BOLD</span>)</div></pre></td></tr></table></figure>
+<p>我们以 bold weight 选择一个 Courier font face。</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(self.count):</div><div class="line">    (x, y, width, height, dx, dy) = <span class="literal">cr</span>.text_extents(self.<span class="keyword">text</span>[i])</div><div class="line"></div><div class="line">    dis += width + <span class="number">2</span></div><div class="line">    <span class="literal">cr</span>.move_to(dis + <span class="number">30</span>, <span class="number">50</span>)</div><div class="line">    <span class="literal">cr</span>.show_text(self.<span class="keyword">text</span>[i])</div></pre></td></tr></table></figure>
+<p>此处我们逐字符绘制文本。我们获取每个字符的宽度，然后计算沿 x 轴需要移动的距离。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-af746100aa068168.jpg" alt="图：逐字符显示"></p>
+<h1 id="Glyphs"><a href="#Glyphs" class="headerlink" title="Glyphs"></a>Glyphs</h1><p><code>show_text()</code> 方法只适合简单的文本渲染。Cairo 开发者称它为玩具方法。更专业的文本渲染通过 glyphs 完成。一个 <em>glyph</em> 是为一个字符提供一个外形的图形符号。一个字符提供一种含义。它可以有多个 glyphs。字符没有内在的外观。glyph 没有内在的含义。</p>
+<p>注意，许多需要处理文字的通用编程需要由 Pango 库来处理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_draw</span><span class="params">(self, wid, cr)</span>:</span></div><div class="line"></div><div class="line">    cr.select_font_face(<span class="string">"Serif"</span>, cairo.FONT_SLANT_NORMAL,</div><div class="line">                        cairo.FONT_WEIGHT_NORMAL)</div><div class="line"></div><div class="line">    cr.set_font_size(<span class="number">13</span>)</div><div class="line"></div><div class="line">    glyphs = []</div><div class="line">    index = <span class="number">0</span></div><div class="line"></div><div class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">20</span>):</div><div class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">35</span>):</div><div class="line">            glyphs.append((index, x * <span class="number">15</span> + <span class="number">20</span>, y * <span class="number">18</span> + <span class="number">20</span>))</div><div class="line">            index += <span class="number">1</span></div><div class="line"></div><div class="line">    cr.show_glyphs(glyphs)</div></pre></td></tr></table></figure>
+<p>这段代码显示选中的字体中的 700 个 glyphs。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attr">glyphs</span> = []</div></pre></td></tr></table></figure>
+<p>glyphs 列表将存储三个整数值。第一个值是 glyph 在选中的字体类型中的索引。第二个和第三个是 glyph 的 x，y 位置。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">cr</span><span class="selector-class">.show_glyphs</span>(<span class="selector-tag">glyphs</span>)</div></pre></td></tr></table></figure>
+<p><code>show_glyphs()</code>  方法在窗口中显示 glyphs。</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-1b147074abf88f9e.jpg" alt="图：Glyphs"></p>
+<p>本章讨论了 PyCairo 中的文本。</p>
+<p><a href="http://zetcode.com/gfx/pycairo/text/" target="_blank" rel="external">原文</a></p>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/图形图像/" rel="tag"># 图形图像</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/12/pycairo08_transformations/" rel="next" title="PyCairo 中的变换">
+                <i class="fa fa-chevron-left"></i> PyCairo 中的变换
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/12/pycairo10_images/" rel="prev" title="PyCairo 中的图片">
+                PyCairo 中的图片 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">168</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#灵魂伴侣"><span class="nav-number">1.</span> <span class="nav-text">灵魂伴侣</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#居中的文字"><span class="nav-number">2.</span> <span class="nav-text">居中的文字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#阴影文字"><span class="nav-number">3.</span> <span class="nav-text">阴影文字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渐变填充文字"><span class="nav-number">4.</span> <span class="nav-text">渐变填充文字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#逐字符显示"><span class="nav-number">5.</span> <span class="nav-text">逐字符显示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Glyphs"><span class="nav-number">6.</span> <span class="nav-text">Glyphs</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname,
+            owner: 'hanpfei',
+            repo: 'blog_comment',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
+            
+                client_id: '0ec580f0a999fbe77a63'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
