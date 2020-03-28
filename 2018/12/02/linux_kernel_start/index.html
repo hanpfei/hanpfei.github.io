@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Linux内核," />
+
+
+<meta name="description" content="在知乎上看到了这个问题，借机总结一下自己在 Linux 内核学习研究上的经历和方法。
+目前的工作实际上不是在搞 Linux 内核，但读大学的 4 年，其中有两年的时间在研究 Linux 内核和嵌入式 Linux。虽然已经好多年没再搞 Linux 内核，但上次项目需要，还是分析调试了 Android 的 low memory killer 驱动，并给 Android 的 binder 驱动增加了一些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux内核工程师是怎么步入内核殿堂的？">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/12/02/linux_kernel_start/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="在知乎上看到了这个问题，借机总结一下自己在 Linux 内核学习研究上的经历和方法。
+目前的工作实际上不是在搞 Linux 内核，但读大学的 4 年，其中有两年的时间在研究 Linux 内核和嵌入式 Linux。虽然已经好多年没再搞 Linux 内核，但上次项目需要，还是分析调试了 Android 的 low memory killer 驱动，并给 Android 的 binder 驱动增加了一些">
+<meta property="og:updated_time" content="2018-12-02T02:03:38.889Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux内核工程师是怎么步入内核殿堂的？">
+<meta name="twitter:description" content="在知乎上看到了这个问题，借机总结一下自己在 Linux 内核学习研究上的经历和方法。
+目前的工作实际上不是在搞 Linux 内核，但读大学的 4 年，其中有两年的时间在研究 Linux 内核和嵌入式 Linux。虽然已经好多年没再搞 Linux 内核，但上次项目需要，还是分析调试了 Android 的 low memory killer 驱动，并给 Android 的 binder 驱动增加了一些">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/12/02/linux_kernel_start/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Linux内核工程师是怎么步入内核殿堂的？ | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/12/02/linux_kernel_start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux内核工程师是怎么步入内核殿堂的？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-02T09:15:49+08:00">2018-12-02</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux内核/" itemprop="url" rel="index"><span itemprop="name">Linux内核</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/12/02/linux_kernel_start/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/12/02/linux_kernel_start/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/12/02/linux_kernel_start/" class="leancloud_visitors" data-flag-title="Linux内核工程师是怎么步入内核殿堂的？">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在知乎上看到了这个<a href="https://www.zhihu.com/question/304179651/answer/543389370" target="_blank" rel="external">问题</a>，借机总结一下自己在 Linux 内核学习研究上的经历和方法。</p>
+<p>目前的工作实际上不是在搞 Linux 内核，但读大学的 4 年，其中有两年的时间在研究 Linux 内核和嵌入式 Linux。虽然已经好多年没再搞 Linux 内核，但上次项目需要，还是分析调试了 Android 的 low memory killer 驱动，并给 Android 的 binder 驱动增加了一些功能，对于 Linux 的内核的基本分析调试能力一直在。看到这个问题，分享一下自己的做法。</p>
+<p>以我的理解，题主的问题可以分解为三个小问题，Linux 内核开发需要知道的基本背景知识，Linux 内核开发研究在技术上的路线图，以及 Linux 内核开发过程中的分析调试手法。<br><a id="more"></a><br>Linux 内核开发需要的基本背景知识。为什么说是“基本”呢？主要是因为，如我们从操作系统原理一棵中所知道的那样，操作系统内核都是分为基本大的子系统的，如 I/O，任务调度，内存管理，文件系统和网络等等，这些子系统都是算法密集型的系统，不同子系统需要的背景知识还不太一样。</p>
+<p>Linux 内核主要是用 C 语言写的，因而 C 语言开发的基本功必不可少。C 语言开发学习的经典著作很多，不仅有 <a href="https://book.douban.com/subject/1139336/" target="_blank" rel="external">C程序设计语言</a> 这样长生不衰的权威之作，还有，还有“C 语言开发的四书五经”和 C 语言开发——现代方法 这些非常好的作品。操作系统内核作为一个数据结构和算法密集型的领域，基本的数据结构和算法知识不可或缺，<a href="https://book.douban.com/subject/2024655/" target="_blank" rel="external">数据结构</a> 这本必修课自不必说，其它还有算法导论等等经典。</p>
+<p>想要研究 Linux 内核，站在用户的角度来看待它，了解它的功能和接口是必须的。谁是 Linux 内核的用户，Linux 内核又为用户提供了什么功能，用户又是通过什么接口访问这些功能的呢？Linux 内核功能主要是通过系统调用暴露给用户的，系统调用通常又被封装为 C 库，需要使用操作系统内核功能的开发者通过 C 库使用 Linux 内核。相关领域非常经典的著作是 <a href="https://book.douban.com/subject/25900403/" target="_blank" rel="external">UNIX环境高级编程（第3版）</a>，读了这本书，应该就大体可以了解到，操作系统提供的大概就是文件操作，进程线程操作等功能了。<a href="https://book.douban.com/subject/3652388/" target="_blank" rel="external">程序员的自我修养</a> 也值得一看，可以了解一下程序加载运行的过程。</p>
+<p>然后是操作系统原理和计算机体系结构。用户空间看到的操作系统功能和操作系统内部通常的设计结构并非严格对应的。通过操作系统原理，可以让我们看到操作系统内部通常的设计结构，如通常的子系统划分， I/O，任务调度，内存管理，文件系统和网络等，多个子系统的功能，都按照“一切皆文件”的 Unix 系统经典理念，通过文件有关的接口暴露给用户空间。操作系统原理有关的经典著作有斯托林斯的 <a href="https://book.douban.com/subject/1506160/" target="_blank" rel="external">操作系统——精髓与设计原理</a>，Andrew S·Tanenbaum 的 <a href="https://book.douban.com/subject/1390650/" target="_blank" rel="external">现代操作系统</a>和<a href="https://book.douban.com/subject/2044818/" target="_blank" rel="external">操作系统设计与实现</a>等，其中 <a href="https://book.douban.com/subject/2044818/" target="_blank" rel="external">操作系统设计与实现</a> 还是 Linus 当年设计实现 Linux 内核时的主要参考。<a href="https://book.douban.com/subject/1035710/" target="_blank" rel="external">UNIX操作系统设计</a> 和 <a href="https://book.douban.com/subject/1503819/" target="_blank" rel="external">Linux内核设计与实现</a> 也非常经典，值得一读，<a href="https://book.douban.com/subject/1503819/" target="_blank" rel="external">Linux内核设计与实现</a> 的作者是 Linux 内核的核心开发者，还是内核抢占子系统的作者。<a href="https://book.douban.com/subject/1422377/" target="_blank" rel="external">自己动手写操作系统</a> 也可以看一下。</p>
+<p>Linux 内核研发是一个软硬件结合的领域，计算机组成原理和体系结构相关的知识必不可少，汇编语言，CPU 的 MMU 等等都需要有所了解。相关的经典著作有 <a href="https://book.douban.com/subject/1230413/" target="_blank" rel="external">深入理解计算机系统</a> 、<a href="https://book.douban.com/subject/2110638/" target="_blank" rel="external">计算机组成与设计硬件/软件接口</a>、<a href="https://book.douban.com/subject/1435663/" target="_blank" rel="external">ARM嵌入式系统开发</a> 和 <a href="https://book.douban.com/subject/3099520/" target="_blank" rel="external">MIPS体系结构透视</a> 等。答住过去关注的主要硬件平台是 ARM 的，因而关于 X86 平台的介绍，可以自行找涵盖了 MMU/保护模式 的 X86 汇编语言有关的著作来研究。</p>
+<p>Linux 内核开发需要的基本背景知识大概就是这些。</p>
+<p>Linux 内核开发研究在技术上的路线图。首先当然是从能够快速上手，能够快速带来成就感的地方开始。硬件平台可以用自己日常使用的 PC 机，装上 Linux 发行版，安装必要的编译链接等开发工具，差不多就可以上手了。Linux 内核的文档非常齐全，可以用 Git 把 Linux 内核的源码整个下载到本地，然后编译一下，熟悉熟悉 Linux 内核的构建系统，毕竟在整个的 Linux 内核研发过程中需要与这套系统打交道的地方很多。</p>
+<p>就 Linux 内核研究和开发本身来说，最简单最方便的入手点就是驱动程序了。驱动程序可以从简单的字符设备内存型驱动开始，编写一个 “Hello world”字符设备驱动，暴露基本的文件操作，编译并动态加载进内核，在通过文件操作访问它时，可以让它仅仅打印一个“Hello world”。当然内核不能使用 C 语言标准库，内核打印的信息也不通过终端来看，而是通过 dmesg 命令来看。据说当前大多数的 Linux 内核研发工程师所做的工作，都是在搞驱动，驱动相关的代码在 Linux 内核代码中的占比远超一半。介绍 Linux 内核驱动的书很多，经典的长盛不衰但有点老的有 <a href="https://book.douban.com/subject/1723151/" target="_blank" rel="external">Linux设备驱动程序</a>，还有 <a href="https://book.douban.com/subject/2984156/" target="_blank" rel="external">Linux设备驱动开发详解</a> 和 <a href="https://book.douban.com/subject/3700970/" target="_blank" rel="external">精通Linux驱动程序开发</a> 等值得一读。实际的 Linux 内核驱动当然不可能像“Hello world”字符设备驱动那么简单。实际编写驱动时，硬件设备本身的协议需要仔细研读，诸如硬件设备有几个寄存器或者 IO 端口，对这些寄存器和 IO 端口的不同访问方式可以访问到什么功能等等。此外在 Linux 内核中运行的驱动程序代码，与内核中的其它子系统的交互几乎是必不可少的，因而 Linux 驱动相关的书读下来，会发现大部分都在讲内核中的内存分配和管理，Linux 内核中的并发同步方法等等。嵌入式 Linux 系统有关的书会讲许多关于硬件访问方法的内容，值得一读，如 <a href="https://book.douban.com/subject/3152027/" target="_blank" rel="external">嵌入式Linux应用开发完全手册</a>， <a href="https://book.douban.com/subject/3234368/" target="_blank" rel="external">ARM嵌入式系统基础教程</a>，<a href="https://book.douban.com/subject/4111412/" target="_blank" rel="external">嵌入式Linux基础教程</a></p>
+<p>很长时间没有通过读书来学习研究 Linux 内核，最近新出的书就不太了解了。不过在有了一定的基础之后，研究 Linux 内核最好的方法就是，阅读 Linux 内核官方相关模块的文档说明，阅读 Linux 内核的代码，然后做一些调试了。</p>
+<p>研究学习 Linux 内核，除了从驱动入手外，也可以从另外两个点入手，一是内核的启动过程，二是系统调用。内核启动和系统调用也都是离用户最近的点，相对比较容易我们着手分析调试。</p>
+<p>能够上手写一些 Linux 内核代码，并对 Linux 内核开发中能够用到的工具，如 Linux 内核提供的同步的函数，内存分配管理的函数等基础有所了解之后，就可以根据自己的喜好和项目需要，来具体深入学习研究特定子系统了，如任务调度，内存管理，文件系统和网络等等。</p>
+<p>总结一下，Linux 内核开发研究在技术上的路线图大概是这样的：代码下载和构建 -&gt; 选择从 Linux 驱动、内核的启动过程或系统调用三者之一入手开始自己的内核开发之旅 -&gt; 学习 Linux 内核开发中能用到的工具和函数库 -&gt; 根据工作和项目需要，选择某个自己感兴趣的子系统，如任务调度，内存管理，文件系统、IO、设备驱动和网络等等深入研究，完成自己的工作。</p>
+<p>Linux 内核开发过程中的分析调试手法。硬件平台可以用自己的 PC 机，装上 Linux 发行版，然后在上面做实验。也可以用 ARM 平台做为硬件平台，可以买一块 ARM 开发板或者 Google 的 Nexus 系列手机。用 Google 的 Nexus 系列手机时，可以参考 Google 提供的官方文档来构建内核。不用硬件，用模拟器或虚拟机更方便，还不用担心把电脑或手机变成砖。Android 模拟器用来研究 Linux 内核非常方便。分析调试可以通过打断点或者打印日志来做。用 Android 模拟器来打内核的断点比较方便。</p>
+<p>最后，<a href="https://book.douban.com/subject/1395123/" target="_blank" rel="external">乐者为王</a> 是一本介绍 Linus 的书，非常有意思。关于 Unix 社区的一些文化和哲学有关的内容可以经常看一下。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Linux内核/" rel="tag"># Linux内核</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/31/lego_ev3_direct_command_005/" rel="next" title="EV3 直接命令 - 第 5 课 从 EV3 的传感器读取数据">
+                <i class="fa fa-chevron-left"></i> EV3 直接命令 - 第 5 课 从 EV3 的传感器读取数据
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/23/android_qemu_poting/" rel="prev" title="Android QEMU 模拟器移植 - 编译">
+                Android QEMU 模拟器移植 - 编译 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

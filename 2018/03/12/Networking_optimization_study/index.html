@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="网络调试," />
+
+
+<meta name="description" content="携程App的网络性能优化实践">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络优化实践探索文章">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/03/12/Networking_optimization_study/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="携程App的网络性能优化实践">
+<meta property="og:updated_time" content="2018-03-21T12:37:06.313Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络优化实践探索文章">
+<meta name="twitter:description" content="携程App的网络性能优化实践">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/03/12/Networking_optimization_study/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>网络优化实践探索文章 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/03/12/Networking_optimization_study/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">网络优化实践探索文章</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-12T13:46:49+08:00">2018-03-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络调试/" itemprop="url" rel="index"><span itemprop="name">网络调试</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/03/12/Networking_optimization_study/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/03/12/Networking_optimization_study/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/03/12/Networking_optimization_study/" class="leancloud_visitors" data-flag-title="网络优化实践探索文章">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://www.infoq.com/cn/articles/how-ctrip-improves-app-networking-performance" target="_blank" rel="external">携程App的网络性能优化实践</a><br><a id="more"></a><br><a href="http://mp.weixin.qq.com/s?__biz=MzA3ODg4MDk0Ng==&amp;mid=2651112505&amp;idx=1&amp;sn=70b6a46e92c372a09edc7050379bd158&amp;scene=1&amp;srcid=0803zfDgG6KTseJwK3UA16Z5&amp;from=singlemessage&amp;isappinstalled=0#wechat_redirect" target="_blank" rel="external">2016年携程App网络服务通道治理和性能优化实践</a></p>
+<p><a href="http://www.infoq.com/cn/articles/mogujie-app-chromium-network-layer" target="_blank" rel="external">蘑菇街App Chromium网络栈实践</a></p>
+<p><a href="https://yq.aliyun.com/articles/53" target="_blank" rel="external">手机淘宝性能优化</a></p>
+<p><a href="http://taobaofed.org/blog/2015/12/16/h5-performance-optimization-and-domain-convergence/" target="_blank" rel="external">无线性能优化：域名收敛</a></p>
+<p><a href="http://chuansong.me/n/1553041851528" target="_blank" rel="external">Facebook App对TLS的魔改造：实现0-RTT</a></p>
+<p><a href="http://mt.sohu.com/20170220/n481149719.shtml" target="_blank" rel="external">腾讯HTTPS性能优化实践</a></p>
+<p><a href="http://mp.weixin.qq.com/s/ghnmC8709DvnhieQhkLJpA" target="_blank" rel="external">Android微信智能心跳方案</a></p>
+<p><a href="https://github.com/Tencent/mars/wiki" target="_blank" rel="external">微信 Mars</a></p>
+<p><a href="http://taobaofed.org/blog/2015/11/20/webkit-remote-debug-test/" target="_blank" rel="external">Webkit 远程调试协议初探</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&amp;mid=2649286266&amp;idx=1&amp;sn=f5d049033e251cccc22e163532355ddf&amp;mpshare=1&amp;scene=1&amp;srcid=01036d3uXgfesl07utb04Hko&amp;pass_ticket=81sKOxJ6az7s%2Bt9iX%2BimmP9aQMHGKJBFGy9jouP6LK%2FoKPoA34mrlGBUph5RD7LR#rd" target="_blank" rel="external">基于TLS1.3的微信安全通信协议mmtls介绍</a></p>
+<p><a href="http://www.infoq.com/cn/presentations/wechat-mars-high-quality-network-connection" target="_blank" rel="external">微信Mars——移动互联网下的高质量网络连接探索</a></p>
+<p><a href="http://code.csdn.net/news/2822509" target="_blank" rel="external">Facebook开源Proxygen HTTP框架和服务器</a></p>
+<p><a href="http://www.infoq.com/cn/articles/taobao-mobile-terminal-access-gateway-infrastructure" target="_blank" rel="external">阿里无线11.11：手机淘宝移动端接入网关基础架构演进之路</a></p>
+<p><a href="https://www.slideshare.net/vorfeedchen/facebook-cwangle" target="_blank" rel="external">Facebook wangle</a></p>
+<h3 id="从-HTTP2-到-QUIC——QQ-空间-Web-加速实践"><a href="#从-HTTP2-到-QUIC——QQ-空间-Web-加速实践" class="headerlink" title="从 HTTP2 到 QUIC——QQ 空间 Web 加速实践"></a><a href="http://www.infoq.com/cn/presentations/from-http2-to-quic-qq-space-web-acceleration?utm_campaign=rightbar_v2&amp;utm_source=infoq&amp;utm_medium=presentations_link&amp;utm_content=link_text" target="_blank" rel="external">从 HTTP2 到 QUIC——QQ 空间 Web 加速实践</a></h3><h3 id="QQ空间已在生产环境中使用QUIC协议"><a href="#QQ空间已在生产环境中使用QUIC协议" class="headerlink" title="QQ空间已在生产环境中使用QUIC协议"></a><a href="http://www.infoq.com/cn/news/2017/10/qzone-quic-practise" target="_blank" rel="external">QQ空间已在生产环境中使用QUIC协议</a></h3><p>QQ 空间已经在生产环境中应用了 QUIC 协议。在 Server 端，是由腾讯的安全云网关团队提供的支持，但 Server 端 QUIC 协议的具体实现方式，信息不是很明确。在用户端，分 PC 端和移动端两种场景，主要是在 PC 端用了 QUIC，理由是移动端支持 QUIC 的还比较少。这个意思似乎是，在用户端对 QUIC 协议的支持，主要是借助于浏览器实现的，特别是 Chrome/Chromium 浏览器。QQ 空间团队在落地 QUIC 协议的过程中，做了什么呢？主要是在 QUIC 协议性能不好时，切换到其它协议么？</p>
+<h3 id="QUIC在微博中的落地思考"><a href="#QUIC在微博中的落地思考" class="headerlink" title="QUIC在微博中的落地思考"></a><a href="http://www.infoq.com/cn/news/2018/03/weibo-quic" target="_blank" rel="external">QUIC在微博中的落地思考</a></h3><p>微博在移动端应用了 QUIC 协议。从分享中，不难了解到，服务端采用开源的 Caddy Web 服务器来提供支持，但不是很清楚，是否有做一些特别的优化。而客户端，则是基于 Chromium 浏览器的网络库来实现的，分享中讲得很明白，从微博 APK 中 <code>/lib/armeabi/</code> 目录下的 <code>libcronet.so</code> 也能看出来。</p>
+<p>从具体的应用效果来看，QUIC 在弱网环境下相比 TCP 有所提升，针对 CDN、流式传输等一些特殊场景也会有一些提升效果；总体上效果不是那么明显，甚至在一些场景下表现还不如 TCP。</p>
+<h3 id="An-overview-of-TLS-1-3-and-Q-amp-A"><a href="#An-overview-of-TLS-1-3-and-Q-amp-A" class="headerlink" title="An overview of TLS 1.3 and Q&amp;A"></a><a href="https://blog.cloudflare.com/tls-1-3-overview-and-q-and-a/" target="_blank" rel="external">An overview of TLS 1.3 and Q&amp;A</a></h3><h3 id="TLS-1-3-Enhanced-Performance-Hardened-Security"><a href="#TLS-1-3-Enhanced-Performance-Hardened-Security" class="headerlink" title="TLS 1.3 - Enhanced Performance, Hardened Security"></a><a href="https://www.cloudflare.com/learning-resources/tls-1-3/" target="_blank" rel="external">TLS 1.3 - Enhanced Performance, Hardened Security</a></h3><h3 id="Netty干货分享：京东京麦的生产级TCP网关技术实践总结"><a href="#Netty干货分享：京东京麦的生产级TCP网关技术实践总结" class="headerlink" title="Netty干货分享：京东京麦的生产级TCP网关技术实践总结"></a><a href="https://www.jianshu.com/p/36308e2caf93?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=pc_all_hots&amp;utm_source=recommendation" target="_blank" rel="external">Netty干货分享：京东京麦的生产级TCP网关技术实践总结</a></h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络调试/" rel="tag"># 网络调试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/04/simpleperf_usage/" rel="next" title="使用 Simpleperf 分析本地代码性能">
+                <i class="fa fa-chevron-left"></i> 使用 Simpleperf 分析本地代码性能
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/20/android_cert_mgr_and_verify/" rel="prev" title="Android 根证书管理与证书验证">
+                Android 根证书管理与证书验证 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#从-HTTP2-到-QUIC——QQ-空间-Web-加速实践"><span class="nav-number">1.</span> <span class="nav-text">从 HTTP2 到 QUIC——QQ 空间 Web 加速实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QQ空间已在生产环境中使用QUIC协议"><span class="nav-number">2.</span> <span class="nav-text">QQ空间已在生产环境中使用QUIC协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QUIC在微博中的落地思考"><span class="nav-number">3.</span> <span class="nav-text">QUIC在微博中的落地思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#An-overview-of-TLS-1-3-and-Q-amp-A"><span class="nav-number">4.</span> <span class="nav-text">An overview of TLS 1.3 and Q&A</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TLS-1-3-Enhanced-Performance-Hardened-Security"><span class="nav-number">5.</span> <span class="nav-text">TLS 1.3 - Enhanced Performance, Hardened Security</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Netty干货分享：京东京麦的生产级TCP网关技术实践总结"><span class="nav-number">6.</span> <span class="nav-text">Netty干货分享：京东京麦的生产级TCP网关技术实践总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

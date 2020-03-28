@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="网络协议," />
+
+
+<meta name="description" content="Wiki 页QUIC Wiki 页 和 HTTP3 Wiki 页 提供了对于 QUIC 协议和 HTTP/3 协议当前发展状况的一个简要描述。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="QUIC最新进展及文档整理">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/03/27/quic_2019_03_27/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Wiki 页QUIC Wiki 页 和 HTTP3 Wiki 页 提供了对于 QUIC 协议和 HTTP/3 协议当前发展状况的一个简要描述。">
+<meta property="og:updated_time" content="2019-08-30T09:00:08.849Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="QUIC最新进展及文档整理">
+<meta name="twitter:description" content="Wiki 页QUIC Wiki 页 和 HTTP3 Wiki 页 提供了对于 QUIC 协议和 HTTP/3 协议当前发展状况的一个简要描述。">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/03/27/quic_2019_03_27/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>QUIC最新进展及文档整理 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/03/27/quic_2019_03_27/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">QUIC最新进展及文档整理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-27T13:46:49+08:00">2019-03-27</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/27/quic_2019_03_27/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/27/quic_2019_03_27/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/27/quic_2019_03_27/" class="leancloud_visitors" data-flag-title="QUIC最新进展及文档整理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Wiki-页"><a href="#Wiki-页" class="headerlink" title="Wiki 页"></a>Wiki 页</h2><p><a href="https://en.wikipedia.org/wiki/QUIC" target="_blank" rel="external">QUIC Wiki 页</a> 和 <a href="https://en.wikipedia.org/wiki/HTTP/3" target="_blank" rel="external">HTTP3 Wiki 页</a> 提供了对于 QUIC 协议和 HTTP/3 协议当前发展状况的一个简要描述。<br><a id="more"></a><br>如 <a href="https://en.wikipedia.org/wiki/QUIC" target="_blank" rel="external">QUIC Wiki</a> 的说明那样，“最初由 Google 创建，并移交给 IETF 的名为 QUIC 的协议，与后来在 IETF 内创建的 QUIC（尽管它们的名字一样）有着巨大的不同。最初的 Google QUIC，有时被称为 gQUIC，只是一个用来基于加密的 UDP 发送 HTTP/2 帧的协议，而 IETF 协议 QUIC 则是一个通用的传输协议。”</p>
+<p>当前的 HTTP/3 对应于之前的 Google QUIC，而当前的 IETF QUIC 则是一个更宏大的体系，既包括了作为通用的基于 UDP 的安全的传输协议，也包括也括 HTTP/3 等内容。</p>
+<h2 id="IETF-QUIC-Working-Group"><a href="#IETF-QUIC-Working-Group" class="headerlink" title="IETF QUIC Working Group"></a>IETF <em>QUIC</em> Working Group</h2><p>IETF QUIC 工作组的<a href="https://quicwg.org/" target="_blank" rel="external">官方网站</a>。这个站点有大量非常权威的标准文档和QUIC标准化推进过程进展的信息。QUIC 相关协议的一些最新文档如下：</p>
+<ul>
+<li><a href="https://quicwg.org/base-drafts/draft-ietf-quic-invariants.html" target="_blank" rel="external">Version-Independent Properties of QUIC</a></li>
+<li><a href="https://quicwg.org/base-drafts/draft-ietf-quic-transport.html" target="_blank" rel="external">QUIC: A UDP-Based Multiplexed and Secure Transport</a></li>
+<li><a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html" target="_blank" rel="external">QUIC Loss Detection and Congestion Control</a></li>
+<li><a href="https://quicwg.org/base-drafts/draft-ietf-quic-tls.html" target="_blank" rel="external">Using TLS to Secure QUIC</a></li>
+<li><a href="https://quicwg.org/base-drafts/draft-ietf-quic-http.html" target="_blank" rel="external">Hypertext Transfer Protocol Version 3 (HTTP/3)</a></li>
+<li><a href="https://quicwg.org/base-drafts/draft-ietf-quic-qpack.html" target="_blank" rel="external">QPACK: Header Compression for HTTP over QUIC</a></li>
+</ul>
+<p><a href="https://datatracker.ietf.org/wg/quic/about/" target="_blank" rel="external">IETF QUIC datatracker 页</a> 可以查看当前 QUIC 协议标准化进程的一些状态。</p>
+<h2 id="IETF-QUIC-工作组官方-GitHub"><a href="#IETF-QUIC-工作组官方-GitHub" class="headerlink" title="IETF QUIC 工作组官方 GitHub"></a>IETF QUIC 工作组官方 GitHub</h2><p><a href="https://github.com/quicwg" target="_blank" rel="external">IETF QUIC 工作组官方 GitHub group</a>。</p>
+<p><strong><a href="https://github.com/quicwg/base-drafts" target="_blank" rel="external">base-drafts</a></strong></p>
+<ul>
+<li>QUIC 协议套件的 IETF QUIC 工作组文档，Markdown 格式。</li>
+</ul>
+<p><strong><a href="https://github.com/quicwg/zh-translations" target="_blank" rel="external">zh-translations</a></strong></p>
+<ul>
+<li>IETF-QUIC-Working-Group 相关文档的中文翻译所使用的仓库。</li>
+</ul>
+<p><strong><a href="https://github.com/quicwg/wg-materials" target="_blank" rel="external">wg-materials</a></strong></p>
+<ul>
+<li>IETF QUIC 工作组的议程、会议记录、演示文稿和其他材料。</li>
+</ul>
+<h2 id="QUIC-实现"><a href="#QUIC-实现" class="headerlink" title="QUIC 实现"></a>QUIC 实现</h2><p>IETF QUIC 工作组收集整理的当前的 <a href="https://github.com/quicwg/base-drafts/wiki/Implementations" target="_blank" rel="external">QUIC 实现</a>，包含许多不同操作系统平台，不同编程语言，不同 QUIC 版本的实现。QUIC 协议的实现被分为了四个部分：<strong>IETF QUIC 传输</strong>，<strong>基于 QUIC 的 IETF HTTP</strong>，<strong>QPACK</strong>，和 <strong>Google QUIC</strong>。</p>
+<p>由于这些实现的存在，QUIC 协议不仅仅可以作为一个传输 HTTP 流量的安全的基于 UDP 的可靠传输协议，就像早期 Google QUIC 那样，而是已经可以作为一个通用的基于 UDP 的安全的可靠传输来用了。</p>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><p>一个协议的完整生态，一定少不了可以对这种协议进行分析、测试、监测和调试的工具。IETF QUIC 工作组收集整理的当前的 <a href="https://github.com/quicwg/base-drafts/wiki/Tools" target="_blank" rel="external">QUIC 工具</a>。</p>
+<p>最重要的协议分析工具当属 Wireshark，而 Wireshark 也已经提供了对于 HTTP/2，Google QUIC，和 IETF QUIC 协议包解码的支持了，当前（2019.03.14）最新的稳定版 Wireshar 是 3.0.0 版。其它还包括：</p>
+<ul>
+<li>QUIC Tracker：<a href="https://quic-tracker.info.ucl.ac.be/" target="_blank" rel="external">QUIC-Tracker</a> 是一个 IETF-QUIC 的测试集。它与 IETF-QUIC 实现交换数据包来验证实现是否与 IETF 规范一致。测试集由多个场景组成，每个场景都旨在测试 QUIC 协议的某个特定功能。测试集每天运行，并把结构抛在网站上。QUIC-Tracker 有一个自己的 <a href="https://github.com/QUIC-Tracker" target="_blank" rel="external">GitHub group</a>，QUIC-Tracker 源码的 GitHub repo 为 <a href="https://github.com/QUIC-Tracker/quic-tracker" target="_blank" rel="external">quic-tracker</a>。</li>
+<li>qvalve：<a href="https://github.com/NTAP/qvalve" target="_blank" rel="external">qvalve</a> 可以以可预见的方式损害 QUIC 流，如通过丢包、重排序或者重传单独的数据包和包序列。它是一个不透明的 UDP 代理，应该插入到 QUIC 客户端和 QUIC 服务器之间。qvalve 的行为由一个以一种简单的语言描述的规则来配置。qvalve 可以用来模拟弱网、网络繁忙等情形，并观察在这种网络环境下 QUIC 协议的表现。</li>
+<li>spindump：<a href="https://github.com/EricssonResearch/spindump" target="_blank" rel="external">spindump</a> 工具是一个 Unix 命令行实用程序，它可以用来检测通过某个网卡的流量的延迟。该工具执行被动的网络监视。它不是一个用于监视独立的连接的流量内容和元数据的工具，且由于网络中的连接是加密的，它也确实不可能做到那些。这个工具主要观察传输协议的特性，比如 QUIC  Spin 位，并尝试获取关于单个连接的往返时间、聚合值或平均值的信息。这个工具支持 TCP，QUIC，COAP，DNS，和 ICMP 流量。</li>
+</ul>
+<h2 id="QUIC-协议实践"><a href="#QUIC-协议实践" class="headerlink" title="QUIC 协议实践"></a>QUIC 协议实践</h2><p><a href="https://zhuanlan.zhihu.com/p/27938635" target="_blank" rel="external">WEB加速，协议先行</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/32630510" target="_blank" rel="external">让互联网更快的“快”—QUIC协议原理分析</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/32630738" target="_blank" rel="external">让互联网更快的“快”—QUIC协议在腾讯的实践和优化</a>  </p>
+<p><a href="https://cloud.tencent.com/developer/article/1155289" target="_blank" rel="external">天下武功，唯’QUICK’不破，揭秘QUIC的五大特性及外网表现</a></p>
+<p><a href="http://www.52im.net/thread-1406-1-1.html" target="_blank" rel="external">七牛云技术分享：使用QUIC协议实现实时视频直播0卡顿！</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/58668946" target="_blank" rel="external">HTTP/3 都来了，你却还在用 HTTP/1.1？</a></p>
+<p><a href="https://blog.cloudflare.com/the-road-to-quic/" target="_blank" rel="external">The Road to QUIC</a></p>
+<p><a href="https://blog.cloudflare.com/head-start-with-quic/" target="_blank" rel="external">Get a head start with QUIC</a></p>
+<p><a href="https://blog.cloudflare.com/http-3-from-root-to-tip/" target="_blank" rel="external">HTTP/3: From root to tip</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络协议/" rel="tag"># 网络协议</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/27/reliable_transport_protocol/" rel="next" title="QUIC 之类的可靠传输协议">
+                <i class="fa fa-chevron-left"></i> QUIC 之类的可靠传输协议
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/01/c_cpp_args_parsing/" rel="prev" title="C/C++ 命令行参数解析库选型">
+                C/C++ 命令行参数解析库选型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Wiki-页"><span class="nav-number">1.</span> <span class="nav-text">Wiki 页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IETF-QUIC-Working-Group"><span class="nav-number">2.</span> <span class="nav-text">IETF QUIC Working Group</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IETF-QUIC-工作组官方-GitHub"><span class="nav-number">3.</span> <span class="nav-text">IETF QUIC 工作组官方 GitHub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUIC-实现"><span class="nav-number">4.</span> <span class="nav-text">QUIC 实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具"><span class="nav-number">5.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUIC-协议实践"><span class="nav-number">6.</span> <span class="nav-text">QUIC 协议实践</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

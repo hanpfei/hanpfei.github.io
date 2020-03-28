@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="C/C++开发," />
+
+
+<meta name="description" content="lambda 表达式和右值引用是 C++11 的两个非常有用的特性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ lambda 捕获模式与右值引用">
+<meta property="og:url" content="https://www.wolfcstech.com/2020/03/21/cpp_lambda_capture_mod_and_rref/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="lambda 表达式和右值引用是 C++11 的两个非常有用的特性。">
+<meta property="og:updated_time" content="2020-03-21T13:42:52.874Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++ lambda 捕获模式与右值引用">
+<meta name="twitter:description" content="lambda 表达式和右值引用是 C++11 的两个非常有用的特性。">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2020/03/21/cpp_lambda_capture_mod_and_rref/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>C++ lambda 捕获模式与右值引用 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2020/03/21/cpp_lambda_capture_mod_and_rref/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++ lambda 捕获模式与右值引用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-21T21:05:49+08:00">2020-03-21</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C-C-开发/" itemprop="url" rel="index"><span itemprop="name">C/C++开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/03/21/cpp_lambda_capture_mod_and_rref/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/03/21/cpp_lambda_capture_mod_and_rref/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/03/21/cpp_lambda_capture_mod_and_rref/" class="leancloud_visitors" data-flag-title="C++ lambda 捕获模式与右值引用">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>lambda 表达式和右值引用是 C++11 的两个非常有用的特性。<br><a id="more"></a><br>lambda 表达式实际上会由编译器创建一个 <code>std::function</code> 对象，以值的方式捕获的变量则会由编译器复制一份，在 <code>std::function</code> 对象中创建一个对应的类型相同的 const 成员变量，如下面的这段代码：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> str = <span class="string">"test"</span>;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">  <span class="keyword">auto</span> funca = [str]() &#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"String address %p (main lambda), str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funcb = funca;</div><div class="line">  <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funcc;</div><div class="line">  funcc = funca;</div><div class="line"></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funca\n"</span>);</div><div class="line">  funca();</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funcd = <span class="built_in">std</span>::move(funca);</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funca\n"</span>);</div><div class="line">  funca();</div><div class="line"></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funcb\n"</span>);</div><div class="line">  funcb();</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funce;</div><div class="line">  funce = <span class="built_in">std</span>::move(funcb);</div><div class="line"></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funcb\n"</span>);</div><div class="line"><span class="comment">//  funcb();</span></div><div class="line"></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funcc\n"</span>);</div><div class="line">  funcc();</div><div class="line"></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funcd\n"</span>);</div><div class="line">  funcd();</div><div class="line"></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funce\n"</span>);</div><div class="line">  funce();</div><div class="line"></div><div class="line"><span class="comment">//  std::function&lt;void(int)&gt; funcf = funce;</span></div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这段代码的输出如下：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffd9aaab720</span> in main, <span class="keyword">str </span>test</div><div class="line"><span class="symbol">funca</span></div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffd9aaab740</span> (main lambda), <span class="keyword">str </span>test</div><div class="line"><span class="symbol">funca</span></div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffd9aaab740</span> (main lambda), <span class="keyword">str </span></div><div class="line"><span class="symbol">funcb</span></div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x55bdd2160280</span> (main lambda), <span class="keyword">str </span>test</div><div class="line"><span class="symbol">funcb</span></div><div class="line"><span class="symbol">funcc</span></div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x55bdd21602b0</span> (main lambda), <span class="keyword">str </span>test</div><div class="line"><span class="symbol">funcd</span></div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x55bdd21602e0</span> (main lambda), <span class="keyword">str </span>test</div><div class="line"><span class="symbol">funce</span></div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x55bdd2160280</span> (main lambda), <span class="keyword">str </span>test</div></pre></td></tr></table></figure></p>
+<p>由上面调用 <code>funca</code> 时的输出，可以看到 lambda 表达式以值的方式捕获的对象 str，其地址在 lambda 表达式内部和外部是不同的。</p>
+<p><code>std::function</code> 类对象和普通的魔板类对象一样，可以拷贝构造，如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funcb = funca;</div></pre></td></tr></table></figure></p>
+<p>由调用 <code>funcb</code> 时的输出，可以看到拷贝构造时是做了逐成员的拷贝构造。</p>
+<p><code>std::function</code> 类对象可以赋值，如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funcc;</div><div class="line">funcc = funca;</div></pre></td></tr></table></figure></p>
+<p>由调用 <code>funcc</code> 时的输出，可以看到赋值时是做了逐成员的赋值。</p>
+<p><code>std::function</code> 类对象可以移动构造，如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funcd = <span class="built_in">std</span>::move(funca);</div></pre></td></tr></table></figure></p>
+<p>由移动构造之后，调用 <code>funca</code> 和 <code>funcd</code> 时的输出，可以看到移动构造时是做了逐成员的移动构造。</p>
+<p><code>std::function</code> 类对象可以移动赋值，如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">  <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; funce;</div><div class="line">  funce = <span class="built_in">std</span>::move(funcb);</div><div class="line"></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"funcb\n"</span>);</div><div class="line"><span class="comment">//  funcb();</span></div></pre></td></tr></table></figure></p>
+<p>这里把移动赋值之后对 <code>funcb</code> 的调用注释掉了，这是因为，作为源的 <code>funcb</code> 在移动赋值之后被调用是，会抛出异常，如：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">String address 0x562334c34280 (main lambda), str test</div><div class="line">funcb</div><div class="line">terminate called after throwing an<span class="built_in"> instance </span>of 'std::bad_function_call'</div><div class="line">  what():  bad_function_call</div></pre></td></tr></table></figure></p>
+<p>同时，由调用 <code>funce</code> 时的输出可以看到，该输出与 <code>funcb</code> 在移动赋值之前被调用时的输出完全相同。<strong>即移动赋值是将对象整体 move 走了，这与移动构造时的行为不太一样。</strong></p>
+<p><code>std::function</code> 类对象的拷贝构造或者赋值，也需要满足类型匹配原则，如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::function&lt;<span class="keyword">void</span>(<span class="keyword">int</span>)&gt; funcf = funce;</div></pre></td></tr></table></figure></p>
+<p>这行代码会造成编译失败，编译错误信息如下：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">../src/DemoTest.cpp: In <span class="function"><span class="keyword">function</span> ‘<span class="title">int</span> <span class="title">main</span><span class="params">()</span></span>’:</div><div class="line">../src/DemoTest.cpp:<span class="number">64</span>:<span class="number">36</span>: <span class="built_in">error</span>: conversion from ‘std::<span class="function"><span class="keyword">function</span>&lt;<span class="title">void</span><span class="params">()</span></span>&gt;’ to non-scalar <span class="built_in">type</span> ‘std::<span class="function"><span class="keyword">function</span>&lt;<span class="title">void</span><span class="params">(int)</span></span>&gt;’ requested</div><div class="line">   std::<span class="function"><span class="keyword">function</span>&lt;<span class="title">void</span><span class="params">(int)</span></span>&gt; funcf = funce;</div><div class="line">                                    ^~~~~</div><div class="line">make: *** [src/DemoTest.o] Error <span class="number">1</span></div><div class="line">src/subdir.mk:<span class="number">18</span>: recipe <span class="keyword">for</span> target <span class="string">'src/DemoTest.o'</span> failed</div></pre></td></tr></table></figure></p>
+<p>在 lambda 中以值的方式捕获的右值对象，只是在 lambda 的 std::function 对象中做了一份被捕获的右值对象的拷贝，而原来的右值则没有任何改变。</p>
+<p>接下来再来看一段示例代码：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">funcd</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> &amp;&amp;str)</span> </span>&#123;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in funcd A, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">  <span class="built_in">string</span> strs = <span class="built_in">std</span>::move(str);</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in funcd B, str %s, strs %s\n"</span>, &amp;str, str.c_str(), strs.c_str());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">funcc</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> str)</span> </span>&#123;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in funcc, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">funcb</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> &amp;str)</span> </span>&#123;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in funcb, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">funca</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> &amp;&amp;str)</span> </span>&#123;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in funca A, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> stra = str;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in funca B, str %s, stra %s\n"</span>, &amp;str, str.c_str(), stra.c_str());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> str = <span class="string">"test"</span>;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main A, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line"></div><div class="line">  funca(<span class="built_in">std</span>::move(str));</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main B, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line"></div><div class="line"><span class="comment">//  funcb(std::move(str));</span></div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main C, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line"></div><div class="line">  funcc(<span class="built_in">std</span>::move(str));</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main D, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> stra = <span class="string">"testa"</span>;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main E, stra %s\n"</span>, &amp;stra, stra.c_str());</div><div class="line"></div><div class="line">  funcd(<span class="built_in">std</span>::move(stra));</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main F, stra %s\n"</span>, &amp;stra, stra.c_str());</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面这段代码在执行时，输出如下：<br><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">String address <span class="number">0x7ffc833f4660</span> <span class="keyword">in</span> main A, <span class="keyword">str</span> <span class="keyword">test</span></div><div class="line">String address <span class="number">0x7ffc833f4660</span> <span class="keyword">in</span> funca A, <span class="keyword">str</span> <span class="keyword">test</span></div><div class="line">String address <span class="number">0x7ffc833f4660</span> <span class="keyword">in</span> funca B, <span class="keyword">str</span> <span class="keyword">test</span>, stra <span class="keyword">test</span></div><div class="line">String address <span class="number">0x7ffc833f4660</span> <span class="keyword">in</span> main B, <span class="keyword">str</span> <span class="keyword">test</span></div><div class="line">String address <span class="number">0x7ffc833f4660</span> <span class="keyword">in</span> main C, <span class="keyword">str</span> <span class="keyword">test</span></div><div class="line">String address <span class="number">0x7ffc833f4680</span> <span class="keyword">in</span> funcc, <span class="keyword">str</span> <span class="keyword">test</span></div><div class="line">String address <span class="number">0x7ffc833f4660</span> <span class="keyword">in</span> main D, <span class="keyword">str</span> </div><div class="line">String address <span class="number">0x7ffc833f4680</span> <span class="keyword">in</span> main E, stra testa</div><div class="line">String address <span class="number">0x7ffc833f4680</span> <span class="keyword">in</span> funcd A, <span class="keyword">str</span> testa</div><div class="line">String address <span class="number">0x7ffc833f4680</span> <span class="keyword">in</span> funcd B, <span class="keyword">str</span> , strs testa</div><div class="line">String address <span class="number">0x7ffc833f4680</span> <span class="keyword">in</span> main F, stra</div></pre></td></tr></table></figure></p>
+<p><code>funca</code> 函数接收右值引用作为参数，由 <code>funca</code> 函数内部及函数调用前后的输出可以看到，<code>std::move()</code> 本身什么都没做，单单调用 <code>std::move()</code> 并不会将原来的对象的内容移动到任何地方。<code>std::move()</code> 只是一个简单的强制类型转换，将左值转为右值引用。同时可以看到，用右值引用作为参数构造对象，也并没有对右值引用所引用的对象产生任何影响。</p>
+<p><code>funcb</code> 函数接收左值引用作为参数，上面的代码中，如下这一行注释掉了：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">//  funcb(<span class="name">std</span>:<span class="symbol">:move</span>(<span class="name">str</span>))<span class="comment">;</span></div></pre></td></tr></table></figure></p>
+<p>这是因为，<code>funcb</code> 不能用一个右值引用作为参数来调用。用右值引用作为参数，调用接收左值引用作为参数的函数 <code>funcb</code> 时，会编译失败：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">g++ -O<span class="number">0</span> -g3 -Wall -c -fmessage-length=<span class="number">0</span> -MMD -MP -MF<span class="string">"src/DemoTest.d"</span> -MT<span class="string">"src/DemoTest.o"</span> -o <span class="string">"src/DemoTest.o"</span> <span class="string">"../src/DemoTest.cpp"</span></div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span> In function ‘int main()’:</div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span><span class="number">34</span><span class="symbol">:</span><span class="number">18</span>: <span class="symbol">error:</span> cannot bind non-const lvalue reference of type ‘<span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:string&amp;</span> &#123;aka <span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;&amp;</span>&#125;’ to an rvalue of type ‘<span class="symbol">std:</span><span class="symbol">:remove_reference&lt;std</span><span class="symbol">:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;&amp;&gt;</span><span class="symbol">:</span><span class="symbol">:type</span> &#123;aka <span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;</span>&#125;’</div><div class="line">   funcb(<span class="symbol">std:</span><span class="symbol">:move</span>(str));</div><div class="line">         ~~~~~~~~~^~~~~</div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span><span class="number">17</span><span class="symbol">:</span><span class="number">6</span>: <span class="symbol">note:</span>   initializing argument <span class="number">1</span> of ‘void funcb(<span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:string&amp;</span>)’</div><div class="line"> void funcb(<span class="symbol">std:</span><span class="symbol">:string</span> &amp;str) &#123;</div><div class="line">      ^~~~~</div><div class="line">src/subdir.<span class="symbol">mk:</span><span class="number">18</span>: recipe <span class="keyword">for</span> target <span class="string">'src/DemoTest.o'</span> failed</div><div class="line"><span class="symbol">make:</span> *** [src/DemoTest.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>不过，如果 <code>funcb</code> 接收 const 左值引用作为参数，如 <code>void funcb(const std::string &amp;str)</code>，则在调用该函数时，可以用右值引用作为参数，此时 <code>funcb</code> 的行为与 <code>funca</code> 基本相同。</p>
+<p><code>funcc</code> 函数接收左值作为参数，由 <code>funcc</code> 函数内部及函数调用前后的输出可以看到，由于有了左值作为接收者，传入的右值引用所引用的对象的值被 move 走，进入函数的参数栈对象中了。</p>
+<p><code>funcd</code> 函数与 <code>funca</code> 函数一样，接收右值引用作为参数，但 <code>funcd</code> 的特别之处在于，在函数内部，右值构造了一个新的对象，因而右值引用原来引用的对象的值被 move 走，进入了新构造的对象中。</p>
+<p>再来看一段示例代码：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">bar</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> &amp;&amp;str)</span> </span>&#123;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in bar A, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">  <span class="built_in">string</span> strs = <span class="built_in">std</span>::move(str);</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in bar B, str %s, strs %s\n"</span>, &amp;str, str.c_str(), strs.c_str());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; bar_bar(<span class="built_in">std</span>::<span class="built_in">string</span> &amp;&amp;str) &#123;</div><div class="line">  <span class="keyword">auto</span> funf = [&amp;str]() &#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"String address %p (foo lambda) F, stra %s\n"</span>, &amp;str, str.c_str());</div><div class="line">  &#125;;</div><div class="line">  <span class="keyword">return</span> funf;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; foo(<span class="built_in">std</span>::<span class="built_in">string</span> &amp;&amp;str) &#123;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in foo A, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line"></div><div class="line"><span class="comment">//  auto funa = [str]() &#123;</span></div><div class="line"><span class="comment">//    printf("String address %p (foo lambda) A, str %s\n", &amp;str, str.c_str());</span></div><div class="line"><span class="comment">//    bar(str);</span></div><div class="line"><span class="comment">//  &#125;;</span></div><div class="line"><span class="comment">//  funa();</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//  auto funb = [str]() &#123;</span></div><div class="line"><span class="comment">//    printf("String address %p (foo lambda) B, str %s\n", &amp;str, str.c_str());</span></div><div class="line"><span class="comment">//    bar(std::move(str));</span></div><div class="line"><span class="comment">//  &#125;;</span></div><div class="line"><span class="comment">//  funb();</span></div><div class="line"></div><div class="line"><span class="comment">//  auto func = [str]() mutable &#123;</span></div><div class="line"><span class="comment">//    printf("String address %p (foo lambda) C, str %s\n", &amp;str, str.c_str());</span></div><div class="line"><span class="comment">//    bar(str);</span></div><div class="line"><span class="comment">//  &#125;;</span></div><div class="line"><span class="comment">//  func();</span></div><div class="line"></div><div class="line">  <span class="keyword">auto</span> fund = [str]() <span class="keyword">mutable</span> &#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"String address %p (foo lambda) D, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">    bar(<span class="built_in">std</span>::move(str));</div><div class="line">  &#125;;</div><div class="line">  fund();</div><div class="line"></div><div class="line">  <span class="keyword">auto</span> fune = [&amp;str]() &#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"String address %p (foo lambda) E, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line">    bar(<span class="built_in">std</span>::move(str));</div><div class="line">  &#125;;</div><div class="line">  fune();</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> stra = <span class="string">"testa"</span>;</div><div class="line">  <span class="keyword">return</span> bar_bar(<span class="built_in">std</span>::move(stra));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> str = <span class="string">"test"</span>;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main A, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line"></div><div class="line">  <span class="keyword">auto</span> funcg = foo(<span class="built_in">std</span>::move(str));</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"String address %p in main B, str %s\n"</span>, &amp;str, str.c_str());</div><div class="line"></div><div class="line">  funcg();</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面这段代码的输出如下：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c5c0</span> in main A, <span class="keyword">str </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c5c0</span> in foo A, <span class="keyword">str </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c540</span> (foo lambda) D, <span class="keyword">str </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c540</span> in <span class="keyword">bar </span>A, <span class="keyword">str </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c540</span> in <span class="keyword">bar </span><span class="keyword">B, </span><span class="keyword">str </span>, <span class="keyword">strs </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c5c0</span> (foo lambda) E, <span class="keyword">str </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c5c0</span> in <span class="keyword">bar </span>A, <span class="keyword">str </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c5c0</span> in <span class="keyword">bar </span><span class="keyword">B, </span><span class="keyword">str </span>, <span class="keyword">strs </span>test</div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c5c0</span> in main <span class="keyword">B, </span><span class="keyword">str </span></div><div class="line"><span class="keyword">String </span><span class="keyword">address </span><span class="number">0x7ffc9fe7c560</span> (foo lambda) F, <span class="keyword">stra </span>����</div></pre></td></tr></table></figure></p>
+<p>在函数 <code>foo()</code> 中定义的 <code>funa</code> 及对 <code>funa</code> 的调用被注释掉了，这是因为这段代码会导致编译失败，具体的错误信息如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">Invoking:</span> GCC C++ Compiler</div><div class="line">g++ -O<span class="number">0</span> -g3 -Wall -c -fmessage-length=<span class="number">0</span> -MMD -MP -MF<span class="string">"src/DemoTest.d"</span> -MT<span class="string">"src/DemoTest.o"</span> -o <span class="string">"src/DemoTest.o"</span> <span class="string">"../src/DemoTest.cpp"</span></div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span> In lambda <span class="symbol">function:</span></div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span><span class="number">25</span><span class="symbol">:</span><span class="number">12</span>: <span class="symbol">error:</span> cannot bind rvalue reference of type ‘<span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:string&amp;&amp;</span> &#123;aka <span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;&amp;&amp;</span>&#125;’ to lvalue of type ‘const string &#123;aka const <span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;</span>&#125;’</div><div class="line">     bar(str);</div><div class="line">            ^</div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span><span class="number">7</span><span class="symbol">:</span><span class="number">6</span>: <span class="symbol">note:</span>   initializing argument <span class="number">1</span> of ‘void bar(<span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:string&amp;&amp;</span>)’</div><div class="line"> void bar(<span class="symbol">std:</span><span class="symbol">:string</span> &amp;&amp;str) &#123;</div><div class="line">      ^~~</div><div class="line">src/subdir.<span class="symbol">mk:</span><span class="number">18</span>: recipe <span class="keyword">for</span> target <span class="string">'src/DemoTest.o'</span> failed</div><div class="line"><span class="symbol">make:</span> *** [src/DemoTest.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>如我们前面提到的，在 lambda 表达式中，以值的方式捕获右值引用时，会在编译器为该 lambda 表达式生成的 <code>std::function</code> 类中生成一个 const 对象，const 对象是不能作为右值引用来调用接收右值引用为参数的函数的。</p>
+<p>在函数 <code>foo()</code> 中定义的 <code>funb</code>，相对于 <code>funa</code>，在调用 <code>bar()</code> 时，为 <code>str</code> 裹上了 <code>std::move()</code>。不过此时还是会编译失败。错误信息如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">Invoking:</span> GCC C++ Compiler</div><div class="line">g++ -O<span class="number">0</span> -g3 -Wall -c -fmessage-length=<span class="number">0</span> -MMD -MP -MF<span class="string">"src/DemoTest.d"</span> -MT<span class="string">"src/DemoTest.o"</span> -o <span class="string">"src/DemoTest.o"</span> <span class="string">"../src/DemoTest.cpp"</span></div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span> In lambda <span class="symbol">function:</span></div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span><span class="number">31</span><span class="symbol">:</span><span class="number">18</span>: <span class="symbol">error:</span> binding reference of type ‘<span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:string&amp;&amp;</span> &#123;aka <span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;&amp;&amp;</span>&#125;’ to ‘<span class="symbol">std:</span><span class="symbol">:remove_reference&lt;const</span> <span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;&amp;&gt;</span><span class="symbol">:</span><span class="symbol">:type</span> &#123;aka const <span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:basic_string&lt;char&gt;</span>&#125;’ discards qualifiers</div><div class="line">     bar(<span class="symbol">std:</span><span class="symbol">:move</span>(str));</div><div class="line">         ~~~~~~~~~^~~~~</div><div class="line">../src/DemoTest.<span class="symbol">cpp:</span><span class="number">7</span><span class="symbol">:</span><span class="number">6</span>: <span class="symbol">note:</span>   initializing argument <span class="number">1</span> of ‘void bar(<span class="symbol">std:</span><span class="symbol">:__cxx11</span><span class="symbol">:</span><span class="symbol">:string&amp;&amp;</span>)’</div><div class="line"> void bar(<span class="symbol">std:</span><span class="symbol">:string</span> &amp;&amp;str) &#123;</div><div class="line">      ^~~</div><div class="line"><span class="symbol">make:</span> *** [src/DemoTest.o] Error <span class="number">1</span></div><div class="line">src/subdir.<span class="symbol">mk:</span><span class="number">18</span>: recipe <span class="keyword">for</span> target <span class="string">'src/DemoTest.o'</span> failed</div></pre></td></tr></table></figure></p>
+<p>在 <code>funb</code> 中，<code>str</code> 是个 const 对象，因而还是不行。</p>
+<p>在函数 <code>foo()</code> 中定义的 <code>func</code>，相对于 <code>funa</code>，加了 <code>mutable</code> 修饰。此时还是会编译失败。错误信息如下：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="string">Invoking:</span> GCC C++ Compiler</div><div class="line">g++ -O0 -g3 -Wall -c -fmessage-length=<span class="number">0</span> -MMD -MP -MF<span class="string">"src/DemoTest.d"</span> -MT<span class="string">"src/DemoTest.o"</span> -o <span class="string">"src/DemoTest.o"</span> <span class="string">"../src/DemoTest.cpp"</span></div><div class="line">..<span class="regexp">/src/</span>DemoTest.<span class="string">cpp:</span> In lambda <span class="string">function:</span></div><div class="line">..<span class="regexp">/src/</span>DemoTest.<span class="string">cpp:</span><span class="number">37</span>:<span class="number">12</span>: <span class="string">error:</span> cannot bind rvalue reference of type ‘<span class="string">std:</span>:<span class="string">__cxx11:</span>:string&amp;&amp; &#123;aka <span class="string">std:</span>:<span class="string">__cxx11:</span>:basic_string&lt;<span class="keyword">char</span>&gt;&amp;&amp;&#125;’ to lvalue of type ‘<span class="string">std:</span>:<span class="string">__cxx11:</span>:string &#123;aka <span class="string">std:</span>:<span class="string">__cxx11:</span>:basic_string&lt;<span class="keyword">char</span>&gt;&#125;’</div><div class="line">     bar(str);</div><div class="line">            ^</div><div class="line">..<span class="regexp">/src/</span>DemoTest.<span class="string">cpp:</span><span class="number">7</span>:<span class="number">6</span>: <span class="string">note:</span>   initializing argument <span class="number">1</span> of ‘<span class="keyword">void</span> bar(<span class="string">std:</span>:<span class="string">__cxx11:</span>:string&amp;&amp;)’</div><div class="line"> <span class="keyword">void</span> bar(<span class="string">std:</span>:string &amp;&amp;str) &#123;</div><div class="line">      ^~~</div><div class="line"><span class="string">make:</span> *** [src/DemoTest.o] Error <span class="number">1</span></div><div class="line">src<span class="regexp">/subdir.mk:18: recipe for target 'src/</span>DemoTest.o<span class="string">' failed</span></div></pre></td></tr></table></figure></p>
+<p>无法将左值绑定到一个右值引用上。</p>
+<p>在函数 <code>foo()</code> 中定义的 <code>fund</code>，相对于 <code>func</code>，在调用 <code>bar()</code> 时，为 <code>str</code> 裹上了 <code>std::move()</code>。此时终于可以编译成功，可以 move const 的 <code>str</code>。</p>
+<p>在函数 <code>foo()</code> 中定义的 <code>fune</code>，相对于 <code>funb</code>，以引用的方式捕获了右值引用。在 <code>fune</code> 中调用 <code>bar()</code>，就如同 <code>foo()</code> 直接调用 <code>bar()</code> 一样。</p>
+<p>在函数 <code>foo()</code> 中调用接收一个右值引用作为参数的函数 <code>bar_bar()</code> 生成一个函数。在函数 <code>bar_bar()</code> 中用 lambda 定义的函数对象 <code>funf</code>，以引用的方式捕获一个右值，并在 lambda 中访问改对象。该 lambda 作为 <code>bar_bar()</code> 函数生成的函数对象。<code>foo()</code> 中调用 <code>bar_bar()</code> 时传入函数栈上定义的临时对象 <code>stra</code>，并将 <code>bar_bar()</code> 返回的函数对象作为返回值返回。在 <code>main()</code> 函数中用 <code>funcg</code> 接收 <code>foo()</code> 函数返回的函数对象，并调用 <code>funcg</code>，此时会发生 crash 或能看到乱码。crash 或乱码是因为，在 funf 中，访问的 <code>str</code> 对象实际上是 <code>foo()</code> 函数中定义的栈上临时对象 <code>stra</code>，<code>foo()</code> 函数调用结束之后，栈上的临时对象被释放，<code>main()</code> 函数中调用 <code>funcg</code> 实际在访问一个无效的对象，因而出现问题。</p>
+<p>Done。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C-C-开发/" rel="tag"># C/C++开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/23/webrtc_audio_pipeline/" rel="next" title="WebRTC 的音频处理流水线">
+                <i class="fa fa-chevron-left"></i> WebRTC 的音频处理流水线
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/22/rtc_knowledge_architecture/" rel="prev" title="RTC 技术知识体系">
+                RTC 技术知识体系 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

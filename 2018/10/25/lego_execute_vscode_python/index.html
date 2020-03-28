@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="ROS," />
+
+
+<meta name="description" content="镜像为 ev3dev。
+通过 SSH 连接 LEGO EV3 设备，默认密码为 maker：1234567891011$ ssh robot@ev3dev.localPassword: Linux ev3dev 4.14.61-ev3dev-2.2.2-ev3 #1 PREEMPT Mon Aug 6 14:22:31 CDT 2018 armv5tejl             _____">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LEGO EV3 中执行 VSCode Python 代码过程分析">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/10/25/lego_execute_vscode_python/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="镜像为 ev3dev。
+通过 SSH 连接 LEGO EV3 设备，默认密码为 maker：1234567891011$ ssh robot@ev3dev.localPassword: Linux ev3dev 4.14.61-ev3dev-2.2.2-ev3 #1 PREEMPT Mon Aug 6 14:22:31 CDT 2018 armv5tejl             _____">
+<meta property="og:updated_time" content="2018-10-25T06:13:11.433Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LEGO EV3 中执行 VSCode Python 代码过程分析">
+<meta name="twitter:description" content="镜像为 ev3dev。
+通过 SSH 连接 LEGO EV3 设备，默认密码为 maker：1234567891011$ ssh robot@ev3dev.localPassword: Linux ev3dev 4.14.61-ev3dev-2.2.2-ev3 #1 PREEMPT Mon Aug 6 14:22:31 CDT 2018 armv5tejl             _____">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/10/25/lego_execute_vscode_python/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>LEGO EV3 中执行 VSCode Python 代码过程分析 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/10/25/lego_execute_vscode_python/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LEGO EV3 中执行 VSCode Python 代码过程分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-25T20:05:49+08:00">2018-10-25</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/25/lego_execute_vscode_python/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/25/lego_execute_vscode_python/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/10/25/lego_execute_vscode_python/" class="leancloud_visitors" data-flag-title="LEGO EV3 中执行 VSCode Python 代码过程分析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>镜像为 ev3dev。</p>
+<p>通过 SSH 连接 LEGO EV3 设备，默认密码为 <code>maker</code>：<br><figure class="highlight coq"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ ssh robot@ev3dev.local</div><div class="line">Password: </div><div class="line">Linux ev3dev <span class="number">4.14</span><span class="number">.61</span>-ev3dev<span class="number">-2.2</span><span class="number">.2</span>-ev3 #<span class="number">1</span> PREEMPT Mon Aug <span class="number">6</span> <span class="number">14</span>:<span class="number">22</span>:<span class="number">31</span> CDT <span class="number">2018</span> armv5tejl</div><div class="line">             _____     <span class="keyword">_</span></div><div class="line">   _____   <span class="keyword">_</span>|<span class="type">___</span> /  __| <span class="type">| _____</span>   __</div><div class="line">  / <span class="keyword">_</span> \ \ / / |<span class="type">_</span> \ / <span class="keyword">_</span>` |<span class="type">/ _</span> \ \ / /</div><div class="line"> |  <span class="type">__</span>/\ V / ___) | <span class="type">(_</span>| <span class="type">|  __</span>/\ V /</div><div class="line">  \___| <span class="type">\_</span>/ |<span class="type">____</span>/ \__,<span class="keyword">_</span>|<span class="type">\___</span>| <span class="type">\_</span>/</div><div class="line"></div><div class="line">Debian stretch on LEGO MINDSTORMS EV3!</div><div class="line">Last login: Wed Oct <span class="number">24</span> <span class="number">07</span>:<span class="number">42</span>:<span class="number">33</span> <span class="number">2018</span> from <span class="number">10.42</span><span class="number">.0</span><span class="number">.1</span></div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>登录之后，查看设备系统中运行的所有进程，剔除所有的内核进程，用户进程主要包括如下这些：<br><figure class="highlight tap"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">robot@ev3dev:~$ ps -alx</div><div class="line">F   UID   PID  PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND</div><div class="line">4    <span class="number"> 0 </span>   <span class="number"> 1 </span>   <span class="number"> 0 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 27960 </span><span class="number"> 5632 </span>-      Ss   ?          0:10 /sbin/init</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 148 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 39620 </span><span class="number"> 7484 </span>-      Ss   ?          0:05 /lib/systemd/systemd-journald</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 193 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 13660 </span><span class="number"> 2692 </span>-      Ss   ?          0:03 /lib/systemd/systemd-udevd</div><div class="line">4  <span class="number"> 107 </span> <span class="number"> 358 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 6360 </span><span class="number"> 2964 </span>-      Ss   ?          0:01 avahi-daemon: running [ev3dev.local]</div><div class="line">4  <span class="number"> 106 </span> <span class="number"> 359 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 6476 </span><span class="number"> 3268 </span>-      Ss   ?          0:02 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation</div><div class="line">1  <span class="number"> 107 </span> <span class="number"> 360 </span> <span class="number"> 358 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 6360 </span><span class="number"> 1444 </span>-      S    ?          0:00 avahi-daemon: chroot helper</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 362 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 7340 </span><span class="number"> 4224 </span>-      Ss   ?          0:00 /lib/systemd/systemd-logind</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 365 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 17184 </span><span class="number"> 4600 </span>-      Ssl  ?          0:04 /usr/sbin/brickd</div><div class="line">4 <span class="number"> 1000 </span> <span class="number"> 378 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 33756 </span><span class="number"> 4200 </span>poll_s Ssl+ tty5       0:00 /usr/bin/conrun-server</div><div class="line">1    <span class="number"> 0 </span> <span class="number"> 393 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 1768 </span> <span class="number"> 544 </span>-      Ss   ?          0:00 /usr/sbin/ldattach<span class="number"> 29 </span>/dev/tty_ev3-ports:in1</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 427 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 10988 </span><span class="number"> 4588 </span>-      Ss   ?          0:03 /usr/sbin/connmand -n</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 429 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 7344 </span><span class="number"> 3300 </span>-      Ss   ?          0:00 /usr/lib/bluetooth/bluetoothd</div><div class="line">4  <span class="number"> 103 </span> <span class="number"> 510 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 8192 </span><span class="number"> 4444 </span>-      Ss   ?          0:00 /lib/systemd/systemd-resolved</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 512 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 9900 </span><span class="number"> 3612 </span>-      Ss   ?          0:00 /sbin/wpa_supplicant -u -s -O /run/wpa_supplicant</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 514 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 51356 </span>11772 -      Ssl+ tty1       0:34 /usr/sbin/brickman</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 518 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 10268 </span><span class="number"> 5188 </span>-      Ss   ?          0:00 /usr/sbin/sshd -D</div><div class="line">5  <span class="number"> 105 </span> <span class="number"> 535 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 8972 </span><span class="number"> 3856 </span>-      Ssl  ?          0:01 /usr/sbin/ntpd -p /var/run/ntpd.pid -g -u 105:108</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 702 </span> <span class="number"> 518 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 11524 </span><span class="number"> 5616 </span>-      Ss   ?          0:00 sshd: robot [priv]</div><div class="line">4 <span class="number"> 1000 </span> <span class="number"> 709 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 9644 </span><span class="number"> 5564 </span>SyS_ep Ss   ?          0:00 /lib/systemd/systemd --user</div><div class="line">5 <span class="number"> 1000 </span> <span class="number"> 712 </span> <span class="number"> 709 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 29564 </span><span class="number"> 2540 </span>-      S    ?          0:00 (sd-pam)</div><div class="line">5 <span class="number"> 1000 </span> <span class="number"> 719 </span> <span class="number"> 702 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 11524 </span><span class="number"> 3680 </span>-      R    ?          0:00 sshd: robot@pts/0</div><div class="line">0 <span class="number"> 1000 </span> <span class="number"> 722 </span> <span class="number"> 719 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 5264 </span><span class="number"> 3008 </span>wait   Ss   pts/0      0:00 -bash</div><div class="line">0 <span class="number"> 1000 </span> <span class="number"> 842 </span> <span class="number"> 722 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 7200 </span><span class="number"> 2296 </span>-      R+   pts/0      0:00 ps -alx</div></pre></td></tr></table></figure></p>
+<p>总共有 23 个用户进程。</p>
+<p>以 ev3dev 官方提供的在 VSCode 中为 EV3 开发 Python 代码的示例工程 <a href="https://github.com/ev3dev/vscode-hello-python" target="_blank" rel="external">vscode-hello-python</a> 为例，在 VSCode 中以打开目录的方式打开下载的这个工程的源码目录，按下 F5 键在 EV3 中运行代码，此时查看 EV3 中进程的运行情况，所有运行的进程如下：<br><figure class="highlight tap"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">robot@ev3dev:~$ ps -alx</div><div class="line">F   UID   PID  PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND</div><div class="line">4    <span class="number"> 0 </span>   <span class="number"> 1 </span>   <span class="number"> 0 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 27960 </span><span class="number"> 5192 </span>-      Ss   ?          0:10 /sbin/init</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 148 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 39620 </span><span class="number"> 6604 </span>-      Ss   ?          0:05 /lib/systemd/systemd-journald</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 193 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 13660 </span><span class="number"> 2676 </span>-      Ss   ?          0:03 /lib/systemd/systemd-udevd</div><div class="line">4  <span class="number"> 107 </span> <span class="number"> 358 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 6360 </span><span class="number"> 2772 </span>-      Ss   ?          0:01 avahi-daemon: running [ev3dev.local]</div><div class="line">4  <span class="number"> 106 </span> <span class="number"> 359 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 6476 </span><span class="number"> 3028 </span>-      Ss   ?          0:02 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation</div><div class="line">1  <span class="number"> 107 </span> <span class="number"> 360 </span> <span class="number"> 358 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 6360 </span><span class="number"> 1332 </span>-      S    ?          0:00 avahi-daemon: chroot helper</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 362 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 7340 </span><span class="number"> 3672 </span>-      Ss   ?          0:00 /lib/systemd/systemd-logind</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 365 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 17212 </span><span class="number"> 4444 </span>-      Ssl  ?          0:05 /usr/sbin/brickd</div><div class="line">4 <span class="number"> 1000 </span> <span class="number"> 378 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 33756 </span><span class="number"> 3896 </span>poll_s Ssl  tty5       0:00 /usr/bin/conrun-server</div><div class="line">1    <span class="number"> 0 </span> <span class="number"> 393 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 1768 </span> <span class="number"> 492 </span>-      Ss   ?          0:00 /usr/sbin/ldattach<span class="number"> 29 </span>/dev/tty_ev3-ports:in1</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 427 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 10988 </span><span class="number"> 3592 </span>-      Ss   ?          0:03 /usr/sbin/connmand -n</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 429 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 7344 </span><span class="number"> 3084 </span>-      Ss   ?          0:00 /usr/lib/bluetooth/bluetoothd</div><div class="line">4  <span class="number"> 103 </span> <span class="number"> 510 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 8192 </span><span class="number"> 3752 </span>-      Ss   ?          0:00 /lib/systemd/systemd-resolved</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 512 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 9900 </span><span class="number"> 2712 </span>-      Ss   ?          0:00 /sbin/wpa_supplicant -u -s -O /run/wpa_supplicant</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 514 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 51356 </span><span class="number"> 8764 </span>-      Ssl+ tty1       0:38 /usr/sbin/brickman</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 518 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 10268 </span><span class="number"> 5016 </span>-      Ss   ?          0:00 /usr/sbin/sshd -D</div><div class="line">5  <span class="number"> 105 </span> <span class="number"> 535 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 8972 </span><span class="number"> 3256 </span>-      Ssl  ?          0:01 /usr/sbin/ntpd -p /var/run/ntpd.pid -g -u 105:108</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 702 </span> <span class="number"> 518 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 11524 </span><span class="number"> 5616 </span>-      Ss   ?          0:00 sshd: robot [priv]</div><div class="line">4 <span class="number"> 1000 </span> <span class="number"> 709 </span>   <span class="number"> 1 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 9644 </span><span class="number"> 5144 </span>SyS_ep Ss   ?          0:00 /lib/systemd/systemd --user</div><div class="line">5 <span class="number"> 1000 </span> <span class="number"> 712 </span> <span class="number"> 709 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 29564 </span><span class="number"> 2412 </span>-      S    ?          0:00 (sd-pam)</div><div class="line">5 <span class="number"> 1000 </span> <span class="number"> 719 </span> <span class="number"> 702 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 11524 </span><span class="number"> 3692 </span>-      S    ?          0:04 sshd: robot@pts/0</div><div class="line">0 <span class="number"> 1000 </span> <span class="number"> 722 </span> <span class="number"> 719 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 5264 </span><span class="number"> 3008 </span>wait   Ss   pts/0      0:00 -bash</div><div class="line">4    <span class="number"> 0 </span> <span class="number"> 857 </span> <span class="number"> 518 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 11524 </span><span class="number"> 5568 </span>-      Ss   ?          0:01 sshd: robot [priv]</div><div class="line">5 <span class="number"> 1000 </span> <span class="number"> 868 </span> <span class="number"> 857 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 11524 </span><span class="number"> 4800 </span>-      S    ?          0:00 sshd: robot@notty</div><div class="line">0 <span class="number"> 1000 </span> <span class="number"> 870 </span> <span class="number"> 868 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 2296 </span><span class="number"> 1448 </span>-      Ss   ?          0:00 /usr/lib/openssh/sftp-server</div><div class="line">0 <span class="number"> 1000 </span> <span class="number"> 872 </span> <span class="number"> 868 </span><span class="number"> 20 </span> <span class="number"> 0 </span><span class="number"> 34148 </span><span class="number"> 4724 </span>poll_s Ssl  ?          0:00 brickrun --directory=/home/robot/vscode-hello-python /home/robot/vscode-hello-python/hello.</div><div class="line">0 <span class="number"> 1000 </span> <span class="number"> 884 </span> <span class="number"> 378 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 9100 </span><span class="number"> 6572 </span>poll_s S+   tty5       0:02 python3 /home/robot/vscode-hello-python/hello.py</div><div class="line">0 <span class="number"> 1000 </span> <span class="number"> 907 </span> <span class="number"> 722 </span><span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 7200 </span><span class="number"> 2300 </span>-      R+   pts/0      0:00 ps -alx</div></pre></td></tr></table></figure></p>
+<p>这次总共有 28 个用户进程。此时多了如下 5 个进程：<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">4 </span>    <span class="number">0</span>   <span class="number">857</span>   <span class="number">518</span>  <span class="number">20</span>   <span class="number">0</span>  <span class="number">11524</span>  <span class="number">5568</span> -      Ss   ?          <span class="number">0</span>:<span class="number">01</span> sshd: robot [priv]</div><div class="line"><span class="symbol">5 </span> <span class="number">1000</span>   <span class="number">868</span>   <span class="number">857</span>  <span class="number">20</span>   <span class="number">0</span>  <span class="number">11524</span>  <span class="number">4800</span> -      S    ?          <span class="number">0</span>:<span class="number">00</span> sshd: robot@notty</div><div class="line"><span class="symbol">0 </span> <span class="number">1000</span>   <span class="number">870</span>   <span class="number">868</span>  <span class="number">20</span>   <span class="number">0</span>   <span class="number">2296</span>  <span class="number">1448</span> -      Ss   ?          <span class="number">0</span>:<span class="number">00</span> /<span class="keyword">usr</span>/lib/openssh/sftp-server</div><div class="line"><span class="symbol">0 </span> <span class="number">1000</span>   <span class="number">872</span>   <span class="number">868</span>  <span class="number">20</span>   <span class="number">0</span>  <span class="number">34148</span>  <span class="number">4724</span> poll_s Ssl  ?          <span class="number">0</span>:<span class="number">00</span> brickrun --directory=/home/robot/vscode-hello-python /home/robot/vscode-hello-python/hello.</div><div class="line"><span class="symbol">0 </span> <span class="number">1000</span>   <span class="number">884</span>   <span class="number">378</span>  <span class="number">20</span>   <span class="number">0</span>   <span class="number">9100</span>  <span class="number">6572</span> poll_s S+   tty5       <span class="number">0</span>:<span class="number">02</span> python3 /home/robot/vscode-hello-python/hello.py</div></pre></td></tr></table></figure></p>
+<p>过程似乎是，在 VSCode 需要将代码灌进 EV3 设备中执行时，EV3 设备的系统中启动了 sftp 服务器 <code>sftp-server</code> 用于传送代码，代码传送完成后执行 <code>brickrun --directory=/home/robot/vscode-hello-python /home/robot/vscode-hello-python/hello.py</code> 命令运行我们的代码。这个 <code>brickrun</code> 进程的父进程是进程 ID 为 868 的 <code>sshd: robot@notty</code> 进程。</p>
+<p><code>brickrun</code> 并没有直接解释执行我们的 Python 代码，而是借助于进程号为 378 的 <code>conrun-server</code> 和 EV3 设备系统中的 Python3 解释器 <code>python3</code> 解释执行我们的代码。</p>
+<p> <a href="https://github.com/ev3dev/vscode-hello-python" target="_blank" rel="external">vscode-hello-python</a> 的代码所完成的功能主要是，在设备的屏幕上显示 “Hello World!”，并在终端上显示 “Hello VS Code!”。通过 VSCode 的插件将代码灌进设备并执行，无疑可以正确的完成这些功能。</p>
+<p>如果我们用 SSH 登录进设备的系统中之后，直接在终端中执行 Python 代码，就像下面这样：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">robot@ev3de<span class="variable">v:</span>~$ <span class="keyword">python3</span> /home/robot/vscode-hello-<span class="keyword">python</span>/hello.<span class="keyword">py</span></div><div class="line">Hello World!</div><div class="line">Hello VS Code!</div></pre></td></tr></table></figure></p>
+<p>此时，无法看到字符串被显示在 LEGO EV3 设备的屏幕上，两条字符串都被显示在了终端中。</p>
+<p>如果我们直接在终端中执行 <code>brickrun</code> 命令，如下面这样：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">robot<span class="variable">@ev3dev</span><span class="symbol">:~</span><span class="variable">$ </span>brickrun --directory=<span class="regexp">/home/robot</span><span class="regexp">/vscode-hello-python /home</span><span class="regexp">/robot/vscode</span>-hello-python/hello.py</div><div class="line">Hello VS Code!</div></pre></td></tr></table></figure></p>
+<p>此时代码依然可以如最初预期的那样运行。如果查看 LEGO EV3 设备中进程运行情况的话，可以看到多了如下这两个进程：<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">0 </span> <span class="number">1000</span>  <span class="number">1046</span>   <span class="number">722</span>  <span class="number">20</span>   <span class="number">0</span>  <span class="number">34148</span>  <span class="number">4616</span> poll_s Sl+  pts/<span class="number">0</span>      <span class="number">0</span>:<span class="number">00</span> brickrun --directory=/home/robot/vscode-hello-python /home/robot/vscode-hello-python/hello.py</div><div class="line"><span class="symbol">0 </span> <span class="number">1000</span>  <span class="number">1058</span>   <span class="number">378</span>  <span class="number">20</span>   <span class="number">0</span>  <span class="number">10696</span>  <span class="number">6736</span> poll_s S+   tty5       <span class="number">0</span>:<span class="number">02</span> python3 /home/robot/vscode-hello-python/hello.py</div></pre></td></tr></table></figure></p>
+<p><code>brickrun</code> 进程由进程号为 722 号的我们正在运行的 <code>bash</code> 进程创建，Python3 解释器进程依然由进程号为 378 的 <code>conrun-server</code> 进程创建。</p>
+<p>在 <a href="https://www.wolfcstech.com/2018/10/24/setting-up-python-pycharm/">搭建 LEGO EV3 的 PyCharm Python 开发环境</a> 一文中，可以看到，用 Python 代码控制马达转动的代码，可以直接在终端中用 Python 解释器如我们预期的那样执行。</p>
+<p>这就说明，直接在终端中执行 Python 解释器的 Python 运行环境，和 <code>brickrun</code>/<code>conrun-server</code> 创建的 Python 运行环境是不同的，主要的不同点应该在 Python 标准库中输入输出函数的行为上。</p>
+<p>总体上来看，LEGO EV3 中执行 VSCode Python 代码的过程，似乎主要是一个远程代码执行的过程。</p>
+<p>LEGO EV3 设备中的 ev3dev 镜像的官方网站为 <a href="https://www.ev3dev.org/" target="_blank" rel="external">ev3dev</a>，ev3dev 镜像中运行的定制的用户进程的代码基本上都是开源的。前面提到的几个命令的源码地址如下：</p>
+<ul>
+<li><code>brickrun</code> - <strong><a href="https://github.com/ev3dev/brickrun" target="_blank" rel="external">brickrun</a></strong></li>
+<li><code>conrun-server</code> - <strong><a href="https://github.com/ev3dev/console-runner" target="_blank" rel="external">console-runner</a></strong></li>
+</ul>
+<p>ev3dev 的 VSCode 插件同样是开源的，其地址为 <strong><a href="https://github.com/ev3dev/vscode-ev3dev-browser" target="_blank" rel="external">vscode-ev3dev-browser</a></strong>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ROS/" rel="tag"># ROS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/24/setting-up-python-pycharm/" rel="next" title="搭建 LEGO EV3 的 PyCharm Python 开发环境">
+                <i class="fa fa-chevron-left"></i> 搭建 LEGO EV3 的 PyCharm Python 开发环境
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/26/lego_ev3_communication_dev_kit/" rel="prev" title="LEGO EV3 通信 开发者套件">
+                LEGO EV3 通信 开发者套件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

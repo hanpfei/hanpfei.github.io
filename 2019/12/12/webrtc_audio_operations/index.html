@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="音视频开发," />
+
+
+<meta name="description" content="在 RTC，即实时音视频通信中，要解决的音频相关的问题，主要包括如下这些：
+
+音频数据的采集及播放。
+音频数据的处理。主要是对采集录制的音频数据的处理，即所谓的 3A 处理，AEC (Acoustic Echo Cancellation) 回声消除，ANS (Automatic Noise Suppression) 降噪，和 AGC (Automatic Gain Control) 自动增益控制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebRTC 中的基本音频处理操作">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/12/12/webrtc_audio_operations/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="在 RTC，即实时音视频通信中，要解决的音频相关的问题，主要包括如下这些：
+
+音频数据的采集及播放。
+音频数据的处理。主要是对采集录制的音频数据的处理，即所谓的 3A 处理，AEC (Acoustic Echo Cancellation) 回声消除，ANS (Automatic Noise Suppression) 降噪，和 AGC (Automatic Gain Control) 自动增益控制。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-92519e17ff0aa28b.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-0fab6119958b4b6c.png">
+<meta property="og:updated_time" content="2019-12-13T03:06:51.920Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WebRTC 中的基本音频处理操作">
+<meta name="twitter:description" content="在 RTC，即实时音视频通信中，要解决的音频相关的问题，主要包括如下这些：
+
+音频数据的采集及播放。
+音频数据的处理。主要是对采集录制的音频数据的处理，即所谓的 3A 处理，AEC (Acoustic Echo Cancellation) 回声消除，ANS (Automatic Noise Suppression) 降噪，和 AGC (Automatic Gain Control) 自动增益控制。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-92519e17ff0aa28b.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/12/12/webrtc_audio_operations/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>WebRTC 中的基本音频处理操作 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/12/12/webrtc_audio_operations/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">WebRTC 中的基本音频处理操作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-12T23:05:49+08:00">2019-12-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/音视频开发/" itemprop="url" rel="index"><span itemprop="name">音视频开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/12/12/webrtc_audio_operations/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/12/12/webrtc_audio_operations/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/12/12/webrtc_audio_operations/" class="leancloud_visitors" data-flag-title="WebRTC 中的基本音频处理操作">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在 RTC，即实时音视频通信中，要解决的音频相关的问题，主要包括如下这些：</p>
+<ul>
+<li>音频数据的采集及播放。</li>
+<li>音频数据的处理。主要是对采集录制的音频数据的处理，即所谓的 3A 处理，AEC (Acoustic Echo Cancellation) 回声消除，ANS (Automatic Noise Suppression) 降噪，和 AGC (Automatic Gain Control) 自动增益控制。</li>
+<li>音效。如变声，混响，均衡等。</li>
+<li>音频数据的编码和解码。包括音频数据的编码和解码，如 AAC，OPUS，和针对弱网的处理，如 NetEQ。</li>
+<li>网络传输。一般用 RTP/RTCP 传输编码后的音频数据。</li>
+<li>整个音频处理流水线的搭建。<a id="more"></a>
+WebRTC 的音频处理流水线大体如下图：</li>
+</ul>
+<p><img src="https://www.wolfcstech.com/images/1315506-92519e17ff0aa28b.png" alt="Audio Pipeline"></p>
+<p>除了音效之外，WebRTC 的音频处理流水线包含其它所有的部分，音频数据的采集及播放，音频数据的处理，音频数据的编码和解码，网络传输都有。</p>
+<p>在 WebRTC 中，通过 AudioDeviceModule 完成音频数据的采集和播放。不同的操作系统平台有着不同的与音频设备通信的方式，因而不同的平台上使用各自平台特有的解决方案实现平台特有的 AudioDeviceModule。一些平台上甚至有很多套音频解决方案，如 Linux 有 pulse 和 ALSA，Android 有 framework 提供的 Java 接口、OpenSLES 和 AAudio，Windows 也有多种方案等。</p>
+<p>WebRTC 的音频流水线只支持处理 10 ms 的数据，有些操作系统平台提供了支持采集和播放 10 ms 音频数据的接口，如 Linux，有些平台则没有，如 Android、iOS 等。AudioDeviceModule 播放和采集的数据，总会通过 AudioDeviceBuffer 拿进来或者送出去 10 ms 的音频数据。对于不支持采集和播放 10 ms 音频数据的平台，在平台的 AudioDeviceModule 和 AudioDeviceBuffer 还会插入一个 FineAudioBuffer，用于将平台的音频数据格式转换为 10 ms 的 WebRTC 能处理的音频帧。</p>
+<p>WebRTC 的 AudioDeviceModule 连接称为 AudioTransport 的模块。对于音频数据的采集发送，AudioTransport 完成音频处理，主要即是 3A 处理。对于音频播放，这里有一个混音器，用于将接收到的多路音频做混音。回声消除主要是将录制的声音中播放的声音的部分消除掉，因而，在从 AudioTransport  中拿音频数据播放时，也会将这一部分音频数据送进 APM 中。</p>
+<p>AudioTransport 接 AudioSendStream 和 AudioReceiveStream，在 AudioSendStream 和 AudioReceiveStream 中完成音频的编码发送和接收解码，及网络传输。</p>
+<h2 id="WebRTC-的音频基本操作"><a href="#WebRTC-的音频基本操作" class="headerlink" title="WebRTC 的音频基本操作"></a>WebRTC 的音频基本操作</h2><p>在 WebRTC 的音频流水线，无论远端发送了多少路音频流，也无论远端发送的各条音频流的采样率和通道数具体是什么，都需要经过重采样，通道数转换和混音，最终转换为系统设备可接受的采样率和通道数的单路音频数据。具体来说，各条音频流需要先重采样和通道数变换转换为某个统一的采样率和通道数，然后做混音；混音之后，再经过重采样以及通道数变换，转变为最终设备可接受的音频数据。（WebRTC 中音频流水线各个节点统一用 16 位整型值表示采样点。）如下面这样：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-0fab6119958b4b6c.png" alt="Mixing"></p>
+<p>WebRTC 提供了一些音频操作的工具类和函数用来完成上述操作。</p>
+<h3 id="混音如何混？"><a href="#混音如何混？" class="headerlink" title="混音如何混？"></a>混音如何混？</h3><p>WebRTC 提供了 <code>AudioMixer</code> 接口来抽象混音器，这个接口定义 (位于 <code>webrtc/src/api/audio/audio_mixer.h</code>) 如下：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> <span class="title">webrtc</span> &#123;</div><div class="line"></div><div class="line"><span class="comment">// WORK IN PROGRESS</span></div><div class="line"><span class="comment">// This class is under development and is not yet intended for for use outside</span></div><div class="line"><span class="comment">// of WebRtc/Libjingle.</span></div><div class="line"><span class="keyword">class</span> <span class="title">AudioMixer</span> : <span class="title">public</span> <span class="title">rtc</span>::<span class="title">RefCountInterface</span> &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="comment">// A callback class that all mixer participants must inherit from/implement.</span></div><div class="line">  <span class="keyword">class</span> <span class="title">Source</span> &#123;</div><div class="line">   <span class="keyword">public</span>:</div><div class="line">    <span class="keyword">enum</span> <span class="keyword">class</span> <span class="title">AudioFrameInfo</span> &#123;</div><div class="line">      kNormal,  <span class="comment">// The samples in audio_frame are valid and should be used.</span></div><div class="line">      kMuted,   <span class="comment">// The samples in audio_frame should not be used, but</span></div><div class="line">                <span class="comment">// should be implicitly interpreted as zero. Other</span></div><div class="line">                <span class="comment">// fields in audio_frame may be read and should</span></div><div class="line">                <span class="comment">// contain meaningful values.</span></div><div class="line">      kError,   <span class="comment">// The audio_frame will not be used.</span></div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    <span class="comment">// Overwrites |audio_frame|. The data_ field is overwritten with</span></div><div class="line">    <span class="comment">// 10 ms of new audio (either 1 or 2 interleaved channels) at</span></div><div class="line">    <span class="comment">// |sample_rate_hz|. All fields in |audio_frame| must be updated.</span></div><div class="line">    <span class="function"><span class="keyword">virtual</span> AudioFrameInfo <span class="title">GetAudioFrameWithInfo</span>(<span class="params"><span class="keyword">int</span> sample_rate_hz,</span></span></div><div class="line">                                                 AudioFrame* audio_frame) = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="comment">// A way for a mixer implementation to distinguish participants.</span></div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Ssrc</span>(<span class="params"></span>) <span class="keyword">const</span> </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="comment">// A way for this source to say that GetAudioFrameWithInfo called</span></div><div class="line">    <span class="comment">// with this sample rate or higher will not cause quality loss.</span></div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">PreferredSampleRate</span>(<span class="params"></span>) <span class="keyword">const</span> </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="keyword">virtual</span> ~Source() &#123;&#125;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="comment">// Returns true if adding was successful. A source is never added</span></div><div class="line">  <span class="comment">// twice. Addition and removal can happen on different threads.</span></div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">AddSource</span>(<span class="params">Source* audio_source</span>) </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Removal is never attempted if a source has not been successfully</span></div><div class="line">  <span class="comment">// added to the mixer.</span></div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">RemoveSource</span>(<span class="params">Source* audio_source</span>) </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Performs mixing by asking registered audio sources for audio. The</span></div><div class="line">  <span class="comment">// mixed result is placed in the provided AudioFrame. This method</span></div><div class="line">  <span class="comment">// will only be called from a single thread. The channels argument</span></div><div class="line">  <span class="comment">// specifies the number of channels of the mix result. The mixer</span></div><div class="line">  <span class="comment">// should mix at a rate that doesn't cause quality loss of the</span></div><div class="line">  <span class="comment">// sources' audio. The mixing rate is one of the rates listed in</span></div><div class="line">  <span class="comment">// AudioProcessing::NativeRate. All fields in</span></div><div class="line">  <span class="comment">// |audio_frame_for_mixing| must be updated.</span></div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Mix</span>(<span class="params">size_t number_of_channels,</span></span></div><div class="line">                   AudioFrame* audio_frame_for_mixing) = <span class="number">0</span>;</div><div class="line"></div><div class="line"> <span class="keyword">protected</span>:</div><div class="line">  <span class="comment">// Since the mixer is reference counted, the destructor may be</span></div><div class="line">  <span class="comment">// called from any thread.</span></div><div class="line">  ~AudioMixer() <span class="keyword">override</span> &#123;&#125;</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace webrtc</span></div></pre></td></tr></table></figure></p>
+<p>WebRTC 的 AudioMixer 将 0 个、1 个或多个 Mixer Source 混音为特定通道数的单路音频帧。输出的音频帧的采样率，由 AudioMixer 的具体实现根据一定的规则确定。</p>
+<p>Mixer Source 为 AudioMixer 提供特定采样率的单声道或立体声的音频帧数据，它有责任将它可以拿到的音频帧数据重采样为 AudioMixer 期待的采样率的音频数据。它还可以提供它倾向的输出采样率的信息，以帮助 AudioMixer 计算合适的输出采样率。Mixer Source 通过 <code>Ssrc()</code> 提供一个这一路的 Mixer Source 标识。</p>
+<p>WebRTC 提供了一个 AudioMixer 的实现 <code>AudioMixerImpl</code> 类，位于 <code>webrtc/src/modules/audio_mixer/</code>。这个类的定义 (位于 <code>webrtc/src/modules/audio_mixer/audio_mixer_impl.h</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> webrtc &#123;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;AudioFrame*&gt; AudioFrameList;</div><div class="line"></div><div class="line"><span class="keyword">class</span> AudioMixerImpl : <span class="keyword">public</span> AudioMixer &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="keyword">struct</span> SourceStatus &#123;</div><div class="line">    SourceStatus(Source* audio_source, <span class="keyword">bool</span> is_mixed, <span class="keyword">float</span> gain)</div><div class="line">        : audio_source(audio_source), is_mixed(is_mixed), gain(gain) &#123;&#125;</div><div class="line">    Source* audio_source = <span class="literal">nullptr</span>;</div><div class="line">    <span class="keyword">bool</span> is_mixed = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">float</span> gain = <span class="number">0.0f</span>;</div><div class="line"></div><div class="line">    <span class="comment">// A frame that will be passed to audio_source-&gt;GetAudioFrameWithInfo.</span></div><div class="line">    AudioFrame audio_frame;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="keyword">using</span> SourceStatusList = <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;SourceStatus&gt;&gt;;</div><div class="line"></div><div class="line">  <span class="comment">// AudioProcessing only accepts 10 ms frames.</span></div><div class="line">  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> kFrameDurationInMs = <span class="number">10</span>;</div><div class="line">  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> kMaximumAmountOfMixedAudioSources = <span class="number">3</span>;</div><div class="line"></div><div class="line">  <span class="keyword">static</span> rtc::scoped_refptr&lt;AudioMixerImpl&gt; Create();</div><div class="line"></div><div class="line">  <span class="keyword">static</span> rtc::scoped_refptr&lt;AudioMixerImpl&gt; Create(</div><div class="line">      <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;OutputRateCalculator&gt; output_rate_calculator,</div><div class="line">      <span class="keyword">bool</span> use_limiter);</div><div class="line"></div><div class="line">  ~AudioMixerImpl() override;</div><div class="line"></div><div class="line">  <span class="comment">// AudioMixer functions</span></div><div class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">AddSource</span><span class="params">(Source* audio_source)</span> override</span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">RemoveSource</span><span class="params">(Source* audio_source)</span> override</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">Mix</span><span class="params">(<span class="keyword">size_t</span> number_of_channels,</span></span></div><div class="line">           AudioFrame* audio_frame_for_mixing) override</div><div class="line">      <span class="title">RTC_LOCKS_EXCLUDED</span><span class="params">(crit_)</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Returns true if the source was mixed last round. Returns</span></div><div class="line">  <span class="comment">// false and logs an error if the source was never added to the</span></div><div class="line">  <span class="comment">// mixer.</span></div><div class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">GetAudioSourceMixabilityStatusForTest</span><span class="params">(Source* audio_source)</span> <span class="keyword">const</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">protected</span>:</div><div class="line">  AudioMixerImpl(<span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;OutputRateCalculator&gt; output_rate_calculator,</div><div class="line">                 <span class="keyword">bool</span> use_limiter);</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="comment">// Set mixing frequency through OutputFrequencyCalculator.</span></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">CalculateOutputFrequency</span><span class="params">()</span></span>;</div><div class="line">  <span class="comment">// Get mixing frequency.</span></div><div class="line">  <span class="function"><span class="keyword">int</span> <span class="title">OutputFrequency</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line"></div><div class="line">  <span class="comment">// Compute what audio sources to mix from audio_source_list_. Ramp</span></div><div class="line">  <span class="comment">// in and out. Update mixed status. Mixes up to</span></div><div class="line">  <span class="comment">// kMaximumAmountOfMixedAudioSources audio sources.</span></div><div class="line">  <span class="function">AudioFrameList <span class="title">GetAudioFromSources</span><span class="params">()</span> <span class="title">RTC_EXCLUSIVE_LOCKS_REQUIRED</span><span class="params">(crit_)</span></span>;</div><div class="line"></div><div class="line">  <span class="comment">// The critical section lock guards audio source insertion and</span></div><div class="line">  <span class="comment">// removal, which can be done from any thread. The race checker</span></div><div class="line">  <span class="comment">// checks that mixing is done sequentially.</span></div><div class="line">  rtc::CriticalSection crit_;</div><div class="line">  rtc::RaceChecker race_checker_;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;OutputRateCalculator&gt; output_rate_calculator_;</div><div class="line">  <span class="comment">// The current sample frequency and sample size when mixing.</span></div><div class="line">  <span class="function"><span class="keyword">int</span> output_frequency_ <span class="title">RTC_GUARDED_BY</span><span class="params">(race_checker_)</span></span>;</div><div class="line">  <span class="keyword">size_t</span> <span class="function">sample_size_ <span class="title">RTC_GUARDED_BY</span><span class="params">(race_checker_)</span></span>;</div><div class="line"></div><div class="line">  <span class="comment">// List of all audio sources. Note all lists are disjunct</span></div><div class="line">  <span class="function">SourceStatusList audio_source_list_ <span class="title">RTC_GUARDED_BY</span><span class="params">(crit_)</span></span>;  <span class="comment">// May be mixed.</span></div><div class="line"></div><div class="line">  <span class="comment">// Component that handles actual adding of audio frames.</span></div><div class="line">  <span class="function">FrameCombiner frame_combiner_ <span class="title">RTC_GUARDED_BY</span><span class="params">(race_checker_)</span></span>;</div><div class="line"></div><div class="line">  RTC_DISALLOW_COPY_AND_ASSIGN(AudioMixerImpl);</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace webrtc</span></div></pre></td></tr></table></figure></p>
+<p><code>AudioMixerImpl</code> 类的实现 (位于 <code>webrtc/src/modules/audio_mixer/audio_mixer_impl.cc</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> webrtc &#123;</div><div class="line"><span class="keyword">namespace</span> &#123;</div><div class="line"></div><div class="line"><span class="keyword">struct</span> SourceFrame &#123;</div><div class="line">  SourceFrame(AudioMixerImpl::SourceStatus* source_status,</div><div class="line">              AudioFrame* audio_frame,</div><div class="line">              <span class="keyword">bool</span> muted)</div><div class="line">      : source_status(source_status), audio_frame(audio_frame), muted(muted) &#123;</div><div class="line">    RTC_DCHECK(source_status);</div><div class="line">    RTC_DCHECK(audio_frame);</div><div class="line">    <span class="keyword">if</span> (!muted) &#123;</div><div class="line">      energy = AudioMixerCalculateEnergy(*audio_frame);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  SourceFrame(AudioMixerImpl::SourceStatus* source_status,</div><div class="line">              AudioFrame* audio_frame,</div><div class="line">              <span class="keyword">bool</span> muted,</div><div class="line">              <span class="keyword">uint32_t</span> energy)</div><div class="line">      : source_status(source_status),</div><div class="line">        audio_frame(audio_frame),</div><div class="line">        muted(muted),</div><div class="line">        energy(energy) &#123;</div><div class="line">    RTC_DCHECK(source_status);</div><div class="line">    RTC_DCHECK(audio_frame);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  AudioMixerImpl::SourceStatus* source_status = <span class="literal">nullptr</span>;</div><div class="line">  AudioFrame* audio_frame = <span class="literal">nullptr</span>;</div><div class="line">  <span class="keyword">bool</span> muted = <span class="literal">true</span>;</div><div class="line">  <span class="keyword">uint32_t</span> energy = <span class="number">0</span>;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// ShouldMixBefore(a, b) is used to select mixer sources.</span></div><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">ShouldMixBefore</span><span class="params">(<span class="keyword">const</span> SourceFrame&amp; a, <span class="keyword">const</span> SourceFrame&amp; b)</span> </span>&#123;</div><div class="line">  <span class="keyword">if</span> (a.muted != b.muted) &#123;</div><div class="line">    <span class="keyword">return</span> b.muted;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> a_activity = a.audio_frame-&gt;vad_activity_;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> b_activity = b.audio_frame-&gt;vad_activity_;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (a_activity != b_activity) &#123;</div><div class="line">    <span class="keyword">return</span> a_activity == AudioFrame::kVadActive;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> a.energy &gt; b.energy;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">RampAndUpdateGain</span><span class="params">(</span></span></div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;SourceFrame&gt;&amp; mixed_sources_and_frames) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; source_frame : mixed_sources_and_frames) &#123;</div><div class="line">    <span class="keyword">float</span> target_gain = source_frame.source_status-&gt;is_mixed ? <span class="number">1.0f</span> : <span class="number">0.0f</span>;</div><div class="line">    Ramp(source_frame.source_status-&gt;gain, target_gain,</div><div class="line">         source_frame.audio_frame);</div><div class="line">    source_frame.source_status-&gt;gain = target_gain;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">AudioMixerImpl::SourceStatusList::<span class="function">const_iterator <span class="title">FindSourceInList</span><span class="params">(</span></span></div><div class="line">    AudioMixerImpl::Source <span class="keyword">const</span>* audio_source,</div><div class="line">    AudioMixerImpl::SourceStatusList <span class="keyword">const</span>* audio_source_list) &#123;</div><div class="line">  <span class="keyword">return</span> <span class="built_in">std</span>::find_if(</div><div class="line">      audio_source_list-&gt;begin(), audio_source_list-&gt;end(),</div><div class="line">      [audio_source](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;AudioMixerImpl::SourceStatus&gt;&amp; p) &#123;</div><div class="line">        <span class="keyword">return</span> p-&gt;audio_source == audio_source;</div><div class="line">      &#125;);</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace</span></div><div class="line"></div><div class="line">AudioMixerImpl::AudioMixerImpl(</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;OutputRateCalculator&gt; output_rate_calculator,</div><div class="line">    <span class="keyword">bool</span> use_limiter)</div><div class="line">    : output_rate_calculator_(<span class="built_in">std</span>::move(output_rate_calculator)),</div><div class="line">      output_frequency_(<span class="number">0</span>),</div><div class="line">      sample_size_(<span class="number">0</span>),</div><div class="line">      audio_source_list_(),</div><div class="line">      frame_combiner_(use_limiter) &#123;&#125;</div><div class="line"></div><div class="line">AudioMixerImpl::~AudioMixerImpl() &#123;&#125;</div><div class="line"></div><div class="line">rtc::scoped_refptr&lt;AudioMixerImpl&gt; AudioMixerImpl::Create() &#123;</div><div class="line">  <span class="keyword">return</span> Create(<span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;DefaultOutputRateCalculator&gt;(</div><div class="line">                    <span class="keyword">new</span> DefaultOutputRateCalculator()),</div><div class="line">                <span class="literal">true</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line">rtc::scoped_refptr&lt;AudioMixerImpl&gt; AudioMixerImpl::Create(</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;OutputRateCalculator&gt; output_rate_calculator,</div><div class="line">    <span class="keyword">bool</span> use_limiter) &#123;</div><div class="line">  <span class="keyword">return</span> rtc::scoped_refptr&lt;AudioMixerImpl&gt;(</div><div class="line">      <span class="keyword">new</span> rtc::RefCountedObject&lt;AudioMixerImpl&gt;(</div><div class="line">          <span class="built_in">std</span>::move(output_rate_calculator), use_limiter));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioMixerImpl::Mix(<span class="keyword">size_t</span> number_of_channels,</div><div class="line">                         AudioFrame* audio_frame_for_mixing) &#123;</div><div class="line">  RTC_DCHECK(number_of_channels &gt;= <span class="number">1</span>);</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker_);</div><div class="line"></div><div class="line">  CalculateOutputFrequency();</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;crit_)</span></span>;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> number_of_streams = audio_source_list_.size();</div><div class="line">    frame_combiner_.Combine(GetAudioFromSources(), number_of_channels,</div><div class="line">                            OutputFrequency(), number_of_streams,</div><div class="line">                            audio_frame_for_mixing);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioMixerImpl::CalculateOutputFrequency() &#123;</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker_);</div><div class="line">  rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;crit_)</span></span>;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; preferred_rates;</div><div class="line">  <span class="built_in">std</span>::transform(audio_source_list_.begin(), audio_source_list_.end(),</div><div class="line">                 <span class="built_in">std</span>::back_inserter(preferred_rates),</div><div class="line">                 [&amp;](<span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;SourceStatus&gt;&amp; a) &#123;</div><div class="line">                   <span class="keyword">return</span> a-&gt;audio_source-&gt;PreferredSampleRate();</div><div class="line">                 &#125;);</div><div class="line"></div><div class="line">  output_frequency_ =</div><div class="line">      output_rate_calculator_-&gt;CalculateOutputRate(preferred_rates);</div><div class="line">  sample_size_ = (output_frequency_ * kFrameDurationInMs) / <span class="number">1000</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> AudioMixerImpl::OutputFrequency() <span class="keyword">const</span> &#123;</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker_);</div><div class="line">  <span class="keyword">return</span> output_frequency_;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> AudioMixerImpl::AddSource(Source* audio_source) &#123;</div><div class="line">  RTC_DCHECK(audio_source);</div><div class="line">  rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;crit_)</span></span>;</div><div class="line">  RTC_DCHECK(FindSourceInList(audio_source, &amp;audio_source_list_) ==</div><div class="line">             audio_source_list_.end())</div><div class="line">      &lt;&lt; <span class="string">"Source already added to mixer"</span>;</div><div class="line">  audio_source_list_.emplace_back(<span class="keyword">new</span> SourceStatus(audio_source, <span class="literal">false</span>, <span class="number">0</span>));</div><div class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioMixerImpl::RemoveSource(Source* audio_source) &#123;</div><div class="line">  RTC_DCHECK(audio_source);</div><div class="line">  rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;crit_)</span></span>;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> iter = FindSourceInList(audio_source, &amp;audio_source_list_);</div><div class="line">  RTC_DCHECK(iter != audio_source_list_.end()) &lt;&lt; <span class="string">"Source not present in mixer"</span>;</div><div class="line">  audio_source_list_.erase(iter);</div><div class="line">&#125;</div><div class="line"></div><div class="line">AudioFrameList AudioMixerImpl::GetAudioFromSources() &#123;</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker_);</div><div class="line">  AudioFrameList result;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;SourceFrame&gt; audio_source_mixing_data_list;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;SourceFrame&gt; ramp_list;</div><div class="line"></div><div class="line">  <span class="comment">// Get audio from the audio sources and put it in the SourceFrame vector.</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; source_and_status : audio_source_list_) &#123;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> audio_frame_info =</div><div class="line">        source_and_status-&gt;audio_source-&gt;GetAudioFrameWithInfo(</div><div class="line">            OutputFrequency(), &amp;source_and_status-&gt;audio_frame);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (audio_frame_info == Source::AudioFrameInfo::kError) &#123;</div><div class="line">      RTC_LOG_F(LS_WARNING) &lt;&lt; <span class="string">"failed to GetAudioFrameWithInfo() from source"</span>;</div><div class="line">      <span class="keyword">continue</span>;</div><div class="line">    &#125;</div><div class="line">    audio_source_mixing_data_list.emplace_back(</div><div class="line">        source_and_status.get(), &amp;source_and_status-&gt;audio_frame,</div><div class="line">        audio_frame_info == Source::AudioFrameInfo::kMuted);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Sort frames by sorting function.</span></div><div class="line">  <span class="built_in">std</span>::sort(audio_source_mixing_data_list.begin(),</div><div class="line">            audio_source_mixing_data_list.end(), ShouldMixBefore);</div><div class="line"></div><div class="line">  <span class="keyword">int</span> max_audio_frame_counter = kMaximumAmountOfMixedAudioSources;</div><div class="line"></div><div class="line">  <span class="comment">// Go through list in order and put unmuted frames in result list.</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; p : audio_source_mixing_data_list) &#123;</div><div class="line">    <span class="comment">// Filter muted.</span></div><div class="line">    <span class="keyword">if</span> (p.muted) &#123;</div><div class="line">      p.source_status-&gt;is_mixed = <span class="literal">false</span>;</div><div class="line">      <span class="keyword">continue</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Add frame to result vector for mixing.</span></div><div class="line">    <span class="keyword">bool</span> is_mixed = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">if</span> (max_audio_frame_counter &gt; <span class="number">0</span>) &#123;</div><div class="line">      --max_audio_frame_counter;</div><div class="line">      result.push_back(p.audio_frame);</div><div class="line">      ramp_list.emplace_back(p.source_status, p.audio_frame, <span class="literal">false</span>, <span class="number">-1</span>);</div><div class="line">      is_mixed = <span class="literal">true</span>;</div><div class="line">    &#125;</div><div class="line">    p.source_status-&gt;is_mixed = is_mixed;</div><div class="line">  &#125;</div><div class="line">  RampAndUpdateGain(ramp_list);</div><div class="line">  <span class="keyword">return</span> result;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> AudioMixerImpl::GetAudioSourceMixabilityStatusForTest(</div><div class="line">    AudioMixerImpl::Source* audio_source) <span class="keyword">const</span> &#123;</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker_);</div><div class="line">  rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;crit_)</span></span>;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> iter = FindSourceInList(audio_source, &amp;audio_source_list_);</div><div class="line">  <span class="keyword">if</span> (iter != audio_source_list_.end()) &#123;</div><div class="line">    <span class="keyword">return</span> (*iter)-&gt;is_mixed;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  RTC_LOG(LS_ERROR) &lt;&lt; <span class="string">"Audio source unknown"</span>;</div><div class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace webrtc</span></div></pre></td></tr></table></figure></p>
+<p>不难看出，<code>AudioMixerImpl</code> 的 <code>AddSource(Source* audio_source)</code> 和 <code>RemoveSource(Source* audio_source)</code> 都只是普通的容器操作，但它强制不能添加已经添加的 Mixer Source，也不能移除不存在的 Mixer Source。整个类的中心无疑是 <code>Mix(size_t number_of_channels, AudioFrame* audio_frame_for_mixing)</code> 了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> AudioMixerImpl::Mix(<span class="keyword">size_t</span> number_of_channels,</div><div class="line">                         AudioFrame* audio_frame_for_mixing) &#123;</div><div class="line">  RTC_DCHECK(number_of_channels &gt;= <span class="number">1</span>);</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker_);</div><div class="line"></div><div class="line">  CalculateOutputFrequency();</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;crit_)</span></span>;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> number_of_streams = audio_source_list_.size();</div><div class="line">    frame_combiner_.Combine(GetAudioFromSources(), number_of_channels,</div><div class="line">                            OutputFrequency(), number_of_streams,</div><div class="line">                            audio_frame_for_mixing);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>AudioMixerImpl::Mix()</code> 混音过程大致如下：</p>
+<ol>
+<li>计算输出音频帧的采样率。这也是这个接口不需要指定输出采样率的原因，<code>AudioMixer</code> 的实现内部会自己算，通常是根据各个 Mixer Source 的 Preferred 采样率算。</li>
+<li>从所有的 Mixer Source 中获得一个特定采样率的音频帧的列表。<code>AudioMixer</code> 并不是简单的从所有的 Mixer Source 中各获得一个音频帧并构造一个列表就完事，它还会对这些音频帧做一些简单变换和取舍。</li>
+<li>通过 <code>FrameCombiner</code> 对不同的音频帧做混音。</li>
+</ol>
+<h4 id="计算输出音频采样率"><a href="#计算输出音频采样率" class="headerlink" title="计算输出音频采样率"></a>计算输出音频采样率</h4><p>计算输出音频采样率的过程如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">void <span class="symbol">AudioMixerImpl:</span><span class="symbol">:CalculateOutputFrequency</span>() &#123;</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker<span class="number">_</span>);</div><div class="line">  <span class="symbol">rtc:</span><span class="symbol">:CritScope</span> lock(&amp;crit<span class="number">_</span>);</div><div class="line"></div><div class="line">  <span class="symbol">std:</span><span class="symbol">:vector&lt;int&gt;</span> preferred_rates;</div><div class="line">  <span class="symbol">std:</span><span class="symbol">:transform</span>(audio_source_list<span class="number">_</span>.<span class="keyword">begin</span>(), audio_source_list<span class="number">_</span>.<span class="keyword">end</span>(),</div><div class="line">                 <span class="symbol">std:</span><span class="symbol">:back_inserter</span>(preferred_rates),</div><div class="line">                 [&amp;](<span class="symbol">std:</span><span class="symbol">:unique_ptr&lt;SourceStatus&gt;&amp;</span> a) &#123;</div><div class="line">                   <span class="keyword">return</span> a-&gt;audio_source-&gt;PreferredSampleRate();</div><div class="line">                 &#125;);</div><div class="line"></div><div class="line">  output_frequency<span class="number">_</span> =</div><div class="line">      output_rate_calculator<span class="number">_</span>-&gt;CalculateOutputRate(preferred_rates);</div><div class="line">  sample_size<span class="number">_</span> = (output_frequency<span class="number">_</span> * kFrameDurationInMs) / <span class="number">1000</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>AudioMixerImpl</code> 首先获得各个 Mixer Source 的 Preferred 的采样率并构造一个列表，然后通过 <code>OutputRateCalculator</code> 接口 (位于 <code>webrtc/modules/audio_mixer/output_rate_calculator.h</code>) 计算输出采样率：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> OutputRateCalculator &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">CalculateOutputRate</span><span class="params">(</span></span></div><div class="line">      <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; preferred_sample_rates) = <span class="number">0</span>;</div><div class="line">  <span class="keyword">virtual</span> ~OutputRateCalculator() &#123;&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>WebRTC 提供了一个默认的 <code>OutputRateCalculator</code> 接口实现 <code>DefaultOutputRateCalculator</code>，类定义 (<code>webrtc/src/modules/audio_mixer/default_output_rate_calculator.h</code>) 如下：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> <span class="title">webrtc</span> &#123;</div><div class="line"></div><div class="line"><span class="keyword">class</span> <span class="title">DefaultOutputRateCalculator</span> : <span class="title">public</span> <span class="title">OutputRateCalculator</span> &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> kDefaultFrequency = <span class="number">48000</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Produces the least native rate greater or equal to the preferred</span></div><div class="line">  <span class="comment">// sample rates. A native rate is one in</span></div><div class="line">  <span class="comment">// AudioProcessing::NativeRate. If |preferred_sample_rates| is</span></div><div class="line">  <span class="comment">// empty, returns |kDefaultFrequency|.</span></div><div class="line">  <span class="function"><span class="keyword">int</span> <span class="title">CalculateOutputRate</span>(<span class="params"></span></span></div><div class="line">      <span class="keyword">const</span> std::vector&lt;<span class="keyword">int</span>&gt;&amp; preferred_sample_rates) <span class="keyword">override</span>;</div><div class="line">  ~DefaultOutputRateCalculator() <span class="keyword">override</span> &#123;&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">&#125;  <span class="comment">// namespace webrtc</span></div></pre></td></tr></table></figure></p>
+<p>这个类的定义很简单。默认的 AudioMixer 输出采样率的计算方法如下：<br><figure class="highlight julia"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">namespace webrtc &#123;</div><div class="line"></div><div class="line">int DefaultOutputRateCalculator<span class="type">::</span>CalculateOutputRate(</div><div class="line">    <span class="keyword">const</span> std<span class="type">::</span>vector&lt;int&gt;&amp; preferred_sample_rates) &#123;</div><div class="line">  <span class="keyword">if</span> (preferred_sample_rates.empty()) &#123;</div><div class="line">    <span class="keyword">return</span> DefaultOutputRateCalculator<span class="type">::</span>kDefaultFrequency;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">using</span> NativeRate = AudioProcessing<span class="type">::</span>NativeRate;</div><div class="line">  <span class="keyword">const</span> int maximal_frequency = *std<span class="type">::</span>max_element(</div><div class="line">      preferred_sample_rates.<span class="keyword">begin</span>(), preferred_sample_rates.<span class="keyword">end</span>());</div><div class="line"></div><div class="line">  RTC_DCHECK_LE(NativeRate<span class="type">::</span>kSampleRate8kHz, maximal_frequency);</div><div class="line">  RTC_DCHECK_GE(NativeRate<span class="type">::</span>kSampleRate48kHz, maximal_frequency);</div><div class="line"></div><div class="line">  static constexpr NativeRate native_rates[] = &#123;</div><div class="line">      NativeRate<span class="type">::</span>kSampleRate8kHz, NativeRate<span class="type">::</span>kSampleRate16kHz,</div><div class="line">      NativeRate<span class="type">::</span>kSampleRate32kHz, NativeRate<span class="type">::</span>kSampleRate48kHz&#125;;</div><div class="line">  <span class="keyword">const</span> auto* rounded_up_index = std<span class="type">::</span>lower_bound(</div><div class="line">      std<span class="type">::</span><span class="keyword">begin</span>(native_rates), std<span class="type">::</span><span class="keyword">end</span>(native_rates), maximal_frequency);</div><div class="line">  RTC_DCHECK(rounded_up_index != std<span class="type">::</span><span class="keyword">end</span>(native_rates));</div><div class="line">  <span class="keyword">return</span> *rounded_up_index;</div><div class="line">&#125;</div><div class="line">&#125;  // namespace webrtc</div></pre></td></tr></table></figure></p>
+<p>对于音频，WebRTC 内部支持一些标准的采样率，即 8K，16K，32K 和 48K。<code>DefaultOutputRateCalculator</code> 获得传入的采样率列表中最大的那个，并在标准采样率列表中找到最小的那个大于等于前面获得的最大采样率的采样率。<strong><em>也就是说，如果 <code>AudioMixerImpl</code> 的所有 Mixer Source 的 Preferred 采样率都大于 48K，计算会失败。</em></strong></p>
+<h4 id="获得音频帧列表"><a href="#获得音频帧列表" class="headerlink" title="获得音频帧列表"></a>获得音频帧列表</h4><p><code>AudioMixerImpl::GetAudioFromSources()</code> 获得音频帧列表：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">AudioFrameList AudioMixerImpl::GetAudioFromSources() &#123;</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;race_checker_);</div><div class="line">  AudioFrameList result;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;SourceFrame&gt; audio_source_mixing_data_list;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;SourceFrame&gt; ramp_list;</div><div class="line"></div><div class="line">  <span class="comment">// Get audio from the audio sources and put it in the SourceFrame vector.</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; source_and_status : audio_source_list_) &#123;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> audio_frame_info =</div><div class="line">        source_and_status-&gt;audio_source-&gt;GetAudioFrameWithInfo(</div><div class="line">            OutputFrequency(), &amp;source_and_status-&gt;audio_frame);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (audio_frame_info == Source::AudioFrameInfo::kError) &#123;</div><div class="line">      RTC_LOG_F(LS_WARNING) &lt;&lt; <span class="string">"failed to GetAudioFrameWithInfo() from source"</span>;</div><div class="line">      <span class="keyword">continue</span>;</div><div class="line">    &#125;</div><div class="line">    audio_source_mixing_data_list.emplace_back(</div><div class="line">        source_and_status.get(), &amp;source_and_status-&gt;audio_frame,</div><div class="line">        audio_frame_info == Source::AudioFrameInfo::kMuted);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Sort frames by sorting function.</span></div><div class="line">  <span class="built_in">std</span>::sort(audio_source_mixing_data_list.begin(),</div><div class="line">            audio_source_mixing_data_list.end(), ShouldMixBefore);</div><div class="line"></div><div class="line">  <span class="keyword">int</span> max_audio_frame_counter = kMaximumAmountOfMixedAudioSources;</div><div class="line"></div><div class="line">  <span class="comment">// Go through list in order and put unmuted frames in result list.</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; p : audio_source_mixing_data_list) &#123;</div><div class="line">    <span class="comment">// Filter muted.</span></div><div class="line">    <span class="keyword">if</span> (p.muted) &#123;</div><div class="line">      p.source_status-&gt;is_mixed = <span class="literal">false</span>;</div><div class="line">      <span class="keyword">continue</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Add frame to result vector for mixing.</span></div><div class="line">    <span class="keyword">bool</span> is_mixed = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">if</span> (max_audio_frame_counter &gt; <span class="number">0</span>) &#123;</div><div class="line">      --max_audio_frame_counter;</div><div class="line">      result.push_back(p.audio_frame);</div><div class="line">      ramp_list.emplace_back(p.source_status, p.audio_frame, <span class="literal">false</span>, <span class="number">-1</span>);</div><div class="line">      is_mixed = <span class="literal">true</span>;</div><div class="line">    &#125;</div><div class="line">    p.source_status-&gt;is_mixed = is_mixed;</div><div class="line">  &#125;</div><div class="line">  RampAndUpdateGain(ramp_list);</div><div class="line">  <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ol>
+<li><code>AudioMixerImpl::GetAudioFromSources()</code> 从各个 Mixer Source 中获得音频帧，并构造 <code>SourceFrame</code> 的列表。注意 <code>SourceFrame</code> 的构造函数会调用 <code>AudioMixerCalculateEnergy()</code> (位于 <code>webrtc/src/modules/audio_mixer/audio_frame_manipulator.cc</code>) 计算音频帧的 energy。具体的计算方法如下：<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">uint32_t AudioMixerCalculateEnergy(<span class="keyword">const</span> AudioFrame&amp; audio_frame) &#123;</div><div class="line">  <span class="built_in">if</span> (audio_frame.muted()) &#123;</div><div class="line">    <span class="built_in">return</span> <span class="number">0</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  uint32_t energy = <span class="number">0</span>;</div><div class="line">  <span class="keyword">const</span> int16_t* frame_data = audio_frame.data();</div><div class="line">  <span class="built_in">for</span> (size_t <span class="built_in">position</span> = <span class="number">0</span>;</div><div class="line">       <span class="built_in">position</span> &lt; audio_frame.samples_per_channel_ * audio_frame.num_channels_;</div><div class="line">       <span class="built_in">position</span>++) &#123;</div><div class="line">    <span class="comment">// TODO(aleloi): This can overflow. Convert to floats.</span></div><div class="line">    energy += frame_data[<span class="built_in">position</span>] * frame_data[<span class="built_in">position</span>];</div><div class="line">  &#125;</div><div class="line">  <span class="built_in">return</span> energy;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>计算所有采样点数值的平方和。</p>
+<ol>
+<li><p>然后对获得的音频帧排序，排序的逻辑如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">ShouldMixBefore</span><span class="params">(<span class="keyword">const</span> SourceFrame&amp; a, <span class="keyword">const</span> SourceFrame&amp; b)</span> </span>&#123;</div><div class="line">  <span class="keyword">if</span> (a.muted != b.muted) &#123;</div><div class="line">    <span class="keyword">return</span> b.muted;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> a_activity = a.audio_frame-&gt;vad_activity_;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> b_activity = b.audio_frame-&gt;vad_activity_;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (a_activity != b_activity) &#123;</div><div class="line">    <span class="keyword">return</span> a_activity == AudioFrame::kVadActive;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> a.energy &gt; b.energy;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>从排序之后的音频帧列表中选取最多 3 个信号最强的音频帧返回。</p>
+</li>
+<li><p>对选择的音频帧信号 Ramp 及更新增益：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">RampAndUpdateGain</span><span class="params">(</span></span></div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;SourceFrame&gt;&amp; mixed_sources_and_frames) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; source_frame : mixed_sources_and_frames) &#123;</div><div class="line">    <span class="keyword">float</span> target_gain = source_frame.source_status-&gt;is_mixed ? <span class="number">1.0f</span> : <span class="number">0.0f</span>;</div><div class="line">    Ramp(source_frame.source_status-&gt;gain, target_gain,</div><div class="line">         source_frame.audio_frame);</div><div class="line">    source_frame.source_status-&gt;gain = target_gain;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>Ramp()</code> 的执行过程 (位于 <code>webrtc/src/modules/audio_mixer/audio_frame_manipulator.cc</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Ramp</span><span class="params">(<span class="keyword">float</span> start_gain, <span class="keyword">float</span> target_gain, AudioFrame* audio_frame)</span> </span>&#123;</div><div class="line">  RTC_DCHECK(audio_frame);</div><div class="line">  RTC_DCHECK_GE(start_gain, <span class="number">0.0f</span>);</div><div class="line">  RTC_DCHECK_GE(target_gain, <span class="number">0.0f</span>);</div><div class="line">  <span class="keyword">if</span> (start_gain == target_gain || audio_frame-&gt;muted()) &#123;</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">size_t</span> samples = audio_frame-&gt;samples_per_channel_;</div><div class="line">  RTC_DCHECK_LT(<span class="number">0</span>, samples);</div><div class="line">  <span class="keyword">float</span> increment = (target_gain - start_gain) / samples;</div><div class="line">  <span class="keyword">float</span> gain = start_gain;</div><div class="line">  <span class="keyword">int16_t</span>* frame_data = audio_frame-&gt;mutable_data();</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; samples; ++i) &#123;</div><div class="line">    <span class="comment">// If the audio is interleaved of several channels, we want to</span></div><div class="line">    <span class="comment">// apply the same gain change to the ith sample of every channel.</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> ch = <span class="number">0</span>; ch &lt; audio_frame-&gt;num_channels_; ++ch) &#123;</div><div class="line">      frame_data[audio_frame-&gt;num_channels_ * i + ch] *= gain;</div><div class="line">    &#125;</div><div class="line">    gain += increment;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>之所以要执行这一步，是因为在混音不同音频帧的特定时刻，同一个音频流的音频帧可能会由于它的音频帧的信号相对强度，被纳入混音或被排除混音，这一步的操作可以使特定某一路音频听上去变化更平滑。</p>
+<h4 id="FrameCombiner"><a href="#FrameCombiner" class="headerlink" title="FrameCombiner"></a><code>FrameCombiner</code></h4><p><code>FrameCombiner</code> 是混音的最终执行者：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> FrameCombiner::Combine(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;AudioFrame*&gt;&amp; mix_list,</div><div class="line">                            <span class="keyword">size_t</span> number_of_channels,</div><div class="line">                            <span class="keyword">int</span> sample_rate,</div><div class="line">                            <span class="keyword">size_t</span> number_of_streams,</div><div class="line">                            AudioFrame* audio_frame_for_mixing) &#123;</div><div class="line">  RTC_DCHECK(audio_frame_for_mixing);</div><div class="line"></div><div class="line">  LogMixingStats(mix_list, sample_rate, number_of_streams);</div><div class="line"></div><div class="line">  SetAudioFrameFields(mix_list, number_of_channels, sample_rate,</div><div class="line">                      number_of_streams, audio_frame_for_mixing);</div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> samples_per_channel = <span class="keyword">static_cast</span>&lt;<span class="keyword">size_t</span>&gt;(</div><div class="line">      (sample_rate * webrtc::AudioMixerImpl::kFrameDurationInMs) / <span class="number">1000</span>);</div><div class="line"></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* frame : mix_list) &#123;</div><div class="line">    RTC_DCHECK_EQ(samples_per_channel, frame-&gt;samples_per_channel_);</div><div class="line">    RTC_DCHECK_EQ(sample_rate, frame-&gt;sample_rate_hz_);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// The 'num_channels_' field of frames in 'mix_list' could be</span></div><div class="line">  <span class="comment">// different from 'number_of_channels'.</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>* frame : mix_list) &#123;</div><div class="line">    RemixFrame(number_of_channels, frame);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (number_of_streams &lt;= <span class="number">1</span>) &#123;</div><div class="line">    MixFewFramesWithNoLimiter(mix_list, audio_frame_for_mixing);</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">array</span>&lt;OneChannelBuffer, kMaximumAmountOfChannels&gt; mixing_buffer =</div><div class="line">      MixToFloatFrame(mix_list, samples_per_channel, number_of_channels);</div><div class="line"></div><div class="line">  <span class="comment">// Put float data in an AudioFrameView.</span></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="keyword">float</span>*, kMaximumAmountOfChannels&gt; channel_pointers&#123;&#125;;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; number_of_channels; ++i) &#123;</div><div class="line">    channel_pointers[i] = &amp;mixing_buffer[i][<span class="number">0</span>];</div><div class="line">  &#125;</div><div class="line">  AudioFrameView&lt;<span class="keyword">float</span>&gt; mixing_buffer_view(</div><div class="line">      &amp;channel_pointers[<span class="number">0</span>], number_of_channels, samples_per_channel);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (use_limiter_) &#123;</div><div class="line">    RunLimiter(mixing_buffer_view, &amp;limiter_);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  InterleaveToAudioFrame(mixing_buffer_view, audio_frame_for_mixing);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ol>
+<li><p><code>FrameCombiner</code> 把各个音频帧的数据的通道数都转换为目标通道数：</p>
+<figure class="highlight ceylon"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> RemixFrame(size<span class="number">_</span>t target<span class="number">_n</span>umber<span class="number">_</span><span class="keyword">of</span><span class="number">_</span>channels, AudioFrame* frame) &#123;</div><div class="line">  RTC<span class="number">_</span>DCHECK<span class="number">_G</span>E(target<span class="number">_n</span>umber<span class="number">_</span><span class="keyword">of</span><span class="number">_</span>channels, <span class="number">1</span>);</div><div class="line">  RTC<span class="number">_</span>DCHECK<span class="number">_</span>LE(target<span class="number">_n</span>umber<span class="number">_</span><span class="keyword">of</span><span class="number">_</span>channels, <span class="number">2</span>);</div><div class="line">  <span class="keyword">if</span> (frame-&gt;num<span class="number">_</span>channels<span class="number">_</span> == <span class="number">1</span> &amp;&amp; target<span class="number">_n</span>umber<span class="number">_</span><span class="keyword">of</span><span class="number">_</span>channels == <span class="number">2</span>) &#123;</div><div class="line">    AudioFrameOperations::MonoToStereo(frame);</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (frame-&gt;num<span class="number">_</span>channels<span class="number">_</span> == <span class="number">2</span> &amp;&amp; target<span class="number">_n</span>umber<span class="number">_</span><span class="keyword">of</span><span class="number">_</span>channels == <span class="number">1</span>) &#123;</div><div class="line">    AudioFrameOperations::StereoToMono(frame);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>执行混音</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::<span class="built_in">array</span>&lt;OneChannelBuffer, kMaximumAmountOfChannels&gt; MixToFloatFrame(</div><div class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;AudioFrame*&gt;&amp; mix_list,</div><div class="line">    <span class="keyword">size_t</span> samples_per_channel,</div><div class="line">    <span class="keyword">size_t</span> number_of_channels) &#123;</div><div class="line">  <span class="comment">// Convert to FloatS16 and mix.</span></div><div class="line">  <span class="keyword">using</span> OneChannelBuffer = <span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="keyword">float</span>, kMaximumChannelSize&gt;;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">array</span>&lt;OneChannelBuffer, kMaximumAmountOfChannels&gt; mixing_buffer&#123;&#125;;</div><div class="line"></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; mix_list.size(); ++i) &#123;</div><div class="line">    <span class="keyword">const</span> AudioFrame* <span class="keyword">const</span> frame = mix_list[i];</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; number_of_channels; ++j) &#123;</div><div class="line">      <span class="keyword">for</span> (<span class="keyword">size_t</span> k = <span class="number">0</span>; k &lt; samples_per_channel; ++k) &#123;</div><div class="line">        mixing_buffer[j][k] += frame-&gt;data()[number_of_channels * k + j];</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> mixing_buffer;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>可以看到，所谓混音，只是把不同音频流的音频帧的样本点数据相加。</p>
+<ol>
+<li><p>RunLimiter<br>这一步会通过 AGC，对音频信号做处理。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">RunLimiter</span><span class="params">(AudioFrameView&lt;<span class="keyword">float</span>&gt; mixing_buffer_view,</span></span></div><div class="line">                FixedGainController* limiter) &#123;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> sample_rate = mixing_buffer_view.samples_per_channel() * <span class="number">1000</span> /</div><div class="line">                             AudioMixerImpl::kFrameDurationInMs;</div><div class="line">  limiter-&gt;SetSampleRate(sample_rate);</div><div class="line">  limiter-&gt;Process(mixing_buffer_view);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>数据格式转换</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Both interleaves and rounds.</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">InterleaveToAudioFrame</span><span class="params">(AudioFrameView&lt;<span class="keyword">const</span> <span class="keyword">float</span>&gt; mixing_buffer_view,</span></span></div><div class="line">                            AudioFrame* audio_frame_for_mixing) &#123;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> number_of_channels = mixing_buffer_view.num_channels();</div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> samples_per_channel = mixing_buffer_view.samples_per_channel();</div><div class="line">  <span class="comment">// Put data in the result frame.</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; number_of_channels; ++i) &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; samples_per_channel; ++j) &#123;</div><div class="line">      audio_frame_for_mixing-&gt;mutable_data()[number_of_channels * j + i] =</div><div class="line">          FloatS16ToS16(mixing_buffer_view.channel(i)[j]);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>经过前面的处理，得到浮点型的音频采样数据。这一步将浮点型的数据转换为需要的 16 位整型数据。</p>
+<p>至此混音结束。</p>
+<p><strong><em>结论：混音就是把各个音频流的采样点数据相加。</em></strong></p>
+<h3 id="通道数转换如何完成？"><a href="#通道数转换如何完成？" class="headerlink" title="通道数转换如何完成？"></a>通道数转换如何完成？</h3><p>WebRTC 提供了一些 Utility 函数用于完成音频帧单通道、立体声及四通道之间的相互转换，位于 <code>webrtc/audio/utility/audio_frame_operations.cc</code>。通过这些函数的实现，我们可以看到音频帧的通道数转换具体是什么含义。</p>
+<p>单通道转立体声：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">void AudioFrameOperations::MonoToStereo(<span class="keyword">const</span> int16_t* src_audio,</div><div class="line">                                        size_t samples_per_channel,</div><div class="line">                                        int16_t* dst_audio) &#123;</div><div class="line">  <span class="keyword">for</span> (size_t i = <span class="number">0</span>; i &lt; samples_per_channel; i++) &#123;</div><div class="line">    dst_audio[<span class="number">2</span> * i] = src_audio[i];</div><div class="line">    dst_audio[<span class="number">2</span> * i + <span class="number">1</span>] = src_audio[i];</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> AudioFrameOperations::MonoToStereo(AudioFrame* frame) &#123;</div><div class="line">  <span class="keyword">if</span> (frame-&gt;num_channels_ != <span class="number">1</span>) &#123;</div><div class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> ((frame-&gt;samples_per_channel_ * <span class="number">2</span>) &gt;= AudioFrame::kMaxDataSizeSamples) &#123;</div><div class="line">    <span class="comment">// Not enough memory to expand from mono to stereo.</span></div><div class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (!frame-&gt;muted()) &#123;</div><div class="line">    <span class="comment">// TODO(yujo): this operation can be done in place.</span></div><div class="line">    int16_t data_copy[AudioFrame::kMaxDataSizeSamples];</div><div class="line">    memcpy(data_copy, frame-&gt;data(),</div><div class="line">           <span class="keyword">sizeof</span>(int16_t) * frame-&gt;samples_per_channel_);</div><div class="line">    MonoToStereo(data_copy, frame-&gt;samples_per_channel_, frame-&gt;mutable_data());</div><div class="line">  &#125;</div><div class="line">  frame-&gt;num_channels_ = <span class="number">2</span>;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>单通道转立体声，也就是把一个通道的数据复制一份，让两个声道播放相同的音频数据。</p>
+<p>立体声转单声道：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> AudioFrameOperations::StereoToMono(<span class="keyword">const</span> <span class="keyword">int16_t</span>* src_audio,</div><div class="line">                                        <span class="keyword">size_t</span> samples_per_channel,</div><div class="line">                                        <span class="keyword">int16_t</span>* dst_audio) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; samples_per_channel; i++) &#123;</div><div class="line">    dst_audio[i] =</div><div class="line">        (<span class="keyword">static_cast</span>&lt;<span class="keyword">int32_t</span>&gt;(src_audio[<span class="number">2</span> * i]) + src_audio[<span class="number">2</span> * i + <span class="number">1</span>]) &gt;&gt; <span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> AudioFrameOperations::StereoToMono(AudioFrame* frame) &#123;</div><div class="line">  <span class="keyword">if</span> (frame-&gt;num_channels_ != <span class="number">2</span>) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  RTC_DCHECK_LE(frame-&gt;samples_per_channel_ * <span class="number">2</span>,</div><div class="line">                AudioFrame::kMaxDataSizeSamples);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (!frame-&gt;muted()) &#123;</div><div class="line">    StereoToMono(frame-&gt;data(), frame-&gt;samples_per_channel_,</div><div class="line">                 frame-&gt;mutable_data());</div><div class="line">  &#125;</div><div class="line">  frame-&gt;num_channels_ = <span class="number">1</span>;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>立体声转单声道是把两个声道的数据相加除以 2，得到一个通道的音频数据。</p>
+<p>四声道转立体声：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> AudioFrameOperations::QuadToStereo(<span class="keyword">const</span> <span class="keyword">int16_t</span>* src_audio,</div><div class="line">                                        <span class="keyword">size_t</span> samples_per_channel,</div><div class="line">                                        <span class="keyword">int16_t</span>* dst_audio) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; samples_per_channel; i++) &#123;</div><div class="line">    dst_audio[i * <span class="number">2</span>] =</div><div class="line">        (<span class="keyword">static_cast</span>&lt;<span class="keyword">int32_t</span>&gt;(src_audio[<span class="number">4</span> * i]) + src_audio[<span class="number">4</span> * i + <span class="number">1</span>]) &gt;&gt; <span class="number">1</span>;</div><div class="line">    dst_audio[i * <span class="number">2</span> + <span class="number">1</span>] =</div><div class="line">        (<span class="keyword">static_cast</span>&lt;<span class="keyword">int32_t</span>&gt;(src_audio[<span class="number">4</span> * i + <span class="number">2</span>]) + src_audio[<span class="number">4</span> * i + <span class="number">3</span>]) &gt;&gt;</div><div class="line">        <span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> AudioFrameOperations::QuadToStereo(AudioFrame* frame) &#123;</div><div class="line">  <span class="keyword">if</span> (frame-&gt;num_channels_ != <span class="number">4</span>) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  RTC_DCHECK_LE(frame-&gt;samples_per_channel_ * <span class="number">4</span>,</div><div class="line">                AudioFrame::kMaxDataSizeSamples);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (!frame-&gt;muted()) &#123;</div><div class="line">    QuadToStereo(frame-&gt;data(), frame-&gt;samples_per_channel_,</div><div class="line">                 frame-&gt;mutable_data());</div><div class="line">  &#125;</div><div class="line">  frame-&gt;num_channels_ = <span class="number">2</span>;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>四声道转立体声，是把 1、2 两个声道的数据相加除以 2 作为一个声道的数据，把 3、4 两个声道的数据相加除以 2 作为另一个声道的数据。</p>
+<p>四声道转单声道：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> AudioFrameOperations::QuadToMono(<span class="keyword">const</span> <span class="keyword">int16_t</span>* src_audio,</div><div class="line">                                      <span class="keyword">size_t</span> samples_per_channel,</div><div class="line">                                      <span class="keyword">int16_t</span>* dst_audio) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; samples_per_channel; i++) &#123;</div><div class="line">    dst_audio[i] =</div><div class="line">        (<span class="keyword">static_cast</span>&lt;<span class="keyword">int32_t</span>&gt;(src_audio[<span class="number">4</span> * i]) + src_audio[<span class="number">4</span> * i + <span class="number">1</span>] +</div><div class="line">         src_audio[<span class="number">4</span> * i + <span class="number">2</span>] + src_audio[<span class="number">4</span> * i + <span class="number">3</span>]) &gt;&gt;</div><div class="line">        <span class="number">2</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> AudioFrameOperations::QuadToMono(AudioFrame* frame) &#123;</div><div class="line">  <span class="keyword">if</span> (frame-&gt;num_channels_ != <span class="number">4</span>) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  RTC_DCHECK_LE(frame-&gt;samples_per_channel_ * <span class="number">4</span>,</div><div class="line">                AudioFrame::kMaxDataSizeSamples);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (!frame-&gt;muted()) &#123;</div><div class="line">    QuadToMono(frame-&gt;data(), frame-&gt;samples_per_channel_,</div><div class="line">               frame-&gt;mutable_data());</div><div class="line">  &#125;</div><div class="line">  frame-&gt;num_channels_ = <span class="number">1</span>;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>四声道转单声道是把四个声道的数据相加除以四，得到一个声道的数据。</p>
+<p>WebRTC 提供的其它音频数据操作具体可以参考 WebRTC 的头文件。</p>
+<h3 id="重采样"><a href="#重采样" class="headerlink" title="重采样"></a>重采样</h3><p>重采样可已将某个采样率的音频数据转换为另一个采样率的分辨率。WebRTC 中的重采样主要通过 <code>PushResampler</code> 、 <code>PushSincResampler</code> 和 <code>SincResampler</code> 等几个组件完成。如 <code>webrtc/src/audio/audio_transport_impl.cc</code> 中的 <code>Resample()</code>：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Resample audio in |frame| to given sample rate preserving the</span></div><div class="line"><span class="comment">// channel count and place the result in |destination|.</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">Resample</span><span class="params">(<span class="keyword">const</span> AudioFrame&amp; frame, <span class="keyword">const</span> <span class="keyword">int</span> destination_sample_rate,</span></span></div><div class="line">             PushResampler&lt;<span class="keyword">int16_t</span>&gt;* resampler, <span class="keyword">int16_t</span>* destination) &#123;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">int</span> number_of_channels = <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(frame.num_channels_);</div><div class="line">  <span class="keyword">const</span> <span class="keyword">int</span> target_number_of_samples_per_channel =</div><div class="line">      destination_sample_rate / <span class="number">100</span>;</div><div class="line">  resampler-&gt;InitializeIfNeeded(frame.sample_rate_hz_, destination_sample_rate,</div><div class="line">                                number_of_channels);</div><div class="line"></div><div class="line">  <span class="comment">// TODO(yujo): make resampler take an AudioFrame, and add special case</span></div><div class="line">  <span class="comment">// handling of muted frames.</span></div><div class="line">  <span class="keyword">return</span> resampler-&gt;Resample(</div><div class="line">      frame.data(), frame.samples_per_channel_ * number_of_channels,</div><div class="line">      destination, number_of_channels * target_number_of_samples_per_channel);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>PushResampler</code> 是一个模板类，其接口比较简单，类的具体定义 (位于 <code>webrtc/src/common_audio/resampler/include/push_resampler.h</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> webrtc &#123;</div><div class="line"></div><div class="line"><span class="keyword">class</span> PushSincResampler;</div><div class="line"></div><div class="line"><span class="comment">// Wraps PushSincResampler to provide stereo support.</span></div><div class="line"><span class="comment">// TODO(ajm): add support for an arbitrary number of channels.</span></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">class</span> PushResampler &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  PushResampler();</div><div class="line">  <span class="keyword">virtual</span> ~PushResampler();</div><div class="line"></div><div class="line">  <span class="comment">// Must be called whenever the parameters change. Free to be called at any</span></div><div class="line">  <span class="comment">// time as it is a no-op if parameters have not changed since the last call.</span></div><div class="line">  <span class="function"><span class="keyword">int</span> <span class="title">InitializeIfNeeded</span><span class="params">(<span class="keyword">int</span> src_sample_rate_hz,</span></span></div><div class="line">                         <span class="keyword">int</span> dst_sample_rate_hz,</div><div class="line">                         <span class="keyword">size_t</span> num_channels);</div><div class="line"></div><div class="line">  <span class="comment">// Returns the total number of samples provided in destination (e.g. 32 kHz,</span></div><div class="line">  <span class="comment">// 2 channel audio gives 640 samples).</span></div><div class="line">  <span class="function"><span class="keyword">int</span> <span class="title">Resample</span><span class="params">(<span class="keyword">const</span> T* src, <span class="keyword">size_t</span> src_length, T* dst, <span class="keyword">size_t</span> dst_capacity)</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;PushSincResampler&gt; sinc_resampler_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;PushSincResampler&gt; sinc_resampler_right_;</div><div class="line">  <span class="keyword">int</span> src_sample_rate_hz_;</div><div class="line">  <span class="keyword">int</span> dst_sample_rate_hz_;</div><div class="line">  <span class="keyword">size_t</span> num_channels_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;T[]&gt; src_left_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;T[]&gt; src_right_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;T[]&gt; dst_left_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;T[]&gt; dst_right_;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">&#125;  <span class="comment">// namespace webrtc</span></div></pre></td></tr></table></figure></p>
+<p>这个类的实现 (位于 <code>webrtc/src/common_audio/resampler/push_resampler.cc</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line">PushResampler&lt;T&gt;::PushResampler()</div><div class="line">    : src_sample_rate_hz_(<span class="number">0</span>), dst_sample_rate_hz_(<span class="number">0</span>), num_channels_(<span class="number">0</span>) &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line">PushResampler&lt;T&gt;::~PushResampler() &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">int</span> PushResampler&lt;T&gt;::InitializeIfNeeded(<span class="keyword">int</span> src_sample_rate_hz,</div><div class="line">                                         <span class="keyword">int</span> dst_sample_rate_hz,</div><div class="line">                                         <span class="keyword">size_t</span> num_channels) &#123;</div><div class="line">  CheckValidInitParams(src_sample_rate_hz, dst_sample_rate_hz, num_channels);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (src_sample_rate_hz == src_sample_rate_hz_ &amp;&amp;</div><div class="line">      dst_sample_rate_hz == dst_sample_rate_hz_ &amp;&amp;</div><div class="line">      num_channels == num_channels_) &#123;</div><div class="line">    <span class="comment">// No-op if settings haven't changed.</span></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (src_sample_rate_hz &lt;= <span class="number">0</span> || dst_sample_rate_hz &lt;= <span class="number">0</span> || num_channels &lt;= <span class="number">0</span> ||</div><div class="line">      num_channels &gt; <span class="number">2</span>) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  src_sample_rate_hz_ = src_sample_rate_hz;</div><div class="line">  dst_sample_rate_hz_ = dst_sample_rate_hz;</div><div class="line">  num_channels_ = num_channels;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> src_size_10ms_mono =</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">size_t</span>&gt;(src_sample_rate_hz / <span class="number">100</span>);</div><div class="line">  <span class="keyword">const</span> <span class="keyword">size_t</span> dst_size_10ms_mono =</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">size_t</span>&gt;(dst_sample_rate_hz / <span class="number">100</span>);</div><div class="line">  sinc_resampler_.reset(</div><div class="line">      <span class="keyword">new</span> PushSincResampler(src_size_10ms_mono, dst_size_10ms_mono));</div><div class="line">  <span class="keyword">if</span> (num_channels_ == <span class="number">2</span>) &#123;</div><div class="line">    src_left_.reset(<span class="keyword">new</span> T[src_size_10ms_mono]);</div><div class="line">    src_right_.reset(<span class="keyword">new</span> T[src_size_10ms_mono]);</div><div class="line">    dst_left_.reset(<span class="keyword">new</span> T[dst_size_10ms_mono]);</div><div class="line">    dst_right_.reset(<span class="keyword">new</span> T[dst_size_10ms_mono]);</div><div class="line">    sinc_resampler_right_.reset(</div><div class="line">        <span class="keyword">new</span> PushSincResampler(src_size_10ms_mono, dst_size_10ms_mono));</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">int</span> PushResampler&lt;T&gt;::Resample(<span class="keyword">const</span> T* src,</div><div class="line">                               <span class="keyword">size_t</span> src_length,</div><div class="line">                               T* dst,</div><div class="line">                               <span class="keyword">size_t</span> dst_capacity) &#123;</div><div class="line">  CheckExpectedBufferSizes(src_length, dst_capacity, num_channels_,</div><div class="line">                           src_sample_rate_hz_, dst_sample_rate_hz_);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (src_sample_rate_hz_ == dst_sample_rate_hz_) &#123;</div><div class="line">    <span class="comment">// The old resampler provides this memcpy facility in the case of matching</span></div><div class="line">    <span class="comment">// sample rates, so reproduce it here for the sinc resampler.</span></div><div class="line">    <span class="built_in">memcpy</span>(dst, src, src_length * <span class="keyword">sizeof</span>(T));</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(src_length);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (num_channels_ == <span class="number">2</span>) &#123;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> src_length_mono = src_length / num_channels_;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> dst_capacity_mono = dst_capacity / num_channels_;</div><div class="line">    T* deinterleaved[] = &#123;src_left_.get(), src_right_.get()&#125;;</div><div class="line">    Deinterleave(src, src_length_mono, num_channels_, deinterleaved);</div><div class="line"></div><div class="line">    <span class="keyword">size_t</span> dst_length_mono = sinc_resampler_-&gt;Resample(</div><div class="line">        src_left_.get(), src_length_mono, dst_left_.get(), dst_capacity_mono);</div><div class="line">    sinc_resampler_right_-&gt;Resample(src_right_.get(), src_length_mono,</div><div class="line">                                    dst_right_.get(), dst_capacity_mono);</div><div class="line"></div><div class="line">    deinterleaved[<span class="number">0</span>] = dst_left_.get();</div><div class="line">    deinterleaved[<span class="number">1</span>] = dst_right_.get();</div><div class="line">    Interleave(deinterleaved, dst_length_mono, num_channels_, dst);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(dst_length_mono * num_channels_);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(</div><div class="line">        sinc_resampler_-&gt;Resample(src, src_length, dst, dst_capacity));</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Explictly generate required instantiations.</span></div><div class="line"><span class="keyword">template</span> <span class="keyword">class</span> PushResampler&lt;<span class="keyword">int16_t</span>&gt;;</div><div class="line"><span class="keyword">template</span> <span class="keyword">class</span> PushResampler&lt;<span class="keyword">float</span>&gt;;</div></pre></td></tr></table></figure></p>
+<p><code>PushResampler&lt;T&gt;::InitializeIfNeeded()</code> 函数根据源和目标采样率初始化了一些缓冲区和必要的 <code>PushSincResampler</code>。</p>
+<p><code>PushResampler&lt;T&gt;::Resample()</code> 函数中，通过 <code>PushSincResampler</code> 完成重采样。<code>PushSincResampler</code> 执行单个通道的音频数据的重采样。对于立体声的音频数据，<code>PushResampler&lt;T&gt;::Resample()</code> 函数会先将音频帧的数据，拆开成两个单通道的音频帧数据，然后分别做重采样，最后再合起来。</p>
+<p><code>webrtc/src/common_audio/include/audio_util.h</code> 中将立体声的音频数据拆开为两个单通道的数据，和将两个单通道的音频数据合并为立体声音频帧数据的具体实现如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Deinterleave audio from |interleaved| to the channel buffers pointed to</span></div><div class="line"><span class="comment">// by |deinterleaved|. There must be sufficient space allocated in the</span></div><div class="line"><span class="comment">// |deinterleaved| buffers (|num_channel| buffers with |samples_per_channel|</span></div><div class="line"><span class="comment">// per buffer).</span></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Deinterleave</span><span class="params">(<span class="keyword">const</span> T* interleaved,</span></span></div><div class="line">                  <span class="keyword">size_t</span> samples_per_channel,</div><div class="line">                  <span class="keyword">size_t</span> num_channels,</div><div class="line">                  T* <span class="keyword">const</span>* deinterleaved) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; num_channels; ++i) &#123;</div><div class="line">    T* channel = deinterleaved[i];</div><div class="line">    <span class="keyword">size_t</span> interleaved_idx = i;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; samples_per_channel; ++j) &#123;</div><div class="line">      channel[j] = interleaved[interleaved_idx];</div><div class="line">      interleaved_idx += num_channels;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Interleave audio from the channel buffers pointed to by |deinterleaved| to</span></div><div class="line"><span class="comment">// |interleaved|. There must be sufficient space allocated in |interleaved|</span></div><div class="line"><span class="comment">// (|samples_per_channel| * |num_channels|).</span></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Interleave</span><span class="params">(<span class="keyword">const</span> T* <span class="keyword">const</span>* deinterleaved,</span></span></div><div class="line">                <span class="keyword">size_t</span> samples_per_channel,</div><div class="line">                <span class="keyword">size_t</span> num_channels,</div><div class="line">                T* interleaved) &#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; num_channels; ++i) &#123;</div><div class="line">    <span class="keyword">const</span> T* channel = deinterleaved[i];</div><div class="line">    <span class="keyword">size_t</span> interleaved_idx = i;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; samples_per_channel; ++j) &#123;</div><div class="line">      interleaved[interleaved_idx] = channel[j];</div><div class="line">      interleaved_idx += num_channels;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>音频数据的基本操作混音，声道转换，和重采样。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/音视频开发/" rel="tag"># 音视频开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/29/draft-ietf-quic-recovery/" rel="next" title="QUIC 丢包检测和拥塞控制">
+                <i class="fa fa-chevron-left"></i> QUIC 丢包检测和拥塞控制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/23/webrtc_audio_pipeline/" rel="prev" title="WebRTC 的音频处理流水线">
+                WebRTC 的音频处理流水线 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#WebRTC-的音频基本操作"><span class="nav-number">1.</span> <span class="nav-text">WebRTC 的音频基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#混音如何混？"><span class="nav-number">1.1.</span> <span class="nav-text">混音如何混？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#计算输出音频采样率"><span class="nav-number">1.1.1.</span> <span class="nav-text">计算输出音频采样率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获得音频帧列表"><span class="nav-number">1.1.2.</span> <span class="nav-text">获得音频帧列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FrameCombiner"><span class="nav-number">1.1.3.</span> <span class="nav-text">FrameCombiner</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通道数转换如何完成？"><span class="nav-number">1.2.</span> <span class="nav-text">通道数转换如何完成？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重采样"><span class="nav-number">1.3.</span> <span class="nav-text">重采样</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

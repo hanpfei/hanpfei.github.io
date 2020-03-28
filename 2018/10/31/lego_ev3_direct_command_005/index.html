@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,ROS," />
+
+
+<meta name="description" content="读取传感器的类型和模式我们从 EV3 设备的一些自反映开始并询问它：
+
+端口 16 上连接了什么类型的设备？
+端口 16 上的传感器的模式？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EV3 直接命令 - 第 5 课 从 EV3 的传感器读取数据">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/10/31/lego_ev3_direct_command_005/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="读取传感器的类型和模式我们从 EV3 设备的一些自反映开始并询问它：
+
+端口 16 上连接了什么类型的设备？
+端口 16 上的传感器的模式？">
+<meta property="og:updated_time" content="2018-11-01T01:21:31.741Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EV3 直接命令 - 第 5 课 从 EV3 的传感器读取数据">
+<meta name="twitter:description" content="读取传感器的类型和模式我们从 EV3 设备的一些自反映开始并询问它：
+
+端口 16 上连接了什么类型的设备？
+端口 16 上的传感器的模式？">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/10/31/lego_ev3_direct_command_005/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>EV3 直接命令 - 第 5 课 从 EV3 的传感器读取数据 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/10/31/lego_ev3_direct_command_005/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">EV3 直接命令 - 第 5 课 从 EV3 的传感器读取数据</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-31T21:15:49+08:00">2018-10-31</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/31/lego_ev3_direct_command_005/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/31/lego_ev3_direct_command_005/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/10/31/lego_ev3_direct_command_005/" class="leancloud_visitors" data-flag-title="EV3 直接命令 - 第 5 课 从 EV3 的传感器读取数据">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="读取传感器的类型和模式"><a href="#读取传感器的类型和模式" class="headerlink" title="读取传感器的类型和模式"></a>读取传感器的类型和模式</h1><p>我们从 EV3 设备的一些自反映开始并询问它：</p>
+<ol>
+<li>端口 16 上连接了什么类型的设备？</li>
+<li>端口 16 上的传感器的模式？<a id="more"></a>
+请给你的 EV3 发送如下的直接命令：<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">----------------------------------------               </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\l</span>a<span class="symbol">\n</span>o<span class="symbol">\t</span>y<span class="symbol">\m</span>o<span class="symbol">\ </span>             </div><div class="line">  ----------------------------------------             </div><div class="line">0x|0B:00|2A:00|00|02:00|99|05|00|10|60|61|             </div><div class="line">  ----------------------------------------             </div><div class="line">   <span class="symbol">\ </span>11  <span class="symbol">\ </span>42  <span class="symbol">\r</span>e<span class="symbol">\ </span>0,2 <span class="symbol">\I</span> <span class="symbol">\G</span> <span class="symbol">\0</span> <span class="symbol">\1</span>6<span class="symbol">\0</span> <span class="symbol">\1</span> <span class="symbol">\ </span>            </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\n</span> <span class="symbol">\E</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>           </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>          </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\_</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>         </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>        </div><div class="line">        <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\Y</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>       </div><div class="line">         <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\D</span> <span class="symbol">\P</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>      </div><div class="line">          <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\E</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>     </div><div class="line">           <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\v</span> <span class="symbol">\M</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    </div><div class="line">            <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\i</span> <span class="symbol">\O</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>   </div><div class="line">             <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\c</span> <span class="symbol">\D</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>  </div><div class="line">              <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\E</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> </div><div class="line">               ----------------------------------------</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>一些说明：</p>
+<ul>
+<li>我们以 CMD <code>GET_TYPEMODE</code> 使用操作 <code>opInput_device</code></li>
+<li>如果被用作传感器端口，电机端口 A 的编号为 16。</li>
+<li>我们将获得两个数作为应答，类型和模式。</li>
+<li>类型需要一个字节且将占据字节 0 的位置，模式也需要一个字节且被放在字节 1 的位置。</li>
+</ul>
+<p>我获得了如下的回答：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">----------------------    </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\r</span>s<span class="symbol">\t</span>y<span class="symbol">\m</span>o<span class="symbol">\ </span>  </div><div class="line">  ----------------------  </div><div class="line">0x|05:00|2A:00|02|07|00|  </div><div class="line">  ----------------------  </div><div class="line">   <span class="symbol">\ </span>5   <span class="symbol">\ </span>42  <span class="symbol">\o</span>k<span class="symbol">\7</span> <span class="symbol">\0</span> <span class="symbol">\ </span> </div><div class="line">    ----------------------</div></pre></td></tr></table></figure></p>
+<p>它是说：电机端口 A 处的传感器具有类型 7 且实际处于模式 0 中。如果你看一下文档 <em>EV3 Firmware Developer Kit</em> 的第 5 章，其标题为 <em>Device type list</em>，你发现类型 7 和模式 0 代表 <em>EV3-Large-Motor-Degree</em>。 <a href="https://le-www-live-s.legocdn.com/sc/media/files/ev3-developer-kit/lego%20mindstorms%20ev3%20firmware%20developer%20kit-7be073548547d99f7df59ddfd57c0088.pdf?la=en-us" target="_blank" rel="external">### EV3 Firmware Developer Kit</a>。</p>
+<h1 id="读取电机的实际位置"><a href="#读取电机的实际位置" class="headerlink" title="读取电机的实际位置"></a>读取电机的实际位置</h1><p>我们来到一个非常有趣的问题：电机端口 A 的电机实际位置是多少？我发送了这个命令：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">----------------------------------------------                  </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\l</span>a<span class="symbol">\n</span>o<span class="symbol">\t</span>y<span class="symbol">\m</span>o<span class="symbol">\v</span>a<span class="symbol">\v</span>1<span class="symbol">\ </span>                </div><div class="line">  ----------------------------------------------                </div><div class="line">0x|0D:00|2A:00|00|04:00|99|1C|00|10|07|00|01|60|                </div><div class="line">  ----------------------------------------------                </div><div class="line">   <span class="symbol">\ </span>13  <span class="symbol">\ </span>42  <span class="symbol">\r</span>e<span class="symbol">\ </span>0,4 <span class="symbol">\I</span> <span class="symbol">\R</span> <span class="symbol">\0</span> <span class="symbol">\1</span>6<span class="symbol">\E</span> <span class="symbol">\D</span> <span class="symbol">\1</span> <span class="symbol">\0</span> <span class="symbol">\ </span>               </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\n</span> <span class="symbol">\E</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\V</span> <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>              </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\A</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\3</span> <span class="symbol">\g</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>             </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\D</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\-</span> <span class="symbol">\r</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>            </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\Y</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\L</span> <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>           </div><div class="line">        <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\_</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\a</span> <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>          </div><div class="line">         <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\D</span> <span class="symbol">\R</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\r</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>         </div><div class="line">          <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\A</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\g</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>        </div><div class="line">           <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\v</span> <span class="symbol">\W</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>       </div><div class="line">            <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\i</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\-</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>      </div><div class="line">             <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\c</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\M</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>     </div><div class="line">              <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\o</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    </div><div class="line">               <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>   </div><div class="line">                <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\o</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>  </div><div class="line">                 <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\r</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> </div><div class="line">                  ----------------------------------------------</div></pre></td></tr></table></figure></p>
+<p>我得到了答复：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">----------------------------    </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\r</span>s<span class="symbol">\ </span>degrees   <span class="symbol">\ </span>  </div><div class="line">  ----------------------------  </div><div class="line">0x|07:00|2A:00|02|00:00:00:00|  </div><div class="line">  ----------------------------  </div><div class="line">   <span class="symbol">\ </span>7   <span class="symbol">\ </span>42  <span class="symbol">\o</span>k<span class="symbol">\ </span>0         <span class="symbol">\ </span> </div><div class="line">    ----------------------------</div></pre></td></tr></table></figure></p>
+<p>然后我用手移动电机并再次发送相同的直接命令。这次回复是：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">----------------------------    </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\r</span>s<span class="symbol">\ </span>degrees   <span class="symbol">\ </span>  </div><div class="line">  ----------------------------  </div><div class="line">0x|07:00|2A:00|02|50:07:00:00|  </div><div class="line">  ----------------------------  </div><div class="line">   <span class="symbol">\ </span>7   <span class="symbol">\ </span>42  <span class="symbol">\o</span>k<span class="symbol">\ </span>1872      <span class="symbol">\ </span> </div><div class="line">    ----------------------------</div></pre></td></tr></table></figure></p>
+<p>那是说：电机移动了 1, 872 度（5.2 周）。这似乎是对的！</p>
+<h1 id="技术细节"><a href="#技术细节" class="headerlink" title="技术细节"></a>技术细节</h1><p>是时候看一下幕后的东西了！你需要理解：</p>
+<ul>
+<li>端口编号的系统，</li>
+<li>我们使用的操作的参数，和</li>
+<li>如何定位并解包全局内存。</li>
+</ul>
+<h2 id="端口编号的系统"><a href="#端口编号的系统" class="headerlink" title="端口编号的系统"></a>端口编号的系统</h2><p>传感器有四个端口，电机有四个端口。传感器端口的编号是 1 到 4：</p>
+<ul>
+<li>端口 1: PORT = 0x|00| 或 LCX(0)</li>
+<li>端口 2: PORT = 0x|01| 或 LCX(1)</li>
+<li>端口 3: PORT = 0x|02| 或 LCX(2)</li>
+<li>端口 4: PORT = 0x|03| 或 LCX(3)</li>
+</ul>
+<p>这似乎有点滑稽，但计算机通常从数字 0 开始计数，人类从数字 1 开始计数。我们刚刚了解到，电机也是传感器，我们可以从中读取电机的实际位置。电机端口标为字母 A 到 D，但通过如下方式定位：</p>
+<ul>
+<li>端口 A: PORT = 0x|10| 或 LCX(16)</li>
+<li>端口 B: PORT = 0x|11| 或 LCX(17)</li>
+<li>端口 C: PORT = 0x|12| 或 LCX(18)</li>
+<li>端口 D: PORT = 0x|13| 或 LCX(19)</li>
+</ul>
+<p>我在我的模块 ev3.py 中添加了一个小函数：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">port_motor_input</span><span class="params">(port_output: int)</span> -&gt; bytes:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    get corresponding input motor port (from output motor port)</div><div class="line">    """</div><div class="line">    <span class="keyword">if</span> port_output == PORT_A:</div><div class="line">        <span class="keyword">return</span> LCX(<span class="number">16</span>)</div><div class="line">    <span class="keyword">elif</span> port_output == PORT_B:</div><div class="line">        <span class="keyword">return</span> LCX(<span class="number">17</span>)</div><div class="line">    <span class="keyword">elif</span> port_output == PORT_C:</div><div class="line">        <span class="keyword">return</span> LCX(<span class="number">18</span>)</div><div class="line">    <span class="keyword">elif</span> port_output == PORT_D:</div><div class="line">        <span class="keyword">return</span> LCX(<span class="number">19</span>)</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">raise</span> ValueError(<span class="string">"port_output needs to be one of the port numbers [1, 2, 4, 8]"</span>)</div></pre></td></tr></table></figure></p>
+<p>从电机输出端口转换到输入端口。</p>
+<h2 id="操作-opInput-Device"><a href="#操作-opInput-Device" class="headerlink" title="操作 opInput_Device"></a>操作 opInput_Device</h2><p>opInput_Device 的两个变体的简短描述，我们已经使用了：</p>
+<ul>
+<li>opInput_Device = 0x|99| 的 CMD GET_TYPEMODE = 0x|05|：<br>参数<ul>
+<li>(Data8) LAYER：链 layer 号</li>
+<li>(Data8) NO：端口编号</li>
+</ul>
+</li>
+</ul>
+<p>返回值</p>
+<pre><code>- (Data8) TYPE：设备类型
+- (Data8) MODE：设备模式
+</code></pre><ul>
+<li>opInput_Device = 0x|99| 的 CMD READY_RAW = 0x|1C|：<br>参数<ul>
+<li>(Data8) LAYER：链 layer 号</li>
+<li>(Data8) NO：端口编号</li>
+<li>(Data8) TYPE：设备类型</li>
+<li>(Data8) MODE：设备模式</li>
+<li>(Data8) VALUES：返回值的个数<br>返回值</li>
+<li>(Data32) VALUE1：以特定模式从传感器接收的第一个值</li>
+</ul>
+</li>
+</ul>
+<p>这里 Data32 是说这是一个 32 位有符号整数。 返回的数据是值，但请记住，返回参数如 VALUE1 是引用。引用是局部或全局内存的地址。阅读下一部分了解详情。</p>
+<h2 id="寻址全局内存"><a href="#寻址全局内存" class="headerlink" title="寻址全局内存"></a>寻址全局内存</h2><p>在第 2 课中，我们介绍了常量参数和局部变量。你将记得，我们已经看到了 LCS，LC0，LC1，LC2，LC4，LV0，LV1，LV2 和 LV4，并写了三个函数 LCX(value:int)，LVX(value:int) 和 LCS(value:str)：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">FUNCTIONS</div><div class="line">    LCS(<span class="built_in">value</span>:str) -&gt; <span class="keyword">bytes</span></div><div class="line">        pack <span class="keyword">a</span> <span class="keyword">string</span> <span class="keyword">into</span> <span class="keyword">a</span> LCS</div><div class="line">    </div><div class="line">    LCX(<span class="built_in">value</span>:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">create</span> <span class="keyword">a</span> LC0, LC1, LC2, LC4, dependent <span class="built_in">from</span> <span class="keyword">the</span> <span class="built_in">value</span></div><div class="line">    </div><div class="line">    LVX(<span class="built_in">value</span>:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">create</span> <span class="keyword">a</span> LV0, LV1, LV2, LV4, dependent <span class="built_in">from</span> <span class="keyword">the</span> <span class="built_in">value</span></div></pre></td></tr></table></figure></p>
+<p>我们讨论了标识字节，它定义了变量的类型和长度：</p>
+<p>现在我们编写另一个函数 GVX，它返回全局内存的地址。如你已经知道的那样，标识字节的位 0 代表短格式或长格式：</p>
+<ul>
+<li><code>0b 0... ....</code> 短格式（只有一个字节，标识字节包含值）</li>
+<li><code>0b 1... ....</code> 长格式（标识字节不包含任何值的位）</li>
+</ul>
+<p>如果位 1 和 2 是 <code>0b .11. ....</code>，它们代表全局变量，它们是全局内存的地址。</p>
+<p>位 6 和 7 代表后续的值的长度</p>
+<ul>
+<li><code>0b .... ..00</code> 意味着可变长度，</li>
+<li><code>0b .... ..01</code> 意味着后面有一个字节，</li>
+<li><code>0b .... ..10</code> 是说，后面有两个字节，</li>
+<li><code>0b .... ..11</code> 是说，后面有四个字节。</li>
+</ul>
+<p>现在我们写 4 个全局变量作为二进制掩码，我们不需要符号，因为地址总是正数。 V 代表地址（值）的一位。</p>
+<ul>
+<li><code>GV0</code>： <code>0b 011V VVVV</code>，5 位地址，范围：0 - 31，长度：1 字节，由前导位 011 标识。</li>
+<li><code>GV1</code>：<code>0b 1110 0001 VVVV VVVV</code>，8 位地址，范围：0 - 255，长度：2 字节，由前导字节 <code>0x|E1|</code> 标识。</li>
+<li><code>GV2</code>：<code>0b 1110 0010 VVVV VVVV VVVV VVVV</code>，16 位地址，范围：0 – 65.536，长度：3 字节，由前导字节 <code>0x|E2|</code> 标识。</li>
+<li><code>GV4</code>：<code>0b 1110 0011 VVVV VVVV VVVV VVVV VVVV VVVV VVVV VVVV</code>，32 位地址，范围：0 – 4,294,967,296，长度：5 字节，由前导字节 <code>0x|E3|</code> 标识。</li>
+</ul>
+<p>一些说明：</p>
+<ul>
+<li>在直接命令中，不需要 GV4！你记得全局内存最多有 1019 个字节 (1024 - 5)。</li>
+<li>必须正确放置全局内存的地址。 如果将 4 字节值写入全局内存，则其地址必须为 0，4，8，……（4的倍数）。 对于 2 字节值也是一样，它们的地址必须是 2 的倍数。</li>
+<li>你将需要将全局内存拆分为所需长度的段，然后使用每个段的第一个字节的地址。我们的第一个例子中，我们需要两个段（类型和模式），每个段一个字节。因此我们使用 GV0(0) 和 GV0(1) 作为地址。</li>
+<li>头字节包含全局内存的总长度（有关详细内容，请参阅第 1 课）。在我们的例子中，这些是2个字节 resp. 4字节。不要忘记正确发送头字节！</li>
+<li>不要在段之间留下空隙！标准的工具诸如 <code>struct.unpack</code> 不喜欢它们。把 4 字节类型放在前面，然后是 2 字节类型以此类推。这使得对拆包进行编码比较方便。</li>
+</ul>
+<h2 id="一个新模块函数：GVX"><a href="#一个新模块函数：GVX" class="headerlink" title="一个新模块函数：GVX"></a>一个新模块函数：GVX</h2><p>请给你的 ev3 模块添加一个函数 <code>GVX(value)</code>，依赖于值，它返回 GV0，GV1，GV2或 GV4 中最短的类型。我已经完成了，现在我的模块 ev3 的文档如下：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">FUNCTIONS</div><div class="line">    GVX(<span class="built_in">value</span>:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">create</span> <span class="keyword">a</span> GV0, GV1, GV2, GV4, dependent <span class="built_in">from</span> <span class="keyword">the</span> <span class="built_in">value</span></div><div class="line">    </div><div class="line">    LCS(<span class="built_in">value</span>:str) -&gt; <span class="keyword">bytes</span></div><div class="line">        pack <span class="keyword">a</span> <span class="keyword">string</span> <span class="keyword">into</span> <span class="keyword">a</span> LCS</div><div class="line">    </div><div class="line">    LCX(<span class="built_in">value</span>:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">create</span> <span class="keyword">a</span> LC0, LC1, LC2, LC4, dependent <span class="built_in">from</span> <span class="keyword">the</span> <span class="built_in">value</span></div><div class="line">    </div><div class="line">    LVX(<span class="built_in">value</span>:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">create</span> <span class="keyword">a</span> LV0, LV1, LV2, LV4, dependent <span class="built_in">from</span> <span class="keyword">the</span> <span class="built_in">value</span></div><div class="line">    </div><div class="line">    port_motor_input(port_output:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">get</span> corresponding input motor port (<span class="built_in">from</span> output motor port)</div></pre></td></tr></table></figure></p>
+<h2 id="解包全局内存"><a href="#解包全局内存" class="headerlink" title="解包全局内存"></a>解包全局内存</h2><p>我已经提到，已经有了解包全局内存的好工具了。在 Python 3 中，这个工具是 <a href="https://docs.python.org/3.0/library/struct.html" target="_blank" rel="external">struct — Interpret bytes as packed binary data</a> 。</p>
+<h3 id="一字节无符号整数"><a href="#一字节无符号整数" class="headerlink" title="一字节无符号整数"></a>一字节无符号整数</h3><p>我的从电机端口 A 读取模式和类型的程序：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, struct</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">my_ev3.verbosity = 1</div><div class="line"></div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.GET_TYPEMODE,</div><div class="line">    ev3.LCX(0),                   <span class="comment"># LAYER</span></div><div class="line">    ev3.port_motor_input(PORT_A), <span class="comment"># NO</span></div><div class="line">    ev3.GVX(0),                   <span class="comment"># TYPE</span></div><div class="line">    ev3.GVX(1)                    <span class="comment"># MODE</span></div><div class="line">])</div><div class="line">reply = my_ev3.send_direct_cmd(ops, global_mem=2)</div><div class="line">(<span class="built_in">type</span>, mode) = struct.unpack(<span class="string">'BB'</span>, reply[5:])</div><div class="line"><span class="built_in">print</span>(<span class="string">"type: &#123;&#125;, mode: &#123;&#125;"</span>.format(<span class="built_in">type</span>, mode))</div></pre></td></tr></table></figure></p>
+<p>模式 ‘BB’ 把全局内存分为两个 1 字节的无符号整数值。这个程序的输出是：<br><figure class="highlight coq"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="number">08</span>:<span class="number">08</span>:<span class="number">13.477998</span> Sent <span class="number">0</span>x|<span class="type">0B</span>:<span class="number">00</span>|<span class="type">2A</span>:<span class="number">00</span>|<span class="type">00</span>|<span class="type">02</span>:<span class="number">00</span>|<span class="type">99</span>:<span class="number">05</span>:<span class="number">00</span>:<span class="number">10</span>:<span class="number">60</span>:<span class="number">61</span>|</div><div class="line"><span class="type">08</span>:<span class="number">08</span>:<span class="number">13.558793</span> Recv <span class="number">0</span>x|<span class="type">05</span>:<span class="number">00</span>|<span class="type">2A</span>:<span class="number">00</span>|<span class="type">02</span>|<span class="type">07</span>:<span class="number">00</span>|</div><div class="line"><span class="type">type</span>: <span class="number">7</span>, mode: <span class="number">0</span></div></pre></td></tr></table></figure></p>
+<p><strong>四个字节的浮点数和四个字节的有符号整数</strong></p>
+<p>我的读取端口 A 和端口 D 上的电机的电机位置的程序：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, struct</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host='00:16:53:42:2B:99')</div><div class="line">my_ev3.verbosity = 1</div><div class="line"></div><div class="line">ops = b''.join([</div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.READY_SI,</div><div class="line">    ev3.LCX(0),                   <span class="comment"># LAYER</span></div><div class="line">    ev3.port_motor_input(PORT_A), <span class="comment"># NO</span></div><div class="line">    ev3.LCX(7),                   <span class="comment"># TYPE</span></div><div class="line">    ev3.LCX(0),                   <span class="comment"># MODE</span></div><div class="line">    ev3.LCX(1),                   <span class="comment"># VALUES</span></div><div class="line">    ev3.GVX(0),                   <span class="comment"># VALUE1</span></div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.READY_RAW,</div><div class="line">    ev3.LCX(0),                   <span class="comment"># LAYER</span></div><div class="line">    ev3.port_motor_input(PORT_D), <span class="comment"># NO</span></div><div class="line">    ev3.LCX(7),                   <span class="comment"># TYPE</span></div><div class="line">    ev3.LCX(0),                   <span class="comment"># MODE</span></div><div class="line">    ev3.LCX(1),                   <span class="comment"># VALUES</span></div><div class="line">    ev3.GVX(4)                    <span class="comment"># VALUE1</span></div><div class="line">])</div><div class="line">reply = my_ev3.send_direct_cmd(ops, global_mem=8)</div><div class="line">(pos_a, pos_d) = struct.unpack('&lt;fi', reply[5:])</div><div class="line">print(<span class="string">"positions in degrees (ports A and D): &#123;&#125; and &#123;&#125;"</span>.format(pos_a, pos_d))</div></pre></td></tr></table></figure></p>
+<p>格式 ‘&lt;fi’ 将全局内存分为一个 4 字节的浮点数和一个 4 字节的有符号整数，都是小尾端的。输出是：<br><figure class="highlight coq"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="number">08</span>:<span class="number">32</span>:<span class="number">32.865522</span> Sent <span class="number">0</span>x|<span class="type">15</span>:<span class="number">00</span>|<span class="type">2A</span>:<span class="number">00</span>|<span class="type">00</span>|<span class="type">08</span>:<span class="number">00</span>|<span class="type">99</span>:<span class="number">1</span>D:<span class="number">00</span>:<span class="number">10</span>:<span class="number">07</span>:<span class="number">00</span>:<span class="number">01</span>:<span class="number">60</span>:<span class="number">99</span>:<span class="number">1</span>C:<span class="number">00</span>:<span class="number">13</span>:<span class="number">07</span>:<span class="number">00</span>:<span class="number">01</span>:<span class="number">64</span>|</div><div class="line"><span class="type">08</span>:<span class="number">32</span>:<span class="number">32.949266</span> Recv <span class="number">0</span>x|<span class="type">0B</span>:<span class="number">00</span>|<span class="type">2A</span>:<span class="number">00</span>|<span class="type">02</span>|<span class="type">00</span>:<span class="number">80</span>:<span class="number">6</span>C:C4:<span class="number">54</span>:<span class="number">04</span>:<span class="number">00</span>:<span class="number">00</span>|</div><div class="line"><span class="type">positions</span> <span class="built_in">in</span> degrees (ports A and D): <span class="number">-946.0</span> and <span class="number">1108</span></div></pre></td></tr></table></figure></p>
+<p><strong>字符串</strong></p>
+<p>我们读取 EV3 设备的名字：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, <span class="keyword">struct</span></div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">my_ev3.verbosity = <span class="number">1</span></div><div class="line"></div><div class="line">ops = b<span class="string">''</span>.<span class="keyword">join</span>([</div><div class="line">    ev3.opCom_Get,</div><div class="line">    ev3.GET_BRICKNAME,</div><div class="line">    ev3.LCX(<span class="number">16</span>),                  <span class="meta"># LENGTH</span></div><div class="line">    ev3.GVX(<span class="number">0</span>)                    <span class="meta"># NAME</span></div><div class="line">])</div><div class="line">reply = my_ev3.send_direct_cmd(ops, global_mem=<span class="number">16</span>)</div><div class="line">(brickname,) = <span class="keyword">struct</span>.unpack(<span class="string">'16s'</span>, reply[<span class="number">5</span>:])</div><div class="line">brickname = brickname.split(b<span class="string">'\x00'</span>)[<span class="number">0</span>]</div><div class="line">brickname = brickname.decode(<span class="string">"ascii"</span>)</div><div class="line">print(<span class="string">"Brickname:"</span>, brickname)</div></pre></td></tr></table></figure></p>
+<p>说明：</p>
+<ul>
+<li>格式 ‘16s’ 描述了一个 16 字节的字符串。</li>
+<li>brickname = brickname.split(b’\x00’)[0] 占据了以 0 结尾的字符串的第一部分。你需要那样做是因为 EV3 设备不清除全局内存。在字符串的右端部分也许有一些垃圾。等一会儿，然后我将演示这个问题。</li>
+<li>brickname = brickname.decode(“ascii”) 从字节类型创建一个字符串类型。</li>
+</ul>
+<p>这个程序的输出是：<br><figure class="highlight coq"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="number">08</span>:<span class="number">55</span>:<span class="number">00.098825</span> Sent <span class="number">0</span>x|<span class="type">0A</span>:<span class="number">00</span>|<span class="type">2B</span>:<span class="number">00</span>|<span class="type">00</span>|<span class="type">10</span>:<span class="number">00</span>|<span class="type">D3</span>:<span class="number">0</span>D:<span class="number">81</span>:<span class="number">20</span>:<span class="number">60</span>|</div><div class="line"><span class="type">08</span>:<span class="number">55</span>:<span class="number">00.138258</span> Recv <span class="number">0</span>x|<span class="type">13</span>:<span class="number">00</span>|<span class="type">2B</span>:<span class="number">00</span>|<span class="type">02</span>|<span class="type">6D</span>:<span class="number">79</span>:<span class="number">45</span>:<span class="number">56</span>:<span class="number">33</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>|</div><div class="line"><span class="type">Brickname</span>: myEV3</div></pre></td></tr></table></figure></p>
+<p><strong>带有垃圾的字符串</strong></p>
+<p>我们发送两个直接命令，第二个读取一个字符串：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, struct</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host='00:16:53:42:2B:99')</div><div class="line">my_ev3.verbosity = 1</div><div class="line"></div><div class="line">ops = b''.join([</div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.READY_SI,</div><div class="line">    ev3.LCX(0),                   <span class="comment"># LAYER</span></div><div class="line">    ev3.port_motor_input(PORT_A), <span class="comment"># NO</span></div><div class="line">    ev3.LCX(7),                   <span class="comment"># TYPE</span></div><div class="line">    ev3.LCX(0),                   <span class="comment"># MODE</span></div><div class="line">    ev3.LCX(1),                   <span class="comment"># VALUES</span></div><div class="line">    ev3.GVX(0),                   <span class="comment"># VALUE1</span></div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.READY_RAW,</div><div class="line">    ev3.LCX(0),                   <span class="comment"># LAYER</span></div><div class="line">    ev3.port_motor_input(PORT_D), <span class="comment"># NO</span></div><div class="line">    ev3.LCX(7),                   <span class="comment"># TYPE</span></div><div class="line">    ev3.LCX(0),                   <span class="comment"># MODE</span></div><div class="line">    ev3.LCX(1),                   <span class="comment"># VALUES</span></div><div class="line">    ev3.GVX(4)                    <span class="comment"># VALUE1</span></div><div class="line">])</div><div class="line">reply = my_ev3.send_direct_cmd(ops, global_mem=8)</div><div class="line">(pos_a, pos_d) = struct.unpack('&lt;fi', reply[5:])</div><div class="line">print(<span class="string">"positions in degrees (ports A and D): &#123;&#125; and &#123;&#125;"</span>.format(pos_a, pos_d))</div><div class="line"></div><div class="line">ops = b''.join([</div><div class="line">    ev3.opCom_Get,</div><div class="line">    ev3.GET_BRICKNAME,</div><div class="line">    ev3.LCX(16),                  <span class="comment"># LENGTH</span></div><div class="line">    ev3.GVX(0)                    <span class="comment"># NAME</span></div><div class="line">])</div><div class="line">reply = my_ev3.send_direct_cmd(ops, global_mem=16)</div></pre></td></tr></table></figure></p>
+<p>这个程序的输出是：<br><figure class="highlight coq"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="number">09</span>:<span class="number">13</span>:<span class="number">30.379771</span> Sent <span class="number">0</span>x|<span class="type">15</span>:<span class="number">00</span>|<span class="type">2A</span>:<span class="number">00</span>|<span class="type">00</span>|<span class="type">08</span>:<span class="number">00</span>|<span class="type">99</span>:<span class="number">1</span>D:<span class="number">00</span>:<span class="number">10</span>:<span class="number">07</span>:<span class="number">00</span>:<span class="number">01</span>:<span class="number">60</span>:<span class="number">99</span>:<span class="number">1</span>C:<span class="number">00</span>:<span class="number">13</span>:<span class="number">07</span>:<span class="number">00</span>:<span class="number">01</span>:<span class="number">64</span>|</div><div class="line"><span class="type">09</span>:<span class="number">13</span>:<span class="number">30.433495</span> Recv <span class="number">0</span>x|<span class="type">0B</span>:<span class="number">00</span>|<span class="type">2A</span>:<span class="number">00</span>|<span class="type">02</span>|<span class="type">00</span>:<span class="number">08</span>:<span class="number">90</span>:C5:FE:F0:FF:FF|</div><div class="line"><span class="type">positions</span> <span class="built_in">in</span> degrees (ports A and D): <span class="number">-4609.0</span> and <span class="number">-3842</span></div><div class="line"><span class="number">09</span>:<span class="number">13</span>:<span class="number">30.433932</span> Sent <span class="number">0</span>x|<span class="type">0A</span>:<span class="number">00</span>|<span class="type">2B</span>:<span class="number">00</span>|<span class="type">00</span>|<span class="type">10</span>:<span class="number">00</span>|<span class="type">D3</span>:<span class="number">0</span>D:<span class="number">81</span>:<span class="number">20</span>:<span class="number">60</span>|</div><div class="line"><span class="type">09</span>:<span class="number">13</span>:<span class="number">30.502499</span> Recv <span class="number">0</span>x|<span class="type">13</span>:<span class="number">00</span>|<span class="type">2B</span>:<span class="number">00</span>|<span class="type">02</span>|<span class="type">6D</span>:<span class="number">79</span>:<span class="number">45</span>:<span class="number">56</span>:<span class="number">33</span>:<span class="number">00</span>:FF:FF:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>|<span class="type"></span></div></pre></td></tr></table></figure></p>
+<p>以 0 结尾的字符串 ‘myEV3’ (0x|6D:79:45:56:33:00|) 的长度为 6 个字节。接下来的两个字节 (0x|FF:FF|) 是来自于第一个直接命令的垃圾。</p>
+<h1 id="最快的拇指"><a href="#最快的拇指" class="headerlink" title="最快的拇指"></a>最快的拇指</h1><p>触屏传感器的类型编号为 16，且有两个模式，0: EV3-Touch 和 1: EV3-Bump。第一个测试，如果传感器实际被触摸了，第二个从上次清除传感器开始计算触摸。我们通过一个小程序演示这些模式。它计数，摸传感器在五秒钟内撞击的频率（请在端口 2 插入你的触摸传感器）：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> ev3, struct, time</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">change_color</span><span class="params">(color)</span> -&gt; bytes:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">b''</span>.join([</div><div class="line">        ev3.opUI_Write,</div><div class="line">        ev3.LED,</div><div class="line">        color</div><div class="line">    ])</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">play_sound</span><span class="params">(vol: int, freq: int, dur:int)</span> -&gt; bytes:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">b''</span>.join([</div><div class="line">        ev3.opSound,</div><div class="line">        ev3.TONE,</div><div class="line">        ev3.LCX(vol),</div><div class="line">        ev3.LCX(freq),</div><div class="line">        ev3.LCX(dur)</div><div class="line">    ])</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">ready</span><span class="params">()</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    ops = change_color(ev3.LED_RED)</div><div class="line">    my_ev3.send_direct_cmd(ops)</div><div class="line">    time.sleep(<span class="number">3</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">steady</span><span class="params">()</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    ops_color = change_color(ev3.LED_ORANGE)</div><div class="line">    ops_sound = play_sound(<span class="number">1</span>, <span class="number">200</span>, <span class="number">60</span>)</div><div class="line">    my_ev3.send_direct_cmd(ops_color + ops_sound)</div><div class="line">    time.sleep(<span class="number">0.25</span>)</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">3</span>):</div><div class="line">        my_ev3.send_direct_cmd(ops_sound)</div><div class="line">        time.sleep(<span class="number">0.25</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">go</span><span class="params">()</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    ops_clear = <span class="string">b''</span>.join([</div><div class="line">        ev3.opInput_Device,</div><div class="line">        ev3.CLR_CHANGES,</div><div class="line">        ev3.LCX(<span class="number">0</span>),          <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(<span class="number">1</span>)           <span class="comment"># NO</span></div><div class="line">    ])</div><div class="line">    ops_color = change_color(ev3.LED_GREEN_FLASH)</div><div class="line">    ops_sound = play_sound(<span class="number">10</span>, <span class="number">200</span>, <span class="number">100</span>)</div><div class="line">    my_ev3.send_direct_cmd(ops_clear + ops_color + ops_sound)</div><div class="line">    time.sleep(<span class="number">5</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stop</span><span class="params">()</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    ops_read = <span class="string">b''</span>.join([</div><div class="line">        ev3.opInput_Device,</div><div class="line">        ev3.READY_SI,</div><div class="line">        ev3.LCX(<span class="number">0</span>),          <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(<span class="number">1</span>),          <span class="comment"># NO</span></div><div class="line">        ev3.LCX(<span class="number">16</span>),         <span class="comment"># TYPE - EV3-Touch</span></div><div class="line">        ev3.LCX(<span class="number">0</span>),          <span class="comment"># MODE - Touch</span></div><div class="line">        ev3.LCX(<span class="number">1</span>),          <span class="comment"># VALUES</span></div><div class="line">        ev3.GVX(<span class="number">0</span>),          <span class="comment"># VALUE1</span></div><div class="line">        ev3.opInput_Device,</div><div class="line">        ev3.READY_SI,</div><div class="line">        ev3.LCX(<span class="number">0</span>),          <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(<span class="number">1</span>),          <span class="comment"># NO</span></div><div class="line">        ev3.LCX(<span class="number">16</span>),         <span class="comment"># TYPE - EV3-Touch</span></div><div class="line">        ev3.LCX(<span class="number">1</span>),          <span class="comment"># MODE - Bump</span></div><div class="line">        ev3.LCX(<span class="number">1</span>),          <span class="comment"># VALUES</span></div><div class="line">        ev3.GVX(<span class="number">4</span>)           <span class="comment"># VALUE1</span></div><div class="line">    ])</div><div class="line">    ops_sound = play_sound(<span class="number">10</span>, <span class="number">200</span>, <span class="number">100</span>)</div><div class="line">    reply = my_ev3.send_direct_cmd(ops_sound + ops_read, global_mem=<span class="number">8</span>)</div><div class="line">    (touched, bumps) = struct.unpack(<span class="string">'&lt;ff'</span>, reply[<span class="number">5</span>:])</div><div class="line">    <span class="keyword">if</span> touched == <span class="number">1</span>:</div><div class="line">        bumps += <span class="number">0.5</span></div><div class="line">    print(bumps, <span class="string">"bumps"</span>)</div><div class="line"></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">3</span>):</div><div class="line">    ready()</div><div class="line">    steady()</div><div class="line">    go()</div><div class="line">    stop()</div><div class="line">ops_color = change_color(ev3.LED_GREEN)</div><div class="line">my_ev3.send_direct_cmd(ops_color)</div><div class="line">print(<span class="string">"**** Game over ****"</span>)</div></pre></td></tr></table></figure></p>
+<p>我们使用了一个新操作：opInput_Device = 0x|99| 的 CMD CLR_CHANGES = 0x|1A|，有这些参数：</p>
+<ul>
+<li>(Data8) LAYER：链 layer 号</li>
+<li>(Data8) NO：端口编号</li>
+</ul>
+<p>它清除传感器，所有它的内部数据被设置为初始值。</p>
+<h1 id="郁闷的长颈鹿"><a href="#郁闷的长颈鹿" class="headerlink" title="郁闷的长颈鹿"></a>郁闷的长颈鹿</h1><p>让我们编写一个程序，它使用类 <code>TwoWheelVehicle</code> 和红外传感器。红外传感器的类型编号为 33，它的模式 0 读取传感器前方的自由距离。我们使用它来探测小车前方的障碍和坑洞。转换你的小车并放置红外传感器，使其看向前方，但从上到下（向下约30 - 60°）。传感器读取小车前方的区域并在遇到意外状况时停止运动：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> ev3, ev3_vehicle, struct, random</div><div class="line"></div><div class="line">vehicle = ev3_vehicle.TwoWheelVehicle(</div><div class="line">    <span class="number">0.02128</span>,                 <span class="comment"># radius_wheel</span></div><div class="line">    <span class="number">0.1175</span>,                  <span class="comment"># tread</span></div><div class="line">    protocol=ev3.BLUETOOTH,</div><div class="line">    host=<span class="string">'00:16:53:42:2B:99'</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">distance</span><span class="params">()</span> -&gt; float:</span></div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        ev3.opInput_Device,</div><div class="line">        ev3.READY_SI,</div><div class="line">        ev3.LCX(<span class="number">0</span>),          <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(<span class="number">0</span>),          <span class="comment"># NO</span></div><div class="line">        ev3.LCX(<span class="number">33</span>),         <span class="comment"># TYPE - EV3-IR</span></div><div class="line">        ev3.LCX(<span class="number">0</span>),          <span class="comment"># MODE - Proximity</span></div><div class="line">        ev3.LCX(<span class="number">1</span>),          <span class="comment"># VALUES</span></div><div class="line">        ev3.GVX(<span class="number">0</span>)           <span class="comment"># VALUE1</span></div><div class="line">    ])</div><div class="line">    reply = vehicle.send_direct_cmd(ops, global_mem=<span class="number">4</span>)</div><div class="line">    <span class="keyword">return</span> struct.unpack(<span class="string">'&lt;f'</span>, reply[<span class="number">5</span>:])[<span class="number">0</span>]</div><div class="line"></div><div class="line">speed = <span class="number">25</span></div><div class="line">vehicle.move(speed, <span class="number">0</span>)</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        dist = distance()</div><div class="line">        <span class="keyword">if</span> dist &lt; <span class="number">15</span> <span class="keyword">or</span> dist &gt; <span class="number">20</span>:</div><div class="line">            <span class="keyword">break</span></div><div class="line">    vehicle.stop()</div><div class="line">    vehicle.sync_mode = ev3.SYNC</div><div class="line">    angle = <span class="number">135</span> + <span class="number">45</span> * random.random()</div><div class="line">    <span class="keyword">if</span> random.random() &gt; <span class="number">0.5</span>:</div><div class="line">        vehicle.drive_turn(speed, <span class="number">0</span>, angle)</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        vehicle.drive_turn(speed, <span class="number">0</span>, angle, right_turn=<span class="keyword">True</span>)</div><div class="line">    vehicle.sync_mode = ev3.STD</div><div class="line">    speed -= <span class="number">2</span></div><div class="line">    vehicle.move(speed, <span class="number">0</span>)</div><div class="line">vehicle.stop()</div></pre></td></tr></table></figure></p>
+<p>一些注释：</p>
+<ul>
+<li>如果你从 <a href="https://github.com/ChristophGaukel/ev3-python3" target="_blank" rel="external">ev3-python3</a> 下载了模块 ev3_vehicle.py，请消除属性 <code>sync_mode</code> 的设置(vehicle.sync_mode = ev3.SYNC 或 vehicle.sync_mode = ev3.STD)</li>
+<li>算法的核心部分是：<figure class="highlight sqf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> <span class="literal">True</span>:</div><div class="line">    dist = <span class="built_in">distance</span>()</div><div class="line">    <span class="keyword">if</span> dist &lt; <span class="number">15</span> <span class="built_in">or</span> dist &gt; <span class="number">20</span>:</div><div class="line">        break</div><div class="line"><span class="built_in">vehicle</span>.<span class="built_in">stop</span>()</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这个代码在自由距离小于 15 cm 或大于 20 cm 时（具体值依赖于对象的构造）停止运动。这是说：如果小车到了桌子的边缘（距离变大），它将停止，以及如果它到了一个障碍物处（小距离），它也将停止。</p>
+<ul>
+<li><p>停止后，车辆以随机方向及随机角度开启（范围在 135 到 180°）。sync_mode 设置为 SYNC，我们想要程序等待直到转弯完成：</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">vehicle</span>.sync_mode = ev3.SYNC</div><div class="line">angle = <span class="number">135</span> + <span class="number">45</span> * <span class="built_in">random</span>.<span class="built_in">random</span>()</div><div class="line"><span class="keyword">if</span> <span class="built_in">random</span>.<span class="built_in">random</span>() &gt; <span class="number">0.5</span>:</div><div class="line">    <span class="built_in">vehicle</span>.drive_turn(<span class="built_in">speed</span>, <span class="number">0</span>, angle)</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    <span class="built_in">vehicle</span>.drive_turn(<span class="built_in">speed</span>, <span class="number">0</span>, angle, right_turn=<span class="literal">True</span>)</div><div class="line"><span class="built_in">vehicle</span>.sync_mode = ev3.STD</div></pre></td></tr></table></figure>
+</li>
+<li><p>然后速度减小，小车向前移动，循环再次开始：</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">speed</span> -= <span class="number">2</span></div><div class="line"><span class="built_in">vehicle</span>.<span class="built_in">move</span>(<span class="built_in">speed</span>, <span class="number">0</span>)</div></pre></td></tr></table></figure>
+</li>
+<li><p>循环数限制为10。</p>
+</li>
+<li>我的传感器放在一个装配长颈鹿颈部的结构上。这个以及越来越慢的运动就成了这个名字。</li>
+<li>一个缺点是传感器直接向前聚焦。如果车辆以小角度移动到桌子的边缘或靠着障碍物，它将会识别它太晚。</li>
+</ul>
+<p>技术上会发生什么？</p>
+<ul>
+<li>vehicle.move(speed, 0) 启动一个无限的运动，它不阻塞 EV3 设备。</li>
+<li>这允许在小车运动时从传感器读取自由距离。</li>
+<li>与第 3 课和第 4 课的远程控制的相似性非常重要，传感器取代了人类的思维。</li>
+<li>仅有的阻塞 EV3 设备的行为是方法 <code>drive_turn</code>。这个命令需要 sync_mode = SYNC。幸运的是，在它执行时，我们不需要任何传感器数据。</li>
+</ul>
+<p>现在是时候适配你的程序来满足你的需要和你的小车的构造了。我发现将小车放在桌面上，其中桌面的一部分被屏障隔开，是最令人印象深刻的。</p>
+<h1 id="导引头"><a href="#导引头" class="headerlink" title="导引头"></a>导引头</h1><p>红外传感器有另一种有趣的模式：<code>seeker</code>。这个模式读取 EV3 红外信标的方向和距离。信标允许在四个信号通道中选一个。请在端口 2 插入 IR 传感器，打开信标，选择一个通道，把它放在红外传感器的前方，然后运行这个程序：<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, <span class="keyword">struct</span></div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host='<span class="number">00</span>:<span class="number">16</span>:<span class="number">53</span>:<span class="number">42</span>:<span class="number">2</span>B:<span class="number">99</span>')</div><div class="line"></div><div class="line">ops_read = b''.join([</div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.READY_RAW,</div><div class="line">    ev3.LCX(<span class="number">0</span>),                       <span class="meta"># LAYER</span></div><div class="line">    ev3.LCX(<span class="number">1</span>),                       <span class="meta"># NO</span></div><div class="line">    ev3.LCX(<span class="number">33</span>),                      <span class="meta"># TYPE - IR</span></div><div class="line">    ev3.LCX(<span class="number">1</span>),                       <span class="meta"># MODE - Seeker</span></div><div class="line">    ev3.LCX(<span class="number">8</span>),                       <span class="meta"># VALUES</span></div><div class="line">    ev3.GVX(<span class="number">0</span>),                       <span class="meta"># VALUE1 - heading   channel 1</span></div><div class="line">    ev3.GVX(<span class="number">4</span>),                       <span class="meta"># VALUE2 - proximity channel 1</span></div><div class="line">    ev3.GVX(<span class="number">8</span>),                       <span class="meta"># VALUE3 - heading   channel 2</span></div><div class="line">    ev3.GVX(<span class="number">12</span>),                      <span class="meta"># VALUE4 - proximity channel 2</span></div><div class="line">    ev3.GVX(<span class="number">16</span>),                      <span class="meta"># VALUE5 - heading   channel 3</span></div><div class="line">    ev3.GVX(<span class="number">20</span>),                      <span class="meta"># VALUE6 - proximity channel 3</span></div><div class="line">    ev3.GVX(<span class="number">24</span>),                      <span class="meta"># VALUE5 - heading   channel 4</span></div><div class="line">    ev3.GVX(<span class="number">28</span>)                       <span class="meta"># VALUE6 - proximity channel 4</span></div><div class="line">])</div><div class="line">reply = my_ev3.send_direct_cmd(ops_read, global_mem=<span class="number">32</span>)</div><div class="line">(</div><div class="line">    h1, p1,</div><div class="line">    h2, p2,</div><div class="line">    h3, p3,</div><div class="line">    h4, p4,</div><div class="line">) = <span class="keyword">struct</span>.unpack('<span class="number">8</span>i', reply[<span class="number">5</span>:])</div><div class="line"><span class="keyword">print</span>(<span class="string">"heading1: &#123;&#125;, proximity1: &#123;&#125;"</span>.<span class="keyword">format</span>(h1, p1))</div><div class="line"><span class="keyword">print</span>(<span class="string">"heading2: &#123;&#125;, proximity2: &#123;&#125;"</span>.<span class="keyword">format</span>(h2, p2))</div><div class="line"><span class="keyword">print</span>(<span class="string">"heading3: &#123;&#125;, proximity3: &#123;&#125;"</span>.<span class="keyword">format</span>(h3, p3))</div><div class="line"><span class="keyword">print</span>(<span class="string">"heading4: &#123;&#125;, proximity4: &#123;&#125;"</span>.<span class="keyword">format</span>(h4, p4))</div></pre></td></tr></table></figure></p>
+<p>朝向的范围为 [-25 - 25]，负值代表左，0 代表直行，正的代表右边。接近性的范围为 [0 - 100]，且以 cm 计。这个操作读取所有 4 个通道，每个通道两个值。这个程序的输出是(seeker 通道是 2)：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="string">heading1:</span> <span class="number">0</span>, <span class="string">proximity1:</span> <span class="number">-2147483648</span></div><div class="line"><span class="string">heading2:</span> <span class="number">-21</span>, <span class="string">proximity2:</span> <span class="number">27</span></div><div class="line"><span class="string">heading3:</span> <span class="number">0</span>, <span class="string">proximity3:</span> <span class="number">-2147483648</span></div><div class="line"><span class="string">heading4:</span> <span class="number">0</span>, <span class="string">proximity4:</span> <span class="number">-2147483648</span></div></pre></td></tr></table></figure></p>
+<p>信标放在红外传感器的左前方，距离为 27 cm。通道 1，3，和 4 返回一个距离值 -2147483648，它是 0x|00:00:00:80|（小尾端，最高位为 1，所有其它的为 0），表示 <em>没信号</em>。</p>
+<h1 id="PID-控制器"><a href="#PID-控制器" class="headerlink" title="PID 控制器"></a>PID 控制器</h1><p><a href="https://en.wikipedia.org/wiki/PID_controller" target="_blank" rel="external">PID 控制器</a> 持续计算错误值，作为所需设定值和测量过程变量之间的差值。控制器尝试通过控制变量的调整随时间最小化误差。这是一个伟大的算法，它修改一个过程的参数直到过程达到它的目的状态。最好的是，你不需要知道你的参数的精确依赖以及过程的状态。一个典型的例子是加热房间的暖气片。过程变量是房间的温度，控制器改变暖气片阀的位置直到房间温度稳定在设置的点。我们将使用 PID 控制器调整小车移动的参数 <code>speed</code> 和 <code>turn</code>。我们给模块 <code>ev3</code> 添加一个类 PID：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">class PID():</div><div class="line">    <span class="string">""</span><span class="string">"</span></div><div class="line">    object to implement a PID controller</div><div class="line">    "<span class="string">""</span></div><div class="line">    def __init__(<span class="keyword">self</span>,</div><div class="line">                 setpoint: <span class="keyword">float</span>,</div><div class="line">                 gain_prop: <span class="keyword">float</span>,</div><div class="line">                 gain_der: <span class="keyword">float</span>=<span class="literal">None</span>,</div><div class="line">                 gain_int: <span class="keyword">float</span>=<span class="literal">None</span>,</div><div class="line">                 half_life: <span class="keyword">float</span>=<span class="literal">None</span></div><div class="line">    ):</div><div class="line">        <span class="keyword">self</span>._setpoint = setpoint</div><div class="line">        <span class="keyword">self</span>._gain_prop = gain_prop</div><div class="line">        <span class="keyword">self</span>._gain_int = gain_int</div><div class="line">        <span class="keyword">self</span>._gain_der = gain_der</div><div class="line">        <span class="keyword">self</span>._half_life = half_life</div><div class="line">        <span class="keyword">self</span>._error = <span class="literal">None</span></div><div class="line">        <span class="keyword">self</span>._time = <span class="literal">None</span></div><div class="line">        <span class="keyword">self</span>._<span class="keyword">int</span> = <span class="literal">None</span></div><div class="line">        <span class="keyword">self</span>._value = <span class="literal">None</span></div><div class="line"></div><div class="line">    def control_signal(<span class="keyword">self</span>, actual_value: <span class="keyword">float</span>) -&gt; <span class="keyword">float</span>:</div><div class="line">        <span class="keyword">if</span> <span class="keyword">self</span>._value is <span class="literal">None</span>:</div><div class="line">            <span class="keyword">self</span>._value = actual_value</div><div class="line">            <span class="keyword">self</span>._time = time.time()</div><div class="line">            <span class="keyword">self</span>._<span class="keyword">int</span> = <span class="number">0</span></div><div class="line">            <span class="keyword">self</span>._error = <span class="keyword">self</span>._setpoint - actual_value</div><div class="line">            <span class="keyword">return</span> <span class="keyword">self</span>._gain_prop * <span class="keyword">self</span>._error</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            time_act = time.time()</div><div class="line">            delta_time = time_act - <span class="keyword">self</span>._time</div><div class="line">            <span class="keyword">self</span>._time = time_act</div><div class="line">            <span class="keyword">if</span> <span class="keyword">self</span>._half_life is <span class="literal">None</span>:</div><div class="line">                <span class="keyword">self</span>._value = actual_value</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                fact1 = math.log(<span class="number">2</span>) / <span class="keyword">self</span>._half_life</div><div class="line">                fact2 = math.exp(-fact1 * delta_time)</div><div class="line">                <span class="keyword">self</span>._value = fact2 * <span class="keyword">self</span>._value + actual_value * (<span class="number">1</span> - fact2)</div><div class="line">            error = <span class="keyword">self</span>._setpoint - <span class="keyword">self</span>._value</div><div class="line">            <span class="keyword">if</span> <span class="keyword">self</span>._gain_int is <span class="literal">None</span>:</div><div class="line">                signal_int = <span class="number">0</span></div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                <span class="keyword">self</span>._<span class="keyword">int</span> += error * delta_time</div><div class="line">                signal_int = <span class="keyword">self</span>._gain_int * <span class="keyword">self</span>._<span class="keyword">int</span></div><div class="line">            <span class="keyword">if</span> <span class="keyword">self</span>._gain_der is <span class="literal">None</span>:</div><div class="line">                signal_der = <span class="number">0</span></div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                signal_der = <span class="keyword">self</span>._gain_der * (error - <span class="keyword">self</span>._error) / delta_time</div><div class="line">            <span class="keyword">self</span>._error = error</div><div class="line">            <span class="keyword">return</span> <span class="keyword">self</span>._gain_prop * error + signal_int + signal_der</div></pre></td></tr></table></figure></p>
+<p>这实现了一个PID控制器，只有一个修改：<code>half_life</code>。实际值可能有噪声或通过离散步骤改变，我们对它们进行平滑，因为当实际值随机或离散变化时，导数部分将显示峰值。<code>half_life</code> 的维度 [s] 为时间，并且是阻尼的半衰期。但请记住：平滑控制器使其变得迟缓！</p>
+<p>它的文档为：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">class PID(builtins.object)</div><div class="line"> |  object <span class="built_in">to</span> implement <span class="keyword">a</span> PID controller</div><div class="line"> |  </div><div class="line"> |  Methods defined here:</div><div class="line"> |  </div><div class="line"> |  __init__(self, setpoint:float, gain_prop:float, gain_der:float=None, gain_int:float=None, half_life:float=None)</div><div class="line"> |      Parametrizes <span class="keyword">a</span> <span class="built_in">new</span> PID controller</div><div class="line"> |      </div><div class="line"> |      Arguments:</div><div class="line"> |      setpoint: ideal <span class="built_in">value</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="built_in">process</span> <span class="built_in">variable</span></div><div class="line"> |      gain_prop: proportional gain,</div><div class="line"> |                 high values <span class="built_in">result</span> <span class="keyword">in</span> fast adaption, but too high values produce oscillations <span class="keyword">or</span> instabilities</div><div class="line"> |      </div><div class="line"> |      Keyword Arguments:</div><div class="line"> |      gain_der: gain <span class="keyword">of</span> <span class="keyword">the</span> derivative part [s], decreases overshooting <span class="keyword">and</span> settling <span class="built_in">time</span></div><div class="line"> |      gain_int: gain <span class="keyword">of</span> <span class="keyword">the</span> integrative part [<span class="number">1</span>/s], eliminates steady-state error, slower <span class="keyword">and</span> smoother response</div><div class="line"> |      half_life: used <span class="keyword">for</span> discrete <span class="keyword">or</span> noisy systems, smooths actual values [s]</div><div class="line"> |  </div><div class="line"> |  control_signal(self, actual_value:float) -&gt; float</div><div class="line"> |      calculates <span class="keyword">the</span> control signal <span class="built_in">from</span> <span class="keyword">the</span> actual <span class="built_in">value</span></div><div class="line"> |      </div><div class="line"> |      Arguments:</div><div class="line"> |      actual_value: actual measured <span class="built_in">process</span> <span class="built_in">variable</span> (will be compared <span class="built_in">to</span> setpoint)</div><div class="line"> |      </div><div class="line"> |      Returns:</div><div class="line"> |      control signal, which will be sent <span class="built_in">to</span> <span class="keyword">the</span> <span class="built_in">process</span></div></pre></td></tr></table></figure></p>
+<h1 id="保持专注"><a href="#保持专注" class="headerlink" title="保持专注"></a>保持专注</h1><p>请将红外传感器放在车辆上，水平放在前面。将其插入端口 2，选择信标通道 1，激活信标，然后启动这个程序：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, ev3_vehicle, <span class="keyword">struct</span></div><div class="line"></div><div class="line">vehicle = ev3_vehicle.TwoWheelVehicle(</div><div class="line">    <span class="number">0.02128</span>,       <span class="meta"># radius_wheel</span></div><div class="line">    <span class="number">0.1175</span>,        <span class="meta"># tread</span></div><div class="line">    protocol=ev3.BLUETOOTH,</div><div class="line">    host=<span class="string">'00:16:53:42:2B:99'</span></div><div class="line">)</div><div class="line">ops_read = b<span class="string">''</span>.<span class="keyword">join</span>([</div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.READY_RAW,</div><div class="line">    ev3.LCX(<span class="number">0</span>),    <span class="meta"># LAYER</span></div><div class="line">    ev3.LCX(<span class="number">1</span>),    <span class="meta"># NO</span></div><div class="line">    ev3.LCX(<span class="number">33</span>),   <span class="meta"># TYPE - IR</span></div><div class="line">    ev3.LCX(<span class="number">1</span>),    <span class="meta"># MODE - Seeker</span></div><div class="line">    ev3.LCX(<span class="number">2</span>),    <span class="meta"># VALUES</span></div><div class="line">    ev3.GVX(<span class="number">0</span>),    <span class="meta"># VALUE1 - heading   channel 1</span></div><div class="line">    ev3.GVX(<span class="number">4</span>)     <span class="meta"># VALUE2 - proximity channel 1</span></div><div class="line">])</div><div class="line">speed_ctrl = ev3.PID(<span class="number">0</span>, <span class="number">2</span>, half_life=<span class="number">0.1</span>, gain_der=<span class="number">0.2</span>)</div><div class="line"><span class="keyword">while</span> True:</div><div class="line">    reply = vehicle.send_direct_cmd(ops_read, global_mem=<span class="number">8</span>)</div><div class="line">    (heading, proximity) = <span class="keyword">struct</span>.unpack(<span class="string">'2i'</span>, reply[<span class="number">5</span>:])</div><div class="line">    <span class="keyword">if</span> proximity == <span class="number">-2147483648</span>:</div><div class="line">        print(<span class="string">"**** lost connection ****"</span>)</div><div class="line">        <span class="keyword">break</span></div><div class="line">    turn = <span class="number">200</span></div><div class="line">    speed = round(speed_ctrl.control_signal(heading))</div><div class="line">    speed = max(<span class="number">-100</span>, min(<span class="number">100</span>, speed))</div><div class="line">    vehicle.move(speed, turn)</div><div class="line">vehicle.stop()</div></pre></td></tr></table></figure></p>
+<p>说明：</p>
+<ul>
+<li>我们选择了通道 1，这只允许读取该通道的值。</li>
+<li>控制器不是一个 PID，它的 PD 带有平滑的值。</li>
+<li>如果你移动信标，你的小车将改变它的方向并保持信标在它的眼镜的焦点上。</li>
+<li>这个程序在关闭信标时停止。</li>
+<li>前进方向是过程变量，其设定值为 0（直行）。通过将车辆转动到位来完成调整。</li>
+<li>请改变 PD 控制器的参数以了解控制机制。</li>
+<li>没有稳定状态错误，因为 control_signal == 0 将进程保持在稳定状态并且是唯一的稳定状态。</li>
+</ul>
+<h1 id="跟我来"><a href="#跟我来" class="headerlink" title="跟我来"></a>跟我来</h1><p>我们稍微改变了程序的代码，但从根本上改变了它的含义：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, ev3_vehicle, struct</div><div class="line"></div><div class="line">vehicle = ev3_vehicle.TwoWheelVehicle(</div><div class="line">    <span class="number">0.02128</span>,       <span class="comment"># radius_wheel</span></div><div class="line">    <span class="number">0.1175</span>,        <span class="comment"># tread</span></div><div class="line">    protocol=ev3.BLUETOOTH,</div><div class="line">    host=<span class="string">'00:16:53:42:2B:99'</span></div><div class="line">)</div><div class="line">ops_read = b<span class="string">''</span>.join([</div><div class="line">    ev3.opInput_Device,</div><div class="line">    ev3.READY_RAW,</div><div class="line">    ev3.LCX(<span class="number">0</span>),    <span class="comment"># LAYER</span></div><div class="line">    ev3.LCX(<span class="number">1</span>),    <span class="comment"># NO</span></div><div class="line">    ev3.LCX(<span class="number">33</span>),   <span class="comment"># TYPE - IR</span></div><div class="line">    ev3.LCX(<span class="number">1</span>),    <span class="comment"># MODE - Seeker</span></div><div class="line">    ev3.LCX(<span class="number">2</span>),    <span class="comment"># VALUES</span></div><div class="line">    ev3.GVX(<span class="number">0</span>),    <span class="comment"># VALUE1 - heading   channel 1</span></div><div class="line">    ev3.GVX(<span class="number">4</span>)     <span class="comment"># VALUE2 - proximity channel 1</span></div><div class="line">])</div><div class="line">speed_ctrl =  ev3.PID(<span class="number">10</span>, <span class="number">4</span>, half_life=<span class="number">0.1</span>, gain_der=<span class="number">0.2</span>)</div><div class="line">turn_ctrl =  ev3.PID(<span class="number">0</span>, <span class="number">8</span>, half_life=<span class="number">0.1</span>, gain_der=<span class="number">0.3</span>)</div><div class="line"><span class="keyword">while</span> True:</div><div class="line">    reply = vehicle.send_direct_cmd(ops_read, global_mem=<span class="number">8</span>)</div><div class="line">    (heading, proximity) = struct.unpack(<span class="string">'2i'</span>, reply[<span class="number">5</span>:])</div><div class="line">    <span class="keyword">if</span> proximity == <span class="number">-2147483648</span>:</div><div class="line">        print(<span class="string">"**** lost connection ****"</span>)</div><div class="line">        break</div><div class="line">    turn = <span class="built_in">round</span>(turn_ctrl.control_signal(heading))</div><div class="line">    turn = <span class="built_in">max</span>(<span class="number">-200</span>, <span class="built_in">min</span>(<span class="number">200</span>, turn))</div><div class="line">    speed = <span class="built_in">round</span>(-speed_ctrl.control_signal(proximity))</div><div class="line">    speed = <span class="built_in">max</span>(<span class="number">-100</span>, <span class="built_in">min</span>(<span class="number">100</span>, speed))</div><div class="line">    vehicle.move(speed, turn)</div><div class="line">vehicle.<span class="built_in">stop</span>()</div></pre></td></tr></table></figure></p>
+<p>这个程序使用 heading 来控制移动参数 <code>turn</code> 和 <code>proximity</code> 继而控制它的 <code>speed</code>。<code>speed_ctrl</code> 的设定点是一个距离 (10 cm)。如果距离增长，控制器增加小车的速度。你可以减少 10 厘米以下的距离，然后车辆向后移动。控制器总是试图保持或达到信标和红外传感器距离为 10 厘米的状态。请改变两个传感器的参数。</p>
+<p>如果信标稳定向前移动并且车辆跟随信标会发生什么？这就像驾驶车队一样，可以研究稳态误差。则 speed = gain_prop <em> error，即 speed = gain_prop </em> (proximity - setpoint)。这是说：proximity = speed / gain_prop + setpoint。信标和传感器之间的稳定距离随着速度从 10 cm (speed == 0) 到 35 cm (speed == 100) 的增加而增加。如果我们模拟车辆车队，这正是我们想要的。</p>
+<p>我们可以设置 <code>gain_int</code> 为一个正值。甚至非常小的值将消除稳态误差。巡航将保持在 10 cm 的距离，甚至在高速的情况下。</p>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>这一课是关于传感器值的。我们已经看到，电机也是传感器，它允许我们读取实际的电机位置。我们写了一些小程序，使用红外传感器来控制带有两个驱动轮的车辆的运动。这是我们第一个真正的机器人程序。读取传感器值的机器，可以对环境作出反应。</p>
+<p>我们获得了一些 PID 控制器方面的经验，PID 控制器是受控过程的行业标准。调整它们的参数取代了复杂算法的编码。我们的程序，使用PID控制器是惊人的紧凑和惊人的统一。PID控制器似乎功能强大且通用。</p>
+<p>下一课将改进我们的类 <code>TwoWheelVehicle</code>，并为多任务做好准备。我期待着再次见到你。</p>
+<p><a href="http://ev3directcommands.blogspot.com/2016/03/lesson-5-reading-data-from-ev3s-sensors.html" target="_blank" rel="external">原文</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/ROS/" rel="tag"># ROS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/31/lego_ev3_direct_command_004/" rel="next" title="EV3 直接命令 - 第 4 课 用两个驱动轮精确地移动小车">
+                <i class="fa fa-chevron-left"></i> EV3 直接命令 - 第 4 课 用两个驱动轮精确地移动小车
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/02/linux_kernel_start/" rel="prev" title="Linux内核工程师是怎么步入内核殿堂的？">
+                Linux内核工程师是怎么步入内核殿堂的？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读取传感器的类型和模式"><span class="nav-number">1.</span> <span class="nav-text">读取传感器的类型和模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#读取电机的实际位置"><span class="nav-number">2.</span> <span class="nav-text">读取电机的实际位置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技术细节"><span class="nav-number">3.</span> <span class="nav-text">技术细节</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#端口编号的系统"><span class="nav-number">3.1.</span> <span class="nav-text">端口编号的系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作-opInput-Device"><span class="nav-number">3.2.</span> <span class="nav-text">操作 opInput_Device</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#寻址全局内存"><span class="nav-number">3.3.</span> <span class="nav-text">寻址全局内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个新模块函数：GVX"><span class="nav-number">3.4.</span> <span class="nav-text">一个新模块函数：GVX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解包全局内存"><span class="nav-number">3.5.</span> <span class="nav-text">解包全局内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一字节无符号整数"><span class="nav-number">3.5.1.</span> <span class="nav-text">一字节无符号整数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最快的拇指"><span class="nav-number">4.</span> <span class="nav-text">最快的拇指</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#郁闷的长颈鹿"><span class="nav-number">5.</span> <span class="nav-text">郁闷的长颈鹿</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#导引头"><span class="nav-number">6.</span> <span class="nav-text">导引头</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PID-控制器"><span class="nav-number">7.</span> <span class="nav-text">PID 控制器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#保持专注"><span class="nav-number">8.</span> <span class="nav-text">保持专注</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#跟我来"><span class="nav-number">9.</span> <span class="nav-text">跟我来</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结论"><span class="nav-number">10.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Android开发," />
+
+
+<meta name="description" content="通知栏消息和透传消息第三方推送服务（小米、华为和魅族）都支持两种类型的推送消息，分别是通知栏消息和透传消息，这两种类型的推送消息，在用户端的行为、消息的格式和到达率等许多方面存在一定的差异。这几个第三方推送服务关于透传消息和通知栏消息的说明如下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三方推送服务">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/08/31/pub_push_services/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="通知栏消息和透传消息第三方推送服务（小米、华为和魅族）都支持两种类型的推送消息，分别是通知栏消息和透传消息，这两种类型的推送消息，在用户端的行为、消息的格式和到达率等许多方面存在一定的差异。这几个第三方推送服务关于透传消息和通知栏消息的说明如下。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-db7a737277fa84c6.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-6256bf45b1ad515e.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-71ce7553e6232a91.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-8deb2be2d516c118.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-73a51aa013b55921.png">
+<meta property="og:updated_time" content="2018-08-31T09:59:31.541Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="第三方推送服务">
+<meta name="twitter:description" content="通知栏消息和透传消息第三方推送服务（小米、华为和魅族）都支持两种类型的推送消息，分别是通知栏消息和透传消息，这两种类型的推送消息，在用户端的行为、消息的格式和到达率等许多方面存在一定的差异。这几个第三方推送服务关于透传消息和通知栏消息的说明如下。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-db7a737277fa84c6.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/08/31/pub_push_services/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>第三方推送服务 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/08/31/pub_push_services/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">第三方推送服务</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-31T19:37:49+08:00">2018-08-31</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/31/pub_push_services/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/08/31/pub_push_services/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/08/31/pub_push_services/" class="leancloud_visitors" data-flag-title="第三方推送服务">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="通知栏消息和透传消息"><a href="#通知栏消息和透传消息" class="headerlink" title="通知栏消息和透传消息"></a>通知栏消息和透传消息</h2><p>第三方推送服务（小米、华为和魅族）都支持两种类型的推送消息，分别是通知栏消息和透传消息，这两种类型的推送消息，在用户端的行为、消息的格式和到达率等许多方面存在一定的差异。这几个第三方推送服务关于透传消息和通知栏消息的说明如下。<br><a id="more"></a><br><a href="https://developer.huawei.com/consumer/cn/service/hms/catalog/huaweipush_agent.html?page=hmssdk_huaweipush_devguide_server_agent" target="_blank" rel="external">华为透传消息和通知栏消息说明</a>：</p>
+<ul>
+<li>通知栏消息：所谓通知栏消息是指消息通过Push平台发送到Push客户端的时候使用华为默认的消息呈现和点击动作（点击后是需要应用处理的）。</li>
+<li>透传消息：所谓透传消息是指消息通过Push平台发送到Push客户端的时候会透传给对应的App，由App自己控制消息呈现方式和点击动作。</li>
+</ul>
+<p><a href="http://open.res.flyme.cn/fileserver/upload/file/201612/728a49f530c64c5a832d7ba1de69e356.pdf" target="_blank" rel="external">魅族透传消息和通知栏消息说明</a>：</p>
+<ul>
+<li>通知栏消息：通知栏通知类型，由 SDK 展示及统计展示数、点击数。</li>
+<li>透传消息：此消息 SDK 不解析，直接透传给应用处理，SDK 不负责后续的统计。</li>
+</ul>
+<p>为优化flyme系统整体功耗，魅族推送平台 6 月 16 号起限制透传消息推送的使用，不排除关闭透传推送类型。（<a href="http://open.res.flyme.cn/fileserver/upload/file/201803/e174a5709f134f64aae3fb168aec8ea3.pdf" target="_blank" rel="external">说明文档地址</a>）</p>
+<p><a href="https://dev.mi.com/doc/?p=544" target="_blank" rel="external">小米透传消息和通知栏消息说明</a>：</p>
+<p>小米推送目前支持两种消息传递方式：透传方式和通知栏方式。透传消息到达手机端后，SDK会将消息通过广播方式传给AndroidManifest中注册的PushMessageReceiver的子类的onReceivePassThroughMessage；对于通知栏消息，SDK会根据消息中设置的信息弹出通知栏通知，通知消息到达时会到达PushMessageReceiver子类的onNotificationMessageArrived方法,用户点击之后再传给您的PushMessageReceiver的子类的onNotificationMessageClicked方法；对于应用在前台时不弹出通知的通知消息，SDK会将消息通过广播方式传给AndroidManifest中注册的PushMessageReceiver的子类的onNotificationMessageArrived方法(在MIUI上，如果没有收到onNotificationMessageArrived回调，是因为使用的MIUI版本还不支持该特性，需要升级到MIUI7之后。非MIUI手机都可以收到这个回调)。</p>
+<p><a href="https://dev.mi.com/doc/?p=7674" target="_blank" rel="external">小米透传消息和通知栏消息说明二</a>：</p>
+<p>首先解释一下透传和通知栏方式的原理，透传是指当小米推送服务客户端SDK接收到消息之后，直接把消息通过回调方法发送给应用，不做任何处理；而通知栏方式，则在设备接收到消息之后，首先由小米推送服务SDK弹出标准安卓通知栏通知，在用户点击通知栏之后，激活应用。 在非MIUI系统中，由于维护小米推送服务长连接的service是寄生在App的运行空间当中的，因此透传和通知栏方式在送达率上并没有任何区别，都需要应用驻留在后台。即，如果一台设备通知栏消息能够接收到并弹出，那么其透传消息也同样能接收到。 在MIUI系统中，由于长连接是由MIUI系统服务建立并维护的，因此在接收消息的时候并不需要应用驻留后台。如果采用通知栏方式接收消息，由于通知栏也是MIUI系统服务弹出的，就可以做到不需要用户后台驻留或者可以自启动消息就能送达。而如果采用透传消息，由于需要直接执行应用的代码，因此即使消息已经到了系统服务，如果应用没有驻留后台或者能自启动，消息依然不能送达，需等下次用户手动点击激活应用后，才能接收到消息。 综上，在MIUI系统中，通知栏消息的送达率会远高于透传方式；在非MIUI系统中，通知栏和透传方式的送达率是一样的。</p>
+<p>总结：</p>
+<table>
+<thead>
+<tr>
+<th>消息类型</th>
+<th>展示样式</th>
+<th>消息数据格式</th>
+<th>到达率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>通知栏消息</td>
+<td>由第三方推送服务提供固定的消息展示样式</td>
+<td>数据格式基本固定，但可携带一些完制的数据</td>
+<td>较好，不会比透传消息差</td>
+</tr>
+<tr>
+<td>透传消息</td>
+<td>完全由 App 控制</td>
+<td>数据格式自由可定制</td>
+<td>不太好，魅族甚至宣称未来可能不再支持这种消息类型</td>
+</tr>
+</tbody>
+</table>
+<h2 id="收费情况"><a href="#收费情况" class="headerlink" title="收费情况"></a>收费情况</h2><p>各个主要设备厂商没有将推送服务当作一项主营的需要盈利的业务在做，因而基本上不收费，这些推送服务的具体收费情况如下：</p>
+<table>
+<thead>
+<tr>
+<th>推送服务</th>
+<th>收费情况</th>
+<th>官方说明（信息出处）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>小米推送</td>
+<td>小米推送的基础服务目前是免费的。</td>
+<td><a href="https://dev.mi.com/doc/p=1608/index.html" target="_blank" rel="external">推送服务常见问题</a></td>
+</tr>
+<tr>
+<td>魅族推送</td>
+<td>Flyme推送平台的基础推送功能是免费的，但是某些定制功能会考虑收费，在功能和体验上会有不同。</td>
+<td><a href="http://open-wiki.flyme.cn/index.php?title=%E9%AD%85%E6%97%8F%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98" target="_blank" rel="external">魅族推送平台常见问题</a></td>
+</tr>
+<tr>
+<td>华为推送</td>
+<td>不收费</td>
+<td>没找到官方的正式声明，收费情况通过华为的相关人员确认</td>
+</tr>
+</tbody>
+</table>
+<h2 id="小米消息推送"><a href="#小米消息推送" class="headerlink" title="小米消息推送"></a>小米消息推送</h2><p>小米消息推送<a href="https://dev.mi.com/doc/p=6421/index.html" target="_blank" rel="external">官方文档地址</a>，其中包含了整个推送系统的说明，各端的接入说明，FAQ 等内容。</p>
+<h3 id="推送消息结构"><a href="#推送消息结构" class="headerlink" title="推送消息结构"></a>推送消息结构</h3><p>由于透传消息的到达率、兼容性等不是很好，因而后面主要分析通知栏消息。</p>
+<p>小米推送通知栏消息格式如下图：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-db7a737277fa84c6.png" alt="小米推送通知栏消息格式"></p>
+<h3 id="消息推送服务端操作"><a href="#消息推送服务端操作" class="headerlink" title="消息推送服务端操作"></a>消息推送服务端操作</h3><p><img src="https://www.wolfcstech.com/images/1315506-6256bf45b1ad515e.png" alt="小米消息推送服务端操作"></p>
+<h3 id="推送消息发送回执"><a href="#推送消息发送回执" class="headerlink" title="推送消息发送回执"></a>推送消息发送回执</h3><p>开发者通过调用 <code>Message.Builder</code> 类的 <code>extra(String key, String value)</code> 来指定消息的送达和点击回执规则。</p>
+<table>
+<thead>
+<tr>
+<th>KEY</th>
+<th>VALUE​含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>callback</td>
+<td>String，必填字段。第三方接收回执的http接口，最大长度128个字节。</td>
+</tr>
+<tr>
+<td>callback.param</td>
+<td>String，可选字段。第三方自定义回执参数，最大长度64个字节。</td>
+</tr>
+<tr>
+<td>callback.type</td>
+<td>int，可选字段。第三方所需要的回执类型。1，送达回执；2，点击回执；3，送达和点击回执，默认值为3。</td>
+</tr>
+</tbody>
+</table>
+<p>小米推送服务器每隔 1s 将已送达或已点击的消息 ID 和对应设备的 regid 或 alias通过调用第三方 http 接口传给开发者。（每次调用后，小米推送服务器会清空这些数据，下次传给开发者将是新一拨数据。）消息的送达回执只支持向regId或alias发送的消息。</p>
+<p>服务器 POST 一个 JSON 数据到 callback 参数对应的 URL。</p>
+<p>JSON 对应的 http 参数名为 <code>data</code>，JSON数据格式如下：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">      <span class="attr">"msgId1"</span>:&#123;<span class="attr">"param"</span>:<span class="string">"param"</span>,<span class="attr">"type"</span>: <span class="number">1</span>, <span class="attr">"targets"</span>:<span class="string">"alias1,alias2,alias3"</span>, <span class="attr">"jobkey"</span>: <span class="string">"123"</span>&#125;,</div><div class="line">      <span class="attr">"msgId2"</span>:&#123;<span class="attr">"param"</span>:<span class="string">"param"</span>,<span class="attr">"type"</span>: <span class="number">2</span>, <span class="attr">"targets"</span>:<span class="string">"alias1,alias2,alias3"</span>, <span class="attr">"jobkey"</span>: <span class="string">"456"</span>&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>格式说明：<br>外层 key 代表相应的消息 msgId，value 是一个 <code>JSONObject</code>，包含了下面的参数值。</p>
+<ul>
+<li>param： 开发者上传的自定义参数值。</li>
+<li>type：callback类型。</li>
+<li>targets：一批alias或者regId列表，之间是用逗号分割。</li>
+<li>jobkey：发送消息时设置的jobkey值。</li>
+</ul>
+<p>设置回调相关信息示例如下：<br><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Message.Builder messageBuilder = new Message.Builder()</div><div class="line"><span class="meta">        .passThrough</span>(Message.PASS_THROUGH_NOTIFICATION)</div><div class="line"><span class="meta">        .title</span>(title)</div><div class="line"><span class="meta">        .description</span>(description)</div><div class="line"><span class="meta">        .payload</span>(paramJsonObject.toJSONString())</div><div class="line"><span class="meta">        .restrictedPackageName</span>(pusherConfigDto.getPackageName())</div><div class="line"><span class="meta">        .notifyType</span>(message.getNotifyType())</div><div class="line"><span class="meta">        .extra</span>(<span class="string">"flow_control"</span>, <span class="string">"4000"</span>) // 设置平滑推送, 推送速度<span class="number">4000</span>每秒(qps=<span class="number">4000</span>)</div><div class="line"><span class="meta">        .extra</span>(<span class="string">"callback"</span>, pusherConfigDto.getCallbackUrl())</div><div class="line"><span class="meta">        .extra</span>(<span class="string">"callback.param"</span>, JSON.toJSONString(biTag))</div><div class="line"><span class="meta">        .extra</span>(<span class="string">"callback.type"</span>, <span class="string">"3"</span>)<span class="comment">;</span></div></pre></td></tr></table></figure></p>
+<p>从回执的请求中拿到回执数据的方法如下：<br><figure class="highlight haxe"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@RequestMapping(<span class="string">"/callback/xiaomi/v&#123;ver&#125;"</span>)</div><div class="line">@ResponseBody</div><div class="line"><span class="keyword">public</span> MobReturnVo callbackXiaomi(HttpServletRequest request) &#123;</div><div class="line">    String <span class="keyword">callback</span> = request.getParameter(<span class="string">"data"</span>);</div><div class="line">    <span class="keyword">if</span> (StringUtils.isNotEmpty(<span class="keyword">callback</span>)) &#123;</div><div class="line">        LOG.info(<span class="string">"callback:"</span> + <span class="keyword">callback</span>);</div><div class="line">        pushLogic.processXiaomiCallbackLog(<span class="keyword">callback</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MobReturnVo.OKVo();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="通知栏推送消息中的额外应用数据"><a href="#通知栏推送消息中的额外应用数据" class="headerlink" title="通知栏推送消息中的额外应用数据"></a>通知栏推送消息中的额外应用数据</h3><p>通知栏消息中的标题等字段用于在客户端的通知栏中展示给用户，对于小米推送而言，标题 <code>title</code> 和描述 <code>description</code> 将会展示给用户，通知类型等用于控制推送消息的行为等。除此之外，推送消息中还可以携带一些数据，不由第三方推送服务使用，而是完全由APP 处理。对于小米推送而言，这部分数据由载荷携带，即通过 <code>Message.Builder</code> 的 <code>payload()</code> 设置的数据。</p>
+<p>像下面这样：<br><figure class="highlight pony"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="type">JSONObject</span> paramJsonObject = <span class="function"><span class="keyword">new</span> <span class="title">JSONObject</span>();</span></div><div class="line"><span class="title">paramJsonObject</span>.<span class="title">put</span>("payload", message.getContent());</div><div class="line"><span class="title">paramJsonObject</span>.<span class="title">put</span>("msgId", messageUUID);</div><div class="line"><span class="title">Map</span>&lt;<span class="title">String</span>, <span class="title">String</span>&gt; <span class="title">extra</span> = <span class="title">message</span>.<span class="title">getExtra</span>();</div><div class="line"><span class="title">if</span> (<span class="type">MapUtils</span>.isNotEmpty(extra)) &#123;</div><div class="line">    <span class="title">paramJsonObject</span>.<span class="title">putAll</span>(extra);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="title">BiTag</span> <span class="title">biTag</span> = <span class="title">new</span> <span class="title">BiTag</span>();</div><div class="line"><span class="title">biTag</span>.<span class="title">setProductKey</span>(pusherConfigDto.getProductKey());</div><div class="line"><span class="title">biTag</span>.<span class="title">setMsgId</span>(messageUUID);</div><div class="line"></div><div class="line"><span class="title">Message</span>.<span class="title">Builder</span> <span class="title">messageBuilder</span> = <span class="title">new</span> <span class="title">Message</span>.<span class="title">Builder</span>()</div><div class="line">        .<span class="title">passThrough</span>(<span class="type">Message</span>.<span class="type">PASS_THROUGH_NOTIFICATION</span>)</div><div class="line">        .<span class="title">title</span>(title)</div><div class="line">        .<span class="title">description</span>(description)</div><div class="line">        .<span class="title">payload</span>(paramJsonObject.toJSONString())</div><div class="line">        .<span class="title">restrictedPackageName</span>(pusherConfigDto.getPackageName())</div><div class="line">        .<span class="title">notifyType</span>(message.getNotifyType())</div><div class="line">        .<span class="title">extra</span>("flow_control", "<span class="number">4000</span>") <span class="comment">// 设置平滑推送, 推送速度4000每秒(qps=4000)</span></div><div class="line">        .<span class="title">extra</span>("callback", pusherConfigDto.getCallbackUrl())</div><div class="line">        .<span class="title">extra</span>("callback.param", <span class="type">JSON</span>.toJSONString(biTag))</div><div class="line">        .<span class="title">extra</span>("callback.type", "<span class="number">1</span>");</div></pre></td></tr></table></figure></p>
+<p>在 Android 客户端，这部分数据在实现的 <code>com.xiaomi.mipush.sdk.PushMessageReceiver</code> 子类的 <code>onNotificationMessageClicked()</code> 方法中，由 <code>MiPushMessage</code> 的 <code>getContent()</code> 方法获取，像下面这样：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onNotificationMessageClicked</span><span class="params">(Context context, MiPushMessage message)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (message == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    NTLog.d(TAG, message.toString());</div><div class="line">    MessageInstance.getInstance().getPushMessageLogic().clickPushMessage(context, message);</div><div class="line"></div><div class="line">    mMessage = message.getContent();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="魅族消息推送"><a href="#魅族消息推送" class="headerlink" title="魅族消息推送"></a>魅族消息推送</h2><p>魅族消息推送<a href="http://open-wiki.flyme.cn/doc-wiki/index" target="_blank" rel="external">官方文档地址</a>。</p>
+<h3 id="魅族推送消息组成及行为控制选项"><a href="#魅族推送消息组成及行为控制选项" class="headerlink" title="魅族推送消息组成及行为控制选项"></a>魅族推送消息组成及行为控制选项</h3><p><img src="https://www.wolfcstech.com/images/1315506-71ce7553e6232a91.png" alt="魅族推送消息组成及行为控制选项"></p>
+<h3 id="消息推送服务端操作-1"><a href="#消息推送服务端操作-1" class="headerlink" title="消息推送服务端操作"></a>消息推送服务端操作</h3><p><img src="https://www.wolfcstech.com/images/1315506-8deb2be2d516c118.png" alt="魅族消息推送服务端操作"></p>
+<p>关于魅族消息推送系统需要注意：</p>
+<ul>
+<li>支持回执接口的接口为 <strong><em>pushId通知栏消息推送(pushMessage)</em></strong>，也就是说，任务推送不支持回执接口。</li>
+</ul>
+<h3 id="推送消息发送回执-1"><a href="#推送消息发送回执-1" class="headerlink" title="推送消息发送回执"></a>推送消息发送回执</h3><p>关于消息推送回调的详细说明，可以参考文档 <a href="http://open.res.flyme.cn/fileserver/upload/file/201803/e174a5709f134f64aae3fb168aec8ea3.pdf" target="_blank" rel="external">Flyme推送JAVA版本SDK接口文档</a> 的 <strong>高级功能</strong> -&gt; <strong>消息送达与回执</strong> 的部分。</p>
+<p>开发者首先需要登录魅族推送平台【配置管理】-&gt;【回执管理】注册回执地址，然后通过调用 <code>VarnishedMessage.Builder</code> 的 <code>extra()</code> 设置相关的回执配置，包括回执的 URL、回执参数，和回执事件类型等。类似于下面这样：<br><figure class="highlight pony"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="type">VarnishedMessage</span>.<span class="type">Builder</span> messageBuilder = <span class="function"><span class="keyword">new</span> <span class="title">VarnishedMessage</span>.<span class="title">Builder</span>()</span></div><div class="line">        .<span class="title">appId</span>(<span class="type">Long</span>.valueOf(pusherConfigDto.getAppId()))</div><div class="line">        .<span class="title">title</span>(message.getTitle())</div><div class="line">        .<span class="title">content</span>(message.getAlert())</div><div class="line">        .<span class="title">clickType</span>(<span class="number">0</span>)</div><div class="line">        .<span class="title">offLine</span>(true)</div><div class="line">        .<span class="title">validTime</span>(<span class="number">24</span>)</div><div class="line">        .<span class="title">fixSpeed</span>(true)</div><div class="line">        .<span class="title">fixSpeedRate</span>(<span class="number">500</span>)</div><div class="line">        .<span class="title">suspend</span>(true)</div><div class="line">        .<span class="title">clearNoticeBar</span>(true)</div><div class="line">        .<span class="title">vibrate</span>((message.getNotifyType() &amp; <span class="title">EdsMessage</span>.<span class="title">NOTIFY_TYPE_VIBRATE</span>) != 0)</div><div class="line">        .<span class="title">lights</span>((message.getNotifyType() &amp; <span class="title">EdsMessage</span>.<span class="title">NOTIFY_TYPE_LIGHTS</span>) != 0)</div><div class="line">        .<span class="title">sound</span>((message.getNotifyType() &amp; <span class="title">EdsMessage</span>.<span class="title">NOTIFY_TYPE_SOUND</span>) != 0)</div><div class="line">        .<span class="title">parameters</span>(paramJsonObject)</div><div class="line">        .<span class="title">extra</span>(<span class="type">ExtraParam</span>.<span class="type">CALLBACK</span>.getKey(), <span class="title">pusherConfigDto</span>.<span class="title">getCallbackUrl</span>())</div><div class="line">        .<span class="title">extra</span>(<span class="type">ExtraParam</span>.<span class="type">CALLBACK_PARAM</span>.getKey(), <span class="title">JSON</span>.<span class="title">toJSONString</span>(biTag))</div><div class="line">        .<span class="title">extra</span>(<span class="type">ExtraParam</span>.<span class="type">CALLBACK_TYPE</span>.getKey(), <span class="title">CallBackType</span>.<span class="title">RECEIVE_CLICK</span>.<span class="title">getKey</span>());</div></pre></td></tr></table></figure></p>
+<p>回执参数(ExtraParam) 说明如下：</p>
+<table>
+<thead>
+<tr>
+<th>枚举</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CALLBACK</td>
+<td>回执接口(第三方接收回执的Http接口, 最大长度128字节)</td>
+</tr>
+<tr>
+<td>CALLBACK_PARAM</td>
+<td>回执参数(第三方自定义回执参数, 最大长度64字节)</td>
+</tr>
+<tr>
+<td>CALLBACK_TYPE</td>
+<td>回执类型((1-送达回执, 2-点击回执, 3-送达与点击回执), 默认3)</td>
+</tr>
+</tbody>
+</table>
+<p>回执类型(CallBackType) 说明如下：</p>
+<table>
+<thead>
+<tr>
+<th>枚举</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RECEIVE</td>
+<td>送达回执</td>
+</tr>
+<tr>
+<td>CLICK</td>
+<td>点击回执</td>
+</tr>
+<tr>
+<td>RECEIVE_CLICK</td>
+<td>送达与点击回执</td>
+</tr>
+</tbody>
+</table>
+<p>魅族推送服务器每隔 1s 将已送达或已点击的消息 ID 和对应设备的 pushId 或alias 通过调用开发者 http 接口传给开发者(每次调用后, 魅族推送服务器会清空这些数据,下次传给业务方将是新一拨数据)。</p>
+<p>消息的送达回执只支持向pushId或alias发送的消息。</p>
+<p>单个应用注册不同回执地址累计上限不能超过100个。</p>
+<p>回执响应内容为：</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cb</td>
+<td>回执明细内容 如下所述(Json数据)</td>
+</tr>
+<tr>
+<td>access_token</td>
+<td>回执接口访问令牌(推送平台设置回执地址令牌)</td>
+</tr>
+</tbody>
+</table>
+<p>回执明细格式说明: 外层 key 代表相应的消息 id 和回执类型 (msgId-type)，value 是一个<br>JSONObject，包含了下面的参数值：</p>
+<ul>
+<li>param：业务上传的自定义参数值</li>
+<li>type：callback类型</li>
+<li>targets：一批alias或者pushId集合</li>
+</ul>
+<p>抓包示例：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">Hypertext Transfer Protocol</div><div class="line">POST <span class="regexp">/callbackUrl/</span>callback HTTP/<span class="number">1.1</span>\r\n</div><div class="line">[Expert Info (Chat<span class="regexp">/Sequence): POST /</span>callbackUrl<span class="regexp">/callback HTTP/</span><span class="number">1.1</span>\r\n]</div><div class="line">Request <span class="string">Method:</span> POST</div><div class="line">Request <span class="string">URI:</span> <span class="regexp">/callbackUrl/</span>callback</div><div class="line">Request <span class="string">Version:</span> HTTP/<span class="number">1.1</span></div><div class="line">Content-<span class="string">Length:</span> <span class="number">32</span>\r\n</div><div class="line">[Content <span class="string">length:</span> <span class="number">32</span>]</div><div class="line">Content-<span class="string">Type:</span> application/x-www-form-urlencoded; charset=UTF<span class="number">-8</span>\r\n</div><div class="line"><span class="string">Host:</span> xxx.xxx.xxx\r\n</div><div class="line"><span class="string">Connection:</span> Keep-Alive\r\n</div><div class="line"><span class="number">30</span><span class="regexp">/39User-Agent: Apache-HttpClient/</span><span class="number">4.3</span><span class="number">.4</span> (java <span class="number">1.5</span>)\r\n</div><div class="line">Accept-<span class="string">Encoding:</span> gzip,deflate\r\n</div><div class="line">\r\n</div><div class="line">[Full request <span class="string">URI:</span> <span class="string">http:</span><span class="comment">//xxx.xxx.xxx/callbackUrl/callback]</span></div><div class="line">[HTTP request <span class="number">1</span>/<span class="number">1</span>]</div><div class="line">[Response <span class="keyword">in</span> <span class="string">frame:</span> <span class="number">7253</span>]</div><div class="line">File <span class="string">Data:</span> <span class="number">32</span> bytes</div><div class="line">HTML Form URL <span class="string">Encoded:</span> application/x-www-form-urlencoded</div><div class="line">Form <span class="string">item:</span> <span class="string">"access_token"</span> = <span class="string">"token"</span></div><div class="line"><span class="symbol">   Key:</span> access_token</div><div class="line"><span class="symbol">   Value:</span> token</div><div class="line">Form <span class="string">item:</span> <span class="string">"cb"</span> = <span class="string">"json value"</span></div><div class="line"><span class="symbol">   Key:</span> cb</div><div class="line"><span class="symbol">   Value:</span> json value</div></pre></td></tr></table></figure></p>
+<p>由回调请求拿到回调数据的方法如下：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequestMapping(<span class="meta-string">"/callback/meizu/v&#123;ver&#125;"</span>)</span></div><div class="line"><span class="meta">@ResponseBody</span></div><div class="line"><span class="keyword">public</span> String callbackMeizu(HttpServletRequest request) &#123;</div><div class="line">    String callbackData = request.getParameter(<span class="string">"cb"</span>);</div><div class="line">    String accessToken = request.getParameter(<span class="string">"access_token"</span>);</div><div class="line">    System.<span class="keyword">out</span>.println(<span class="string">"callbackData:"</span> + callbackData);</div><div class="line">    System.<span class="keyword">out</span>.println(<span class="string">"accessToken:"</span> + accessToken);</div><div class="line">    <span class="keyword">return</span> <span class="string">"ok"</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>由回调请求拿到的回调数据类似下面这样：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">callbackData</span>:&#123;<span class="string">"NS20180830094758844_0_11529504_1_3-1"</span>:&#123;<span class="string">"param"</span>:<span class="string">"&#123;\"</span>msgId\<span class="string">":\"</span>c69f1867-<span class="number">0509</span>-<span class="number">4343</span>-bff0-<span class="number">04</span>ba5beb6725\<span class="string">"&#125;"</span>,<span class="string">"type"</span>:<span class="number">1</span>,<span class="string">"targets"</span>:[<span class="string">"N6A6977416a7a77536b59675d61507c7b036074466a77"</span>]&#125;&#125;</div><div class="line"><span class="attribute">accessToken</span>:<span class="number">2324515</span>cf21b4ea2b6b916637b1a7c3b</div><div class="line"><span class="attribute">callbackData</span>:&#123;<span class="string">"NS20180830094902957_0_11529500_1_3-2"</span>:&#123;<span class="string">"param"</span>:<span class="string">"&#123;\"</span>msgId\<span class="string">":\"</span><span class="number">4</span>a9ef86f-<span class="number">66</span>db-<span class="number">4819</span>-b98b-<span class="number">537</span>a4dca64ce\<span class="string">"&#125;"</span>,<span class="string">"type"</span>:<span class="number">2</span>,<span class="string">"targets"</span>:[<span class="string">"N6A6977416a7a77536b59675d61507c7b036074466a77"</span>]&#125;&#125;</div><div class="line"><span class="attribute">accessToken</span>:<span class="number">2324515</span>cf21b4ea2b6b916637b1a7c3b</div></pre></td></tr></table></figure></p>
+<h3 id="通知栏推送消息中的额外应用数据-1"><a href="#通知栏推送消息中的额外应用数据-1" class="headerlink" title="通知栏推送消息中的额外应用数据"></a>通知栏推送消息中的额外应用数据</h3><p>对于魅族消息推送而言，用于显示的是标题 <code>title</code> 和内容 <code>content</code>，推送服务不处理，消息中完全由应用程序自行解析的额外数据，在构造 <code>VarnishedMessage</code> 时，通过 <code>VarnishedMessage.Builder</code> 的 <code>parameters()</code> 方法设置，如下面这样：<br><figure class="highlight pony"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="type">JSONObject</span> paramJsonObject = <span class="function"><span class="keyword">new</span> <span class="title">JSONObject</span>();</span></div><div class="line"><span class="title">paramJsonObject</span>.<span class="title">put</span>("payload", message.getContent());</div><div class="line"><span class="title">paramJsonObject</span>.<span class="title">put</span>("msgId", messageUUID);</div><div class="line"></div><div class="line"><span class="title">Map</span>&lt;<span class="title">String</span>, <span class="title">String</span>&gt; <span class="title">extra</span> = <span class="title">message</span>.<span class="title">getExtra</span>();</div><div class="line"><span class="title">if</span>(<span class="type">MapUtils</span>.isNotEmpty(extra)) &#123;</div><div class="line">    <span class="title">paramJsonObject</span>.<span class="title">putAll</span>(extra);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="title">VarnishedMessage</span>.<span class="title">Builder</span> <span class="title">messageBuilder</span> = <span class="title">new</span> <span class="title">VarnishedMessage</span>.<span class="title">Builder</span>()</div><div class="line">        .<span class="title">appId</span>(<span class="type">Long</span>.valueOf(pusherConfigDto.getAppId()))</div><div class="line">        .<span class="title">title</span>(message.getTitle())</div><div class="line">        .<span class="title">content</span>(message.getAlert())</div><div class="line">        .<span class="title">clickType</span>(<span class="number">0</span>)</div><div class="line">        .<span class="title">offLine</span>(true)</div><div class="line">        .<span class="title">validTime</span>(<span class="number">24</span>)</div><div class="line">        .<span class="title">fixSpeed</span>(true)</div><div class="line">        .<span class="title">fixSpeedRate</span>(<span class="number">500</span>)</div><div class="line">        .<span class="title">suspend</span>(true)</div><div class="line">        .<span class="title">clearNoticeBar</span>(true)</div><div class="line">        .<span class="title">vibrate</span>((message.getNotifyType() &amp; <span class="title">EdsMessage</span>.<span class="title">NOTIFY_TYPE_VIBRATE</span>) != 0)</div><div class="line">        .<span class="title">lights</span>((message.getNotifyType() &amp; <span class="title">EdsMessage</span>.<span class="title">NOTIFY_TYPE_LIGHTS</span>) != 0)</div><div class="line">        .<span class="title">sound</span>((message.getNotifyType() &amp; <span class="title">EdsMessage</span>.<span class="title">NOTIFY_TYPE_SOUND</span>) != 0)</div><div class="line">        .<span class="title">parameters</span>(paramJsonObject)</div><div class="line">        .<span class="title">extra</span>(<span class="type">ExtraParam</span>.<span class="type">CALLBACK</span>.getKey(), <span class="title">pusherConfigDto</span>.<span class="title">getCallbackUrl</span>())</div><div class="line">        .<span class="title">extra</span>(<span class="type">ExtraParam</span>.<span class="type">CALLBACK_PARAM</span>.getKey(), <span class="title">JSON</span>.<span class="title">toJSONString</span>(biTag))</div><div class="line">        .<span class="title">extra</span>(<span class="type">ExtraParam</span>.<span class="type">CALLBACK_TYPE</span>.getKey(), <span class="title">CallBackType</span>.<span class="title">RECEIVE_CLICK</span>.<span class="title">getKey</span>());</div></pre></td></tr></table></figure></p>
+<p><code>parameters()</code> 方法接受一个 <code>JSONObject</code> 的参数。</p>
+<p>在 Android 端，这些数据，在实现的<code>com.meizu.cloud.pushsdk.MzPushMessageReceiver</code> 子类的回调中，通过 <code>MzPushMessage</code> 的  <code>getSelfDefineContentString()</code> 方法获得，如下面这样：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onNotificationClicked</span><span class="params">(Context context, MzPushMessage mzPushMessage)</span> </span>&#123;</div><div class="line">    DebugLogger.i(TAG, <span class="string">"onNotificationClicked title "</span>+ mzPushMessage.getTitle() + <span class="string">"content "</span></div><div class="line">            + mzPushMessage.getContent() + <span class="string">" selfDefineContentString "</span> + mzPushMessage.getSelfDefineContentString()+<span class="string">" notifyId "</span>+mzPushMessage.getNotifyId());</div><div class="line"></div><div class="line">    <span class="keyword">if</span>(!TextUtils.isEmpty(mzPushMessage.getSelfDefineContentString()))&#123;</div><div class="line">        print(context,<span class="string">" 点击自定义消息为："</span>+mzPushMessage.getSelfDefineContentString());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="华为消息推送"><a href="#华为消息推送" class="headerlink" title="华为消息推送"></a>华为消息推送</h2><p>华为消息推送<a href="https://developer.huawei.com/consumer/cn/service/hms/catalog/huaweipush_agent.html?page=hmssdk_huaweipush_api_reference_agent_s2" target="_blank" rel="external">官方文档地址</a>。</p>
+<h3 id="推送消息结构-1"><a href="#推送消息结构-1" class="headerlink" title="推送消息结构"></a>推送消息结构</h3><p><img src="https://www.wolfcstech.com/images/1315506-73a51aa013b55921.png" alt="华为推送消息载荷组成"></p>
+<h3 id="消息推送服务端操作-2"><a href="#消息推送服务端操作-2" class="headerlink" title="消息推送服务端操作"></a>消息推送服务端操作</h3><p>华为推送只提供了两个 REST 接口，分别是获得访问令牌和推送消息。</p>
+<h3 id="推送消息发送回执-2"><a href="#推送消息发送回执-2" class="headerlink" title="推送消息发送回执"></a>推送消息发送回执</h3><p>(1). 回执的安全 目前华为Push服务器和接收回执消息的 APP 服务器之间走的是HTTPS 协议，华为 Push 服务器会校验 APP 服务器提供证书的合法性，APP 服务器务必使用正式商用的HTTPS证书。</p>
+<p>(2). 回执消息的开通 a). 开通Push服务后，发送邮件到 (<a href="mailto:developer@huawei.com" target="_blank" rel="external">developer@huawei.com</a>)申请开通回执消息，邮件中需要提供应用的 AppId、接收回执消息的URL地址以及每天发送消息的总量。 b). 申请加入华为 Push 回执 QQ 群，便于后续联调功能以及沟通交流问题，QQ群号：224090622。</p>
+<p>(3). 回执消息的API 回执消息发生在系统检测到客户端有应答返回，并且有 CP 订阅了该应答结果的场景。华为Push平台和CP接收回执消息服务器使用HTTPS协议。</p>
+<p>华为推送消息的发送回执搞起来比较麻烦，详见 <a href="https://developer.huawei.com/consumer/cn/service/hms/catalog/huaweipush_agent.html?page=hmssdk_huaweipush_devguide_server_agent" target="_blank" rel="external">服务端开发指南</a> 的 <strong><em>3.3 消息回执</em></strong>。</p>
+<h3 id="通知栏推送消息中的额外应用数据-2"><a href="#通知栏推送消息中的额外应用数据-2" class="headerlink" title="通知栏推送消息中的额外应用数据"></a>通知栏推送消息中的额外应用数据</h3><p>对于华为消息推送而言，用于显示的是标题 <code>title</code> 和内容 <code>content</code>，推送服务不处理，消息中完全由应用程序自行解析的额外数据，由消息中的 <code>hps</code> -&gt; <code>ext</code> -&gt; <code>customize</code> 字段携带。</p>
+<p>在 Android 客户端，这些数据，在实现的<code>com.huawei.hms.support.api.push.PushReceiver</code> 子类的回调方法 <code>onEvent()</code> 中获得，如下面这样：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public void onEvent(<span class="built_in">Context</span> <span class="built_in">context</span>, Event event, <span class="keyword">Bundle </span><span class="keyword">extras) </span>&#123;</div><div class="line">    Intent intent = new Intent()<span class="comment">;</span></div><div class="line">    intent.setAction(ACTION_UPDATEUI)<span class="comment">;</span></div><div class="line"></div><div class="line">    int notifyId = <span class="number">0</span><span class="comment">;</span></div><div class="line">    if (Event.NOTIFICATION_OPENED.equals(event) <span class="title">||</span> Event.NOTIFICATION_CLICK_BTN.equals(event)) &#123;</div><div class="line">        notifyId = <span class="keyword">extras.getInt(BOUND_KEY.pushNotifyId, </span><span class="number">0</span>)<span class="comment">;</span></div><div class="line">        if (<span class="number">0</span> != notifyId) &#123;</div><div class="line">            NotificationManager manager = (NotificationManager) <span class="built_in">context</span></div><div class="line">                    .getSystemService(<span class="built_in">Context</span>.NOTIFICATION_SERVICE)<span class="comment">;</span></div><div class="line">            manager.cancel(notifyId)<span class="comment">;</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    String message = <span class="keyword">extras.getString(BOUND_KEY.pushMsgKey);</span></div><div class="line">    intent.putExtra(<span class="string">"log"</span>, <span class="string">"Received event,notifyId:"</span> + notifyId + <span class="string">" msg:"</span> + message)<span class="comment">;</span></div><div class="line">    callBack(intent)<span class="comment">;</span></div><div class="line">    super.onEvent(<span class="built_in">context</span>, event, <span class="keyword">extras);</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>参考文档<br><a href="https://juejin.im/entry/57b3fae71532bc0063e30c7d" target="_blank" rel="external">Android 端外推送到底有多烦？</a><br><a href="https://dev.mi.com/doc/p=1608/index.html" target="_blank" rel="external">推送服务常见问题</a><br><a href="https://github.com/android-cn/topics/issues/4" target="_blank" rel="external">Android 第三方 Push 推送方案使用调查</a><br><a href="https://www.zhihu.com/question/23507243" target="_blank" rel="external">android推送服务，目前哪家相对较好？</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android开发/" rel="tag"># Android开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/31/cpp_websocket/" rel="next" title="C++ WebSocket 库">
+                <i class="fa fa-chevron-left"></i> C++ WebSocket 库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/16/apns/" rel="prev" title="APNs 概述">
+                APNs 概述 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#通知栏消息和透传消息"><span class="nav-number">1.</span> <span class="nav-text">通知栏消息和透传消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#收费情况"><span class="nav-number">2.</span> <span class="nav-text">收费情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小米消息推送"><span class="nav-number">3.</span> <span class="nav-text">小米消息推送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#推送消息结构"><span class="nav-number">3.1.</span> <span class="nav-text">推送消息结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息推送服务端操作"><span class="nav-number">3.2.</span> <span class="nav-text">消息推送服务端操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推送消息发送回执"><span class="nav-number">3.3.</span> <span class="nav-text">推送消息发送回执</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通知栏推送消息中的额外应用数据"><span class="nav-number">3.4.</span> <span class="nav-text">通知栏推送消息中的额外应用数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#魅族消息推送"><span class="nav-number">4.</span> <span class="nav-text">魅族消息推送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#魅族推送消息组成及行为控制选项"><span class="nav-number">4.1.</span> <span class="nav-text">魅族推送消息组成及行为控制选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息推送服务端操作-1"><span class="nav-number">4.2.</span> <span class="nav-text">消息推送服务端操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推送消息发送回执-1"><span class="nav-number">4.3.</span> <span class="nav-text">推送消息发送回执</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通知栏推送消息中的额外应用数据-1"><span class="nav-number">4.4.</span> <span class="nav-text">通知栏推送消息中的额外应用数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#华为消息推送"><span class="nav-number">5.</span> <span class="nav-text">华为消息推送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#推送消息结构-1"><span class="nav-number">5.1.</span> <span class="nav-text">推送消息结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息推送服务端操作-2"><span class="nav-number">5.2.</span> <span class="nav-text">消息推送服务端操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推送消息发送回执-2"><span class="nav-number">5.3.</span> <span class="nav-text">推送消息发送回执</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通知栏推送消息中的额外应用数据-2"><span class="nav-number">5.4.</span> <span class="nav-text">通知栏推送消息中的额外应用数据</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

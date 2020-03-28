@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,ROS," />
+
+
+<meta name="description" content="LEGO 的 EV3 是一个极好的游戏工具。它的标准编程方式是 LEGO 的图形化编程工具。你可以编写程序，把它们传到你的 EV3 brick 上，然后启动它们。但还有另外一种与你的 EV3 交互的方式。把它看作一个服务器并给它发送命令，命令将以数据和/或行为来应答。在这种情形下，你的程序所运行的机器是客户端。这打开了迷人的新视角。如果程序运行在你的智能手机上，你将获得很好的交互性和便利性。如果你">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EV3 直接命令 - 第一课 无为的艺术">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/10/29/lego_ev3_direct_command_001/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="LEGO 的 EV3 是一个极好的游戏工具。它的标准编程方式是 LEGO 的图形化编程工具。你可以编写程序，把它们传到你的 EV3 brick 上，然后启动它们。但还有另外一种与你的 EV3 交互的方式。把它看作一个服务器并给它发送命令，命令将以数据和/或行为来应答。在这种情形下，你的程序所运行的机器是客户端。这打开了迷人的新视角。如果程序运行在你的智能手机上，你将获得很好的交互性和便利性。如果你">
+<meta property="og:updated_time" content="2018-11-01T07:27:10.429Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EV3 直接命令 - 第一课 无为的艺术">
+<meta name="twitter:description" content="LEGO 的 EV3 是一个极好的游戏工具。它的标准编程方式是 LEGO 的图形化编程工具。你可以编写程序，把它们传到你的 EV3 brick 上，然后启动它们。但还有另外一种与你的 EV3 交互的方式。把它看作一个服务器并给它发送命令，命令将以数据和/或行为来应答。在这种情形下，你的程序所运行的机器是客户端。这打开了迷人的新视角。如果程序运行在你的智能手机上，你将获得很好的交互性和便利性。如果你">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/10/29/lego_ev3_direct_command_001/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>EV3 直接命令 - 第一课 无为的艺术 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/10/29/lego_ev3_direct_command_001/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">EV3 直接命令 - 第一课 无为的艺术</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-29T20:05:49+08:00">2018-10-29</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/29/lego_ev3_direct_command_001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/29/lego_ev3_direct_command_001/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/10/29/lego_ev3_direct_command_001/" class="leancloud_visitors" data-flag-title="EV3 直接命令 - 第一课 无为的艺术">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>LEGO 的 EV3 是一个极好的游戏工具。它的标准编程方式是 LEGO 的图形化编程工具。你可以编写程序，把它们传到你的 EV3 brick 上，然后启动它们。但还有另外一种与你的 EV3 交互的方式。把它看作一个服务器并给它发送命令，命令将以数据和/或行为来应答。在这种情形下，你的程序所运行的机器是客户端。这打开了迷人的新视角。如果程序运行在你的智能手机上，你将获得很好的交互性和便利性。如果你的客户端是一个 PC 或笔记本电脑，你将获得舒服的键盘和显示器。另一种新选项是在一个机器人中结合多个 EV3。一个客户端与多个服务器通信，这允许机器人具有无限多个马达和传感器。或者把你的 EV3 当做一台机器，生产数据的那种。客户端可以持续地从 EV3 的传感器接收数据，这也将打开新的机会之门。如果你想进入这个新世界，你不得不使用 EV3 的直接命令，这需要你的一些工作。如果你准备投资它，则继续阅读，否则，开心地玩你的 EV3 并等待其它人做出很酷的新应用吧。<br><a id="more"></a><br>在我们开始讨论正式的内容之前，我们先瞥一眼 EV3 的通信协议和 LEGO 直接命令的特性。你的 EV3 提供了三种通信类型，蓝牙，WiFI 和 USB。蓝牙和 USB 无需其它额外的设备即可使用，通过 WiFi 通信需要一个适配器。所有三种都允许你开发应用程序，运行在任何计算机上与你的 EV3 brick 通信。也许你了解 EV3 的前身，NXT 及其通信协议。它提供了大约 20 个系统命令，类似于函数调用。LEGO 改变了它的理念，EV3 以机器码提供命令语法。一方面，这意味着实现真正算法的自由，但另一方面，它变得更难入门。</p>
+<p>我发现，官方文档是纯粹的技术文档。他们缺乏动机和教育的方面。我希望这份文档能成为你深入你的 EV3 的适当入口。如果你已经是一个程序员，或试图成为一个程序员，你将沉浸在位和字节的世界。如果不是，那可能很困难，但唯一的选择是，保持双手分开。试一试，在与乐高 EV3 的有效沟通之下，你将学到很多关于机器代码，即所有计算机的基础的知识。</p>
+<h1 id="要知道的文档"><a href="#要知道的文档" class="headerlink" title="要知道的文档"></a>要知道的文档</h1><p>LEGO 已经发布了很好很详细的文档，你可以在这里下载：<a href="http://www.lego.com/en-gb/mindstorms/downloads" target="_blank" rel="external">http://www.lego.com/en-gb/mindstorms/downloads</a>。对于我们的目的，你绝对需要查看文档，你可以在标题为 <em>Advanced Users - Developer Kits（PC / MAC）</em> 的标题下找到。<em><a href="https://www.lego.com/r/www/r/mindstorms/-/media/franchises/mindstorms%202014/downloads/firmware%20and%20software/advanced/lego%20mindstorms%20ev3%20firmware%20developer%20kit.pdf?l.r2=830923294" target="_blank" rel="external">EV3 Firmware Developer Kit</a></em> 是 LEGO EV3 直接命令的参考书。我希望你能深入阅读它。</p>
+<p>有一个 C# 的通信库，它使用直接命令与 LEGO EV3 通信。如果你喜欢使用开箱即用的软件，并且喜欢 C#，这可能是你的选择：<a href="http://www.monobrick.dk。" target="_blank" rel="external">http://www.monobrick.dk。</a></p>
+<p>我最初的想法是不发布任何源码。当功能逐步增长时，编程更有趣。Bugs 是游戏的一部分，查找 bugs 很难，但它是每个编程人员的日常生活。简短的结论，代码增长到一定的规模和复杂性时，最初的想法变得不现实。我已经在 Github 上发布了代码，你可以在这里下载： <a href="https://github.com/ChristophGaukel/ev3-python3" target="_blank" rel="external">ev3-python3</a>。</p>
+<h1 id="第一课-无为的艺术"><a href="#第一课-无为的艺术" class="headerlink" title="第一课 无为的艺术"></a>第一课 无为的艺术</h1><p>你做到了，你真的想介入，那很好！这一课是关于非常基本的通信的知识。我们将实现第一个发送-应答循环。通过 WiFi，蓝牙或 USB 给你的 EV3 发送信息，你将获得一个定义良好的应答。不要屏住呼吸，我们不会从一个令人惊奇的应用程序开始。相反，它什么都不做。这听起来比实际要做的少，但如果你设法做到这一点，向后倾斜并感到快乐，你就在路上。</p>
+<h2 id="比特和字节命名的简短介绍"><a href="#比特和字节命名的简短介绍" class="headerlink" title="比特和字节命名的简短介绍"></a>比特和字节命名的简短介绍</h2><p>也许你已经知道了如何编写二进制和十六进制数字，大小尾端的含义等等。如果你真的可以把值 156 写为一个小尾端的 4 字节整数表示格式，则你可以跳过这一节。如果不能，你需要阅读它，因为你真的需要知道它。</p>
+<p>让我们从基础开始！几乎所有的现代计算机都将 8 位组为 1 个字节，并且在内存中按字节寻址（你的 EV3 是一台现代计算机，因而也是这样的）。在下文中我们使用如下表示法表示二进制数字：<code>0b 1001 1100</code>。</p>
+<p>前导的 <code>0b</code> 告诉我们，后面是二进制的数字，每个字节的 8 个数字被分为 4 和 4 的两个半个字节。它是数字 156 的二进制表示法，你可以把它看作是：156 = 1<em>128 + 0</em>64 + 0<em>32 + 1</em>16 + 1<em>8 + 1</em>4 + 0<em>2 + 0</em>1。可以对相同字节进行另外的解释。它可以被看作 8 个标记的序列，或可以是符号 £ 的 ASCII 码。解释依赖于上下文。目前我们专注于数字。</p>
+<p>二进制表示法非常长，因此常见的习惯是把半个字节写为 16 进制数，其中字母 A 到 F 表示数字 10 到 15。十六进制表示法比较紧凑，它与二进制表示法的转换很容易。这是因为一个十六进制数表示半个字节。十六进制（这里的值是 156）表示是： 0x 9C。你可以把它看作是：156 = 9<em>16 + 12</em>1。前导的 0x 告诉我们，后面的是十六进制数。因为它的紧凑，我们可以编写和阅读更大的数字。作为一个 4 字节整数，值 156 被写作：0x 00 00 00 9C。</p>
+<p>我们将用冒号 “:” 或竖线 “|” 把字节分开。我们使用竖线表示高级分隔，使用冒号表示低级的。我们将把值为 156 的 2 字节整数写作：0x|00:9C|。现在我们可以在一行中保存值列表。255（一个无符号 1 字节整数），156（2 字节整数）和 65536（4 字节整数）的序列可以写为：0x|FF|00:9C|00:01:00:00|。</p>
+<p>那负数呢？大多数计算机语言区分有符号和无符号整数。如果整数是有符号的，则它们的第一位是负号标志，整数是另一个范围的。有符号 1 字节整数的范围是 -128 到 127，有符号 2 字节整数的范围是 -32,768 到 32,767 等等。负数值的计算方法是最小值（-128，-32,768 等）加上其余非符号标志的值。有符号 1 字节整数的最小值，-128 写为 0b 1000 0000 或 0x|80|，有符号 2 字节整数值 -1 (-32,768 + 32,767) 为：0b 1111 1111 1111 1111 或 0x|FF:FF|</p>
+<p>那什么是 <a href="https://en.wikipedia.org/wiki/Endianness" target="_blank" rel="external">小尾端</a> 呢？OK，我不再保守这个秘密了。小尾端格式反转字节的位置（你常常使用的，被称作 <em>大尾端</em>）。2 字节整数值 156 的小尾端格式写作：0x|9C:00|。</p>
+<p>也许这听起来像个糟糕的玩笑，但非常抱歉，EV3 直接命令读和写所有数字都是以小尾端进行的，那不是我的错。但我可以给你一些安慰。首先，本课程使用数字。其次，存在管理小尾端数的好工具。在 Python 中，你可以使用 <code>struct</code> 模块，在 Java 中，<code>ByteBuffer</code> 可能是你选择的对象。</p>
+<h2 id="什么都不做的直接命令"><a href="#什么都不做的直接命令" class="headerlink" title="什么都不做的直接命令"></a>什么都不做的直接命令</h2><p>第一个例子展示所有可能的直接命令中最简单的那个。你将向你的 EV3 发送一条消息，并期待它有所回应。让我们看一下要发送的消息，它由如下 8 个字节组成：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">-------------------------      </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\ </span>    </div><div class="line">  -------------------------    </div><div class="line">0x|06:00|2A:00|00|00:00|01|    </div><div class="line">  -------------------------    </div><div class="line">   <span class="symbol">\ </span>6   <span class="symbol">\ </span>42  <span class="symbol">\R</span>e<span class="symbol">\ </span>0,0 <span class="symbol">\N</span> <span class="symbol">\ </span>  </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\o</span> <span class="symbol">\ </span> </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span></div><div class="line">      -------------------------</div></pre></td></tr></table></figure></p>
+<p>消息本身是以 0x 开头的那一行。在消息的顶部，你会看到关于消息对应部分的类型的一些注释。底部显示关于其值的注释。消息的 8 个字节由如下部分组成：</p>
+<ul>
+<li><p><strong>消息长度</strong>(字节 0，1)：开头的两个字节不是直接命令本身的组成部分。它们是通信协议的一部分，在 EV3 的情况下可以是 Wifi，蓝牙或 USB。长度被编码为小尾端格式的 2 字节无符号整数，因此 <code>0x|06:00|</code> 表示值 6。</p>
+</li>
+<li><p><strong>消息计数器</strong>(字节 2，3)：接下来的两个字节是这个直接命令的指纹。消息计数器将包含在应答中，并可以用来匹配直接命令和它的应答。这也是一个小尾端格式的 2 字节无符号整数。在我们的例子中把消息计数器设置为 <code>0x|2A:00|</code>，其值为 42。</p>
+</li>
+<li><p><strong>消息类型</strong>(字节 4)：它可以是如下的两个值之一：</p>
+<ul>
+<li>DIRECT_COMMAND_REPLY = 0x|00|</li>
+<li>DIRECT_COMMAND_NO_REPLY = 0x|80|<br>在我们的例子中我们希望 EV3 应答消息。</li>
+</ul>
+</li>
+<li><p><strong>头部</strong>(字节 5，6)：接下来的两个字节，第一个操作之前最后的部分，是头部。它包含了两个数字，它们定义了直接命令的内存大小（是的，它是复数，我们有两个内存，一个局部的和一个全局的）。我们将很快回到这个内存大小的具体细节。此时我们很幸运，我们的命令不需要任何内存，因而我们把头部设置为 <code>0x|00:00|</code>。</p>
+</li>
+<li><p><strong>操作</strong>(从字节 7 开始)：在我们的例子中是单个字节，它表示：<code>opNOP</code> = <code>0x|01|</code>，什么也不做，EV3 的 idle 操作。</p>
+</li>
+</ul>
+<h2 id="给-EV3-发送消息"><a href="#给-EV3-发送消息" class="headerlink" title="给 EV3 发送消息"></a>给 EV3 发送消息</h2><p>我们的任务是，发送上面描述的消息给 EV3。如何做到呢？你可以在三种通信协议中选择一种，蓝牙，Wifi 和 USB，且你可以选择支持至少一种通信协议的任何编程语言。下面我展示 Python 和 Java 的例子。如果没有你喜爱的语言，将程序翻译成你最喜爱的计算机语言并发送给我会很棒。它们将被发布在这里。</p>
+<h3 id="蓝牙"><a href="#蓝牙" class="headerlink" title="蓝牙"></a>蓝牙</h3><p>你需要访问开启了蓝牙的计算机，且你需要开启你的 EV3 上的蓝牙。接下来你需要为两个设备做配对。这可以从 EV3 或你的计算机发起。EV3 的用户指南对此过程有详细描述。如需帮助，你可以在网上找到教程，这里有 LEGO 页面的链接：<a href="http://www.lego.com/en-gb/mindstorms/support/" target="_blank" rel="external">http://www.lego.com/en-gb/mindstorms/support/</a>。配对过程将向你展示你的 EV3 的 MAC 地址。你需要注意它。此外，你也可以在你的 EV3 的显示器中，在 <em>Brick Info</em> / <em>ID</em> 下面读取 MAC 地址，这里展示的是 EV3 MAC 地址的没有冒号分割的十六进制形式，如 001653602591，其 MAC 地址为 00:16:53:60:25:91。</p>
+<h4 id="python"><a href="#python" class="headerlink" title="python"></a>python</h4><p>你需要完成如下的步骤：</p>
+<ul>
+<li>把代码复制到名为 <em>EV3_do_nothing_bluetooth.py</em> 的文件中。</li>
+<li>把 MAC 地址从 <code>00:16:53:42:2B:99</code> 变为你的 EV3 的值。</li>
+<li>打开一个终端并切换到你的程序的目录。</li>
+<li>通过键入 <code>python3 EV3_do_nothing_bluetooth.py</code> 运行它。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> socket</div><div class="line"><span class="keyword">import</span> struct</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">EV3</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, host: str)</span>:</span></div><div class="line">        self._socket = socket.socket(</div><div class="line">            socket.AF_BLUETOOTH,</div><div class="line">            socket.SOCK_STREAM,</div><div class="line">            socket.BTPROTO_RFCOMM</div><div class="line">        )</div><div class="line">        self._socket.connect((host, <span class="number">1</span>))</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__del__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> isinstance(self._socket, socket.socket):</div><div class="line">            self._socket.close()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_direct_cmd</span><span class="params">(self, ops: bytes, local_mem: int=<span class="number">0</span>, global_mem: int=<span class="number">0</span>)</span> -&gt; bytes:</span></div><div class="line">        cmd = <span class="string">b''</span>.join([</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, len(ops) + <span class="number">5</span>),</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, <span class="number">42</span>),</div><div class="line">            DIRECT_COMMAND_REPLY,</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, local_mem*<span class="number">1024</span> + global_mem),</div><div class="line">            ops</div><div class="line">        ])</div><div class="line">        self._socket.send(cmd)</div><div class="line">        print_hex(<span class="string">'Sent'</span>, cmd)</div><div class="line">        reply = self._socket.recv(<span class="number">5</span> + global_mem)</div><div class="line">        print_hex(<span class="string">'Recv'</span>, reply)</div><div class="line">        <span class="keyword">return</span> reply</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_hex</span><span class="params">(desc: str, data: bytes)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    print(desc + <span class="string">' 0x|'</span> + <span class="string">':'</span>.join(<span class="string">'&#123;:02X&#125;'</span>.format(byte) <span class="keyword">for</span> byte <span class="keyword">in</span> data) + <span class="string">'|'</span>)</div><div class="line"></div><div class="line">DIRECT_COMMAND_REPLY = <span class="string">b'\x00'</span></div><div class="line">opNop = <span class="string">b'\x01'</span></div><div class="line">my_ev3 = EV3(<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">ops_nothing = opNop</div><div class="line">my_ev3.send_direct_cmd(ops_nothing)</div></pre></td></tr></table></figure>
+<p><a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="external">socket</a> 的实现依赖于你计算机的操作系统。如果不支持 <code>AF_BLUETOOTH</code> (你将看到一条错误消息如 <em>AttributeError: module ‘socket’ has no attribute ‘AF_BLUETOOTH’</em>)，你可以使用 <code>pybluez</code>，那意味着你需要导入 <code>bluetooth</code> 而不是 <code>socket</code>。在我的情况下那是说：</p>
+<ul>
+<li><p>用 pip3 安装 <a href="https://github.com/karulis/pybluez" target="_blank" rel="external">pybluez</a>：<code>sudo pip3 install pybluez</code><br>安装 pybluez 有两个前提条件：一是系统中配置的当前默认 Python 是 Python 3，这这个配置可以通过 <code>$ sudo update-alternatives --config python</code> 完成；二是已经安装了蓝牙开发包 <code>libbluetooth-dev</code>，这可以通过执行命令 <code>$ sudo apt-get install libbluetooth-dev</code> 完成，否则在安装 <code>pybluez</code> 时将报出如下错误：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">    creating build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5</span></div><div class="line">    creating build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    copying bluetooth/osx.py -&gt; build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    copying bluetooth/__init__.py -&gt; build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    copying bluetooth/btcommon.py -&gt; build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    copying bluetooth/msbt.py -&gt; build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    copying bluetooth/widcomm.py -&gt; build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    copying bluetooth/ble.py -&gt; build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    copying bluetooth/bluez.py -&gt; build/<span class="class"><span class="keyword">lib</span>.<span class="title">linux</span>-<span class="title">x86_64</span>-3.5/<span class="title">bluetooth</span></span></div><div class="line">    running build_ext</div><div class="line">    building <span class="string">'bluetooth._bluetooth'</span> extension</div><div class="line">    creating build/temp.linux-x86_64-<span class="number">3.5</span></div><div class="line">    creating build/temp.linux-x86_64-<span class="number">3.5</span>/bluez</div><div class="line">    x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=<span class="number">2</span> -fPIC -I./port3 -I/usr/<span class="keyword">include</span>/python3.<span class="number">5</span>m -c bluez/btmodule.c -o build/temp.linux-x86_64-<span class="number">3.5</span>/bluez/btmodule.o</div><div class="line">    In file included from bluez/btmodule.<span class="symbol">c:</span><span class="number">20</span>:<span class="number">0</span>:</div><div class="line">    bluez/btmodule.<span class="symbol">h:</span><span class="number">5</span>:<span class="number">33</span>: fatal <span class="symbol">error:</span> bluetooth/bluetooth.<span class="symbol">h:</span> 没有那个文件或目录</div><div class="line">    compilation terminated.</div><div class="line">    <span class="symbol">error:</span> command <span class="string">'x86_64-linux-gnu-gcc'</span> failed <span class="keyword">with</span> exit status <span class="number">1</span></div><div class="line">    </div><div class="line">    ----------------------------------------</div><div class="line">Command <span class="string">"/usr/bin/python -u -c "</span>import setuptools, tokenize;__file__=<span class="string">'/tmp/pip-install-mk3f5p_f/pybluez/setup.py'</span>;f=getattr(tokenize, <span class="string">'open'</span>, open)(__file__);code=f.read().replace(<span class="string">'\r\n'</span>, <span class="string">'\n'</span>);f.close();exec(compile(code, __file__, <span class="string">'exec'</span>))<span class="string">" install --record /tmp/pip-record-gpk9_xhc/install-record.txt --single-version-externally-managed --compile"</span> failed <span class="keyword">with</span> error code <span class="number">1</span> in /tmp/pip-install-mk3f5p_f/pybluez/</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改程序：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> bluetooth</div><div class="line"><span class="keyword">import</span> struct</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">EV3</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, host: str)</span>:</span></div><div class="line">        self._socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)</div><div class="line">        self._socket.connect((host, <span class="number">1</span>))</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__del__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> isinstance(self._socket, bluetooth.BluetoothSocket):</div><div class="line">            self._socket.close()</div><div class="line">...</div></pre></td></tr></table></figure>
+</li>
+<li><p>运行程序</p>
+</li>
+<li><p>关于 <code>struct.pack</code> 的说明<br><code>struct</code> 模块的 <code>pack()</code> 函数的原型如下：</p>
+</li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct.pack(format, </span><span class="built_in">v1</span>, <span class="built_in">v2</span>, ...)</div></pre></td></tr></table></figure>
+<p>即第一个参数是格式串，后面的是需要打包的数值。</p>
+<p>其中的格式串 <code>format</code> 由两部分组成，分别是表示字节序/大小/对齐方式的字符和格式字符。表示字节序/大小/对齐方式的各字符含义如下表：</p>
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th>字节序</th>
+<th>大小</th>
+<th>对齐方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@</td>
+<td>本地的</td>
+<td>本地的</td>
+<td>本地的</td>
+</tr>
+<tr>
+<td>=</td>
+<td>本地的</td>
+<td>标准的</td>
+<td>none</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>小尾端</td>
+<td>标准的</td>
+<td>none</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>大尾端</td>
+<td>标准的</td>
+<td>none</td>
+</tr>
+<tr>
+<td>!</td>
+<td>网络（= 大尾端）</td>
+<td>标准的</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>格式字符的含义如下表：</p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>C 类型</th>
+<th>Python 类型</th>
+<th>标准大小</th>
+<th>注意</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x</td>
+<td>pad byte</td>
+<td>no value</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>c</td>
+<td>char</td>
+<td>bytes of length 1</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>b</td>
+<td>signed char</td>
+<td>integer</td>
+<td>1</td>
+<td>(1),(3)</td>
+</tr>
+<tr>
+<td>B</td>
+<td>unsigned char</td>
+<td>integer</td>
+<td>1</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td>?</td>
+<td>_Bool</td>
+<td>bool</td>
+<td>1</td>
+<td>(1)</td>
+</tr>
+<tr>
+<td>h</td>
+<td>short</td>
+<td>integer</td>
+<td>2</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td>H</td>
+<td>unsigned short</td>
+<td>integer</td>
+<td>2</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td>i</td>
+<td>int</td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td>I</td>
+<td>unsigned int</td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td>l</td>
+<td>long</td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td>L</td>
+<td>unsigned long</td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td>q</td>
+<td>long long</td>
+<td>integer</td>
+<td>8</td>
+<td>(2), (3)</td>
+</tr>
+<tr>
+<td>Q</td>
+<td>unsigned long long</td>
+<td>integer</td>
+<td>8</td>
+<td>(2), (3)</td>
+</tr>
+<tr>
+<td>n</td>
+<td>ssize_t</td>
+<td>integer</td>
+<td></td>
+<td>(4)</td>
+</tr>
+<tr>
+<td>N</td>
+<td>size_t</td>
+<td>integer</td>
+<td></td>
+<td>(4)</td>
+</tr>
+<tr>
+<td>e</td>
+<td>(7)</td>
+<td>float</td>
+<td>2</td>
+<td>(5)</td>
+</tr>
+<tr>
+<td>f</td>
+<td>float</td>
+<td>float</td>
+<td>4</td>
+<td>(5)</td>
+</tr>
+<tr>
+<td>d</td>
+<td>double</td>
+<td>float</td>
+<td>8</td>
+<td>(5)</td>
+</tr>
+<tr>
+<td>s</td>
+<td>char[]</td>
+<td>bytes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>p</td>
+<td>char[]</td>
+<td>bytes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>P</td>
+<td>void *</td>
+<td>integer</td>
+<td></td>
+<td>(6)</td>
+</tr>
+</tbody>
+</table>
+<p>关于 <code>struct</code> 模块更详细的说明可以参考其<a href="https://docs.python.org/3/library/struct.html" target="_blank" rel="external">官方文档</a>。</p>
+<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><p>与蓝牙设备通信，我的选择是 <em>bluecove</em>。下载 Java 包 <em>bluecove-2.1.0.jar</em>（在 Unix 上也可以是 <em>bluecove-gpl-2.1.0.jar</em>）之后，你可以把它们添加到你的 classpath 上。在我的 Unix 机器上，这通过以下命令完成：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">export <span class="keyword">CLASSPATH</span>=$<span class="keyword">CLASSPATH</span>:.<span class="regexp">/bluecove-2.1.0.jar:./</span>bluecove-gpl-<span class="number">2.1</span>.<span class="number">0</span>.jar</div></pre></td></tr></table></figure></p>
+<p><em>bluecove-2.1.0.jar</em> 的下载地址为 <a href="https://mvnrepository.com/artifact/net.sf.bluecove/bluecove/2.1.0，*bluecove-gpl-2.1.0.jar*" target="_blank" rel="external">https://mvnrepository.com/artifact/net.sf.bluecove/bluecove/2.1.0，*bluecove-gpl-2.1.0.jar*</a> 的下载地址为 <a href="https://mvnrepository.com/artifact/net.sf.bluecove/bluecove-gpl/2.1.0。" target="_blank" rel="external">https://mvnrepository.com/artifact/net.sf.bluecove/bluecove-gpl/2.1.0。</a></p>
+<p>然后，执行下面的步骤：</p>
+<ul>
+<li>把下面的代码拷贝到名为 <em>EV3_do_nothing_bluetooth.java</em> 的文件中。</li>
+<li>把 MAC 地址由 <code>001653422B99</code> 修改为你的 EV3 的值。</li>
+<li>打开一个终端并切换到你的程序的目录。</li>
+<li>键入 <code>javac EV3_do_nothing_bluetooth.java</code> 编译它。</li>
+<li>键入 <code>java EV3_do_nothing_bluetooth</code> 运行它。</li>
+</ul>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.io.*;</div><div class="line"><span class="keyword">import</span> javax.microedition.io.*;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</div><div class="line"><span class="keyword">import</span> java.nio.ByteOrder;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.*;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> EV3_do_nothing_bluetooth &#123;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">String</span> mac_addr = <span class="string">"001653422B99"</span>;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  opNop                        = (<span class="keyword">byte</span>)  <span class="number">0x01</span>;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  DIRECT_COMMAND_REPLY         = (<span class="keyword">byte</span>)  <span class="number">0x00</span>;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> InputStream in;</div><div class="line">    <span class="keyword">static</span> OutputStream out;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> connectBluetooth ()</div><div class="line"> throws IOException &#123;</div><div class="line">     <span class="keyword">String</span> s = <span class="string">"btspp://"</span> + mac_addr + <span class="string">":1"</span>;</div><div class="line">     StreamConnection c = (StreamConnection) Connector.<span class="built_in">open</span>(s);</div><div class="line">     in = c.openInputStream();</div><div class="line">     out = c.openOutputStream();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer sendDirectCmd (ByteBuffer operations,</div><div class="line">         <span class="keyword">int</span> local_mem, <span class="keyword">int</span> global_mem)</div><div class="line"> throws IOException &#123;</div><div class="line"> ByteBuffer <span class="built_in">buffer</span> = ByteBuffer.allocateDirect(operations.<span class="built_in">position</span>() + <span class="number">7</span>);</div><div class="line"> <span class="built_in">buffer</span>.order(ByteOrder.LITTLE_ENDIAN);</div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) (operations.<span class="built_in">position</span>() + <span class="number">5</span>));   <span class="comment">// length</span></div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) <span class="number">42</span>);                            <span class="comment">// counter</span></div><div class="line"> <span class="built_in">buffer</span>.<span class="built_in">put</span>(DIRECT_COMMAND_REPLY);                       <span class="comment">// type</span></div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) (local_mem*<span class="number">1024</span> + global_mem)); <span class="comment">// header</span></div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i &lt; operations.<span class="built_in">position</span>(); i++) &#123;         <span class="comment">// operations</span></div><div class="line">     <span class="built_in">buffer</span>.<span class="built_in">put</span>(operations.<span class="built_in">get</span>(i));</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="keyword">byte</span>[] cmd = <span class="keyword">new</span> <span class="keyword">byte</span> [<span class="built_in">buffer</span>.<span class="built_in">position</span>()];</div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="built_in">buffer</span>.<span class="built_in">position</span>(); i++) cmd[i] = <span class="built_in">buffer</span>.<span class="built_in">get</span>(i);</div><div class="line"> out.<span class="built_in">write</span>(cmd);</div><div class="line"> printHex(<span class="string">"Sent"</span>, <span class="built_in">buffer</span>);</div><div class="line"></div><div class="line"> <span class="keyword">byte</span>[] reply = <span class="keyword">new</span> <span class="keyword">byte</span>[global_mem + <span class="number">5</span>];</div><div class="line"> in.<span class="built_in">read</span>(reply);</div><div class="line"> <span class="built_in">buffer</span> = ByteBuffer.wrap(reply);</div><div class="line"> <span class="built_in">buffer</span>.<span class="built_in">position</span>(reply.length);</div><div class="line"> printHex(<span class="string">"Recv"</span>, <span class="built_in">buffer</span>);</div><div class="line"></div><div class="line"> <span class="built_in">return</span> <span class="built_in">buffer</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> printHex(<span class="keyword">String</span> desc, ByteBuffer <span class="built_in">buffer</span>) &#123;</div><div class="line"> System.out.<span class="built_in">print</span>(desc + <span class="string">" 0x|"</span>);</div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i= <span class="number">0</span>; i &lt; <span class="built_in">buffer</span>.<span class="built_in">position</span>() - <span class="number">1</span>; i++) &#123;</div><div class="line">     System.out.printf(<span class="string">"%02X:"</span>, <span class="built_in">buffer</span>.<span class="built_in">get</span>(i));</div><div class="line"> &#125;</div><div class="line"> System.out.printf(<span class="string">"%02X|"</span>, <span class="built_in">buffer</span>.<span class="built_in">get</span>(<span class="built_in">buffer</span>.<span class="built_in">position</span>() - <span class="number">1</span>));</div><div class="line"> System.out.<span class="built_in">println</span>();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main (<span class="keyword">String</span> args[] ) &#123;</div><div class="line"> <span class="built_in">try</span> &#123;</div><div class="line">     connectBluetooth();</div><div class="line"></div><div class="line">     ByteBuffer operations = ByteBuffer.allocateDirect(<span class="number">1</span>);</div><div class="line">     operations.<span class="built_in">put</span>(opNop);</div><div class="line"></div><div class="line">     ByteBuffer reply = sendDirectCmd(operations, <span class="number">0</span>, <span class="number">0</span>);</div><div class="line"> &#125;</div><div class="line"> <span class="built_in">catch</span> (Exception e) &#123;</div><div class="line">     e.printStackTrace(System.err);</div><div class="line"> &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这就是一个普通的 Java 应用，可以采用自己顺手的构建工具和 IDE。引入 <code>bluecove</code> 和 <code>bluecove-gpl</code> 的 Maven 依赖如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.bluecove<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>bluecove<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.bluecove<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>bluecove-gpl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<h3 id="Wifi"><a href="#Wifi" class="headerlink" title="Wifi"></a>Wifi</h3><p>你需要一个 Wifi 适配器将你的 EV3 连接到你的本地网络。下面文档的第一部分描述了这个过程：<a href="http://www.monobrick.dk/guides/how-to-establish-a-wifi-connection-with-the-ev3-brick/" target="_blank" rel="external">http://www.monobrick.dk/guides/how-to-establish-a-wifi-connection-with-the-ev3-brick/</a>。现在你的 EV3 是本地网络的一部分，且具有一个网络地址了。从网络中的所有机器上你都可以与之通信。如上面提到的文档所描述的那样，需要如下步骤与 EV3 建立 TCP/IP 连接：</p>
+<ul>
+<li>在端口 3015 上监听来自于 EV3 的 UDP 广播。</li>
+<li>向 EV3 发回一个 UDP 消息使它接受一个 TCP/IP 连接。</li>
+<li>在端口 5555 上建立一个 TCP/IP 连接。</li>
+<li>通过 TCP/IP 给 EV3 发送一条解锁消息。</li>
+</ul>
+<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h4><p>你需要完成如下步骤：</p>
+<ul>
+<li>把代码复制到名为 <em>EV3_do_nothing_wifi.py</em> 的文件中。</li>
+<li>打开一个终端，并切换到你的程序的目录。</li>
+<li>键入 <code>python3 EV3_do_nothing_wifi.py</code> 运行它。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> socket</div><div class="line"><span class="keyword">import</span> struct</div><div class="line"><span class="keyword">import</span> re</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">EV3</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, host: str)</span>:</span></div><div class="line">        <span class="comment"># listen on port 3015 for a UDP broadcast from the EV3</span></div><div class="line">        UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</div><div class="line">        UDPSock.bind((<span class="string">''</span>, <span class="number">3015</span>))</div><div class="line">        data, addr = UDPSock.recvfrom(<span class="number">67</span>)</div><div class="line"></div><div class="line">        <span class="comment"># pick serial number, port, name and protocol</span></div><div class="line">        <span class="comment"># from the broadcast message</span></div><div class="line">        matcher = re.search(<span class="string">'Serial-Number: (\w*)\s\n'</span> +</div><div class="line">                            <span class="string">'Port: (\d&#123;4,4&#125;)\s\n'</span> +</div><div class="line">                            <span class="string">'Name: (\w+)\s\n'</span> +</div><div class="line">                            <span class="string">'Protocol: (\w+)\s\n'</span>,</div><div class="line">                            data.decode(<span class="string">'utf-8'</span>))</div><div class="line">        serial_number = matcher.group(<span class="number">1</span>)</div><div class="line">        port = matcher.group(<span class="number">2</span>)</div><div class="line">        name = matcher.group(<span class="number">3</span>)</div><div class="line">        protocol = matcher.group(<span class="number">4</span>)</div><div class="line">        <span class="keyword">if</span> serial_number.upper() != host.replace(<span class="string">':'</span>, <span class="string">''</span>).upper():</div><div class="line">            self._socket = <span class="keyword">None</span></div><div class="line">            <span class="keyword">raise</span> ValueError(<span class="string">'found ev3 but not '</span> + host)</div><div class="line"></div><div class="line">        <span class="comment"># Send an UDP message back to the EV3</span></div><div class="line">        <span class="comment"># to make it accept a TCP/IP connection</span></div><div class="line">        UDPSock.sendto(<span class="string">' '</span>.encode(<span class="string">'utf-8'</span>), (addr[<span class="number">0</span>], int(port)))</div><div class="line">        UDPSock.close()</div><div class="line"></div><div class="line">        <span class="comment"># Establish a TCP/IP connection with EV3s address and port</span></div><div class="line">        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</div><div class="line">        self._socket.connect((addr[<span class="number">0</span>], int(port)))</div><div class="line"></div><div class="line">        <span class="comment"># Send an unlock message to the EV3 over TCP/IP</span></div><div class="line">        msg = <span class="string">''</span>.join([</div><div class="line">            <span class="string">'GET /target?sn='</span> + serial_number + <span class="string">'VMTP1.0\n'</span>,</div><div class="line">            <span class="string">'Protocol: '</span> + protocol</div><div class="line">        ])</div><div class="line">        self._socket.send(msg.encode(<span class="string">'utf-8'</span>))</div><div class="line">        reply = self._socket.recv(<span class="number">16</span>).decode(<span class="string">'utf-8'</span>)</div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> reply.startswith(<span class="string">'Accept:EV340'</span>):</div><div class="line">            <span class="keyword">raise</span> IOError(<span class="string">'No wifi connection to '</span> + name + <span class="string">' established'</span>)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__del__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> isinstance(self._socket, socket.socket):</div><div class="line">            self._socket.close()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_direct_cmd</span><span class="params">(self, ops: bytes, local_mem: int=<span class="number">0</span>, global_mem: int=<span class="number">0</span>)</span> -&gt; bytes:</span></div><div class="line">        cmd = <span class="string">b''</span>.join([</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, len(ops) + <span class="number">5</span>),</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, <span class="number">42</span>),</div><div class="line">            DIRECT_COMMAND_REPLY,</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, local_mem*<span class="number">1024</span> + global_mem),</div><div class="line">            ops</div><div class="line">        ])</div><div class="line">        self._socket.send(cmd)</div><div class="line">        print_hex(<span class="string">'Sent'</span>, cmd)</div><div class="line">        reply = self._socket.recv(<span class="number">5</span> + global_mem)</div><div class="line">        print_hex(<span class="string">'Recv'</span>, reply)</div><div class="line">        <span class="keyword">return</span> reply</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_hex</span><span class="params">(desc: str, data: bytes)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    print(desc + <span class="string">' 0x|'</span> + <span class="string">':'</span>.join(<span class="string">'&#123;:02X&#125;'</span>.format(byte) <span class="keyword">for</span> byte <span class="keyword">in</span> data) + <span class="string">'|'</span>)</div><div class="line"></div><div class="line">DIRECT_COMMAND_REPLY = <span class="string">b'\x00'</span></div><div class="line">opNop = <span class="string">b'\x01'</span></div><div class="line">my_ev3 = EV3(<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">ops_nothing = opNop</div><div class="line">my_ev3.send_direct_cmd(ops_nothing)</div></pre></td></tr></table></figure>
+<h4 id="Java-1"><a href="#Java-1" class="headerlink" title="Java"></a>Java</h4><p>你需要完成如下的步骤：</p>
+<ul>
+<li>把代码复制到名为 <em>EV3_do_nothing_wifi.java</em> 的文件中。</li>
+<li>打开一个终端，并切换到你的程序的目录。</li>
+<li>键入 <code>javac EV3_do_nothing_wifi.java</code> 编译它。</li>
+<li>键入 <code>java EV3_do_nothing_wifi</code> 运行它。</li>
+</ul>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.net.Socket;</div><div class="line"><span class="keyword">import</span> java.net.SocketException;</div><div class="line"><span class="keyword">import</span> java.net.ServerSocket;</div><div class="line"><span class="keyword">import</span> java.net.DatagramSocket;</div><div class="line"><span class="keyword">import</span> java.net.DatagramPacket;</div><div class="line"><span class="keyword">import</span> java.net.InetAddress;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</div><div class="line"><span class="keyword">import</span> java.nio.IntBuffer;</div><div class="line"><span class="keyword">import</span> java.nio.ByteOrder;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.*;</div><div class="line"><span class="keyword">import</span> java.util.regex.*;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> EV3_do_nothing_wifi &#123;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  opNop                        = (<span class="keyword">byte</span>)  <span class="number">0x01</span>;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  DIRECT_COMMAND_REPLY         = (<span class="keyword">byte</span>)  <span class="number">0x00</span>;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> InputStream in;</div><div class="line">    <span class="keyword">static</span> OutputStream out;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> connectWifi ()</div><div class="line"> throws IOException, SocketException &#123;</div><div class="line">     <span class="comment">// listen for a UDP broadcast from the EV3 on port 3015</span></div><div class="line">     DatagramSocket listener = <span class="keyword">new</span> DatagramSocket(<span class="number">3015</span>);</div><div class="line">     DatagramPacket packet_r = <span class="keyword">new</span> DatagramPacket(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">67</span>], <span class="number">67</span>);</div><div class="line">     listener.receive(packet_r); <span class="comment">// receive the broadcast message</span></div><div class="line">     <span class="keyword">String</span> broadcast_message = <span class="keyword">new</span> <span class="keyword">String</span>(packet_r.getData());</div><div class="line">     <span class="comment">/* pick serial number, port, name and protocol </span></div><div class="line">        from the broadcast message */</div><div class="line">     Pattern broadcast_pattern = </div><div class="line">     Pattern.compile(<span class="string">"Serial-Number: (\\w*)\\s\\n"</span> +</div><div class="line">                            <span class="string">"Port:\\s(\\d&#123;4,4&#125;)\\s\\n"</span> +</div><div class="line">                            <span class="string">"Name:\\s(\\w+)\\s\\n"</span> +</div><div class="line">                            <span class="string">"Protocol:\\s(\\w+)\\s\\n"</span>);</div><div class="line">     Matcher matcher = broadcast_pattern.matcher(broadcast_message);</div><div class="line">     <span class="keyword">String</span> serial_number, name, protocol;</div><div class="line">     <span class="keyword">int</span> port;</div><div class="line">     <span class="built_in">if</span>(matcher.matches()) &#123;</div><div class="line">  serial_number = matcher.group(<span class="number">1</span>);</div><div class="line">  port = Integer.valueOf(matcher.group(<span class="number">2</span>));</div><div class="line">  name = matcher.group(<span class="number">3</span>);</div><div class="line">  protocol = matcher.group(<span class="number">4</span>);</div><div class="line">     &#125;</div><div class="line">     <span class="built_in">else</span> &#123;</div><div class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Unexpected Broadcast message: "</span> + broadcast_message);</div><div class="line">     &#125;</div><div class="line">     InetAddress adr = packet_r.getAddress();</div><div class="line">     <span class="comment">// connect the EV3 with its address and port</span></div><div class="line">     listener.<span class="built_in">connect</span>(adr, port);</div><div class="line">     <span class="comment">/* Send an UDP message back to the EV3 </span></div><div class="line">        to make it accept a TCP/IP connection */</div><div class="line">     listener.send(<span class="keyword">new</span> DatagramPacket(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1</span>], <span class="number">1</span>));</div><div class="line">     <span class="comment">// close the UDP connection</span></div><div class="line">     listener.<span class="built_in">close</span>();</div><div class="line"></div><div class="line">     <span class="comment">// Establish a TCP/IP connection with EV3s address and port</span></div><div class="line">     Socket socket = <span class="keyword">new</span> Socket(adr, port);</div><div class="line">     in     = socket.getInputStream();</div><div class="line">     out    = socket.getOutputStream();</div><div class="line"></div><div class="line">     <span class="comment">// Send an unlock message to the EV3 over TCP/IP</span></div><div class="line">     <span class="keyword">String</span> unlock_message = <span class="string">"GET /target?sn="</span> + serial_number + </div><div class="line">                                    <span class="string">"VMTP1.0\n"</span> + </div><div class="line">                                    <span class="string">"Protocol: "</span> + protocol;</div><div class="line">     out.<span class="built_in">write</span>(unlock_message.getBytes());</div><div class="line"></div><div class="line">     <span class="keyword">byte</span>[] reply = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">16</span>];           <span class="comment">// read reply</span></div><div class="line">     in.<span class="built_in">read</span>(reply);</div><div class="line">     <span class="built_in">if</span> (! (<span class="keyword">new</span> <span class="keyword">String</span>(reply)).startsWith(<span class="string">"Accept:EV340"</span>)) &#123;</div><div class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"No wifi connection established "</span> + name);</div><div class="line">     &#125; </div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer sendDirectCmd (ByteBuffer operations,</div><div class="line">         <span class="keyword">int</span> local_mem, <span class="keyword">int</span> global_mem)</div><div class="line"> throws IOException &#123;</div><div class="line"> ByteBuffer <span class="built_in">buffer</span> = ByteBuffer.allocateDirect(operations.<span class="built_in">position</span>() + <span class="number">7</span>);</div><div class="line"> <span class="built_in">buffer</span>.order(ByteOrder.LITTLE_ENDIAN);</div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) (operations.<span class="built_in">position</span>() + <span class="number">5</span>));   <span class="comment">// length</span></div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) <span class="number">42</span>);                            <span class="comment">// counter</span></div><div class="line"> <span class="built_in">buffer</span>.<span class="built_in">put</span>(DIRECT_COMMAND_REPLY);                       <span class="comment">// type</span></div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) (local_mem*<span class="number">1024</span> + global_mem)); <span class="comment">// header</span></div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;operations.<span class="built_in">position</span>(); i++) &#123;           <span class="comment">// operations</span></div><div class="line">     <span class="built_in">buffer</span>.<span class="built_in">put</span>(operations.<span class="built_in">get</span>(i));</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="keyword">byte</span>[] cmd = <span class="keyword">new</span> <span class="keyword">byte</span> [<span class="built_in">buffer</span>.<span class="built_in">position</span>()];</div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="built_in">buffer</span>.<span class="built_in">position</span>(); i++) cmd[i] = <span class="built_in">buffer</span>.<span class="built_in">get</span>(i);</div><div class="line"> out.<span class="built_in">write</span>(cmd);</div><div class="line"> printHex(<span class="string">"Sent"</span>, <span class="built_in">buffer</span>);</div><div class="line"></div><div class="line"> <span class="keyword">byte</span>[] reply = <span class="keyword">new</span> <span class="keyword">byte</span>[global_mem + <span class="number">5</span>];</div><div class="line"> in.<span class="built_in">read</span>(reply);</div><div class="line"> <span class="built_in">buffer</span> = ByteBuffer.wrap(reply);</div><div class="line"> <span class="built_in">buffer</span>.<span class="built_in">position</span>(reply.length);</div><div class="line"> printHex(<span class="string">"Recv"</span>, <span class="built_in">buffer</span>);</div><div class="line"></div><div class="line"> <span class="built_in">return</span> <span class="built_in">buffer</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> printHex(<span class="keyword">String</span> desc, ByteBuffer <span class="built_in">buffer</span>) &#123;</div><div class="line"> System.out.<span class="built_in">print</span>(desc + <span class="string">" 0x|"</span>);</div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i= <span class="number">0</span>; i&lt;<span class="built_in">buffer</span>.<span class="built_in">position</span>() - <span class="number">1</span>; i++) &#123;</div><div class="line">     System.out.printf(<span class="string">"%02X:"</span>, <span class="built_in">buffer</span>.<span class="built_in">get</span>(i));</div><div class="line"> &#125;</div><div class="line"> System.out.printf(<span class="string">"%02X|"</span>, <span class="built_in">buffer</span>.<span class="built_in">get</span>(<span class="built_in">buffer</span>.<span class="built_in">position</span>() - <span class="number">1</span>));</div><div class="line"> System.out.<span class="built_in">println</span>();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main (<span class="keyword">String</span> args[] ) &#123;</div><div class="line"> <span class="built_in">try</span> &#123;</div><div class="line">     connectWifi();</div><div class="line"></div><div class="line">     ByteBuffer operations = ByteBuffer.allocateDirect(<span class="number">1</span>);</div><div class="line">     operations.<span class="built_in">put</span>(opNop);</div><div class="line"></div><div class="line">     ByteBuffer reply = sendDirectCmd(operations, <span class="number">0</span>, <span class="number">0</span>);</div><div class="line"> &#125;</div><div class="line"> <span class="built_in">catch</span> (Exception e) &#123;</div><div class="line">     e.printStackTrace(System.err);</div><div class="line"> &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="USB"><a href="#USB" class="headerlink" title="USB"></a>USB</h3><p>通用串行总线是一个连接电子设备的工业标准。你的 EV3 具有一个 2.0 的Mini-B 接口（标有 PC 字样）。这是性能最好的通信协议，但它需要一条线。在你运行你的程序的电脑上，你需要有与 LEGO EV3 通信的权限。在 Ubuntu Linux 上，通过 <code>lsusb</code> 查看当前已经连接的 USB 设备，以确认 EV3 被成功识别，如：<br><figure class="highlight vhdl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">$ lsusb</div><div class="line"><span class="keyword">Bus</span> <span class="number">002</span> Device <span class="number">002</span>: ID <span class="number">8087</span>:<span class="number">8000</span> Intel Corp. </div><div class="line"><span class="keyword">Bus</span> <span class="number">002</span> Device <span class="number">001</span>: ID <span class="number">1</span>d6b:<span class="number">0002</span> Linux Foundation <span class="number">2.0</span> root hub</div><div class="line"><span class="keyword">Bus</span> <span class="number">001</span> Device <span class="number">002</span>: ID <span class="number">8087</span>:<span class="number">8008</span> Intel Corp. </div><div class="line"><span class="keyword">Bus</span> <span class="number">001</span> Device <span class="number">001</span>: ID <span class="number">1</span>d6b:<span class="number">0002</span> Linux Foundation <span class="number">2.0</span> root hub</div><div class="line"><span class="keyword">Bus</span> <span class="number">004</span> Device <span class="number">001</span>: ID <span class="number">1</span>d6b:<span class="number">0003</span> Linux Foundation <span class="number">3.0</span> root hub</div><div class="line"><span class="keyword">Bus</span> <span class="number">003</span> Device <span class="number">006</span>: ID <span class="number">5986</span>:<span class="number">055</span>c Acer, Inc </div><div class="line"><span class="keyword">Bus</span> <span class="number">003</span> Device <span class="number">005</span>: ID <span class="number">8087</span>:<span class="number">07</span>dc Intel Corp. </div><div class="line"><span class="keyword">Bus</span> <span class="number">003</span> Device <span class="number">004</span>: ID <span class="number">2717</span>:ff48  </div><div class="line"><span class="keyword">Bus</span> <span class="number">003</span> Device <span class="number">003</span>: ID <span class="number">046</span>d:c52b Logitech, Inc. Unifying Receiver</div><div class="line"><span class="keyword">Bus</span> <span class="number">003</span> Device <span class="number">007</span>: ID <span class="number">0694</span>:<span class="number">0005</span> Lego <span class="keyword">Group</span> </div><div class="line"><span class="keyword">Bus</span> <span class="number">003</span> Device <span class="number">001</span>: ID <span class="number">1</span>d6b:<span class="number">0002</span> Linux Foundation <span class="number">2.0</span> root hub</div></pre></td></tr></table></figure></p>
+<p>由 <code>Bus 003 Device 007: ID 0694:0005 Lego Group</code> 这一行可以看出 EV3 已经被系统成功识别了，其中的 <code>Bus 003 Device 007</code> 部分描述了设备连接的位置，<code>ID 0694:0005</code> 描述生产商 ID 和产品 ID。默认情况下，新连接的新类型的 USB 设备只有 root 用户有访问权限，这一点可以根据 <code>Bus 003 Device 007</code> 这些信息，查看 <code>/dev/bus/usb</code> 下对应的设备文件看出来：<br><figure class="highlight tap"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$ ls -al  /dev/bus/usb/003/</div><div class="line">总用量 0</div><div class="line">drwxr-xr-x <span class="number"> 2 </span>root root      <span class="number"> 160 </span>11月 <span class="number"> 1 </span>09:51 .</div><div class="line">drwxr-xr-x <span class="number"> 6 </span>root root      <span class="number"> 120 </span>11月 <span class="number"> 1 </span>09:49 ..</div><div class="line">crw-rw-r-- <span class="number"> 1 </span>root root  189,<span class="number"> 256 </span>11月 <span class="number"> 1 </span>09:49 001</div><div class="line">crw-rw-r-- <span class="number"> 1 </span>root root  189,<span class="number"> 258 </span>11月 <span class="number"> 1 </span>09:49 003</div><div class="line">crw-rw----+<span class="number"> 1 </span>root audio 189,<span class="number"> 259 </span>11月 <span class="number"> 1 </span>09:50 004</div><div class="line">crw-rw-r-- <span class="number"> 1 </span>root root  189,<span class="number"> 260 </span>11月 <span class="number"> 1 </span>09:49 005</div><div class="line">crw-rw-r-- <span class="number"> 1 </span>root root  189,<span class="number"> 261 </span>11月 <span class="number"> 1 </span>09:49 006</div><div class="line">crw-rw-r-- <span class="number"> 1 </span>root root  189,<span class="number"> 262 </span>11月 <span class="number"> 1 </span>09:51 007</div></pre></td></tr></table></figure></p>
+<p>可以看到对应于 LEGO EV3 的 USB 设备文件 <code>/dev/bus/usb/003/007</code>，其所有者和所有者组都为 root，且其它用户只有读权限。当我们在没有权限的情况下，通过 <code>pyusb</code> 访问 EV3 时，将报出如下的错误：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Traceback (most recent <span class="keyword">call</span> <span class="keyword">last</span>):</div><div class="line">  <span class="keyword">File</span> <span class="string">"/home/hanpfei0306/data/MyProjects/wolfcs-tools/EV3_do_nothing_usb.py"</span>, line <span class="number">44</span>, <span class="keyword">in</span> &lt;<span class="keyword">module</span>&gt;</div><div class="line">    my_ev3 = EV3(<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">  <span class="keyword">File</span> <span class="string">"/home/hanpfei0306/data/MyProjects/wolfcs-tools/EV3_do_nothing_usb.py"</span>, line <span class="number">11</span>, <span class="keyword">in</span> __init__</div><div class="line">    serial_number = usb.util.get_string(self._device, self._device.iSerialNumber)</div><div class="line">  <span class="keyword">File</span> <span class="string">"/usr/local/lib/python3.5/dist-packages/usb/util.py"</span>, line <span class="number">314</span>, <span class="keyword">in</span> get_string</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">"The device has no langid"</span>)</div><div class="line">ValueError: The device has <span class="keyword">no</span> langid</div></pre></td></tr></table></figure></p>
+<p>为了使得普通的非 root 用户也能通过 USB 访问 EV3，需要为它添加 udev 规则。在我的 Ubuntu Linux 16.04 上是，创建文件 <code>/etc/udev/rules.d/51-legoev3-usb.rules</code>，并添加如下内容：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SUBSYSTEM=="usb", </span><span class="meta">ATTR</span>&#123;idVendor&#125;==<span class="string">"0694"</span>, <span class="meta">ATTR</span>&#123;idProduct&#125;==<span class="string">"0005"</span>, MODE=<span class="string">"0666"</span>, GROUP=<span class="string">"&lt;group&gt;"</span></div></pre></td></tr></table></figure></p>
+<p>把 <code>&lt;group&gt;</code> 修改为你所属的那个。添加了 udev 规则之后，拔出 USB 接口重新插入即可使规则生效。此时即使在普通用户下，通过 lsusb 也能查看到关于 EV3 的详细信息：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div></pre></td><td class="code"><pre><div class="line">$ lsusb -v -d <span class="number">0694</span>:<span class="number">0005</span></div><div class="line"><span class="keyword">Bus </span><span class="number">003</span> Device <span class="number">013</span>: ID <span class="number">0694</span>:<span class="number">0005</span> Lego Group </div><div class="line"><span class="symbol">Device</span> Descriptor:</div><div class="line">  <span class="keyword">bLength </span>               <span class="number">18</span></div><div class="line">  <span class="keyword">bDescriptorType </span>        <span class="number">1</span></div><div class="line">  <span class="keyword">bcdUSB </span>              <span class="number">2</span>.<span class="number">00</span></div><div class="line">  <span class="keyword">bDeviceClass </span>           <span class="number">0</span> (Defined at Interface level)</div><div class="line">  <span class="keyword">bDeviceSubClass </span>        <span class="number">0</span> </div><div class="line">  <span class="keyword">bDeviceProtocol </span>        <span class="number">0</span> </div><div class="line">  <span class="keyword">bMaxPacketSize0 </span>       <span class="number">64</span></div><div class="line">  idVendor           <span class="number">0x0694</span> Lego Group</div><div class="line">  idProduct          <span class="number">0x0005</span> </div><div class="line">  <span class="keyword">bcdDevice </span>           <span class="number">2</span>.<span class="number">16</span></div><div class="line">  iManufacturer           <span class="number">1</span> LEGO Group</div><div class="line">  iProduct                <span class="number">2</span> EV3</div><div class="line">  iSerial                 <span class="number">3</span> <span class="number">001653602591</span></div><div class="line">  <span class="keyword">bNumConfigurations </span>     <span class="number">1</span></div><div class="line">  Configuration Descriptor:</div><div class="line">    <span class="keyword">bLength </span>                <span class="number">9</span></div><div class="line">    <span class="keyword">bDescriptorType </span>        <span class="number">2</span></div><div class="line">    wTotalLength           <span class="number">41</span></div><div class="line">    <span class="keyword">bNumInterfaces </span>         <span class="number">1</span></div><div class="line">    <span class="keyword">bConfigurationValue </span>    <span class="number">1</span></div><div class="line">    iConfiguration          <span class="number">1</span> LEGO Group</div><div class="line">    <span class="keyword">bmAttributes </span>        <span class="number">0xc0</span></div><div class="line">      <span class="keyword">Self </span>Powered</div><div class="line">    MaxPower                <span class="number">2</span>mA</div><div class="line">    Interface Descriptor:</div><div class="line">      <span class="keyword">bLength </span>                <span class="number">9</span></div><div class="line">      <span class="keyword">bDescriptorType </span>        <span class="number">4</span></div><div class="line">      <span class="keyword">bInterfaceNumber </span>       <span class="number">0</span></div><div class="line">      <span class="keyword">bAlternateSetting </span>      <span class="number">0</span></div><div class="line">      <span class="keyword">bNumEndpoints </span>          <span class="number">2</span></div><div class="line">      <span class="keyword">bInterfaceClass </span>        <span class="number">3</span> Human Interface Device</div><div class="line">      <span class="keyword">bInterfaceSubClass </span>     <span class="number">0</span> No <span class="keyword">Subclass</span></div><div class="line">      <span class="keyword">bInterfaceProtocol </span>     <span class="number">0</span> None</div><div class="line">      iInterface              <span class="number">4</span> Xfer <span class="meta">data</span> to <span class="keyword">and </span>from EV3 <span class="keyword">brick</span></div><div class="line">        HID Device Descriptor:</div><div class="line">          <span class="keyword">bLength </span>                <span class="number">9</span></div><div class="line">          <span class="keyword">bDescriptorType </span>       <span class="number">33</span></div><div class="line">          <span class="keyword">bcdHID </span>              <span class="number">1</span>.<span class="number">10</span></div><div class="line">          <span class="keyword">bCountryCode </span>           <span class="number">0</span> Not supported</div><div class="line">          <span class="keyword">bNumDescriptors </span>        <span class="number">1</span></div><div class="line">          <span class="keyword">bDescriptorType </span>       <span class="number">34</span> Report</div><div class="line">          wDescriptorLength      <span class="number">29</span></div><div class="line">          Report Descriptor: (length is <span class="number">29</span>)</div><div class="line">            <span class="keyword">Item(Global): </span>Usage Page, <span class="meta">data</span>= [ <span class="number">0x00</span> <span class="number">0xff</span> ] <span class="number">65280</span></div><div class="line">                            (null)</div><div class="line">            <span class="keyword">Item(Local </span>): Usage, <span class="meta">data</span>= [ <span class="number">0x01</span> ] <span class="number">1</span></div><div class="line">                            (null)</div><div class="line">            <span class="keyword">Item(Main </span> ): Collection, <span class="meta">data</span>= [ <span class="number">0x01</span> ] <span class="number">1</span></div><div class="line">                            Application</div><div class="line">            <span class="keyword">Item(Global): </span>Logical Minimum, <span class="meta">data</span>= [ <span class="number">0x00</span> ] <span class="number">0</span></div><div class="line">            <span class="keyword">Item(Global): </span>Logical Maximum, <span class="meta">data</span>= [ <span class="number">0xff</span> <span class="number">0x00</span> ] <span class="number">255</span></div><div class="line">            <span class="keyword">Item(Global): </span>Report Size, <span class="meta">data</span>= [ <span class="number">0x08</span> ] <span class="number">8</span></div><div class="line">            <span class="keyword">Item(Global): </span>Report Count, <span class="meta">data</span>= [ <span class="number">0x00</span> <span class="number">0x04</span> ] <span class="number">1024</span></div><div class="line">            <span class="keyword">Item(Local </span>): Usage, <span class="meta">data</span>= [ <span class="number">0x01</span> ] <span class="number">1</span></div><div class="line">                            (null)</div><div class="line">            <span class="keyword">Item(Main </span> ): Input, <span class="meta">data</span>= [ <span class="number">0x02</span> ] <span class="number">2</span></div><div class="line">                            <span class="meta">Data</span> Variable Absolute No_Wrap Linear</div><div class="line">                            Preferred_State No_Null_Position Non_Volatile <span class="keyword">Bitfield</span></div><div class="line">            <span class="keyword">Item(Global): </span>Report Count, <span class="meta">data</span>= [ <span class="number">0x00</span> <span class="number">0x04</span> ] <span class="number">1024</span></div><div class="line">            <span class="keyword">Item(Local </span>): Usage, <span class="meta">data</span>= [ <span class="number">0x01</span> ] <span class="number">1</span></div><div class="line">                            (null)</div><div class="line">            <span class="keyword">Item(Main </span> ): Output, <span class="meta">data</span>= [ <span class="number">0x02</span> ] <span class="number">2</span></div><div class="line">                            <span class="meta">Data</span> Variable Absolute No_Wrap Linear</div><div class="line">                            Preferred_State No_Null_Position Non_Volatile <span class="keyword">Bitfield</span></div><div class="line">            <span class="keyword">Item(Main </span> ): <span class="meta">End</span> Collection, <span class="meta">data</span><span class="symbol">=none</span></div><div class="line">      Endpoint Descriptor:</div><div class="line">        <span class="keyword">bLength </span>                <span class="number">7</span></div><div class="line">        <span class="keyword">bDescriptorType </span>        <span class="number">5</span></div><div class="line">        <span class="keyword">bEndpointAddress </span>    <span class="number">0x81</span>  EP <span class="number">1</span> IN</div><div class="line">        <span class="keyword">bmAttributes </span>           <span class="number">3</span></div><div class="line">          Transfer Type            Interrupt</div><div class="line">          Synch Type               None</div><div class="line">          Usage Type               <span class="meta">Data</span></div><div class="line">        wMaxPacketSize     <span class="number">0x0400</span>  <span class="number">1</span>x <span class="number">1024</span> <span class="keyword">bytes</span></div><div class="line">        <span class="keyword">bInterval </span>              <span class="number">4</span></div><div class="line">      Endpoint Descriptor:</div><div class="line">        <span class="keyword">bLength </span>                <span class="number">7</span></div><div class="line">        <span class="keyword">bDescriptorType </span>        <span class="number">5</span></div><div class="line">        <span class="keyword">bEndpointAddress </span>    <span class="number">0x01</span>  EP <span class="number">1</span> OUT</div><div class="line">        <span class="keyword">bmAttributes </span>           <span class="number">3</span></div><div class="line">          Transfer Type            Interrupt</div><div class="line">          Synch Type               None</div><div class="line">          Usage Type               <span class="meta">Data</span></div><div class="line">        wMaxPacketSize     <span class="number">0x0400</span>  <span class="number">1</span>x <span class="number">1024</span> <span class="keyword">bytes</span></div><div class="line">        <span class="keyword">bInterval </span>              <span class="number">4</span></div><div class="line"><span class="symbol">Device</span> Qualifier (for other device speed):</div><div class="line">  <span class="keyword">bLength </span>               <span class="number">10</span></div><div class="line">  <span class="keyword">bDescriptorType </span>        <span class="number">6</span></div><div class="line">  <span class="keyword">bcdUSB </span>              <span class="number">2</span>.<span class="number">00</span></div><div class="line">  <span class="keyword">bDeviceClass </span>           <span class="number">0</span> (Defined at Interface level)</div><div class="line">  <span class="keyword">bDeviceSubClass </span>        <span class="number">0</span> </div><div class="line">  <span class="keyword">bDeviceProtocol </span>        <span class="number">0</span> </div><div class="line">  <span class="keyword">bMaxPacketSize0 </span>       <span class="number">64</span></div><div class="line">  <span class="keyword">bNumConfigurations </span>     <span class="number">1</span></div><div class="line"><span class="symbol">Device</span> Status:     <span class="number">0x0001</span></div><div class="line">  <span class="keyword">Self </span>Powered</div></pre></td></tr></table></figure></p>
+<p>更多信息可参考<a href="https://blog.csdn.net/lyx___vvv/article/details/47256301" target="_blank" rel="external">如何在非root用户下，访问普通的usb设备</a>。</p>
+<p>通过它们的 vendor-id 0x0694 和 product-id 0x0005 标识 EV3 设备。模式 0666 允许属于 <code>&lt;group&gt;</code> 的所有用户具有读和写权限。EV3-USB 设备描述符显示了一个具有一个接口和两个端点的配置，0x01 用于给 EV3 发送数据，0x81 用于从 EV3 接收数据。数据以 1024 字节的包发送和接收。</p>
+<h4 id="Python-1"><a href="#Python-1" class="headerlink" title="Python"></a>Python</h4><p>也许你需要安装 <code>pyusb</code>。对于我的系统来说，这通过如下命令完成：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip3 <span class="keyword">install</span> <span class="comment">--pre pyusb</span></div></pre></td></tr></table></figure></p>
+<p>如果已经安装了 <code>pyusb</code>，你需要完成如下的步骤：</p>
+<ul>
+<li>把代码复制到名为 <em>EV3_do_nothing_usb.py</em> 的文件中。</li>
+<li>打开一个终端，并切换到你的程序的目录。</li>
+<li>键入 <code>python3 EV3_do_nothing_usb.py</code> 运行它。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> usb.core</div><div class="line"><span class="keyword">import</span> struct</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">EV3</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, host: str)</span>:</span></div><div class="line">        self._device = usb.core.find(idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_EV3)</div><div class="line">        <span class="keyword">if</span> self._device <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">raise</span> RuntimeError(<span class="string">"No Lego EV3 found"</span>)</div><div class="line">        serial_number = usb.util.get_string(self._device, self._device.iSerialNumber)</div><div class="line">        <span class="keyword">if</span> serial_number.upper() != host.replace(<span class="string">':'</span>, <span class="string">''</span>).upper():</div><div class="line">            <span class="keyword">raise</span> ValueError(<span class="string">'found ev3 but not '</span> + host)</div><div class="line">        <span class="keyword">if</span> self._device.is_kernel_driver_active(<span class="number">0</span>) <span class="keyword">is</span> <span class="keyword">True</span>:</div><div class="line">            self._device.detach_kernel_driver(<span class="number">0</span>)</div><div class="line">        self._device.set_configuration()</div><div class="line">        self._device.read(EP_IN, <span class="number">1024</span>, <span class="number">100</span>)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__del__</span><span class="params">(self)</span>:</span> <span class="keyword">pass</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_direct_cmd</span><span class="params">(self, ops: bytes, local_mem: int=<span class="number">0</span>, global_mem: int=<span class="number">0</span>)</span> -&gt; bytes:</span></div><div class="line">        cmd = <span class="string">b''</span>.join([</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, len(ops) + <span class="number">5</span>),</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, <span class="number">42</span>),</div><div class="line">            DIRECT_COMMAND_REPLY,</div><div class="line">            struct.pack(<span class="string">'&lt;h'</span>, local_mem*<span class="number">1024</span> + global_mem),</div><div class="line">            ops</div><div class="line">        ])</div><div class="line">        self._device.write(EP_OUT, cmd, <span class="number">100</span>)</div><div class="line">        print_hex(<span class="string">'Sent'</span>, cmd)</div><div class="line">        reply = self._device.read(EP_IN, <span class="number">1024</span>, <span class="number">100</span>)[<span class="number">0</span>:<span class="number">5</span>+global_mem]</div><div class="line">        print_hex(<span class="string">'Recv'</span>, reply)</div><div class="line">        <span class="keyword">return</span> reply</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_hex</span><span class="params">(desc: str, data: bytes)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    print(desc + <span class="string">' 0x|'</span> + <span class="string">':'</span>.join(<span class="string">'&#123;:02X&#125;'</span>.format(byte) <span class="keyword">for</span> byte <span class="keyword">in</span> data) + <span class="string">'|'</span>)</div><div class="line"></div><div class="line">ID_VENDOR_LEGO = <span class="number">0x0694</span></div><div class="line">ID_PRODUCT_EV3 = <span class="number">0x0005</span></div><div class="line">EP_IN  = <span class="number">0x81</span></div><div class="line">EP_OUT = <span class="number">0x01</span></div><div class="line">DIRECT_COMMAND_REPLY = <span class="string">b'\x00'</span></div><div class="line">opNop = <span class="string">b'\x01'</span></div><div class="line">my_ev3 = EV3(<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">ops_nothing = opNop</div><div class="line">my_ev3.send_direct_cmd(ops_nothing)</div></pre></td></tr></table></figure>
+<p>译者注：</p>
+<ul>
+<li>由上面通过 <code>lsusb</code> 扒出来的 EV3 设备信息可以看到，EV3 的串号是 <code>iSerial                 3 001653602591</code>，即 <code>00:16:53:60:25:91</code>，而不是 <code>00:16:53:42:2B:99&#39;</code>，因此上面代码中串号判断的几行：<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">serial_number = usb.util.get_string(self.<span class="title">_device</span>, self.<span class="title">_device</span>.iSerialNumber)</div><div class="line"><span class="keyword">if</span> serial_number.<span class="built_in">upper</span>() != host.<span class="built_in">replace</span>(<span class="string">':'</span>, <span class="string">''</span>).<span class="built_in">upper</span>():</div><div class="line">    raise ValueError(<span class="string">'found ev3 but not '</span> + host)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>可以去掉。</p>
+<ul>
+<li>在 LEGO EV3 设备初次连接之后，执行上述代码，可以正常的向 EV3 发送消息并接收响应。但再次执行时，程序报出如下的错误：<figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">Traceback (most recent call last):</div><div class="line">  <span class="keyword">File</span> <span class="string">"/home/hanpfei0306/data/MyProjects/wolfcs-tools/EV3_do_nothing_usb.py"</span>, <span class="keyword">line</span> 44, <span class="keyword">in</span> &lt;module&gt;</div><div class="line">    my_ev3 = EV3('00:16:53:42:2B:99')</div><div class="line">  <span class="keyword">File</span> <span class="string">"/home/hanpfei0306/data/MyProjects/wolfcs-tools/EV3_do_nothing_usb.py"</span>, <span class="keyword">line</span> 17, <span class="keyword">in</span> __init__</div><div class="line">    self._device.<span class="keyword">read</span>(EP_IN, 1024, 100)</div><div class="line">  <span class="keyword">File</span> <span class="string">"/usr/local/lib/python3.5/dist-packages/usb/core.py"</span>, <span class="keyword">line</span> 988, <span class="keyword">in</span> <span class="keyword">read</span></div><div class="line">    self.__get_timeout(timeout))</div><div class="line">  <span class="keyword">File</span> <span class="string">"/usr/local/lib/python3.5/dist-packages/usb/backend/libusb1.py"</span>, <span class="keyword">line</span> 851, <span class="keyword">in</span> intr_read</div><div class="line">    timeout)</div><div class="line">  <span class="keyword">File</span> <span class="string">"/usr/local/lib/python3.5/dist-packages/usb/backend/libusb1.py"</span>, <span class="keyword">line</span> 936, <span class="keyword">in</span> __read</div><div class="line">    _check(retval)</div><div class="line">  <span class="keyword">File</span> <span class="string">"/usr/local/lib/python3.5/dist-packages/usb/backend/libusb1.py"</span>, <span class="keyword">line</span> 595, <span class="keyword">in</span> _check</div><div class="line">    raise USBError(_strerror(<span class="keyword">ret</span>), <span class="keyword">ret</span>, _libusb_errno[<span class="keyword">ret</span>])</div><div class="line">usb.core.USBError: [Errno 110] Operation timed <span class="keyword">out</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>StackOverflow 上对这个问题有所讨论：<a href="https://stackoverflow.com/questions/38658907/trouble-using-pyusb-to-read-write-from-usb-device-timeouts。这个问题可以通过在" target="_blank" rel="external">https://stackoverflow.com/questions/38658907/trouble-using-pyusb-to-read-write-from-usb-device-timeouts。这个问题可以通过在</a> <code>find()</code> 方法调用之后，加入 <code>self._device.reset()</code> 来解决，如：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, host: str)</span>:</span></div><div class="line">    self._device = usb.core.find(idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_EV3)</div><div class="line">    <span class="keyword">if</span> self._device <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">        <span class="keyword">raise</span> RuntimeError(<span class="string">"No Lego EV3 found"</span>)</div><div class="line">    self._device.reset()</div><div class="line">    serial_number = usb.util.get_string(self._device, self._device.iSerialNumber)</div><div class="line">    <span class="comment"># if serial_number.upper() != host.replace(':', '').upper():</span></div><div class="line">    <span class="comment">#     raise ValueError('found ev3 but not ' + host)</span></div><div class="line">    <span class="keyword">if</span> self._device.is_kernel_driver_active(<span class="number">0</span>) <span class="keyword">is</span> <span class="keyword">True</span>:</div><div class="line">        self._device.detach_kernel_driver(<span class="number">0</span>)</div><div class="line">    self._device.set_configuration()</div><div class="line">    self._device.read(EP_IN, <span class="number">1024</span>, <span class="number">100</span>)</div></pre></td></tr></table></figure></p>
+<h4 id="Java-2"><a href="#Java-2" class="headerlink" title="Java"></a>Java</h4><p>我选择的与 USB 设备通信的是 usb4java。下载了 Java 包之后，你可以把它们添加到你的 classpath 中。在我的 Unix 机器是，通过如下命令完成：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">export <span class="keyword">CLASSPATH</span>=$<span class="keyword">CLASSPATH</span>:.<span class="regexp">/usb4java-1.3.0.jar:./</span>libusb4java-<span class="number">1.3</span>.<span class="number">0</span>-linux-x86_64.jar</div></pre></td></tr></table></figure></p>
+<p>译者注：<br>如果构建系统用的是 Maven，也可以通过在 <code>pom.xml</code> 文件中添加如下的依赖来使用 <code>usb4java</code>：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.usb4java<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>usb4java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>然后，执行下面的步骤：</p>
+<ul>
+<li>把下面的代码拷贝到名为 <em>EV3_do_nothing_usb.java</em> 的文件中。</li>
+<li>打开一个终端并切换到你的程序的目录。</li>
+<li>键入 <code>javac EV3_do_nothing_usb.java</code> 编译它。</li>
+<li>键入 <code>java EV3_do_nothing_usb</code> 运行它。</li>
+</ul>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.usb4java.Device;</div><div class="line"><span class="keyword">import</span> org.usb4java.DeviceDescriptor;</div><div class="line"><span class="keyword">import</span> org.usb4java.DeviceHandle;</div><div class="line"><span class="keyword">import</span> org.usb4java.DeviceList;</div><div class="line"><span class="keyword">import</span> org.usb4java.LibUsb;</div><div class="line"><span class="keyword">import</span> org.usb4java.LibUsbException;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</div><div class="line"><span class="keyword">import</span> java.nio.IntBuffer;</div><div class="line"><span class="keyword">import</span> java.nio.ByteOrder;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> EV3_do_nothing_usb &#123;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">short</span> ID_VENDOR_LEGO = (<span class="keyword">short</span>) <span class="number">0x0694</span>;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">short</span> ID_PRODUCT_EV3 = (<span class="keyword">short</span>) <span class="number">0x0005</span>;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  EP_IN          = (<span class="keyword">byte</span>)  <span class="number">0x81</span>;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  EP_OUT         = (<span class="keyword">byte</span>)  <span class="number">0x01</span>;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  opNop                        = (<span class="keyword">byte</span>)  <span class="number">0x01</span>;</div><div class="line">    <span class="keyword">static</span> final <span class="keyword">byte</span>  DIRECT_COMMAND_REPLY         = (<span class="keyword">byte</span>)  <span class="number">0x00</span>;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> DeviceHandle handle;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> connectUsb () &#123;</div><div class="line"> <span class="keyword">int</span> result = LibUsb.init(null);</div><div class="line"> Device device = null;</div><div class="line"> DeviceList list = <span class="keyword">new</span> DeviceList();</div><div class="line"> result = LibUsb.getDeviceList(null, list);</div><div class="line"> <span class="built_in">if</span> (result &lt; <span class="number">0</span>)&#123;</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Unable to get device list. Result="</span> + result);</div><div class="line"> &#125;</div><div class="line"> <span class="keyword">boolean</span> found = false;</div><div class="line"> <span class="built_in">for</span> (Device dev: list) &#123;</div><div class="line">     DeviceDescriptor descriptor = <span class="keyword">new</span> DeviceDescriptor();</div><div class="line">     result = LibUsb.getDeviceDescriptor(dev, descriptor);</div><div class="line">     <span class="built_in">if</span> (result != LibUsb.SUCCESS) &#123;</div><div class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> LibUsbException(<span class="string">"Unable to read device descriptor"</span>, result);</div><div class="line">     &#125;</div><div class="line">     <span class="built_in">if</span> (  descriptor.idVendor()  == ID_VENDOR_LEGO</div><div class="line">    || descriptor.idProduct() == ID_PRODUCT_EV3) &#123;</div><div class="line">  device = dev;</div><div class="line">  found = true;</div><div class="line">  <span class="built_in">break</span>;</div><div class="line">     &#125;</div><div class="line"> &#125;</div><div class="line"> LibUsb.freeDeviceList(list, true);</div><div class="line"> <span class="built_in">if</span> (! found) <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Lego EV3 device not found."</span>);</div><div class="line"></div><div class="line"> handle = <span class="keyword">new</span> DeviceHandle();</div><div class="line"> result = LibUsb.<span class="built_in">open</span>(device, handle);</div><div class="line"> <span class="built_in">if</span> (result != LibUsb.SUCCESS) &#123;</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> LibUsbException(<span class="string">"Unable to open USB device"</span>, result);</div><div class="line"> &#125;</div><div class="line"> <span class="keyword">boolean</span> <span class="built_in">detach</span> = LibUsb.kernelDriverActive(handle, <span class="number">0</span>) != <span class="number">0</span>;</div><div class="line"></div><div class="line"> <span class="built_in">if</span> (<span class="built_in">detach</span>) result = LibUsb.detachKernelDriver(handle, <span class="number">0</span>);</div><div class="line"> <span class="built_in">if</span> (result != LibUsb.SUCCESS) &#123;</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> LibUsbException(<span class="string">"Unable to detach kernel driver"</span>, result);</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> result = LibUsb.claimInterface(handle, <span class="number">0</span>);</div><div class="line"> <span class="built_in">if</span> (result != LibUsb.SUCCESS) &#123;</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> LibUsbException(<span class="string">"Unable to claim interface"</span>, result);</div><div class="line"> &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer sendDirectCmd (ByteBuffer operations,</div><div class="line">         <span class="keyword">int</span> local_mem, <span class="keyword">int</span> global_mem) &#123;</div><div class="line"> ByteBuffer <span class="built_in">buffer</span> = ByteBuffer.allocateDirect(operations.<span class="built_in">position</span>() + <span class="number">7</span>);</div><div class="line"> <span class="built_in">buffer</span>.order(ByteOrder.LITTLE_ENDIAN);</div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) (operations.<span class="built_in">position</span>() + <span class="number">5</span>));   <span class="comment">// length</span></div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) <span class="number">42</span>);                            <span class="comment">// counter</span></div><div class="line"> <span class="built_in">buffer</span>.<span class="built_in">put</span>(DIRECT_COMMAND_REPLY);                       <span class="comment">// type</span></div><div class="line"> <span class="built_in">buffer</span>.putShort((<span class="keyword">short</span>) (local_mem*<span class="number">1024</span> + global_mem)); <span class="comment">// header</span></div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i &lt; operations.<span class="built_in">position</span>(); i++) &#123;         <span class="comment">// operations</span></div><div class="line">     <span class="built_in">buffer</span>.<span class="built_in">put</span>(operations.<span class="built_in">get</span>(i));</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> IntBuffer transferred = IntBuffer.allocate(<span class="number">1</span>);</div><div class="line"> <span class="keyword">int</span> result = LibUsb.bulkTransfer(handle, EP_OUT, <span class="built_in">buffer</span>, transferred, <span class="number">100</span>); </div><div class="line"> <span class="built_in">if</span> (result != LibUsb.SUCCESS) &#123;</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> LibUsbException(<span class="string">"Unable to write data"</span>, transferred.<span class="built_in">get</span>(<span class="number">0</span>));</div><div class="line"> &#125;</div><div class="line"> printHex(<span class="string">"Sent"</span>, <span class="built_in">buffer</span>);</div><div class="line"></div><div class="line"> <span class="built_in">buffer</span> = ByteBuffer.allocateDirect(<span class="number">1024</span>);</div><div class="line"> transferred = IntBuffer.allocate(<span class="number">1</span>);</div><div class="line"> result = LibUsb.bulkTransfer(handle, EP_IN, <span class="built_in">buffer</span>, transferred, <span class="number">100</span>);</div><div class="line"> <span class="built_in">if</span> (result != LibUsb.SUCCESS) &#123;</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> LibUsbException(<span class="string">"Unable to read data"</span>, result);</div><div class="line"> &#125;</div><div class="line"> <span class="built_in">buffer</span>.<span class="built_in">position</span>(global_mem + <span class="number">5</span>);</div><div class="line"> printHex(<span class="string">"Recv"</span>, <span class="built_in">buffer</span>);</div><div class="line"></div><div class="line"> <span class="built_in">return</span> <span class="built_in">buffer</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> printHex(<span class="keyword">String</span> desc, ByteBuffer <span class="built_in">buffer</span>) &#123;</div><div class="line"> System.out.<span class="built_in">print</span>(desc + <span class="string">" 0x|"</span>);</div><div class="line"> <span class="built_in">for</span> (<span class="keyword">int</span> i= <span class="number">0</span>; i &lt; <span class="built_in">buffer</span>.<span class="built_in">position</span>() - <span class="number">1</span>; i++) &#123;</div><div class="line">     System.out.printf(<span class="string">"%02X:"</span>, <span class="built_in">buffer</span>.<span class="built_in">get</span>(i));</div><div class="line"> &#125;</div><div class="line"> System.out.printf(<span class="string">"%02X|"</span>, <span class="built_in">buffer</span>.<span class="built_in">get</span>(<span class="built_in">buffer</span>.<span class="built_in">position</span>() - <span class="number">1</span>));</div><div class="line"> System.out.<span class="built_in">println</span>();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main (<span class="keyword">String</span> args[] ) &#123;</div><div class="line"> <span class="built_in">try</span> &#123;</div><div class="line">     connectUsb();</div><div class="line"></div><div class="line">     ByteBuffer operations = ByteBuffer.allocateDirect(<span class="number">1</span>);</div><div class="line">     operations.<span class="built_in">put</span>(opNop);</div><div class="line"></div><div class="line">     ByteBuffer reply = sendDirectCmd(operations, <span class="number">0</span>, <span class="number">0</span>);</div><div class="line"></div><div class="line">     LibUsb.releaseInterface(handle, <span class="number">0</span>);</div><div class="line">     LibUsb.<span class="built_in">close</span>(handle);</div><div class="line"> &#125;</div><div class="line"> <span class="built_in">catch</span> (Exception e) &#123;</div><div class="line">     e.printStackTrace(System.err);</div><div class="line"> &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="应答消息"><a href="#应答消息" class="headerlink" title="应答消息"></a>应答消息</h2><p>如果你使用上面方案中的一个成功实现了与 EV3 的通信，则会获得以下输出，即直接命令的回复消息：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">----------------    </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\r</span>s<span class="symbol">\ </span>  </div><div class="line">  –---------------  </div><div class="line">0x|03:00|2A:00|02|  </div><div class="line">  –---------------  </div><div class="line">   <span class="symbol">\ </span>3   <span class="symbol">\ </span>42  <span class="symbol">\o</span>k<span class="symbol">\ </span></div><div class="line">    ----------------</div></pre></td></tr></table></figure></p>
+<p>前两个字节是众所周知的，它是回复消息消息长度的小尾端表示。在我们的情况中，回复消息是 3 字节长的。接下来的两个字节是消息计数器，也是广为人知的，即你发送的消息的指纹，是 42。</p>
+<p>最后一个字节是返回状态，其有 2 个可能值是：</p>
+<ul>
+<li><code>DIRECT_REPLY</code> = <code>0x|02|</code>：直接命令操作成功</li>
+<li><code>DIRECT_REPLY_ERROR</code> = <code>0x|04|</code>：直接命令以失败结束</li>
+</ul>
+<p>如果你真的收到了这条回复消息，那么你入门了。恭喜！</p>
+<h2 id="头部的细节"><a href="#头部的细节" class="headerlink" title="头部的细节"></a>头部的细节</h2><p>上面我们跳过了头部细节的描述。提到了它，头部包含两个数，它们定义内存的大小。</p>
+<p>第一个数是局部内存的大小，它是你可以在其中保存中间信息的地址空间。第二个数描述了全局内存的大小，它是输出的地址空间。在 <code>DIRECT_COMMAND_REPLY</code> 的情形中，全局内存将作为回复消息的一部分发回。</p>
+<p>局部内存具有最大 63 个字节，全局内存具有最大 1019 字节。那意味着，局部内存大小需要 6 位，全局内存大小需要 10 位。如果一个字节共用的话，所有的组合在一起可以包含在两个字节中。确实这样做了。如果以相反的顺序写入头字节，这是熟悉的大尾端，并且以二进制表示法写为半字节组，则得到：<code>0b LLLL LLGG GGGG GGGG</code>。开头的 6 位是局部内存大小，其范围为 0-63。尾部的 10 位是全局内存大小，其范围为 0-1020。小尾端下是：<code>0b GGGG GGGG LLLL LLGG</code>。比如如果你的全局内存具有 6 个字节，你的局部内存需要 16 字节，则你的头部是 <code>0b 0000 0110 0100 0000</code> 或以十六进制表示是 <code>0x 06 40</code>。</p>
+<p>这是描述性版本，现在是声明式方式的第二种方法。如果 <code>local_mem</code> 是本地内存大小，<code>global_mem</code> 是全局内存大小，则计算：<code>header</code> = <code>local_mem</code> * 1024 + <code>global_mem</code>。把头部以小尾端 2 字节整数格式写入，你将得到两个头部字节。如果你还有疑问，请等待接下来的课程，你将看到大量的头部并从例子中学习，这将有望解答你的疑问。</p>
+<h2 id="什么都不做的变体"><a href="#什么都不做的变体" class="headerlink" title="什么都不做的变体"></a>什么都不做的变体</h2><p>在离开我们的第一个例子并关闭第一章之前，我们将测试两个头部的变体。第一个尝试是直接命令具有 6 字节的全局内存空间：</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\ </span>    </div><div class="line">  -------------------------    </div><div class="line">0x|06:00|2A:00|00|06:00|01|    </div><div class="line">  -------------------------    </div><div class="line">   <span class="symbol">\ </span>6   <span class="symbol">\ </span>42  <span class="symbol">\R</span>e<span class="symbol">\ </span>0,6 <span class="symbol">\N</span> <span class="symbol">\ </span>  </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\o</span> <span class="symbol">\ </span> </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span></div><div class="line">      -------------------------</div></pre></td></tr></table></figure>
+<p>我们期望获得 6 字节低值输出的回复。 因此，你必须将答案的长度从 5 增加到 11。如果这样做，你将得到：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">----------------------------------    </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\r</span>s<span class="symbol">\ </span>Output          <span class="symbol">\ </span>  </div><div class="line">  –---------------------------------  </div><div class="line">0x|09:00|2A:00|02|00:00:00:00:00:00|  </div><div class="line">  –---------------------------------  </div><div class="line">   <span class="symbol">\ </span>9   <span class="symbol">\ </span>42  <span class="symbol">\o</span>k<span class="symbol">\ </span>                <span class="symbol">\ </span></div><div class="line">    ----------------------------------</div></pre></td></tr></table></figure></p>
+<p>我们添加 16 字节的局部内存空间，并将直接命令更改为以下内容：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">-------------------------      </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\ </span>    </div><div class="line">  -------------------------    </div><div class="line">0x|06:00|2A:00|00|06:40|01|    </div><div class="line">  -------------------------    </div><div class="line">   <span class="symbol">\ </span>6   <span class="symbol">\ </span>42  <span class="symbol">\R</span>e<span class="symbol">\1</span>6,6 <span class="symbol">\N</span> <span class="symbol">\ </span>  </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\o</span> <span class="symbol">\ </span> </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span></div><div class="line">      -------------------------</div></pre></td></tr></table></figure></p>
+<p>我们希望得到与上述相同的回复，实际上是：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">----------------------------------    </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\r</span>s<span class="symbol">\ </span>Output          <span class="symbol">\ </span>  </div><div class="line">  –---------------------------------  </div><div class="line">0x|09:00|2A:00|02|00:00:00:00:00:00|  </div><div class="line">  –---------------------------------  </div><div class="line">   <span class="symbol">\ </span>9   <span class="symbol">\ </span>42  <span class="symbol">\o</span>k<span class="symbol">\ </span>                <span class="symbol">\ </span></div><div class="line">    ----------------------------------</div></pre></td></tr></table></figure></p>
+<h2 id="你的家庭作业"><a href="#你的家庭作业" class="headerlink" title="你的家庭作业"></a>你的家庭作业</h2><p>在进行第 2 课之前，你应该完成如下的家庭作业：</p>
+<ul>
+<li>把一个小程序转换为你喜欢的编程语言并把它集成进你喜欢的开发环境。</li>
+<li>准备一些工具，因为一遍又一遍的从头开始可不是一件让人愉快的事情。我想到了以下设计：<ul>
+<li>EV3 是一个类。</li>
+<li>BLUETOOTH，USB，WIFI，STD，ASYNC，SYNC 和 opNop 是公共常量。</li>
+<li>连接 EV3 是 EV3 对象初始化的一部分，即协议的选择通过以特定的参数调用 EV3 对象的构造函数完成。EV3 对象需要记住它的协议类型。<code>socket</code> 和 <code>device</code> 是 EV3 对象的 private 或 protected 变量。</li>
+<li>给 EV3 发送数据通过 EV3 类的方法 <code>send_direct_cmd</code> 完成。你可以把示例的函数当作蓝图，但在内部你一定要区分协议。</li>
+<li>为了从 EV3 接收数据，我们使用方法 <code>wait_for_reply</code>。你必须把函数 <code>send_direct_cmd</code> 的代码拆分为两个新的方法 <code>send_direct_cmd</code> 和 <code>wait_for_reply</code>。</li>
+<li>添加一个属性 <code>verbosity</code>，它控制是否打印已发送的直接命令和收到的回复。</li>
+<li>添加一个属性 <code>sync_mode</code>，它通过如下值控制通信的行为：<ul>
+<li><code>SYNC</code>：总是使用类型 <code>DIRECT_COMMAND_REPLY</code> 并等待响应。</li>
+<li><code>ASYNC</code>：从不等待响应，当不使用全局内存时设置 <code>DIRECT_COMMAND_NO_REPLY</code>，其它情况设置 <code>DIRECT_COMMAND_REPLY</code>。</li>
+<li><code>STD</code>：像 <code>ASYNC</code> 那样设置 <code>DIRECT_COMMAND_NO_REPLY</code> 或 <code>DIRECT_COMMAND_REPLY</code>，但在 <code>DIRECT_COMMAND_REPLY</code> 的情况下等待响应。</li>
+</ul>
+</li>
+<li><code>msg_cnt</code> 是 EV3 对象的私有变量，每次调用 <code>send_direct_cmd</code> 这个值都会增加。使用它来设置消息计数器。</li>
+<li>如例子中那样，消息长度，消息计数器，消息类型和头部都是在 <code>send_direct_cmd</code> 内部自动添加的。因此 <code>send_direct_cmd</code> 方法的参数 <code>ops</code> 真正地保存操作有关的信息而没有其它东西。</li>
+</ul>
+</li>
+<li>做一些性能测试，并比较三种通信协议（你将看到，USB 最快，蓝牙最慢，Wifi 居于中间，但你可能会赌三个协议之间的绝对值和因素）。<ul>
+<li>以 <code>DIRECT_COMMAND_REPLY</code> 重复发送 <code>opNop</code> 并计算一个发送接收循环的平均时间。</li>
+<li>把连接的时间从发送和接收的时间中分离出来。你将只连接一次，但发送和接收循环的性能将限制你的应用程序。</li>
+</ul>
+</li>
+</ul>
+<p><strong>译者注：</strong><br>以我本人手边的设备，比较方便测试 USB 和蓝牙的性能。我测试得到的，noop 操作的连接建立和消息发送性能如下：</p>
+<table>
+<thead>
+<tr>
+<th>连接方式</th>
+<th>连接时间（单位/秒）</th>
+<th>消息发送接收时间（单位/秒）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>蓝牙</td>
+<td>3.849</td>
+<td>0.0872</td>
+</tr>
+<tr>
+<td>USB</td>
+<td>0.3204</td>
+<td>0.004</td>
+</tr>
+</tbody>
+</table>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>你开始编写一个类 <code>EV3</code>，用于使用直接命令与 LEGO EV3 通信。这个类允许自由地选择通信协议，并提供蓝牙，USB 和 Wifi。我选择的编程语言是 Python3。我使用 pydoc3 来展示我们的工程的实际状态。我希望，你可以简单地把它转为你喜欢的语言。此刻，我们的类 <code>EV3</code> 具有如下的 API：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">Help</span> <span class="keyword">on</span> <span class="keyword">module</span> ev3:</div><div class="line"></div><div class="line"><span class="keyword">NAME</span></div><div class="line">    ev3 - LEGO EV3 direct commands</div><div class="line"></div><div class="line">CLASSES</div><div class="line">    builtins.object</div><div class="line">        EV3</div><div class="line">    </div><div class="line">    <span class="keyword">class</span> EV3(builtins.object)</div><div class="line">     |  <span class="keyword">object</span> <span class="keyword">to</span> communicate <span class="keyword">with</span> a LEGO EV3 <span class="keyword">using</span> direct commands</div><div class="line">     |  </div><div class="line">     |  Methods defined here:</div><div class="line">     |  </div><div class="line">     |  __del__(<span class="keyword">self</span>)</div><div class="line">     |      closes the <span class="keyword">connection</span> <span class="keyword">to</span> the LEGO EV3</div><div class="line">     |  </div><div class="line">     |  __init__(<span class="keyword">self</span>, protocol:<span class="keyword">str</span>, host:<span class="keyword">str</span>)</div><div class="line">     |      Establish a <span class="keyword">connection</span> <span class="keyword">to</span> a LEGO EV3 device</div><div class="line">     |      </div><div class="line">     |      Arguments:</div><div class="line">     |      protocol: <span class="string">'Bluetooth'</span>, <span class="string">'Usb'</span> <span class="keyword">or</span> <span class="string">'Wifi'</span></div><div class="line">     |      host: mac-address <span class="keyword">of</span> the LEGO EV3 (f.i. <span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">     |  </div><div class="line">     |  send_direct_cmd(<span class="keyword">self</span>, ops:<span class="keyword">bytes</span>, local_mem:<span class="built_in">int</span>=<span class="number">0</span>, global_mem:<span class="built_in">int</span>=<span class="number">0</span>) -&gt; <span class="keyword">bytes</span></div><div class="line">     |      Send a direct command <span class="keyword">to</span> the LEGO EV3</div><div class="line">     |      </div><div class="line">     |      Arguments:</div><div class="line">     |      ops: holds netto <span class="keyword">data</span> <span class="keyword">only</span> (<span class="keyword">operations</span>), the <span class="keyword">following</span> <span class="keyword">fields</span> <span class="keyword">are</span> added:</div><div class="line">     |        <span class="keyword">length</span>: <span class="number">2</span> <span class="keyword">bytes</span>, <span class="keyword">little</span> <span class="keyword">endian</span></div><div class="line">     |        counter: <span class="number">2</span> <span class="keyword">bytes</span>, <span class="keyword">little</span> <span class="keyword">endian</span></div><div class="line">     |        <span class="keyword">type</span>: <span class="number">1</span> <span class="keyword">byte</span>, DIRECT_COMMAND_REPLY <span class="keyword">or</span> DIRECT_COMMAND_NO_REPLY</div><div class="line">     |        header: <span class="number">2</span> <span class="keyword">bytes</span>, holds <span class="keyword">sizes</span> <span class="keyword">of</span> <span class="keyword">local</span> <span class="keyword">and</span> <span class="keyword">global</span> <span class="keyword">memory</span></div><div class="line">     |      </div><div class="line">     |      Keyword Arguments:</div><div class="line">     |      local_mem: <span class="keyword">size</span> <span class="keyword">of</span> the <span class="keyword">local</span> <span class="keyword">memory</span></div><div class="line">     |      global_mem: <span class="keyword">size</span> <span class="keyword">of</span> the <span class="keyword">global</span> <span class="keyword">memory</span></div><div class="line">     |      </div><div class="line">     |      <span class="keyword">Returns</span>: </div><div class="line">     |        sync_mode <span class="keyword">is</span> <span class="keyword">STD</span>: reply (<span class="keyword">if</span> global_mem &gt; <span class="number">0</span>) <span class="keyword">or</span> message counter</div><div class="line">     |        sync_mode <span class="keyword">is</span> ASYNC: message counter</div><div class="line">     |        sync_mode <span class="keyword">is</span> <span class="keyword">SYNC</span>: reply <span class="keyword">of</span> the LEGO EV3</div><div class="line">     |  </div><div class="line">     |  wait_for_reply(<span class="keyword">self</span>, counter:<span class="keyword">bytes</span>) -&gt; <span class="keyword">bytes</span></div><div class="line">     |      Ask the LEGO EV3 <span class="keyword">for</span> a reply <span class="keyword">and</span> <span class="keyword">wait</span> <span class="keyword">until</span> it <span class="keyword">is</span> received</div><div class="line">     |      </div><div class="line">     |      Arguments:</div><div class="line">     |      counter: <span class="keyword">is</span> the message counter <span class="keyword">of</span> the <span class="keyword">corresponding</span> send_direct_cmd</div><div class="line">     |      </div><div class="line">     |      <span class="keyword">Returns</span>:</div><div class="line">     |      reply <span class="keyword">to</span> the direct command</div><div class="line">     |  </div><div class="line">     |  <span class="comment">----------------------------------------------------------------------</span></div><div class="line">     |  <span class="keyword">Data</span> descriptors defined here:</div><div class="line">     |  </div><div class="line">     |  __dict__</div><div class="line">     |      dictionary <span class="keyword">for</span> <span class="keyword">instance</span> <span class="keyword">variables</span> (<span class="keyword">if</span> defined)</div><div class="line">     |  </div><div class="line">     |  __weakref__</div><div class="line">     |      <span class="keyword">list</span> <span class="keyword">of</span> weak <span class="keyword">references</span> <span class="keyword">to</span> the <span class="keyword">object</span> (<span class="keyword">if</span> defined)</div><div class="line">     |  </div><div class="line">     |  sync_mode</div><div class="line">     |      <span class="keyword">sync</span> <span class="keyword">mode</span> (standard, <span class="keyword">asynchronous</span>, <span class="keyword">synchronous</span>)</div><div class="line">     |      </div><div class="line">     |      <span class="keyword">STD</span>:   <span class="keyword">Use</span> DIRECT_COMMAND_REPLY <span class="keyword">if</span> global_mem &gt; <span class="number">0</span>,</div><div class="line">     |             <span class="keyword">wait</span> <span class="keyword">for</span> reply <span class="keyword">if</span> there <span class="keyword">is</span> one.</div><div class="line">     |      ASYNC: <span class="keyword">Use</span> DIRECT_COMMAND_REPLY <span class="keyword">if</span> global_mem &gt; <span class="number">0</span>,</div><div class="line">     |             <span class="keyword">never</span> <span class="keyword">wait</span> <span class="keyword">for</span> reply (it<span class="string">'s the task of the calling program).</span></div><div class="line">     |      SYNC:  Always use DIRECT_COMMAND_REPLY and wait for reply.</div><div class="line">     |      </div><div class="line">     |      The general idea is:</div><div class="line">     |      ASYNC: Interruption or EV3 device queues direct commands,</div><div class="line">     |             control directly comes back.</div><div class="line">     |      SYNC:  EV3 device is blocked until direct command is finished,</div><div class="line">     |             control comes back, when direct command is finished.               </div><div class="line">     |      STD:   NO_REPLY like ASYNC with interruption or EV3 queuing,</div><div class="line">     |             REPLY like SYNC, synchronicity of program and EV3 device.</div><div class="line">     |  </div><div class="line">     |  verbosity</div><div class="line">     |      level of verbosity (prints on stdout).</div><div class="line"></div><div class="line">DATA</div><div class="line">    BLUETOOTH = 'Bluetooth<span class="string">'</span></div><div class="line">    USB = 'Usb<span class="string">'</span></div><div class="line">    WIFI = 'Wifi<span class="string">'</span></div><div class="line">    STD = '<span class="keyword">STD</span><span class="string">'</span></div><div class="line">    ASYNC = 'ASYSNC<span class="string">'</span></div><div class="line">    SYNC = '<span class="keyword">SYNC</span><span class="string">'</span></div><div class="line">    opNop = b'\x01<span class="string">'</span></div></pre></td></tr></table></figure>
+<p>我的 <code>EV3</code> 类是模块 <code>ev3</code> 的一部分，文件名是 <code>ev3.py</code>。我使用如下程序测试我的 <code>EV3</code> 类：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env python3</div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3<span class="selector-class">.BLUETOOTH</span>, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">my_ev3<span class="selector-class">.verbosity</span> = <span class="number">1</span></div><div class="line"></div><div class="line">ops = ev3<span class="selector-class">.opNop</span></div><div class="line"></div><div class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">"*** SYNC ***"</span>)</span></span></div><div class="line">my_ev3<span class="selector-class">.sync_mode</span> = ev3<span class="selector-class">.SYNC</span></div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line"></div><div class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">"*** ASYNC (no reply) ***"</span>)</span></span></div><div class="line">my_ev3<span class="selector-class">.sync_mode</span> = ev3<span class="selector-class">.ASYNC</span></div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line"></div><div class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">"*** ASYNC (reply) ***"</span>)</span></span></div><div class="line">counter_1 = my_ev3.send_direct_cmd(ops, global_mem=<span class="number">1</span>)</div><div class="line">counter_2 = my_ev3.send_direct_cmd(ops, global_mem=<span class="number">1</span>)</div><div class="line">my_ev3.wait_for_reply(counter_1)</div><div class="line">my_ev3.wait_for_reply(counter_2)</div><div class="line"></div><div class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">"*** STD (no reply) ***"</span>)</span></span></div><div class="line">my_ev3<span class="selector-class">.sync_mode</span> = ev3<span class="selector-class">.STD</span></div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line"></div><div class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">"*** STD (reply) ***"</span>)</span></span></div><div class="line">my_ev3.send_direct_cmd(ops, global_mem=<span class="number">5</span>)</div><div class="line">my_ev3.send_direct_cmd(ops, global_mem=<span class="number">5</span>)</div></pre></td></tr></table></figure></p>
+<p>得到输出：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">*** <span class="selector-tag">SYNC</span> ***</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.084275</span> <span class="selector-tag">Sent</span> <span class="selector-tag">0x</span>|<span class="selector-tag">06</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2A</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">00</span>|<span class="selector-tag">00</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">01</span>|</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.168023</span> <span class="selector-tag">Recv</span> <span class="selector-tag">0x</span>|<span class="selector-tag">03</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2A</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">02</span>|</div><div class="line">*** <span class="selector-tag">ASYNC</span> (no reply) ***</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.168548</span> <span class="selector-tag">Sent</span> <span class="selector-tag">0x</span>|<span class="selector-tag">06</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2B</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">80</span>|<span class="selector-tag">00</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">01</span>|</div><div class="line">*** <span class="selector-tag">ASYNC</span> (reply) ***</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.168976</span> <span class="selector-tag">Sent</span> <span class="selector-tag">0x</span>|<span class="selector-tag">06</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2C</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">00</span>|<span class="selector-tag">01</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">01</span>|</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.169315</span> <span class="selector-tag">Sent</span> <span class="selector-tag">0x</span>|<span class="selector-tag">06</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2D</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">00</span>|<span class="selector-tag">01</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">01</span>|</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.212077</span> <span class="selector-tag">Recv</span> <span class="selector-tag">0x</span>|<span class="selector-tag">04</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2C</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">02</span>|<span class="selector-tag">00</span>|</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.212708</span> <span class="selector-tag">Recv</span> <span class="selector-tag">0x</span>|<span class="selector-tag">04</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2D</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">02</span>|<span class="selector-tag">00</span>|</div><div class="line">*** <span class="selector-tag">STD</span> (no reply) ***</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.213034</span> <span class="selector-tag">Sent</span> <span class="selector-tag">0x</span>|<span class="selector-tag">06</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2E</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">80</span>|<span class="selector-tag">00</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">01</span>|</div><div class="line">*** <span class="selector-tag">STD</span> (reply) ***</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.213411</span> <span class="selector-tag">Sent</span> <span class="selector-tag">0x</span>|<span class="selector-tag">06</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2F</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">00</span>|<span class="selector-tag">05</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">01</span>|</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.254032</span> <span class="selector-tag">Recv</span> <span class="selector-tag">0x</span>|<span class="selector-tag">08</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">2F</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">02</span>|<span class="selector-tag">00</span><span class="selector-pseudo">:00</span><span class="selector-pseudo">:00</span><span class="selector-pseudo">:00</span><span class="selector-pseudo">:00</span>|</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.254633</span> <span class="selector-tag">Sent</span> <span class="selector-tag">0x</span>|<span class="selector-tag">06</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">30</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">00</span>|<span class="selector-tag">05</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">01</span>|</div><div class="line"><span class="selector-tag">15</span><span class="selector-pseudo">:15</span><span class="selector-pseudo">:05.313027</span> <span class="selector-tag">Recv</span> <span class="selector-tag">0x</span>|<span class="selector-tag">08</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">30</span><span class="selector-pseudo">:00</span>|<span class="selector-tag">02</span>|<span class="selector-tag">00</span><span class="selector-pseudo">:00</span><span class="selector-pseudo">:00</span><span class="selector-pseudo">:00</span><span class="selector-pseudo">:00</span>|</div></pre></td></tr></table></figure></p>
+<p>一些备注：</p>
+<ul>
+<li><code>sync_mode</code> = <code>SYNC</code> 设置 <code>type</code> = <code>DIRECT_COMMAND_REPLY</code> 并自动地等待响应，ok。</li>
+<li><code>sync_mode</code> = <code>ASYNC</code> 设置 <code>type</code> = <code>DIRECT_COMMAND_NO_REPLY</code>，不等待，ok。</li>
+<li>全局内存设置 <code>type</code> = <code>DIRECT_COMMAND_REPLY</code> 时 <code>sync_mode</code> = <code>ASYNC</code>，不等待。显式地调用 <code>wait_for_reply</code> 方法获得响应。</li>
+<li>请特别尊重此变体。我们发送两个直接命令，它们都被执行，且 EV3 设备保存响应。</li>
+<li>当我们稍后询问响应时，我们首先读取第一条命令的响应。它似乎就像 EV3 是一个 FIFO（先进先出）。 </li>
+<li>但它也可以并行执行，但它也可以按照完成执行的顺序执行并行和重复。我们将回到这一点。</li>
+<li>模式 <code>ASYNC</code> 需要一些规律。如果你忘记了读取响应，当你等待另一件事时，它会来。 我们使用消息计数器来揭示这种情况！</li>
+<li>请小心 USB 协议！协议USB请小心！ 如果像我一样直接发送异步命令，这可能会太快。</li>
+<li><code>sync_mode</code> = <code>STD</code>，没有全局内存设置 <code>type</code> = <code>DIRECT_COMMAND_NO_REPLY</code>，并且不等待回复，ok。</li>
+<li><code>sync_mode</code> = <code>STD</code>，全局内存设置 <code>type</code> = <code>DIRECT_COMMAND_REPLY</code>，每个直接命令等待响应，ok。</li>
+<li>消息计数器随直接命令递增，ok。</li>
+<li>头部正确保存全局内存的大小，ok。</li>
+</ul>
+<p>如果你完成了作业，那么你已经为新的冒险做好了充分的准备。 我希望在下一课中再次见到你。</p>
+<p><a href="http://ev3directcommands.blogspot.com/2016/01/no-title-specified-page-table-border_94.html" target="_blank" rel="external">原文</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/ROS/" rel="tag"># ROS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/26/lego_ev3_communication_dev_kit/" rel="next" title="LEGO EV3 通信 开发者套件">
+                <i class="fa fa-chevron-left"></i> LEGO EV3 通信 开发者套件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/30/lego_ev3_direct_command_002/" rel="prev" title="EV3 直接命令 - 第 2 课 让你的 EV3 做点什么">
+                EV3 直接命令 - 第 2 课 让你的 EV3 做点什么 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#要知道的文档"><span class="nav-number">1.</span> <span class="nav-text">要知道的文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一课-无为的艺术"><span class="nav-number">2.</span> <span class="nav-text">第一课 无为的艺术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#比特和字节命名的简短介绍"><span class="nav-number">2.1.</span> <span class="nav-text">比特和字节命名的简短介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么都不做的直接命令"><span class="nav-number">2.2.</span> <span class="nav-text">什么都不做的直接命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#给-EV3-发送消息"><span class="nav-number">2.3.</span> <span class="nav-text">给 EV3 发送消息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#蓝牙"><span class="nav-number">2.3.1.</span> <span class="nav-text">蓝牙</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#python"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">python</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wifi"><span class="nav-number">2.3.2.</span> <span class="nav-text">Wifi</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Python"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java-1"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#USB"><span class="nav-number">2.3.3.</span> <span class="nav-text">USB</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Python-1"><span class="nav-number">2.3.3.1.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java-2"><span class="nav-number">2.3.3.2.</span> <span class="nav-text">Java</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应答消息"><span class="nav-number">2.4.</span> <span class="nav-text">应答消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#头部的细节"><span class="nav-number">2.5.</span> <span class="nav-text">头部的细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么都不做的变体"><span class="nav-number">2.6.</span> <span class="nav-text">什么都不做的变体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#你的家庭作业"><span class="nav-number">2.7.</span> <span class="nav-text">你的家庭作业</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">2.8.</span> <span class="nav-text">结论</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

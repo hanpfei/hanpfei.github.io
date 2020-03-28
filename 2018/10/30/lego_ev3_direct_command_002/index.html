@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,ROS," />
+
+
+<meta name="description" content="介绍上一课我们编写了类 EV3，它可以用于与 LEGO EV3 设备通信。我们通过什么也不做的 opNop 操作测试它。这一课是关于带有参数的真实指令的。这将使你的 EV3 设备成为你程序的活动部分。目前，我们不从我们的 EV3 接收数据。这个主题需要等稍后的一些课程。我们选取了如下这些种类的操作：
+
+设置 EV3 的名称
+播放声音和音调
+控制它的LED
+显示图像
+定时器
+启动程序
+模拟按钮动作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EV3 直接命令 - 第 2 课 让你的 EV3 做点什么">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/10/30/lego_ev3_direct_command_002/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="介绍上一课我们编写了类 EV3，它可以用于与 LEGO EV3 设备通信。我们通过什么也不做的 opNop 操作测试它。这一课是关于带有参数的真实指令的。这将使你的 EV3 设备成为你程序的活动部分。目前，我们不从我们的 EV3 接收数据。这个主题需要等稍后的一些课程。我们选取了如下这些种类的操作：
+
+设置 EV3 的名称
+播放声音和音调
+控制它的LED
+显示图像
+定时器
+启动程序
+模拟按钮动作">
+<meta property="og:updated_time" content="2018-12-02T01:58:14.537Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EV3 直接命令 - 第 2 课 让你的 EV3 做点什么">
+<meta name="twitter:description" content="介绍上一课我们编写了类 EV3，它可以用于与 LEGO EV3 设备通信。我们通过什么也不做的 opNop 操作测试它。这一课是关于带有参数的真实指令的。这将使你的 EV3 设备成为你程序的活动部分。目前，我们不从我们的 EV3 接收数据。这个主题需要等稍后的一些课程。我们选取了如下这些种类的操作：
+
+设置 EV3 的名称
+播放声音和音调
+控制它的LED
+显示图像
+定时器
+启动程序
+模拟按钮动作">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/10/30/lego_ev3_direct_command_002/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>EV3 直接命令 - 第 2 课 让你的 EV3 做点什么 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/10/30/lego_ev3_direct_command_002/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">EV3 直接命令 - 第 2 课 让你的 EV3 做点什么</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-30T20:05:49+08:00">2018-10-30</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/30/lego_ev3_direct_command_002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/30/lego_ev3_direct_command_002/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/10/30/lego_ev3_direct_command_002/" class="leancloud_visitors" data-flag-title="EV3 直接命令 - 第 2 课 让你的 EV3 做点什么">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>上一课我们编写了类 EV3，它可以用于与 LEGO EV3 设备通信。我们通过什么也不做的 <code>opNop</code> 操作测试它。这一课是关于带有参数的真实指令的。这将使你的 EV3 设备成为你程序的活动部分。目前，我们不从我们的 EV3 接收数据。这个主题需要等稍后的一些课程。我们选取了如下这些种类的操作：</p>
+<ul>
+<li>设置 EV3 的名称</li>
+<li>播放声音和音调</li>
+<li>控制它的LED</li>
+<li>显示图像</li>
+<li>定时器</li>
+<li>启动程序</li>
+<li>模拟按钮动作<a id="more"></a>
+请拿出 LEGO EV3 操作集的官方文档 <em>EV3 Firmware Developer Kit</em>，并阅读它。LEGO 的官方文档 <em>EV3 Communication Developer Kit</em> 还包含一些直接命令的例子。</li>
+</ul>
+<p>如果你没有编写 <code>EV3</code> 类，但想要运行本课的程序，你可以自由地从 <a href="https://github.com/ChristophGaukel/ev3-python3" target="_blank" rel="external">ev3-python3</a> 下载模块 <code>ev3</code>。程序中仅有的需要你修改的地方是 MAC 地址。把 <code>00:16:53:42:2B:99</code> 替换为你的 EV3 设备的值。</p>
+<h1 id="设置-EV3-的名字"><a href="#设置-EV3-的名字" class="headerlink" title="设置 EV3 的名字"></a>设置 EV3 的名字</h1><p>编程艺术的一个重要部分是选择好的名字。我们思考事物的方式强烈依赖于我们为它使用的名字。因此我们从设置名字开始。为了把你的 EV3 的名字修改为 <em>myEV3</em>，你需要发送如下的直接命令：</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">-------------------------------------------------                </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\ </span>Name               <span class="symbol">\ </span>              </div><div class="line">  -------------------------------------------------              </div><div class="line">0x|0E:00|2A:00|00|00:00|D4|08|84:6D:79:45:56:33:00|              </div><div class="line">  -------------------------------------------------              </div><div class="line">   <span class="symbol">\ </span>14  <span class="symbol">\ </span>42  <span class="symbol">\R</span>e<span class="symbol">\ </span>0,0 <span class="symbol">\C</span> <span class="symbol">\S</span> <span class="symbol">\ </span>"myEV3"            <span class="symbol">\ </span>            </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\o</span> <span class="symbol">\E</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>           </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\m</span> <span class="symbol">\T</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>          </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\_</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>         </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\S</span> <span class="symbol">\B</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>        </div><div class="line">        <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\R</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>       </div><div class="line">         <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\I</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>      </div><div class="line">          <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\C</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>     </div><div class="line">           <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\K</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>    </div><div class="line">            <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\N</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>   </div><div class="line">             <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\A</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span>  </div><div class="line">              <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\M</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span> </div><div class="line">               <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\E</span> <span class="symbol">\ </span>                   <span class="symbol">\ </span></div><div class="line">                -------------------------------------------------</div></pre></td></tr></table></figure>
+<p>响应是：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">----------------    </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\r</span>s<span class="symbol">\ </span>  </div><div class="line">  ----------------  </div><div class="line">0x|03:00|2A:00|02|  </div><div class="line">  ----------------  </div><div class="line">   <span class="symbol">\ </span>3   <span class="symbol">\ </span>42  <span class="symbol">\o</span>k<span class="symbol">\ </span></div><div class="line">    ----------------</div></pre></td></tr></table></figure></p>
+<p>这说明，直接命令被成功执行了。你可以通过查看 brick 显示器来检查操作的结果，在它的第一行应该显示新名称。此外，如果某些蓝牙设备搜索设备并找到了你的 EV3，它将以新的名字显示。</p>
+<p>几点备注：</p>
+<ul>
+<li>我们使用了一个新操作，它执行一些设置：<code>opCom_Set</code> = <code>0x|D4|</code></li>
+<li>由于操作 <code>opCom_Set</code> 用于执行不同的设置，因而它的后面总是跟一个指定操作内容的 CMD。CMD 告诉我们，具体是哪一个。你可以把它们想成是一个两字节操作。但在 EV3 的术语中，它是一个操作（即 指令）和它的 CMD。</li>
+<li><code>opCom_Set</code> 的 CMD <code>SET_BRICKNAME</code> = <code>0x|08|</code> 需要一个参数：<code>NAME</code>。在 LEGO 的操作描述中，你可以读到：<em>(DATA8) NAME – First character in character string</em>。但事实上，我们发送 <code>0x|84:6D:79:45:56:33:00|</code> 作为参数 <code>NAME</code> 的值。这需要一些解释：<ul>
+<li><code>0x|6D:79:45:56:33|</code> 是字符串 <em>myEV3</em> 的 ASCII 码，其中 <code>0x|6D|</code> = <code>“m”</code>，<code>0x|79|</code> = <code>“y”</code> 等等。</li>
+<li><code>0x|00|</code> 终止字符串（这被称为零终止字符串）。</li>
+<li><code>0x|84|</code> 是 LCS 字符串的前导标识字节（以二进制表示是：<code>0b 1000 0100</code>）。</li>
+</ul>
+</li>
+</ul>
+<p>结论是，你发送给你的 EV3 作为操作的常量参数的每个字符串，必须包含前导 <code>0x|84|</code> 和后缀 <code>0x|00|</code>。在我的情况中，连接的结果是<code>LCS(&quot;myEV3&quot;)</code> = <code>0x|84:6D:79:45:56:33:00|</code>，作为参数 <code>NAME</code> 的值。</p>
+<p>请给你的类 EV3 添加一个静态类方法（在 Python 中，是一个模块级的函数）：</p>
+<ul>
+<li><code>LCS(value: str)</code> 以 LCS 格式返回一个表示字符串值的字节数组。</li>
+</ul>
+<p>然后添加两个常量 <code>opCom_Set</code> = <code>0x|D4|</code> 和 <code>SET_BRICKNAME</code> = <code>0x|08|</code>。</p>
+<p>可以编写一个小程序来修改名称。我通过如下的代码来完成：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env python3</div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3<span class="selector-class">.BLUETOOTH</span>, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">my_ev3<span class="selector-class">.verbosity</span> = <span class="number">1</span></div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opCom_Set</span>,</div><div class="line">    ev3<span class="selector-class">.SET_BRICKNAME</span>,</div><div class="line">    ev3.LCS(<span class="string">"myEV3"</span>)</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>它的输出是：<br><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">09:12:31.011558 Sent 0x|<span class="string">0E:00</span>|<span class="string">2A:00</span>|<span class="string">80</span>|<span class="string">00:00</span>|<span class="string">D4:08:84:6D:79:45:56:33:00</span>|</div></pre></td></tr></table></figure></p>
+<p>请看一下你 EV3 的显示器，它的名字改变了。</p>
+<h1 id="常量整数参数"><a href="#常量整数参数" class="headerlink" title="常量整数参数"></a>常量整数参数</h1><p>字符串是一种参数类型，但还有其它的。共同的是，参数的类型由前导字节，<em>标识字节</em> 标识。在这一课，我们集中于常量参数和局部变量。术语 <em>常量参数</em> 并不是很精确，但它意味着参数具有如下两个特性：</p>
+<ul>
+<li>它们是操作的参数。</li>
+<li>它们总是保存值而永远没有地址。</li>
+</ul>
+<p>EV3 直接命令支持如下格式的常量参数：</p>
+<ul>
+<li>字符串（你已经学习了它们中的一个）</li>
+<li>整数值</li>
+</ul>
+<p>字符串的长度可变，整数是有符号的，且可以包含 5 位，8 位，16 位和 32 位。也许你没有看到浮点数，但是没有操作需要以浮点数作为参数。事实上，只有 5 种常量参数。</p>
+<p>你应该特别专注于第一个字节，即标识字节，它定义了变量的类型和长度。标识字节的位 0 <strong><em>（最高有效位）</em></strong> 代表长或短格式：</p>
+<ul>
+<li><code>0b 0... ....</code> 短格式（只有一个字节，标识字节包含值）</li>
+<li><code>0b 1... ....</code> 长格式（标识字节不包含任何值的位）</li>
+</ul>
+<p>位 5 （在长格式的情况下）代表长度类型</p>
+<ul>
+<li><code>0b .... .0..</code> 意味着固定长度。</li>
+<li><code>0b .... .1..</code> 意味着以零结束的字符串。</li>
+</ul>
+<p>位 6 和 7 （仅长格式）代表后续的整数的长度</p>
+<ul>
+<li><code>0b .... ..00</code> 意味着可变长度，</li>
+<li><code>0b .... ..01</code> 意味着后面有一个字节，</li>
+<li><code>0b .... ..10</code> 是说，后面有两个字节，</li>
+<li><code>0b .... ..11</code> 是说，后面有四个字节。</li>
+</ul>
+<p>现在我们写 5 个常量作为二进制掩码，其中 S 代表符号（0 是正的，1 是负的），V 代表值的一位。</p>
+<ul>
+<li><code>LC0</code>：<code>0b 00SV VVVV</code>，5 位整数值，范围：-32 - 31，长度：1 字节，由 2 个前导位 00 标识。<strong><em>整数值其实是 6 位的。</em></strong></li>
+<li><code>LC1</code>：<code>0b 1000 0001 SVVV VVVV</code>，8 位整数值，范围：-127 - 127，长度：2 字节，由前导字节 <code>0x|81|</code> 标识。值 <code>0x|80|</code> 是 <code>NaN</code>。</li>
+<li><code>LC2</code>：<code>0b 1000 0010 VVVV VVVV SVVV VVVV</code>，16 位整数值，范围：-32,767 – 32,767，长度：3 字节，由前导字节 <code>0x|82|</code> 标识。值 <code>0x|80:00|</code> 是 <code>NaN</code>。</li>
+<li><code>LC4</code>：<code>0b 1000 0011 VVVV VVVV VVVV VVVV VVVV VVVV SVVV VVVV</code>，32 位整数值，范围：-2,147,483,647 – 2,147,483,647，长度：5 字节，由前导字节 <code>0x|83|</code> 标识。值 <code>0x|80:00:00:00|</code> 是 <code>NaN</code>。</li>
+<li><code>LCS</code>：<code>0b 1000 0100 VVVV VVVV ... 0000 0000</code>，以零结尾的字符串，长度：可变，由前导字节 <code>0x|84|</code> 标识。</li>
+</ul>
+<p>LC2 和 LC4 的字节序列是小尾端的。这意味着，正如你从第 1 课学到的那样，标识字节是头部，后面的字节与你习惯的顺序相反。如果操作以整数常量作为参数，则可以在 LC0，LC1，LC2 或 LC4 之间进行选择。对于小值（范围在 -32 到 31 之间），用 LC0，对于非常大的值，用 LC4。直接命令从左到右读取。当解释一个参数的第一个字节时，哪个附加字节属于它以及在哪里找到该值是清楚的。总是使用最短的可能变体以消除通信流量，并因此加速直接命令的操作，但这种影响很小。更多关于参数的标识字节的细节可以在 LEGO 的 <em>EV3 Firmware Developer Kit</em> 的 3.4 节找到。</p>
+<p>请给你的 <code>EV3</code> 类添加另外的静态类方法（或模块方法）：</p>
+<ul>
+<li>LCX(value: int) 以格式 LC0，LC1，LC2 或 LC4 返回一个依赖于值的范围的字节数组。</li>
+</ul>
+<h1 id="播放声音文件"><a href="#播放声音文件" class="headerlink" title="播放声音文件"></a>播放声音文件</h1><p>我们想要我们的 EV3 brick 播放声音文件 <code>/home/root/lms2012/sys/ui/DownloadSucces.rsf</code>，这通过如下操作完成：</p>
+<ul>
+<li><code>opSound</code> = <code>0x|94|</code> 的 <code>CMD PLAY</code> = 0x|02|，且参数为：<ul>
+<li>VOLUME：百分比 [0 - 100]</li>
+<li>NAME：声音文件的绝对路径，或相对于 <code>/home/root/lms2012/sys/</code> (不包含扩展名 “.rsf”)</li>
+</ul>
+</li>
+</ul>
+<p>程序：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.USB, host='00:16:53:42:2B:99')</div><div class="line">my_ev3.verbosity = 1</div><div class="line"></div><div class="line">ops = b''.join([</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.PLAY,</div><div class="line">    ev3.LCX(100),                  <span class="comment"># VOLUME</span></div><div class="line">    ev3.LCS('./ui/DownloadSucces') <span class="comment"># NAME</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>输出：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">09</span>:<span class="number">42</span>:<span class="number">03.575103</span> Sent <span class="number">0</span>x|<span class="number">1</span><span class="attribute">E</span>:<span class="number">00</span>|<span class="number">2</span><span class="attribute">A</span>:<span class="number">00</span>|<span class="number">80</span>|<span class="number">00</span>:<span class="number">00</span>|<span class="number">94</span>:<span class="number">02</span>:<span class="number">81</span>:<span class="number">64</span>:<span class="number">84</span>:<span class="number">2</span><span class="attribute">E</span>:<span class="number">2</span><span class="attribute">F</span>:<span class="number">75</span>:<span class="number">69</span>:<span class="number">2</span><span class="attribute">F</span>:<span class="number">44</span>:<span class="number">6</span><span class="attribute">F</span>:<span class="number">77</span>:<span class="number">6</span><span class="attribute">E</span>:<span class="number">6</span><span class="attribute">C</span>:<span class="number">6</span><span class="attribute">F</span>:<span class="number">61</span>:<span class="number">64</span>:<span class="number">53</span>:<span class="number">75</span>:<span class="number">63</span>:<span class="number">63</span>:<span class="number">65</span>:<span class="number">73</span>:<span class="number">00</span>|</div></pre></td></tr></table></figure></p>
+<p>EV3 brick 的文件系统不是本节课的主题。更多信息请参考 <a href="http://ev3.fantastic.computer/doxygen/UIdesign.html" target="_blank" rel="external">Folder Structure</a>。</p>
+<h2 id="重复播放声音文件"><a href="#重复播放声音文件" class="headerlink" title="重复播放声音文件"></a>重复播放声音文件</h2><p>操作 <code>opSound</code> 具有一个 CMD <code>REPEAT</code>，它以无限循环播放声音文件，这可以由操作 <code>opSound</code> 的 CMD <code>BREAK</code> 中断。有两个额外的操作：</p>
+<ul>
+<li><code>opSound</code> = <code>0x|94|</code> 的 CMD <code>REPEAT</code> = <code>0x|03|</code>，且具有参数：<ul>
+<li>VOLUME：百分比 [0 - 100]</li>
+<li>NAME：声音文件的绝对路径，或相对于 <code>/home/root/lms2012/sys/</code> 的相对路径 (不包含扩展名 “.rsf”)</li>
+</ul>
+</li>
+<li><code>opSound</code> = <code>0x|94|</code> 的 CMD <code>BREAK</code> = <code>0x|00|</code>，没有参数。</li>
+</ul>
+<p>我们用如下的程序来测试它：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, time</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.USB, host='00:16:53:42:2B:99')</div><div class="line">my_ev3.verbosity = 1</div><div class="line"></div><div class="line">ops = b''.join([</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.REPEAT,</div><div class="line">    ev3.LCX(100),                  <span class="comment"># VOLUME</span></div><div class="line">    ev3.LCS('./ui/DownloadSucces') <span class="comment"># NAME</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line">time.sleep(5)</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.BREAK</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>它播放声音文件 5 秒，然后停止播放。输出为：<br><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">09:55:28.814320 Sent 0x|<span class="string">1E:00</span>|<span class="string">2A:00</span>|<span class="string">80</span>|<span class="string">00:00</span>|<span class="string">94:03:81:64:84:2E:2F:75:69:2F:44:6F:77:6E:6C:6F:61:64:53:75:63:63:65:73:00</span>|</div><div class="line">09:55:33.822352 Sent 0x|<span class="string">07:00</span>|<span class="string">2B:00</span>|<span class="string">80</span>|<span class="string">00:00</span>|<span class="string">94:00</span>|</div></pre></td></tr></table></figure></p>
+<h2 id="播放音调"><a href="#播放音调" class="headerlink" title="播放音调"></a>播放音调</h2><p>我们想要我们的 EV3 brick 播放音调，这通过如下操作完成：</p>
+<ul>
+<li><code>opSound</code> = <code>0x|94|</code> 的 <code>CMD TONE</code> = 0x|01|，且参数为：<ul>
+<li>VOLUME：百分比 [0 - 100]</li>
+<li>FREQUENCY：单位为 Hz，[250 - 10000]</li>
+<li>DURATION：单位为毫秒（0 表示无限制）</li>
+</ul>
+</li>
+</ul>
+<p>播放一个 a’ 一秒的直接命令：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">-------------------------------------------------        </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\v</span>o<span class="symbol">\ </span>fr     <span class="symbol">\ </span>du     <span class="symbol">\ </span>      </div><div class="line">  -------------------------------------------------      </div><div class="line">0x|0E:00|2A:00|80|00:00|94|01|01|82:B8:01|82:E8:03|      </div><div class="line">  -------------------------------------------------      </div><div class="line">   <span class="symbol">\ </span>14  <span class="symbol">\ </span>42  <span class="symbol">\n</span>o<span class="symbol">\ </span>0,0 <span class="symbol">\S</span> <span class="symbol">\T</span> <span class="symbol">\1</span> <span class="symbol">\ </span>440    <span class="symbol">\ </span>1000   <span class="symbol">\ </span>     </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\o</span> <span class="symbol">\O</span> <span class="symbol">\ </span> <span class="symbol">\ </span>       <span class="symbol">\ </span>       <span class="symbol">\ </span>    </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\N</span> <span class="symbol">\ </span> <span class="symbol">\ </span>       <span class="symbol">\ </span>       <span class="symbol">\ </span>   </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\n</span> <span class="symbol">\E</span> <span class="symbol">\ </span> <span class="symbol">\ </span>       <span class="symbol">\ </span>       <span class="symbol">\ </span>  </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\d</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>       <span class="symbol">\ </span>       <span class="symbol">\ </span> </div><div class="line">        -------------------------------------------------</div></pre></td></tr></table></figure></p>
+<p>程序发送它：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.USB, host='00:16:53:42:2B:99')</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.TONE,</div><div class="line">    ev3.LCX(1),    <span class="comment"># VOLUME</span></div><div class="line">    ev3.LCX(440),  <span class="comment"># FREQUENCY</span></div><div class="line">    ev3.LCX(1000), <span class="comment"># DURATION</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>尽管我们很自豪，但我们希望我们的 EV3 以 c’ 播放三和弦：</p>
+<ul>
+<li>c’ (262 Hz)</li>
+<li>e’ (330 Hz)</li>
+<li>g’ (392 Hz)</li>
+<li>c’’ (523 Hz)</li>
+</ul>
+<p>我们把我们的程序修改为：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.USB, host='00:16:53:42:2B:99')</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.TONE,</div><div class="line">    ev3.LCX(1),</div><div class="line">    ev3.LCX(262),</div><div class="line">    ev3.LCX(500),</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.TONE,</div><div class="line">    ev3.LCX(1),</div><div class="line">    ev3.LCX(330),</div><div class="line">    ev3.LCX(500),</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.TONE,</div><div class="line">    ev3.LCX(1),</div><div class="line">    ev3.LCX(392),</div><div class="line">    ev3.LCX(500),</div><div class="line">    ev3.opSound,</div><div class="line">    ev3.TONE,</div><div class="line">    ev3.LCX(2),</div><div class="line">    ev3.LCX(523),</div><div class="line">    ev3.LCX(1000)</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>但我们只听到了一个音调，即最后的那个 (c’’)。为什么？</p>
+<p>这是因为操作彼此中断。你必须将操作视为不耐烦且表现不佳的角色。中断是他们的标准。如果想要避免中断，则必须明确告诉它。在播放声音的场景中，可以通过如下操作完成：</p>
+<ul>
+<li><code>opSound_Ready</code> = <code>0x|96|</code></li>
+</ul>
+<p>它将一直等到声音结束。我们再次修改程序：<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="built_in">import</span> ev3</div><div class="line"></div><div class="line"><span class="attr">my_ev3</span> = ev3.EV3(<span class="attr">protocol=ev3.USB,</span> <span class="attr">host='00:16:53:42:2B:99')</span></div><div class="line"><span class="attr">ops</span> = b<span class="string">''.join([</span></div><div class="line">        opSound,</div><div class="line">        cmdSound_PlayTone,</div><div class="line">        LCX(1),</div><div class="line">        LCX(262),</div><div class="line">        LCX(500),</div><div class="line">        opSound_Ready,</div><div class="line"></div><div class="line">        opSound,</div><div class="line">        cmdSound_PlayTone,</div><div class="line">        LCX(1),</div><div class="line">        LCX(330),</div><div class="line">        LCX(500),</div><div class="line">        opSound_Ready,</div><div class="line"></div><div class="line">        opSound,</div><div class="line">        cmdSound_PlayTone,</div><div class="line">        LCX(1),</div><div class="line">        LCX(392),</div><div class="line">        LCX(500),</div><div class="line">        opSound_Ready,</div><div class="line"></div><div class="line">        opSound,</div><div class="line">        cmdSound_PlayTone,</div><div class="line">        LCX(2),</div><div class="line">        LCX(523),</div><div class="line">        LCX(1000),</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>现在我们听到了我们期望的！</p>
+<h1 id="修改-LEDs-的颜色"><a href="#修改-LEDs-的颜色" class="headerlink" title="修改 LEDs 的颜色"></a>修改 LEDs 的颜色</h1><p>我们的 EV3 永远不会达到真正的自动点唱机的质量，但为什么不添加一些灯光效果？这需要一个新操作：</p>
+<ul>
+<li><code>opUI_Write</code> = <code>0x|82|</code> 的 <code>CMD LED</code> = <code>0x|1B|</code>，且参数为：<ul>
+<li><code>PATTERN</code>：<code>GREEN</code> = <code>0x|01|</code>，<code>RED</code> = <code>0x|02|</code>，等等。</li>
+</ul>
+</li>
+</ul>
+<p>LED Patterns 可以取的值如下：</p>
+<ul>
+<li>0x00 : Led off</li>
+<li>0x01 : Led green</li>
+<li>0x02 : Led red</li>
+<li>0x03 : Led orange</li>
+<li>0x04 : Led green flashing</li>
+<li>0x05 : Led red flashing</li>
+<li>0x06 : Led orange flashing</li>
+<li>0x07 : Led green pulse</li>
+<li>0x08 : Led red pulse</li>
+<li>0x09 : Led orange pulse</li>
+</ul>
+<p>我们再次给我们的程序添加一些代码：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env python3</div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3<span class="selector-class">.USB</span>, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">my_ev3<span class="selector-class">.verbosity</span> = <span class="number">1</span></div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_RED</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">1</span>),</div><div class="line">    ev3.LCX(<span class="number">262</span>),</div><div class="line">    ev3.LCX(<span class="number">500</span>),</div><div class="line">    ev3<span class="selector-class">.opSound_Ready</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_GREEN</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">1</span>),</div><div class="line">    ev3.LCX(<span class="number">330</span>),</div><div class="line">    ev3.LCX(<span class="number">500</span>),</div><div class="line">    ev3<span class="selector-class">.opSound_Ready</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_RED</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">1</span>),</div><div class="line">    ev3.LCX(<span class="number">392</span>),</div><div class="line">    ev3.LCX(<span class="number">500</span>),</div><div class="line">    ev3<span class="selector-class">.opSound_Ready</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_RED_FLASH</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">2</span>),</div><div class="line">    ev3.LCX(<span class="number">523</span>),</div><div class="line">    ev3.LCX(<span class="number">2000</span>),</div><div class="line">    ev3<span class="selector-class">.opSound_Ready</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_GREEN</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>我们发送的是一个 60 字节长的直接命令：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">11</span>:<span class="number">39</span>:<span class="number">49.039902</span> Sent <span class="number">0</span>x|<span class="number">3</span><span class="attribute">C</span>:<span class="number">00</span>|<span class="number">2</span><span class="attribute">A</span>:<span class="number">00</span>|<span class="number">80</span>|<span class="number">00</span>:<span class="number">00</span>|<span class="number">82</span>:<span class="number">1</span><span class="attribute">B</span>:<span class="number">02</span>:<span class="number">94</span>:<span class="number">01</span>:<span class="number">01</span>:<span class="number">82</span>:<span class="number">06</span>:<span class="number">01</span>:<span class="number">82</span>:<span class="attribute">F4</span>:<span class="number">01</span>:<span class="number">96</span>:<span class="number">82</span>:<span class="number">1</span><span class="attribute">B</span>:<span class="number">01</span>:<span class="number">94</span>:<span class="number">01</span>:<span class="number">01</span>:<span class="number">82</span>:<span class="number">4</span><span class="attribute">A</span>:<span class="number">01</span>:<span class="number">82</span>:<span class="attribute">F4</span>:<span class="number">01</span>:<span class="number">96</span>:<span class="number">82</span>:<span class="number">1</span><span class="attribute">B</span>:<span class="number">02</span>:...</div></pre></td></tr></table></figure></p>
+<p>这小于它最大长度的 6%。</p>
+<h1 id="显示图像"><a href="#显示图像" class="headerlink" title="显示图像"></a>显示图像</h1><p>EV3 的显示屏是单色的，分辨率为 180 x 128 像素。这听起来有点过时，但允许显示图标和表情符号或绘制图片。操作 <code>opUI_Draw</code> 具有大量不同的操作显示器的 CMD。这里我们使用其中四个：</p>
+<ul>
+<li><code>opUI_Draw</code> = <code>0x|84|</code> 的 CMD <code>UPDATE</code> = <code>0x|00|</code>，没有参数。</li>
+<li><code>opUI_Draw</code> = <code>0x|84|</code> 的 <code>CMD TOPLINE</code> = <code>0x|12|</code>，具有参数：<ul>
+<li>(Data8) <code>ENABLE</code>：启用或禁用顶部状态行， [0：禁用，1：启用]</li>
+</ul>
+</li>
+<li><code>opUI_Draw</code> = <code>0x|84|</code> 的 CMD <code>FILLWINDOW</code> = 0x|13|，具有参数：<ul>
+<li>(Data8) COLOR：指定黑色或白色，[0：白色，1：黑色]</li>
+<li>(Data16) Y0：指定 Y 起始点，[0 - 127]</li>
+<li>(Data16) Y1：指定 Y 大小</li>
+</ul>
+</li>
+<li><code>opUI_Draw</code> = <code>0x|84|</code> 的 CMD <code>BMPFILE</code> = <code>0x|1C|</code>，具有参数：<ul>
+<li>(Data8) COLOR：指定黑色或白色，[0：白色，1：黑色]</li>
+<li>(Data16) X0：指定 X 起始点，[0 - 127]</li>
+<li>(Data16) Y0：指定 Y 起始点，[0 - 127]</li>
+<li>NAME：图像文件的绝对路径，或相对于 <code>/home/root/lms2012/sys/</code>（具有扩展名 “.rgf”）。该命令的名称具有误导性。该文件的扩展名必须是 <code>.rgf</code>（代表 <em>机器人图形格式(robot graphic format)</em>）而不是 bmp 图形的文件。</li>
+</ul>
+</li>
+</ul>
+<p>我们运行这个程序：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, time</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(</div><div class="line">    protocol=ev3.USB,</div><div class="line">    host='00:16:53:42:2B:99'</div><div class="line">)</div><div class="line">my_ev3.verbosity = 1</div><div class="line"></div><div class="line">ops = b''.join([</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.TOPLINE,</div><div class="line">    ev3.LCX(0),                                      <span class="comment"># ENABLE</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.BMPFILE,</div><div class="line">    ev3.LCX(1),                                      <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(0),                                      <span class="comment"># X0</span></div><div class="line">    ev3.LCX(0),                                      <span class="comment"># Y0</span></div><div class="line">    ev3.LCS(<span class="string">"../apps/Motor Control/MotorCtlAD.rgf"</span>), <span class="comment"># NAME</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line">time.sleep(5)</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.TOPLINE,</div><div class="line">    ev3.LCX(1),     <span class="comment"># ENABLE</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.FILLWINDOW,</div><div class="line">    ev3.LCX(0),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(0),     <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(0),     <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>输出为：<br><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">12:01:00.253855 Sent 0x|<span class="string">35:00</span>|<span class="string">2A:00</span>|<span class="string">80</span>|<span class="string">00:00</span>|<span class="string">84:12:00:84:1C:01:00:00:84:2E:2E:2F:61:70:70:...</span></div><div class="line">12:01:05.265584 Sent 0x|<span class="string">0F:00</span>|<span class="string">2B:00</span>|<span class="string">80</span>|<span class="string">00:00</span>|<span class="string">84:12:01:84:13:00:00:00:84:00</span>|</div></pre></td></tr></table></figure></p>
+<p>显示屏显示图像 <code>MotorCtlAD.rgf</code> 五秒钟，然后显示屏变为空，除了顶线。 一些注释：</p>
+<ul>
+<li>绘制需要画布。这是显示的实际图像。我们添加一些元素，然后调用 <code>UPDATE</code> 使画布可见。如果你更喜欢以空白画布开始，则必须明确清除画布的内容。</li>
+<li>CMD <code>TOPLINE</code> 允许打开或关闭顶线。</li>
+<li>CMD <code>FILLWINDOW</code> 允许填充或擦除窗口的一部分。如果参数 <code>Y0</code> 和 <code>Y1</code> 都为零，则表示整个显示屏。</li>
+<li>将 CMD <code>BMPFILE</code> 的参数 COLOR 设置为值 0 会反转图像的颜色。</li>
+<li>操作 <code>opUI_Draw</code> 允许存储和恢复图像（CMD <code>STORE</code> 和 <code>RESTORE</code>）。  但是当实际的直接命令执行结束时，存储的图像将丢失。</li>
+</ul>
+<p>欢迎你测试更多操作 <code>opUI_Draw</code> 的 CMD。</p>
+<h1 id="局部内存"><a href="#局部内存" class="headerlink" title="局部内存"></a>局部内存</h1><p>在第 1 课我们读到，本地内存是保存中间信息的地址空间。现在我们学习如何使用它，我们再次讨论标识字节，它定义变量的类型和长度。我们将编写另一个函数 LVX，它返回本地内存的地址。如你所知，标识字节的第 0 位代表短格式或长格式：</p>
+<ul>
+<li><code>0b 0... ....</code> 短格式（只有一个字节，标识字节包含值）</li>
+<li><code>0b 1... ....</code> 长格式（标识字节不包含任何值的位）</li>
+</ul>
+<p>如果位 1 和 2 是 <code>0b .10. ....,</code>，它们代表局部变量，它们是局部内存的地址。</p>
+<p>位 6 和 7 代表后续的值的长度</p>
+<ul>
+<li><code>0b .... ..00</code> 意味着可变长度，</li>
+<li><code>0b .... ..01</code> 意味着后面有一个字节，</li>
+<li><code>0b .... ..10</code> 是说，后面有两个字节，</li>
+<li><code>0b .... ..11</code> 是说，后面有四个字节。</li>
+</ul>
+<p>这允许将 4 个局部变量写为二进制掩码，我们不需要符号，因为地址总是正数。 V 代表地址（值）的一位。</p>
+<ul>
+<li><code>LV0</code>： <code>0b 010V VVVV</code>，5 位地址，范围：0 - 31，长度：1 字节，由 3 个前导位 010 标识。</li>
+<li><code>LV1</code>：<code>0b 1100 0001 VVVV VVVV</code>，8 位地址，范围：0 - 255，长度：2 字节，由前导字节 <code>0x|C1|</code> 标识。</li>
+<li><code>LV2</code>：<code>0b 1100 0010 VVVV VVVV VVVV VVVV</code>，16 位地址，范围：0 – 65, 535，长度：3 字节，由前导字节 <code>0x|C2|</code> 标识。</li>
+<li><code>LV4</code>：<code>0b 1100 0011 VVVV VVVV VVVV VVVV VVVV VVVV VVVV VVVV</code>，32 位地址，范围：0 – 4,294,967,296，长度：5 字节，由前导字节 <code>0x|C3|</code> 标识。</li>
+</ul>
+<p>一些说明：</p>
+<ul>
+<li>在直接命令中，不需要 LV2 和 LV4！你记得局部内存最多有 63 个字节。</li>
+<li>必须正确放置局部内存的地址。 如果将 4 字节值写入局部内存，则其地址必须为0，4，8，……（4的倍数）。对于 2 字节值也是一样，它们的地址必须是 2 的倍数。</li>
+<li>你需要将局部内存拆分为所需长度的段，然后使用每个段的第一个字节的地址。</li>
+<li>头字节包含局部内存的总长度（有关详细内容，请参阅第 1 课）。 不要忘记正确发送头字节！</li>
+</ul>
+<h3 id="一个新的模块函数：LVX"><a href="#一个新的模块函数：LVX" class="headerlink" title="一个新的模块函数：LVX"></a>一个新的模块函数：LVX</h3><p>请将函数 <code>LVX(value)</code> 添加到模块 <code>ev3</code> 中，它取决于实际值，返回 LV0，LV1，LV2 或 LV4 类型中最短的。 我已经完成了，现在我的 ev3 模块的文档如下：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">FUNCTIONS</div><div class="line">    LCS(<span class="built_in">value</span>:str) -&gt; <span class="keyword">bytes</span></div><div class="line">        pack <span class="keyword">a</span> <span class="keyword">string</span> <span class="keyword">into</span> <span class="keyword">a</span> LCS</div><div class="line">    </div><div class="line">    LCX(<span class="built_in">value</span>:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">create</span> <span class="keyword">a</span> LC0, LC1, LC2, LC4, dependent <span class="built_in">from</span> <span class="keyword">the</span> <span class="built_in">value</span></div><div class="line">    </div><div class="line">    LVX(<span class="built_in">value</span>:int) -&gt; <span class="keyword">bytes</span></div><div class="line">        <span class="built_in">create</span> <span class="keyword">a</span> LV0, LV1, LV2, LV4, dependent <span class="built_in">from</span> <span class="keyword">the</span> <span class="built_in">value</span></div></pre></td></tr></table></figure></p>
+<h1 id="计时器"><a href="#计时器" class="headerlink" title="计时器"></a>计时器</h1><p>控制时间是实时程序的一个重要方面。我们已经看到如何等待音调结束，我们在本地程序中等待，直到我们停止重复播放的声音文件。EV3 的操作集包含计时器操作，它们允许在直接命令的执行中等待。我们使用以下两个操作：</p>
+<ul>
+<li><p><code>opTimer_Wait</code> = <code>0x|85|</code>，具有参数：</p>
+<ul>
+<li>(Data32) <code>TIME</code>：等待的时间（单位为毫秒）</li>
+<li>(Data32) TIMER：用于计时的变量<br>这个操作向局部或全局内存中写入 4 个字节的时间戳</li>
+</ul>
+</li>
+<li><p><code>opTimer_Ready</code> = <code>0x|86|</code>，具有参数：</p>
+<ul>
+<li>(Data32) TIMER：用于计时的变量<br>这个操作读取时间戳并等待直到实际时间到达这个时间戳的值。</li>
+</ul>
+</li>
+</ul>
+<p>我们用一个绘制三角形的程序测试计时器操作。这需要操作 <code>opUI_Draw</code> 的另一个 CMD：</p>
+<ul>
+<li><code>opUI_Draw</code> = <code>0x|84|</code> 的 CMD <code>LINE</code> = 0x|03|，具有参数：<ul>
+<li>(Data8) COLOR：指定黑色或白色，[0：白色，1：黑色]</li>
+<li>(Data16) X0：指定 X 起始点，[0 - 177]</li>
+<li>(Data16) Y0：指定 Y 起始点，[0 - 127]</li>
+<li>(Data16) X1：指定 X 结束点</li>
+<li>(Data16) Y1：指定 Y 结束点</li>
+</ul>
+</li>
+</ul>
+<p>程序：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host='00:16:53:42:2B:99')</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.TOPLINE,</div><div class="line">    ev3.LCX(0),     <span class="comment"># ENABLE</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.FILLWINDOW,</div><div class="line">    ev3.LCX(0),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(0),     <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(0),     <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE,</div><div class="line">    ev3.opTimer_Wait,</div><div class="line">    ev3.LCX(1000),</div><div class="line">    ev3.LVX(0),</div><div class="line">    ev3.opTimer_Ready,</div><div class="line">    ev3.LVX(0),</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.LINE,</div><div class="line">    ev3.LCX(1),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># X0</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(88),    <span class="comment"># X1</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE,</div><div class="line">    ev3.opTimer_Wait,</div><div class="line">    ev3.LCX(500),</div><div class="line">    ev3.LVX(0),</div><div class="line">    ev3.opTimer_Ready,</div><div class="line">    ev3.LVX(0),</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.LINE,</div><div class="line">    ev3.LCX(1),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(88),    <span class="comment"># X0</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(175),   <span class="comment"># X1</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE,</div><div class="line">    ev3.opTimer_Wait,</div><div class="line">    ev3.LCX(500),</div><div class="line">    ev3.LVX(0),</div><div class="line">    ev3.opTimer_Ready,</div><div class="line">    ev3.LVX(0),</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.LINE,</div><div class="line">    ev3.LCX(1),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(175),   <span class="comment"># X0</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># X1</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops, local_mem=4)</div></pre></td></tr></table></figure></p>
+<p>这个程序清除显示屏，然后等待一秒，绘制一条线，等待半秒，绘制第二条线，等待并最终绘制第三条线。它需要 4 个字节的本地内存，可以多次写入和读出。</p>
+<p>显然，计时可以在本地程序或直接命令中完成。 我们修改程序：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3, time</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.BLUETOOTH, host='00:16:53:42:2B:99')</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.TOPLINE,</div><div class="line">    ev3.LCX(0),     <span class="comment"># ENABLE</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.FILLWINDOW,</div><div class="line">    ev3.LCX(0),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(0),     <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(0),     <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line">time.sleep(1)</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.LINE,</div><div class="line">    ev3.LCX(1),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># X0</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(88),    <span class="comment"># X1</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line">time.sleep(0.5)</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.LINE,</div><div class="line">    ev3.LCX(1),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(88),    <span class="comment"># X0</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(175),   <span class="comment"># X1</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line">time.sleep(0.5)</div><div class="line">ops = b''.join([</div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.LINE,</div><div class="line">    ev3.LCX(1),     <span class="comment"># COLOR</span></div><div class="line">    ev3.LCX(175),   <span class="comment"># X0</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y0</span></div><div class="line">    ev3.LCX(2),     <span class="comment"># X1</span></div><div class="line">    ev3.LCX(125),   <span class="comment"># Y1</span></div><div class="line">    ev3.opUI_Draw,</div><div class="line">    ev3.UPDATE</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>两种方案下，显示器具有相同的行为，但又有些不同。 第一个版本所需的通信量较少，但它会阻塞 EV3，直到直接命令执行结束。第二个版本需要四个直接命令，但允许在绘图休眠时发送其它直接命令。</p>
+<h1 id="启动程序"><a href="#启动程序" class="headerlink" title="启动程序"></a>启动程序</h1><p>直接命令可以启动程序。通常你通过按下 EV3 设备的按钮完成。程序是一个扩展名为 “.rbf” 的文件，它存放在 EV3 的文件系统上。我们将启动程序 <code>/home/root/lms2012/apps/Motor Control/Motor Control.rbf</code>。这需要两个新操作：</p>
+<ul>
+<li><p><code>opFile</code> = <code>0x|C0|</code> 的 CMD <code>LOAD_IMAGE</code> = 0x|08|，具有参数：</p>
+<ul>
+<li>(Data16) PRGID：程序运行的 Slot。值 <code>0x|01|</code> 用于执行用户工程，apps 和工具。</li>
+<li>(Data8) NAME：可执行文件的完整路径，或相对于 <code>/home/root/lms2012/sys/</code>（具有扩展名 “.rbf”）的路径<br>返回：</li>
+<li>(Data32) SIZE：镜像的字节大小</li>
+<li>(Data32) *IP：镜像的地址<br>这个操作是 <a href="https://en.wikipedia.org/wiki/Loader_(computing" target="_blank" rel="external">加载器</a>)。它把程序加载进内存中，并准备执行。</li>
+</ul>
+</li>
+<li><p><code>opProgram_Start</code> = <code>0x|C0|</code>，具有参数：</p>
+<ul>
+<li>(Data16) PRGID：程序运行的 Slot。</li>
+<li>(Data32) SIZE：镜像的字节大小</li>
+<li>(Data32) *IP：镜像的地址</li>
+<li>(Data8) DEBUG：调试模式，值 0 代表普通模式</li>
+</ul>
+</li>
+</ul>
+<p>程序：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3.USB, host='00:16:53:42:2B:99')</div><div class="line">my_ev3.verbosity = 1</div><div class="line"></div><div class="line">ops = b''.join([</div><div class="line">    ev3.opFile,</div><div class="line">    ev3.LOAD_IMAGE,</div><div class="line">    ev3.LCX(1),                                         <span class="comment"># SLOT</span></div><div class="line">    ev3.LCS('../apps/Motor Control/Motor Control.rbf'), <span class="comment"># NAME</span></div><div class="line">    ev3.LVX(0),                                         <span class="comment"># SIZE</span></div><div class="line">    ev3.LVX(4),                                         <span class="comment"># IP*</span></div><div class="line">    ev3.opProgram_Start,</div><div class="line">    ev3.LCX(1),                                         <span class="comment"># SLOT</span></div><div class="line">    ev3.LVX(0),                                         <span class="comment"># SIZE</span></div><div class="line">    ev3.LVX(4),                                         <span class="comment"># IP*</span></div><div class="line">    ev3.LCX(0)                                          <span class="comment"># DEBUG</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops, local_mem=8)</div></pre></td></tr></table></figure></p>
+<p>第一个操作的返回值是 <code>SIZE</code> 和 <code>IP*</code>。我们把它们写入局部内存的地址 0 和 4。第二个操作从局部内存读取它的参数 <code>SIZE</code> 和 <code>IP*</code>。它的参数 <code>SLOT</code> 和 <code>DEBUG</code> 是给定的常量值。程序的输出是：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">12</span>:<span class="number">50</span>:<span class="number">45.332826</span> Sent <span class="number">0</span>x|<span class="number">38</span>:<span class="number">00</span>|<span class="number">2</span><span class="attribute">A</span>:<span class="number">00</span>|<span class="number">80</span>|<span class="number">00</span>:<span class="number">20</span>|<span class="attribute">C0</span>:<span class="number">08</span>:<span class="number">01</span>:<span class="number">84</span>:<span class="number">2</span><span class="attribute">E</span>:<span class="number">2</span><span class="attribute">E</span>:<span class="number">2</span><span class="attribute">F</span>:<span class="number">61</span>:<span class="number">70</span>:<span class="number">70</span>:<span class="number">73</span>:<span class="number">2</span><span class="attribute">F</span>:<span class="number">4</span><span class="attribute">D</span>:<span class="number">6</span><span class="attribute">F</span>:<span class="number">74</span>:<span class="number">6</span><span class="attribute">F</span>:...</div></pre></td></tr></table></figure></p>
+<p>它真的启动了程序 <code>/home/root/lms2012/apps/Motor Control/Motor Control.rbf</code>。</p>
+<p>译者注：</p>
+<ul>
+<li>关于操作命令的参数和返回值。要传递参数时，将参数值直接附加到操作命令的后面，并进行适当的编码即可。对于操作命令的返回值，EV3 的直接命令虚拟机的处理方式，非常类似与传出参数。即需要针对每一个返回值，传入一个指针，告诉操作命令把返回值放在指针所指向的位置。EV3 中有两种类型的指针，分别是全局内存指针和局部内存指针。两者的主要差异在于，全局内存中的数据，在命令执行之后，我们的程序可以全部通过读操作，从 EV3 设备中读取出来，而局部内存则不会。全局内存和局部内存的分配，则是通过直接命令的头部，告诉 EV3 中的直接命令虚拟机各为它们分配多少字节。保存返回值内容的内存的指针的具体值，需要开发者自己根据传出参数的类型长度进行手动计算。因此，EV3 的直接命令的操作命令，没有我们写代码时一般意义上的那种函数或方法，或者可以说，EV3 的操作命令的原型都是下面这样的：<figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="literal">void</span> opXXX_cmdYYY(arg1, arg2, arg3, <span class="params">...</span>, *ret1, *ret2, <span class="params">...</span>)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>如上面，这里的小程序，指定通过局部内存 <code>LVX(0)</code> / <code>LVX(4)</code> 接收操作命令 <code>opFile</code>/<code>LOAD_IMAGE</code> 的返回值。上面那段程序，也可以写为通过全局内存来接收操作命令 <code>opFile</code>/<code>LOAD_IMAGE</code> 的返回值，如：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">start_program</span><span class="params">(self, exe_file_path: str)</span>:</span></div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        opFile,</div><div class="line">        cmdFile_LoadImage,</div><div class="line">        PRGID_USER,</div><div class="line">        LCS(exe_file_path),</div><div class="line">        GVX(<span class="number">0</span>),</div><div class="line">        GVX(<span class="number">4</span>)</div><div class="line">    ])</div><div class="line"></div><div class="line">    ret = self.send_direct_cmd(ops=ops, global_mem=<span class="number">8</span>)</div><div class="line"></div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        opProgram_Start,</div><div class="line">        PRGID_USER,</div><div class="line">        GVX(<span class="number">0</span>),</div><div class="line">        GVX(<span class="number">4</span>),</div><div class="line">        debugMode_Normal</div><div class="line">    ])</div><div class="line">    ret = self.send_direct_cmd(ops = ops)</div></pre></td></tr></table></figure></p>
+<p>上面这段代码使用全局内存接收操作命令 <code>opFile</code>/<code>LOAD_IMAGE</code> 的返回值。第一个 <code>send_direct_cmd()</code> 调用的返回值 <code>ret</code> 中包含了操作命令 <code>opFile</code>/<code>LOAD_IMAGE</code> 的返回值。但注意操作 <code>opProgram_Start</code> 的说明。直接把操作命令 <code>opFile</code>/<code>LOAD_IMAGE</code> 的返回值传给 <code>opProgram_Start</code> 是不行的，如下面这样：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">start_program</span><span class="params">(self, exe_file_path: str)</span>:</span></div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        opFile,</div><div class="line">        cmdFile_LoadImage,</div><div class="line">        PRGID_USER,</div><div class="line">        LCS(exe_file_path),</div><div class="line">        GVX(<span class="number">0</span>),</div><div class="line">        GVX(<span class="number">4</span>)</div><div class="line">    ])</div><div class="line"></div><div class="line">    ret = self.send_direct_cmd(ops=ops, global_mem=<span class="number">8</span>)</div><div class="line"></div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        opProgram_Start,</div><div class="line">        PRGID_USER,</div><div class="line">        ret[<span class="number">5</span>:],</div><div class="line">        debugMode_Normal</div><div class="line">    ])</div><div class="line">    ret = self.send_direct_cmd(ops = ops)</div></pre></td></tr></table></figure></p>
+<p>以这种直接传值的方式，程序无法如预期执行。</p>
+<h1 id="模拟按钮按下"><a href="#模拟按钮按下" class="headerlink" title="模拟按钮按下"></a>模拟按钮按下</h1><p>在这个例子中，我们通过模拟如下的按钮按下事件关闭 EV3 brick：</p>
+<ul>
+<li><code>BACK_BUTTON</code> = <code>0x|06|</code></li>
+<li><code>RIGHT_BUTTON</code> = <code>0x|04|</code></li>
+<li><code>ENTER_BUTTON</code> = <code>0x|02|</code></li>
+</ul>
+<p>我们需要等待直到初始化操作完成。这可以通过操作 <code>opUI_Button</code> 的 CMD <code>WAIT_FOR_PRESS</code> 完成，这再次预防了中断。使用下面的新操作：</p>
+<ul>
+<li><code>opUI_Button</code> = <code>0x|83|</code> 的 CMD <code>PRESS</code> = 0x|05|，具有参数：<ul>
+<li>BUTTON：Up Button = 0x|01|，Enter Button = 0x|02|，等等。</li>
+</ul>
+</li>
+<li><code>opUI_Button</code> = <code>0x|83|</code> 的 CMD <code>WAIT_FOR_PRESS</code> = 0x|03|</li>
+</ul>
+<p>直接命令具有如下的结构：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">-------------------------------------------------------------                 </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\b</span>u<span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\b</span>u<span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\o</span>p<span class="symbol">\c</span>d<span class="symbol">\b</span>u<span class="symbol">\ </span>               </div><div class="line">  -------------------------------------------------------------               </div><div class="line">0x|12:00|2A:00|80|00:00|83|05|06|83|03|83|05|04|83|03|83|05|02|               </div><div class="line">  -------------------------------------------------------------               </div><div class="line">   <span class="symbol">\ </span>18  <span class="symbol">\ </span>42  <span class="symbol">\n</span>o<span class="symbol">\ </span>0,0 <span class="symbol">\U</span> <span class="symbol">\P</span> <span class="symbol">\B</span> <span class="symbol">\U</span> <span class="symbol">\W</span> <span class="symbol">\U</span> <span class="symbol">\P</span> <span class="symbol">\R</span> <span class="symbol">\U</span> <span class="symbol">\W</span> <span class="symbol">\U</span> <span class="symbol">\P</span> <span class="symbol">\E</span> <span class="symbol">\ </span>             </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\I</span> <span class="symbol">\R</span> <span class="symbol">\A</span> <span class="symbol">\I</span> <span class="symbol">\A</span> <span class="symbol">\I</span> <span class="symbol">\R</span> <span class="symbol">\I</span> <span class="symbol">\I</span> <span class="symbol">\A</span> <span class="symbol">\I</span> <span class="symbol">\R</span> <span class="symbol">\N</span> <span class="symbol">\ </span>            </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\E</span> <span class="symbol">\C</span> <span class="symbol">\_</span> <span class="symbol">\I</span> <span class="symbol">\_</span> <span class="symbol">\E</span> <span class="symbol">\G</span> <span class="symbol">\_</span> <span class="symbol">\I</span> <span class="symbol">\_</span> <span class="symbol">\E</span> <span class="symbol">\T</span> <span class="symbol">\ </span>           </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\B</span> <span class="symbol">\S</span> <span class="symbol">\K</span> <span class="symbol">\B</span> <span class="symbol">\T</span> <span class="symbol">\B</span> <span class="symbol">\S</span> <span class="symbol">\H</span> <span class="symbol">\B</span> <span class="symbol">\T</span> <span class="symbol">\B</span> <span class="symbol">\S</span> <span class="symbol">\E</span> <span class="symbol">\ </span>          </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\U</span> <span class="symbol">\S</span> <span class="symbol">\_</span> <span class="symbol">\U</span> <span class="symbol">\_</span> <span class="symbol">\U</span> <span class="symbol">\S</span> <span class="symbol">\T</span> <span class="symbol">\U</span> <span class="symbol">\_</span> <span class="symbol">\U</span> <span class="symbol">\S</span> <span class="symbol">\R</span> <span class="symbol">\ </span>         </div><div class="line">        <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\B</span> <span class="symbol">\T</span> <span class="symbol">\F</span> <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\_</span> <span class="symbol">\T</span> <span class="symbol">\F</span> <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\_</span> <span class="symbol">\ </span>        </div><div class="line">         <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\U</span> <span class="symbol">\T</span> <span class="symbol">\O</span> <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\B</span> <span class="symbol">\T</span> <span class="symbol">\O</span> <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\B</span> <span class="symbol">\ </span>       </div><div class="line">          <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\O</span> <span class="symbol">\ </span> <span class="symbol">\T</span> <span class="symbol">\O</span> <span class="symbol">\R</span> <span class="symbol">\O</span> <span class="symbol">\ </span> <span class="symbol">\U</span> <span class="symbol">\O</span> <span class="symbol">\R</span> <span class="symbol">\O</span> <span class="symbol">\ </span> <span class="symbol">\U</span> <span class="symbol">\ </span>      </div><div class="line">           <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\N</span> <span class="symbol">\ </span> <span class="symbol">\T</span> <span class="symbol">\N</span> <span class="symbol">\_</span> <span class="symbol">\N</span> <span class="symbol">\ </span> <span class="symbol">\T</span> <span class="symbol">\N</span> <span class="symbol">\_</span> <span class="symbol">\N</span> <span class="symbol">\ </span> <span class="symbol">\T</span> <span class="symbol">\ </span>     </div><div class="line">            <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\O</span> <span class="symbol">\ </span> <span class="symbol">\P</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\T</span> <span class="symbol">\ </span> <span class="symbol">\P</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\T</span> <span class="symbol">\ </span>    </div><div class="line">             <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\N</span> <span class="symbol">\ </span> <span class="symbol">\R</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\O</span> <span class="symbol">\ </span> <span class="symbol">\R</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\O</span> <span class="symbol">\ </span>   </div><div class="line">              <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\E</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\N</span> <span class="symbol">\ </span> <span class="symbol">\E</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\N</span> <span class="symbol">\ </span>  </div><div class="line">               <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> </div><div class="line">                <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span></div><div class="line">                 -------------------------------------------------------------</div></pre></td></tr></table></figure></p>
+<p>我的对应的程序是：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env python3</div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3<span class="selector-class">.BLUETOOTH</span>, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.BACK_BUTTON</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.WAIT_FOR_PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.RIGHT_BUTTON</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.WAIT_FOR_PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.ENTER_BUTTON</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>这真的关闭了EV3设备！</p>
+<p>没有必要回复，但我是一个好奇的人。我的问题是：EV3会在它关闭之前回复还是不回复？</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env python3</div><div class="line"></div><div class="line">import ev3</div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3<span class="selector-class">.BLUETOOTH</span>, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">my_ev3<span class="selector-class">.verbosity</span> = <span class="number">1</span></div><div class="line">my_ev3<span class="selector-class">.sync_mode</span> = ev3<span class="selector-class">.SYNC</span></div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.BACK_BUTTON</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.WAIT_FOR_PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.RIGHT_BUTTON</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.WAIT_FOR_PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.opUI_Button</span>,</div><div class="line">    ev3<span class="selector-class">.PRESS</span>,</div><div class="line">    ev3<span class="selector-class">.ENTER_BUTTON</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure>
+<p>在我按下另一个按钮之前没有任何反应，然后它回复并关闭。这并不令人惊讶，这是不一致的。 关机和回复不合适一起，EV3 设备无法完成命令然后发送回复！</p>
+<h1 id="我们学到了什么"><a href="#我们学到了什么" class="headerlink" title="我们学到了什么"></a>我们学到了什么</h1><ul>
+<li>直接命令由操作序列组成。当我们给 brick 发送直接命令时，一个操作接一个操作的执行。但它们彼此互相打断，如果想要它们等待的话需要特殊的操作。</li>
+<li>大多数操作需要参数，它们可以以格式 LC0，LC1，LC2 和 LC4 发送，这些都包含有符号整数，但具有不同的范围。另一种格式是 LCS，用于字符串。它以<code>0x|84|</code> 开头，然后是零终止的 ASCII 码串。</li>
+<li>局部变量（LV0，LV1，LV2 和 LV4）允许寻址保存中间数据的局部存储器。</li>
+<li>一些操作具有许多 CMD，它们使用不同的参数集定义不同的任务。</li>
+<li>我们已经看过很多操作并知道他们的参数的含义，但这只是 EV3 操作集的一小部分。</li>
+</ul>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>我们关于直接命令的知识增长了，我们的类 EV3 也是。添加我们需要的所有常量需要一些耐心。随着操作数量的增加，直接命令的参考文档 <em>EV3 Firmware Developer Kit</em> 需要更加仔细地阅读。</p>
+<p>这是我的函数和数据的实际状态：<br><figure class="highlight sml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="type">Help</span> on module ev3:</div><div class="line"></div><div class="line"><span class="type">NAME</span></div><div class="line">    ev3 - <span class="type">LEGO</span> <span class="type">EV3</span> direct commands</div><div class="line"></div><div class="line"><span class="type">CLASSES</span></div><div class="line">    builtins.object</div><div class="line">        <span class="type">EV3</span></div><div class="line">    </div><div class="line">    class <span class="type">EV3</span>(builtins.object)</div><div class="line">     ...</div><div class="line"></div><div class="line"><span class="type">FUNCTIONS</span></div><div class="line">    <span class="type">LCS</span>(value:str) -&gt; bytes</div><div class="line">        pack a <span class="built_in">string</span> into a <span class="type">LCS</span></div><div class="line">    </div><div class="line">    <span class="type">LCX</span>(value:<span class="built_in">int</span>) -&gt; bytes</div><div class="line">        create a <span class="type">LC0</span>, <span class="type">LC1</span>, <span class="type">LC2</span>, <span class="type">LC4</span>, dependent from the value</div><div class="line">    </div><div class="line">    <span class="type">LVX</span>(value:<span class="built_in">int</span>) -&gt; bytes</div><div class="line">        create a <span class="type">LV0</span>, <span class="type">LV1</span>, <span class="type">LV2</span>, <span class="type">LV4</span>, dependent from the value</div><div class="line"></div><div class="line"><span class="type">DATA</span></div><div class="line">    <span class="type">ASYNC</span> = <span class="symbol">'ASYNC'</span></div><div class="line">    <span class="type">BACK_BUTTON</span> = b'\x06'</div><div class="line">    <span class="type">BLUETOOTH</span> = <span class="symbol">'Bluetooth'</span></div><div class="line">    <span class="type">BMPFILE</span> = b'\x1c'</div><div class="line">    <span class="type">BREAK</span> = b'\x00'</div><div class="line">    <span class="type">ENTER_BUTTON</span> = b'\x02'</div><div class="line">    <span class="type">FILLWINDOW</span> = b'\x13'</div><div class="line">    <span class="type">LED</span> = b'\x1b'</div><div class="line">    <span class="type">LED_OFF</span> = b'\x00'</div><div class="line">    <span class="type">LED_GREEN</span> = b'\x01'</div><div class="line">    <span class="type">LED_GREEN_FLASH</span> = b'\x04'</div><div class="line">    <span class="type">LED_GREEN_PULSE</span> = b'\x07'</div><div class="line">    <span class="type">LED_ORANGE</span> = b'\x03'</div><div class="line">    <span class="type">LED_ORANGE_FLASH</span> = b'\x06'</div><div class="line">    <span class="type">LED_ORANGE_PULSE</span> = b'\t'</div><div class="line">    <span class="type">LED_RED</span> = b'\x02'</div><div class="line">    <span class="type">LED_RED_FLASH</span> = b'\x05'</div><div class="line">    <span class="type">LED_RED_PULSE</span> = b'\x08'</div><div class="line">    <span class="type">LINE</span> = b'\x03'</div><div class="line">    <span class="type">LOAD_IMAGE</span> = b'\x08'</div><div class="line">    <span class="type">PLAY</span> = b'\x02'</div><div class="line">    <span class="type">PRESS</span> = b'\x53'</div><div class="line">    <span class="type">REPEAT</span> = b'\x02'</div><div class="line">    <span class="type">RIGHT_BUTTON</span> = b'\x04'</div><div class="line">    <span class="type">SET_BRICKNAME</span> = b'\x08'</div><div class="line">    <span class="type">STD</span> = <span class="symbol">'STD'</span></div><div class="line">    <span class="type">SYNC</span> = <span class="symbol">'SYNC'</span></div><div class="line">    <span class="type">TONE</span> = b'\x01'</div><div class="line">    <span class="type">TOPLINE</span> = b'\x12'</div><div class="line">    <span class="type">USB</span> = <span class="symbol">'Usb'</span></div><div class="line">    <span class="type">UPDATE</span> = b'\x00'</div><div class="line">    <span class="type">WAIT_FOR_PRESS</span> = b'\x03'</div><div class="line">    <span class="type">WIFI</span> = <span class="symbol">'Wifi'</span></div><div class="line">    opCom_Set = b'\xd4'</div><div class="line">    opFile = b'\xc0'</div><div class="line">    opNop = b'\x01'</div><div class="line">    opProgram_Start = b'\x03'</div><div class="line">    opSound = b'\x94'</div><div class="line">    opSound_Ready = b'\x96'</div><div class="line">    opTimer_Wait = b'\x85'</div><div class="line">    opTimer_Ready = b'\x86'</div><div class="line">    opUI_Button = b'\x83'</div><div class="line">    opUI_Draw = b'\x84'</div><div class="line">    opUI_Write = b'\x82'</div></pre></td></tr></table></figure></p>
+<p>真正的机器人从其传感器读取数据并通过其电机进行运动。目前我们的 EV3 设备都没有。我也知道，存在更酷的声音或光效的电子设备。现在，你可以测试在 <em>EV3 Firmware Developer Kit</em> 中找到的其他一些操作了。</p>
+<p>保持联系，下一课将是关于电机的。我希望，我们将更接近你真正感兴趣的话题。</p>
+<p><a href="http://ev3directcommands.blogspot.com/2016/01/ev3-direct-commands-lesson-02-pre.html" target="_blank" rel="external">原文</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/ROS/" rel="tag"># ROS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/29/lego_ev3_direct_command_001/" rel="next" title="EV3 直接命令 - 第一课 无为的艺术">
+                <i class="fa fa-chevron-left"></i> EV3 直接命令 - 第一课 无为的艺术
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/30/lego_ev3_direct_command_003/" rel="prev" title="EV3 直接命令 - 第 3 课 遥控车辆">
+                EV3 直接命令 - 第 3 课 遥控车辆 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#设置-EV3-的名字"><span class="nav-number">2.</span> <span class="nav-text">设置 EV3 的名字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常量整数参数"><span class="nav-number">3.</span> <span class="nav-text">常量整数参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#播放声音文件"><span class="nav-number">4.</span> <span class="nav-text">播放声音文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#重复播放声音文件"><span class="nav-number">4.1.</span> <span class="nav-text">重复播放声音文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#播放音调"><span class="nav-number">4.2.</span> <span class="nav-text">播放音调</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修改-LEDs-的颜色"><span class="nav-number">5.</span> <span class="nav-text">修改 LEDs 的颜色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#显示图像"><span class="nav-number">6.</span> <span class="nav-text">显示图像</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#局部内存"><span class="nav-number">7.</span> <span class="nav-text">局部内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个新的模块函数：LVX"><span class="nav-number">7.0.1.</span> <span class="nav-text">一个新的模块函数：LVX</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计时器"><span class="nav-number">8.</span> <span class="nav-text">计时器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动程序"><span class="nav-number">9.</span> <span class="nav-text">启动程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模拟按钮按下"><span class="nav-number">10.</span> <span class="nav-text">模拟按钮按下</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#我们学到了什么"><span class="nav-number">11.</span> <span class="nav-text">我们学到了什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结论"><span class="nav-number">12.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

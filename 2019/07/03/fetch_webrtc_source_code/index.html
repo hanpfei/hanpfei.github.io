@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="音视频开发," />
+
+
+<meta name="description" content="关于 WebRTC 的源码下载和 Demo 的编译运行，WebRTC 的官方文档已经有非常详细的说明。以 Linux 为例，过程大概是这样的：
+
+下载并安装 depot_tools。这是 WebRTC 的代码下载及编译工具集，下载即是把源码 clone 下来，所谓安装只是把  depot_tools 的目录路径放进系统的环境变量 PATH 中即可。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="无需翻墙的 WebRTC 源码下载">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/07/03/fetch_webrtc_source_code/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="关于 WebRTC 的源码下载和 Demo 的编译运行，WebRTC 的官方文档已经有非常详细的说明。以 Linux 为例，过程大概是这样的：
+
+下载并安装 depot_tools。这是 WebRTC 的代码下载及编译工具集，下载即是把源码 clone 下来，所谓安装只是把  depot_tools 的目录路径放进系统的环境变量 PATH 中即可。">
+<meta property="og:updated_time" content="2019-07-19T15:34:21.725Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="无需翻墙的 WebRTC 源码下载">
+<meta name="twitter:description" content="关于 WebRTC 的源码下载和 Demo 的编译运行，WebRTC 的官方文档已经有非常详细的说明。以 Linux 为例，过程大概是这样的：
+
+下载并安装 depot_tools。这是 WebRTC 的代码下载及编译工具集，下载即是把源码 clone 下来，所谓安装只是把  depot_tools 的目录路径放进系统的环境变量 PATH 中即可。">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/07/03/fetch_webrtc_source_code/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>无需翻墙的 WebRTC 源码下载 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/07/03/fetch_webrtc_source_code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">无需翻墙的 WebRTC 源码下载</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-03T23:05:49+08:00">2019-07-03</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/音视频开发/" itemprop="url" rel="index"><span itemprop="name">音视频开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/03/fetch_webrtc_source_code/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/03/fetch_webrtc_source_code/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/03/fetch_webrtc_source_code/" class="leancloud_visitors" data-flag-title="无需翻墙的 WebRTC 源码下载">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>关于 WebRTC 的源码下载和 Demo 的编译运行，WebRTC 的官方文档已经有非常详细的说明。以 Linux 为例，过程大概是这样的：</p>
+<ol>
+<li>下载并安装 depot_tools。这是 WebRTC 的代码下载及编译工具集，下载即是把源码 clone 下来，所谓安装只是把  depot_tools 的目录路径放进系统的环境变量 PATH 中即可。<a id="more"></a></li>
+<li><p>准备目录</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">mkdir</span> webrtc</div><div class="line">$ <span class="built_in">cd</span> webrtc</div></pre></td></tr></table></figure>
+</li>
+<li><p>下载代码</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>fetch --nohooks webrtc</div><div class="line"><span class="variable">$ </span>gclient sync</div></pre></td></tr></table></figure>
+</li>
+<li><p>安装依赖。</p>
+</li>
+<li><p>编译运行。</p>
+</li>
+</ol>
+<p>安装依赖和编译运行具体可以参考 WebRTC 的官方文档。</p>
+<p>在国内，由于大家都懂的原因，通过 WebRTC 的官方流程下载源码比较困难。笔者过去一直期待有人能够建立一套在国内可以访问的 WebRTC 代码的 mirror 仓库，只是可惜一直未能见到这样的东西。于是笔者就花了点时间看了下，将 WebRTC 的源码及其依赖的一些模块，在 GitHub 和 Bitbucket 上做了一份 fork，做了一点小改动，使得同仁基本可以按照 WebRTC 的官方流程下载编译 WebRTC 的源码。</p>
+<p>（ WebRTC 及其依赖的大部分模块源码 fork 在 GitHub 上，但由于对 repo 中文件的最大大小有限制，导致无法把 <code>tools</code> 的源码推到 GitHub 上，而 Bitbucket 从开源项目 import 创建 repo 非常方便，因而 <code>tools</code> 的源码就被放在了 Bitbucket 上。另外一个模块 <code>third_party</code>，它的源码比较多，因而推到 GitHub 上也比较困难，所以也通过 import 创建 repo 在 Bitbucket 上建立 mirror。）</p>
+<h1 id="WebRTC-源码下载过程浅析"><a href="#WebRTC-源码下载过程浅析" class="headerlink" title="WebRTC 源码下载过程浅析"></a>WebRTC 源码下载过程浅析</h1><p>在上面 WebRTC 源码的官方下载流程中，首先需要执行 <code>fetch --nohooks webrtc</code> 命令。这个命令做的最主要的事情是，下载名为 <code>.gclient</code> 的源码下载配置文件：<br><figure class="highlight tap"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">webrtc$ ls -al</div><div class="line">总用量 24</div><div class="line">drwxr-xr-x<span class="number"> 5 </span>hanpfei hanpfei<span class="number"> 4096 </span>7月  <span class="number"> 3 </span>14:13 .</div><div class="line">drwxrwxr-x<span class="number"> 6 </span>hanpfei hanpfei<span class="number"> 4096 </span>7月  <span class="number"> 3 </span>16:15 ..</div><div class="line">-rw-r--r--<span class="number"> 1 </span>hanpfei hanpfei <span class="number"> 175 </span>7月  <span class="number"> 3 </span>14:13 .gclient</div></pre></td></tr></table></figure></p>
+<p>这个文件的内容如下：<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">solutions = [</div><div class="line">  &#123;</div><div class="line">    <span class="string">"url"</span>: <span class="string">"https://webrtc.googlesource.com/src.git"</span>,</div><div class="line">    <span class="string">"managed"</span>: False,</div><div class="line">    <span class="string">"name"</span>: <span class="string">"src"</span>,</div><div class="line">    <span class="string">"deps_file"</span>: <span class="string">"DEPS"</span>,</div><div class="line">    <span class="string">"custom_deps"</span>: &#123;&#125;,</div><div class="line">  &#125;,</div><div class="line">]</div></pre></td></tr></table></figure></p>
+<p>执行 <code>fetch</code> 之后，通过 <code>gclient sync</code> 下载完整的源码库。<code>gclient</code> 做的事情主要是两件：</p>
+<ol>
+<li><p>克隆 <code>.gclient</code> 文件中 <code>url</code> 字段指向的 repo，repo 的放置位置则由 <code>.gclient</code> 文件中 <code>name</code> 字段描述。如上面的 <code>.gclient</code> 文件，<code>gclient</code> 工具将会克隆 <code>https://webrtc.googlesource.com/src.git</code>，并把repo 放在 <code>src</code> 出。</p>
+</li>
+<li><p>根据第一步中下载的 repo 中依赖文件的内容，下载所有的依赖，依赖文件的路径由 <code>.gclient</code> 文件中 <code>deps_file</code> 字段描述，如上面的 <code>DEPS</code>。</p>
+</li>
+</ol>
+<p>WebRTC 源码库根目录下的 <code>DEPS</code> 文件描述了它依赖的所有东西，包括源码形式的模块，也包含二进制形式的模块，这个文件的内容如下面这样：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># This file contains dependencies for WebRTC.</span></div><div class="line"></div><div class="line">vars = &#123;</div><div class="line">  <span class="string">'chromium_git'</span>: <span class="string">'https://chromium.googlesource.com'</span>,</div><div class="line">  <span class="comment"># By default, we should check out everything needed to run on the main</span></div><div class="line">  <span class="comment"># chromium waterfalls. More info at: crbug.com/570091.</span></div><div class="line">  <span class="string">'checkout_configuration'</span>: <span class="string">'default'</span>,</div><div class="line">  <span class="string">'checkout_instrumented_libraries'</span>: <span class="string">'checkout_linux and checkout_configuration == "default"'</span>,</div><div class="line">  <span class="string">'webrtc_git'</span>: <span class="string">'https://webrtc.googlesource.com'</span>,</div><div class="line">  <span class="string">'chromium_revision'</span>: <span class="string">'ce6d12c81b7d61fbff70d4389c098c6a92a1c57c'</span>,</div><div class="line">  <span class="string">'boringssl_git'</span>: <span class="string">'https://boringssl.googlesource.com'</span>,</div><div class="line">  <span class="comment"># Three lines of non-changing comments so that</span></div><div class="line">  <span class="comment"># the commit queue can handle CLs rolling swarming_client</span></div><div class="line">  <span class="comment"># and whatever else without interference from each other.</span></div><div class="line">  <span class="string">'swarming_revision'</span>: <span class="string">'96f125709acfd0b48fc1e5dae7d6ea42291726ac'</span>,</div><div class="line">  . . . . . .</div><div class="line">&#125;</div><div class="line">deps = &#123;</div><div class="line">  <span class="comment"># TODO(kjellander): Move this to be Android-only once the libevent dependency</span></div><div class="line">  <span class="comment"># in base/third_party/libevent is solved.</span></div><div class="line">  <span class="string">'src/base'</span>:</div><div class="line">    <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/base'</span> + <span class="string">'@'</span> + <span class="string">'b8d7dd92d6132c1d168f75130ffeb79fbf94ac11'</span>,</div><div class="line">  <span class="string">'src/build'</span>:</div><div class="line">    <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/build'</span> + <span class="string">'@'</span> + <span class="string">'fe39ce9fd1fd675cc28172aa15f919101deb475a'</span>,</div><div class="line">  <span class="string">'src/buildtools'</span>:</div><div class="line">    <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/buildtools'</span> + <span class="string">'@'</span> + <span class="string">'80b545b427d95ac8996a887fa32ba1d64919792d'</span>,</div><div class="line">  <span class="comment"># Gradle 4.3-rc4. Used for testing Android Studio project generation for WebRTC.</span></div><div class="line">  <span class="string">'src/examples/androidtests/third_party/gradle'</span>: &#123;</div><div class="line">    <span class="string">'url'</span>: <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/external/github.com/gradle/gradle.git'</span> + <span class="string">'@'</span> +</div><div class="line">      <span class="string">'89af43c4d0506f69980f00dde78c97b2f81437f8'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_android'</span>,</div><div class="line">  &#125;,</div><div class="line">  <span class="string">'src/ios'</span>: &#123;</div><div class="line">    <span class="string">'url'</span>: <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/ios'</span> + <span class="string">'@'</span> + <span class="string">'8c6bafc3be9726bacd212c07f0e4d141584842a8'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_ios'</span>,</div><div class="line">  &#125;,</div><div class="line">  <span class="string">'src/testing'</span>:</div><div class="line">    <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/testing'</span> + <span class="string">'@'</span> + <span class="string">'5398243e97ec98e520895f0c33fe6af0c375d4f0'</span>,</div><div class="line">  <span class="string">'src/third_party'</span>:</div><div class="line">    <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/third_party'</span> + <span class="string">'@'</span> + <span class="string">'68164bde6b551633809786d030d3c5cd48041d46'</span>,</div><div class="line"></div><div class="line">  <span class="string">'src/buildtools/linux64'</span>: &#123;</div><div class="line">    <span class="string">'packages'</span>: [</div><div class="line">      &#123;</div><div class="line">        <span class="string">'package'</span>: <span class="string">'gn/gn/linux-amd64'</span>,</div><div class="line">        <span class="string">'version'</span>: <span class="keyword">Var</span>(<span class="string">'gn_version'</span>),</div><div class="line">      &#125;</div><div class="line">    ],</div><div class="line">    <span class="string">'dep_type'</span>: <span class="string">'cipd'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_linux'</span>,</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  . . . . . .</div><div class="line">&#125;</div><div class="line"></div><div class="line">hooks = [</div><div class="line">  &#123;</div><div class="line">    <span class="comment"># This clobbers when necessary (based on get_landmines.py). It should be</span></div><div class="line">    <span class="comment"># an early hook but it will need to be run after syncing Chromium and</span></div><div class="line">    <span class="comment"># setting up the links, so the script actually exists.</span></div><div class="line">    <span class="string">'name'</span>: <span class="string">'landmines'</span>,</div><div class="line">    <span class="string">'pattern'</span>: <span class="string">'.'</span>,</div><div class="line">    <span class="string">'action'</span>: [</div><div class="line">        <span class="string">'python'</span>,</div><div class="line">        <span class="string">'src/build/landmines.py'</span>,</div><div class="line">        <span class="string">'--landmine-scripts'</span>,</div><div class="line">        <span class="string">'src/tools_webrtc/get_landmines.py'</span>,</div><div class="line">        <span class="string">'--src-dir'</span>,</div><div class="line">        <span class="string">'src'</span>,</div><div class="line">    ],</div><div class="line">  &#125;,</div><div class="line">  &#123;</div><div class="line">    <span class="comment"># Ensure that the DEPS'd "depot_tools" has its self-update capability</span></div><div class="line">    <span class="comment"># disabled.</span></div><div class="line">    <span class="string">'name'</span>: <span class="string">'disable_depot_tools_selfupdate'</span>,</div><div class="line">    <span class="string">'pattern'</span>: <span class="string">'.'</span>,</div><div class="line">    <span class="string">'action'</span>: [</div><div class="line">        <span class="string">'python'</span>,</div><div class="line">        <span class="string">'src/third_party/depot_tools/update_depot_tools_toggle.py'</span>,</div><div class="line">        <span class="string">'--disable'</span>,</div><div class="line">    ],</div><div class="line">  &#125;,</div><div class="line">  &#123;</div><div class="line">    <span class="string">'name'</span>: <span class="string">'sysroot_arm'</span>,</div><div class="line">    <span class="string">'pattern'</span>: <span class="string">'.'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_linux and checkout_arm'</span>,</div><div class="line">    <span class="string">'action'</span>: [<span class="string">'python'</span>, <span class="string">'src/build/linux/sysroot_scripts/install-sysroot.py'</span>,</div><div class="line">               <span class="string">'--arch=arm'</span>],</div><div class="line">  &#125;,</div><div class="line">  &#123;</div><div class="line">    <span class="string">'name'</span>: <span class="string">'sysroot_arm64'</span>,</div><div class="line">    <span class="string">'pattern'</span>: <span class="string">'.'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_linux and checkout_arm64'</span>,</div><div class="line">    <span class="string">'action'</span>: [<span class="string">'python'</span>, <span class="string">'src/build/linux/sysroot_scripts/install-sysroot.py'</span>,</div><div class="line">               <span class="string">'--arch=arm64'</span>],</div><div class="line">  &#125;,</div><div class="line">  &#123;</div><div class="line">    <span class="string">'name'</span>: <span class="string">'sysroot_x86'</span>,</div><div class="line">    <span class="string">'pattern'</span>: <span class="string">'.'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_linux and (checkout_x86 or checkout_x64)'</span>,</div><div class="line">    <span class="comment"># TODO(mbonadei): change to --arch=x86.</span></div><div class="line">    <span class="string">'action'</span>: [<span class="string">'python'</span>, <span class="string">'src/build/linux/sysroot_scripts/install-sysroot.py'</span>,</div><div class="line">               <span class="string">'--arch=i386'</span>],</div><div class="line">  &#125;,</div><div class="line">  &#123;</div><div class="line">    <span class="string">'name'</span>: <span class="string">'sysroot_mips'</span>,</div><div class="line">    <span class="string">'pattern'</span>: <span class="string">'.'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_linux and checkout_mips'</span>,</div><div class="line">    <span class="comment"># TODO(mbonadei): change to --arch=mips.</span></div><div class="line">    <span class="string">'action'</span>: [<span class="string">'python'</span>, <span class="string">'src/build/linux/sysroot_scripts/install-sysroot.py'</span>,</div><div class="line">               <span class="string">'--arch=mipsel'</span>],</div><div class="line">  &#125;,</div><div class="line">  &#123;</div><div class="line">    <span class="string">'name'</span>: <span class="string">'sysroot_x64'</span>,</div><div class="line">    <span class="string">'pattern'</span>: <span class="string">'.'</span>,</div><div class="line">    <span class="string">'condition'</span>: <span class="string">'checkout_linux and checkout_x64'</span>,</div><div class="line">    <span class="comment"># TODO(mbonadei): change to --arch=x64.</span></div><div class="line">    <span class="string">'action'</span>: [<span class="string">'python'</span>, <span class="string">'src/build/linux/sysroot_scripts/install-sysroot.py'</span>,</div><div class="line">               <span class="string">'--arch=amd64'</span>],</div><div class="line">  &#125;,</div><div class="line">  . . . . . .</div><div class="line">]</div><div class="line"></div><div class="line">recursedeps = []</div><div class="line"></div><div class="line"><span class="comment"># Define rules for which include paths are allowed in our source.</span></div><div class="line">include_rules = [</div><div class="line">  <span class="comment"># Base is only used to build Android APK tests and may not be referenced by</span></div><div class="line">  <span class="comment"># WebRTC production code.</span></div><div class="line">  <span class="string">"-base"</span>,</div><div class="line">  <span class="string">"-chromium"</span>,</div><div class="line">  <span class="string">"+external/webrtc/webrtc"</span>,  <span class="comment"># Android platform build.</span></div><div class="line">  <span class="string">"+libyuv"</span>,</div><div class="line"></div><div class="line">  <span class="comment"># These should eventually move out of here.</span></div><div class="line">  <span class="string">"+common_types.h"</span>,</div><div class="line"></div><div class="line">  <span class="string">"+WebRTC"</span>,</div><div class="line">  <span class="string">"+api"</span>,</div><div class="line">  <span class="string">"+modules/include"</span>,</div><div class="line">  <span class="string">"+rtc_base"</span>,</div><div class="line">  <span class="string">"+test"</span>,</div><div class="line">  <span class="string">"+rtc_tools"</span>,</div><div class="line"></div><div class="line">  <span class="comment"># Abseil whitelist. Keep this in sync with abseil-in-webrtc.md.</span></div><div class="line">  <span class="string">"+absl/algorithm/algorithm.h"</span>,</div><div class="line">  . . . . . .</div><div class="line">]</div></pre></td></tr></table></figure></p>
+<p><code>DEPS</code> 文件的内容主要分为如下几个部分：</p>
+<ol>
+<li><p>变量定义 <code>vars</code>：这个部分定义了将会在后面被引用到的一些变量，如 Git 仓库的根地址，依赖的一些模块的 commit 等。</p>
+</li>
+<li><p>依赖描述 <code>deps</code>：这个部分描述了 WebRTC 依赖的所有模块，既包括 Git repo 形式的依赖，也包括 cipd 模块形式的依赖，既包括无条件的依赖，即适用于所有编译环境平台和目标平台的依赖，也包括有条件的依赖，即仅适用与一定条件的依赖。<br>无条件的 Git repo 形式依赖如：</p>
+<figure class="highlight cal"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="string">'src/base'</span>:</div><div class="line">  <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/base'</span> + <span class="string">'@'</span> + <span class="string">'b8d7dd92d6132c1d168f75130ffeb79fbf94ac11'</span>,</div><div class="line"><span class="string">'src/build'</span>:</div><div class="line">  <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/build'</span> + <span class="string">'@'</span> + <span class="string">'fe39ce9fd1fd675cc28172aa15f919101deb475a'</span>,</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>有条件的 Git repo 依赖，如仅在为 iOS 编译时才需要的模块：<br><figure class="highlight cal"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="string">'src/ios'</span>: &#123;</div><div class="line">  <span class="string">'url'</span>: <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/src/ios'</span> + <span class="string">'@'</span> + <span class="string">'8c6bafc3be9726bacd212c07f0e4d141584842a8'</span>,</div><div class="line">  <span class="string">'condition'</span>: <span class="string">'checkout_ios'</span>,</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>Git repo 主要用于存放源码，但也可以用于存放二进制文件，如 yasm 的二进制文件：<br><figure class="highlight cal"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="string">'src/third_party/yasm/binaries'</span>: &#123;</div><div class="line">  <span class="string">'url'</span>: <span class="keyword">Var</span>(<span class="string">'chromium_git'</span>) + <span class="string">'/chromium/deps/yasm/binaries.git'</span> + <span class="string">'@'</span> + <span class="string">'52f9b3f4b0aa06da24ef8b123058bb61ee468881'</span>,</div><div class="line">  <span class="string">'condition'</span>: <span class="string">'checkout_win'</span>,</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>cipd 模块形式的无条件依赖如：<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="string">'src/tools/luci-go'</span>: &#123;</div><div class="line">    <span class="string">'packages'</span>: [</div><div class="line">      &#123;</div><div class="line">        <span class="string">'package'</span>: <span class="string">'infra/tools/luci/isolate/$&#123;&#123;platform&#125;&#125;'</span>,</div><div class="line">        <span class="string">'version'</span>: Var(<span class="string">'luci_go'</span>),</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        <span class="string">'package'</span>: <span class="string">'infra/tools/luci/isolated/$&#123;&#123;platform&#125;&#125;'</span>,</div><div class="line">        <span class="string">'version'</span>: Var(<span class="string">'luci_go'</span>),</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        <span class="string">'package'</span>: <span class="string">'infra/tools/luci/swarming/$&#123;&#123;platform&#125;&#125;'</span>,</div><div class="line">        <span class="string">'version'</span>: Var(<span class="string">'luci_go'</span>),</div><div class="line">      &#125;,</div><div class="line">    ],</div><div class="line">    <span class="string">'dep_type'</span>: <span class="string">'cipd'</span>,</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>cipd 模块形式的有条件依赖，如仅适用于 Linux 的 gn 依赖的描述：<br><figure class="highlight sml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">'src</span>/buildtools/linux64': &#123;</div><div class="line">  <span class="symbol">'packages'</span>: [</div><div class="line">    &#123;</div><div class="line">      <span class="symbol">'package'</span>: <span class="symbol">'gn</span>/gn/linux-amd64',</div><div class="line">      <span class="symbol">'version'</span>: <span class="type">Var</span>(<span class="symbol">'gn_version'</span>),</div><div class="line">    &#125;</div><div class="line">  ],</div><div class="line">  <span class="symbol">'dep_type'</span>: <span class="symbol">'cipd'</span>,</div><div class="line">  <span class="symbol">'condition'</span>: <span class="symbol">'checkout_linux'</span>,</div><div class="line">&#125;,</div></pre></td></tr></table></figure></p>
+<p>由于 cipd 主要是一套维护二进制文件的系统，因而 cipd 模块形式的依赖都是二进制文件。<br>每个依赖项的描述主要包含三个字段，<code>packages</code> 描述依赖项的详细路径和版本，<code>dep_type</code> 描述依赖项的类型，<code>condition</code> 描述依赖项启用的条件。</p>
+<ol>
+<li><p><code>hooks</code>：由于在某些时间点执行的命令或工具。hook 项的描述主要包含四个字段，<code>name</code> 为名称，<code>pattern</code> 为模式，<code>condition</code> 为应用的条件，<code>action</code> 为具体执行的命令工具及其运行参数。如：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="symbol">'name</span>': <span class="symbol">'sysroot_x64</span>',</div><div class="line">  <span class="symbol">'pattern</span>': <span class="string">'.'</span>,</div><div class="line">  <span class="symbol">'condition</span>': <span class="symbol">'checkout_linux</span> <span class="keyword">and</span> checkout_x64',</div><div class="line">  # TODO(mbonadei): change to <span class="comment">--arch=x64.</span></div><div class="line">  <span class="symbol">'action</span>': [<span class="symbol">'python</span>', <span class="symbol">'src</span>/build/linux/sysroot_scripts/install-sysroot.py',</div><div class="line">             '<span class="comment">--arch=amd64'],</span></div><div class="line">&#125;,</div></pre></td></tr></table></figure>
+</li>
+<li><p><code>recursedeps</code>：循环依赖。</p>
+</li>
+<li><code>include_rules</code>：定义源码中允许的 include 路径的规则。</li>
+</ol>
+<p>不难想到，只要我们可以重新定义 <code>.gclient</code> 文件和 <code>DEPS</code> 文件的内容，就可以把 WebRTC 的依赖都指向我们在 GitHub 和 Bitbucket 的 Mirror。</p>
+<h1 id="WebRTC-源码下载"><a href="#WebRTC-源码下载" class="headerlink" title="WebRTC 源码下载"></a>WebRTC 源码下载</h1><ol>
+<li><p>克隆 WebRTC 壳工程：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="keyword">clone</span> <span class="title">https</span>://github.com/asdfghjjklllllaaa/webrtc.git</div><div class="line">$ cd webrtc</div></pre></td></tr></table></figure>
+</li>
+<li><p>同步代码</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ gclient <span class="keyword">sync</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>代码量比较大，同步代码比较简单，可能需要多次重试。</p>
+<p>下载 cipd 依赖时需要访问主机 <code>chrome-infra-packages.appspot.com</code>，这个主机经常无法访问。可以先通过 <code>http://site.ip138.com/chrome-infra-packages.appspot.com/</code> 查询这个主机的 IP 地址，然后找一个可以访问的 IP，并把域名/IP信息写入 hosts 来解决。</p>
+<p>WebRTC 源码的编译，和 Demo 的运行，可以参考网上的其它文档，如 <a href="https://www.jianshu.com/p/f5ff16b3c427" target="_blank" rel="external">webrtc所有平台下载编译步骤详细说明</a> 和 <a href="https://blog.csdn.net/chenxiemin/article/details/79039350" target="_blank" rel="external">Windows下 WebRTC Demo运行： PeerConnection</a></p>
+<p>gclient 同步代码结束后，会生成一个名为 <code>.gclient_entries</code> 的文件，描述实际同步的模块及其版本号，如：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">entries = &#123;</div><div class="line">  <span class="symbol">'src</span>': <span class="symbol">'https</span>:<span class="comment">//webrtc.googlesource.com/src.git',</span></div><div class="line">  <span class="symbol">'src</span>/base': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/src/base@e56ffbf17eacb22490aa43cdf74110d951bf367d',</span></div><div class="line">  <span class="symbol">'src</span>/build': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/src/build@33e3a26c2df56dd8bca09cc909f794a1f1b6e3b5',</span></div><div class="line">  <span class="symbol">'src</span>/buildtools': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/src/buildtools@d5c58b84d50d256968271db459cd29b22bff1ba2',</span></div><div class="line">  <span class="symbol">'src</span>/buildtools/clang_format/script': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/llvm-project/cfe/tools/clang-format.git@96636aa0e9f047f17447f2d45a094d0b59ed7917',</span></div><div class="line">  <span class="symbol">'src</span>/buildtools/third_party/libc++/trunk': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/llvm-project/libcxx.git@9b96c3dbd4e89c10d9fd8364da4b65f93c6f4276',</span></div><div class="line">  <span class="symbol">'src</span>/buildtools/third_party/libc++abi/trunk': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/llvm-project/libcxxabi.git@0d529660e32d77d9111912d73f2c74fc5fa2a858',</span></div><div class="line">  <span class="symbol">'src</span>/buildtools/third_party/libunwind/trunk': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/llvm.org/libunwind.git@69d9b84cca8354117b9fe9705a4430d789ee599b',</span></div><div class="line">  <span class="symbol">'src</span>/buildtools/win:gn/gn/windows-amd64': <span class="symbol">'https</span>:<span class="comment">//chrome-infra-packages.appspot.com/gn/gn/windows-amd64@git_revision:64b846c96daeb3eaf08e26d8a84d8451c6cb712b',</span></div><div class="line">  <span class="symbol">'src</span>/testing': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/src/testing@80417f33667b5442967941d8b0657453f9976064',</span></div><div class="line">  <span class="symbol">'src</span>/third_party': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/src/third_party@096dc92b019d57f57842e652c8d6d393fd9cf3d5',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/boringssl/src': <span class="symbol">'https</span>:<span class="comment">//boringssl.googlesource.com/boringssl.git@4a8c05ffe826c61d50fdf13483b35097168faa5c',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/catapult': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/catapult.git@acbf095c15e9524a0a1116792c3b6698f8e9b85b',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/colorama/src': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/colorama.git@799604a1041e9b3bc5d2789ecbd7e8db2e18e6b8',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/depot_tools': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/tools/depot_tools.git@1e2cb1573bd2a2c847dee2844a5b6750e9270c73',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/ffmpeg': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/third_party/ffmpeg.git@e02fc00c5da42ea5cdf2bf5b9bab93c323a1e698',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/freetype/src': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/src/third_party/freetype2.git@31757f969fba60d75404f31e8f1168bef5011770',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/googletest/src': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/github.com/google/googletest.git@b617b277186e03b1065ac6d43912b1c4147c2982',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/gtest-parallel': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/github.com/google/gtest-parallel@3ca6798e2c2a06708888611bc5147bd1266f97a0',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/harfbuzz-ng/src': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git@f3aca6aa267f7687a0406c7c545aefb5eed300b2',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/icu': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/deps/icu.git@35f7e139f33f1ddbfdb68b65dda29aff430c3f6f',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/jsoncpp/source': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/github.com/open-source-parsers/jsoncpp.git@f572e8e42e22cfcf5ab0aea26574f408943edfa4',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/libFuzzer/src': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/llvm-project/compiler-rt/lib/fuzzer.git@e847d8a9b47158695593d5693b0f69250472b229',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/libjpeg_turbo': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@61a2bbaa9aec89cb2c882d87ace6aba9aee49bb9',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/libsrtp': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/deps/libsrtp.git@650611720ecc23e0e6b32b0e3100f8b4df91696c',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/libvpx/source/libvpx': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/webm/libvpx.git@da5be113f3205544658db52201a66273cf7d6e70',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/libyuv': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/libyuv/libyuv.git@b36c86fdfe746d7be904c3a565b047b24d58087e',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/nasm': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/deps/nasm.git@076332ea7c414313ab9d6d5b56396641051df5ea',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/openh264/src': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/github.com/cisco/openh264@6f26bce0b1c4e8ce0e13332f7c0083788def5fdf',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/usrsctp/usrsctplib': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/external/github.com/sctplab/usrsctp@7a8bc9a90ca96634aa56ee712856d97f27d903f8',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/yasm/binaries': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/deps/yasm/binaries.git@52f9b3f4b0aa06da24ef8b123058bb61ee468881',</span></div><div class="line">  <span class="symbol">'src</span>/third_party/yasm/source/patched-yasm': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/deps/yasm/patched-yasm.git@720b70524a4424b15fc57e82263568c8ba0496ad',</span></div><div class="line">  <span class="symbol">'src</span>/tools': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/chromium/src/tools@1892917dac44cf1ee586849a2980cd9e9e8b0555',</span></div><div class="line">  <span class="symbol">'src</span>/tools/luci-go:infra/tools/luci/isolate/$&#123;platform&#125;': <span class="symbol">'https</span>:<span class="comment">//chrome-infra-packages.appspot.com/infra/tools/luci/isolate/$&#123;platform&#125;@git_revision:25958d48e89e980e2a97daeddc977fb5e2e1fb8c',</span></div><div class="line">  <span class="symbol">'src</span>/tools/luci-go:infra/tools/luci/isolated/$&#123;platform&#125;': <span class="symbol">'https</span>:<span class="comment">//chrome-infra-packages.appspot.com/infra/tools/luci/isolated/$&#123;platform&#125;@git_revision:25958d48e89e980e2a97daeddc977fb5e2e1fb8c',</span></div><div class="line">  <span class="symbol">'src</span>/tools/luci-go:infra/tools/luci/swarming/$&#123;platform&#125;': <span class="symbol">'https</span>:<span class="comment">//chrome-infra-packages.appspot.com/infra/tools/luci/swarming/$&#123;platform&#125;@git_revision:25958d48e89e980e2a97daeddc977fb5e2e1fb8c',</span></div><div class="line">  <span class="symbol">'src</span>/tools/swarming_client': <span class="symbol">'https</span>:<span class="comment">//chromium.googlesource.com/infra/luci/client-py.git@aa60736aded9fc32a0e21a81f5fc51f6009d01f3',</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>笔者基于 <code>.gclient_entries</code> 文件的内容，写了一个简单的脚本，下载并迁移 WebRTC 依赖的这些 Git repo，脚本文件的如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> re</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse_gclient_entries</span><span class="params">(gclient_entries_file_path)</span>:</span></div><div class="line">    webrtc_repos = []</div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.isfile(gclient_entries_file_path):</div><div class="line">        print(<span class="string">"File does not exist: "</span> + gclient_entries_file_path)</div><div class="line">        <span class="keyword">return</span> webrtc_repos</div><div class="line"></div><div class="line">    git_direct_pattern = re.compile(<span class="string">r".+: '(.+\.git)',$"</span>)</div><div class="line">    git_dep_repo_pattern = re.compile(<span class="string">r".+: '(.+)@.+',$"</span>)</div><div class="line"></div><div class="line">    gclient_entries_file_handle = open(gclient_entries_file_path)</div><div class="line">    lines = gclient_entries_file_handle.readlines()</div><div class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> lines:</div><div class="line">        line = line.strip()</div><div class="line">        matcher = git_direct_pattern.match(line)</div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> matcher:</div><div class="line">            matcher = git_dep_repo_pattern.match(line)</div><div class="line">        <span class="keyword">if</span> matcher:</div><div class="line">            repo_path = matcher.group(<span class="number">1</span>)</div><div class="line">            webrtc_repos.append(repo_path)</div><div class="line"></div><div class="line">    <span class="keyword">return</span> webrtc_repos[<span class="number">31</span>:<span class="number">34</span>]</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">clone_repo</span><span class="params">(repo_path)</span>:</span></div><div class="line">    pathelem = repo_path.split(<span class="string">"/"</span>);</div><div class="line">    folder_name = pathelem[len(pathelem) - <span class="number">1</span>]</div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> folder_name.endswith(<span class="string">".git"</span>):</div><div class="line">        folder_name = folder_name + <span class="string">".git"</span></div><div class="line"></div><div class="line">    print(<span class="string">"Clone "</span> + repo_path)</div><div class="line">    clone_cmd = <span class="string">"git clone --bare "</span> + repo_path</div><div class="line">    os.system(clone_cmd)</div><div class="line"></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.isdir(folder_name):</div><div class="line">        print(<span class="string">"Clone repo failed: "</span> + repo_path)</div><div class="line">        <span class="keyword">return</span></div><div class="line"></div><div class="line">    cwd_path = os.getcwd()</div><div class="line">    os.chdir(folder_name)</div><div class="line">    push_mirror_cmd = <span class="string">"git push --mirror git@github.com:asdfghjjklllllaaa/"</span> + folder_name</div><div class="line">    os.system(push_mirror_cmd)</div><div class="line">    os.chdir(cwd_path)</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    webrtc_repos = parse_gclient_entries(<span class="string">"/media/data/webrtc/.gclient_entries"</span>)</div><div class="line">    <span class="keyword">for</span> repo_path <span class="keyword">in</span> webrtc_repos:</div><div class="line">       clone_repo(repo_path)</div></pre></td></tr></table></figure></p>
+<p>这个脚本能工作的基础是，在 GitHub 上已经为它们创建了空 repo。这个脚本解析<code>.gclient_entries</code> 文件的内容，从中提取 git repo 的地址，把它们 clone 到本地，然后在推送到 github 上对应的 repo 中去。</p>
+<p>不过，完美的解决方案，应该是解析 <code>DEPS</code> 文件的内容，而不是 <code>.gclient_entries</code> 文件的内容。</p>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/音视频开发/" rel="tag"># 音视频开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/19/AddressSanitizer_on_linux/" rel="next" title="Linux 下的 AddressSanitizer">
+                <i class="fa fa-chevron-left"></i> Linux 下的 AddressSanitizer
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/20/webrtc_audio_receiving_and_sending/" rel="prev" title="WebRTC Audio 接收和发送的关键过程">
+                WebRTC Audio 接收和发送的关键过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WebRTC-源码下载过程浅析"><span class="nav-number">1.</span> <span class="nav-text">WebRTC 源码下载过程浅析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WebRTC-源码下载"><span class="nav-number">2.</span> <span class="nav-text">WebRTC 源码下载</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

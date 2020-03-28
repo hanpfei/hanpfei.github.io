@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<html class="theme-next mist use-motion" lang="zh-CN">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -187,7 +187,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
   
   
@@ -233,37 +233,37 @@
         
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-commonweal">
           <a href="http://www.ixirong.com/404.html" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
         </li>
       
 
@@ -307,7 +307,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/11/15/OkHttp3-HTTP请求执行流程分析/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/06/08/android_tls_version_issue/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -326,7 +326,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/11/15/OkHttp3-HTTP请求执行流程分析/" itemprop="url">OkHttp3 HTTP请求执行流程分析</a></h1>
+                <a class="post-title-link" href="/2017/06/08/android_tls_version_issue/" itemprop="url">Android TLS 版本过低造成的问题</a></h1>
         
 
         <div class="post-meta">
@@ -336,9 +336,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-15T17:46:49+08:00">2016-11-15</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-08T09:17:49+08:00">2017-06-08</time>
             
 
             
@@ -356,10 +356,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/安全/" itemprop="url" rel="index"><span itemprop="name">安全</span></a></span>
 
                 
                 
@@ -369,17 +369,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/06/08/android_tls_version_issue/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/06/08/android_tls_version_issue/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/11/15/OkHttp3-HTTP请求执行流程分析/" class="leancloud_visitors" data-flag-title="OkHttp3 HTTP请求执行流程分析">
+             <span id="/2017/06/08/android_tls_version_issue/" class="leancloud_visitors" data-flag-title="Android TLS 版本过低造成的问题">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -405,17 +415,42 @@
 
       
         
-          <h1 id="OkHttp3的基本用法"><a href="#OkHttp3的基本用法" class="headerlink" title="OkHttp3的基本用法"></a>OkHttp3的基本用法</h1><p>使用OkHttp3发送Http请求并获得响应的过程大体为：</p>
-<ol>
-<li>创建OkHttpClient对象。OkHttpClient为网络请求执行的一个中心，它会管理连接池，缓存，SocketFactory，代理，各种超时时间，DNS，请求执行结果的分发等许多内容。</li>
-<li>创建Request对象。Request用于描述一个HTTP请求，比如请求的方法是”GET”还是”POST”，请求的URL，请求的header，请求的body，请求的缓存策略等。</li>
-<li>利用前面创建的OkHttpClient对象和Request对象创建Call对象。Call是一次HTTP请求的Task，它会执行网络请求以获得响应。OkHttp中的网络请求执行Call既可以同步进行，也可以异步进行。调用call.execute()将直接执行网络请求，阻塞直到获得响应。而调用call.enqueue()传入回调，则会将Call放入一个异步执行队列，由ExecutorService在后台执行。</li>
-<li>执行网络请求并获取响应。</li>
-</ol>
+          <p>由于集成的 SSL 库版本不同，不同 Android 版本的默认 SSL/TLS 版本配置如下表：</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Supported (API Levels)</th>
+<th>Enabled by default (API Levels)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSLv3</td>
+<td>1–TBD</td>
+<td>1–22</td>
+</tr>
+<tr>
+<td>TLSv1</td>
+<td>1+</td>
+<td>1+</td>
+</tr>
+<tr>
+<td>TLSv1.1</td>
+<td>20+</td>
+<td>20+</td>
+</tr>
+<tr>
+<td>TLSv1.2</td>
+<td>20+</td>
+<td>20+</td>
+</tr>
+</tbody>
+</table>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/11/15/OkHttp3-HTTP请求执行流程分析/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/06/08/android_tls_version_issue/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -467,7 +502,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/11/14/curl_for_HTTP2_on_ubuntu/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/06/05/wifi_shard/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -486,7 +521,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/11/14/curl_for_HTTP2_on_ubuntu/" itemprop="url">为curl命令启用HTTP2支持</a></h1>
+                <a class="post-title-link" href="/2017/06/05/wifi_shard/" itemprop="url">WiFi 热点共享设置</a></h1>
         
 
         <div class="post-meta">
@@ -496,9 +531,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-14T16:05:49+08:00">2016-11-14</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-05T09:17:49+08:00">2017-06-05</time>
             
 
             
@@ -516,7 +551,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络调试/" itemprop="url" rel="index"><span itemprop="name">网络调试</span></a></span>
@@ -529,17 +564,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/06/05/wifi_shard/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/06/05/wifi_shard/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/11/14/curl_for_HTTP2_on_ubuntu/" class="leancloud_visitors" data-flag-title="为curl命令启用HTTP2支持">
+             <span id="/2017/06/05/wifi_shard/" class="leancloud_visitors" data-flag-title="WiFi 热点共享设置">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -565,12 +610,11 @@
 
       
         
-          <h2 id="检查curl版本"><a href="#检查curl版本" class="headerlink" title="检查curl版本"></a>检查curl版本</h2><p>可以通过如下命令检查当前安装的curl支持的协议及特性：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ curl --<span class="keyword">version</span></div><div class="line">curl <span class="number">7.47</span>.<span class="number">0</span> (x86_64-<span class="keyword">pc</span>-linux-gnu) libcurl/<span class="number">7.47</span>.<span class="number">0</span> GnuTLS/<span class="number">3.4</span>.<span class="number">10</span> zlib/<span class="number">1.2</span>.<span class="number">8</span> libidn/<span class="number">1.32</span> librtmp/<span class="number">2.3</span></div><div class="line">Protocol<span class="variable">s:</span> dict <span class="keyword">file</span> ftp ftps gopher http https <span class="keyword">imap</span> imaps ldap ldaps pop3 pop3s rtmp rtsp smb smbs smtp smtps telnet tftp </div><div class="line">Feature<span class="variable">s:</span> AsynchDNS IDN IPv6 Largefile GSS-API Kerberos SPNEGO NTLM NTLM_WB SSL libz TLS-SRP UnixSockets</div></pre></td></tr></table></figure></p>
-<p>可以看到当前安装的curl支持的http、https等协议，及其它功能，但其中并没有包含HTTP2。</p>
+          <p>借助于 WiFi 热点共享，分析移动设备网络流量非常方便，但 WiFi 热点共享竟然这么简单就可以实现。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/11/14/curl_for_HTTP2_on_ubuntu/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/06/05/wifi_shard/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -622,7 +666,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/11/14/nginx_uWSGI_deply_django_on_ubuntu/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/05/26/security-ssl/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -641,7 +685,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/11/14/nginx_uWSGI_deply_django_on_ubuntu/" itemprop="url">基于nginx和uWSGI在Ubuntu上部署Django</a></h1>
+                <a class="post-title-link" href="/2017/05/26/security-ssl/" itemprop="url">通过 HTTPS 和 SSL 确保安全</a></h1>
         
 
         <div class="post-meta">
@@ -651,9 +695,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-14T11:45:49+08:00">2016-11-14</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-26T13:17:49+08:00">2017-05-26</time>
             
 
             
@@ -671,10 +715,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后台开发/" itemprop="url" rel="index"><span itemprop="name">后台开发</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/安全/" itemprop="url" rel="index"><span itemprop="name">安全</span></a></span>
 
                 
                 
@@ -684,17 +728,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/26/security-ssl/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/05/26/security-ssl/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/11/14/nginx_uWSGI_deply_django_on_ubuntu/" class="leancloud_visitors" data-flag-title="基于nginx和uWSGI在Ubuntu上部署Django">
+             <span id="/2017/05/26/security-ssl/" class="leancloud_visitors" data-flag-title="通过 HTTPS 和 SSL 确保安全">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -720,12 +774,11 @@
 
       
         
-          <h1 id="1-nginx"><a href="#1-nginx" class="headerlink" title="1. nginx"></a>1. nginx</h1><p>启动、停止和重启</p>
-<figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>nginx</div><div class="line"><span class="variable">$ </span>nginx -s stop</div><div class="line"><span class="variable">$ </span>nginx -s reload</div></pre></td></tr></table></figure>
+          <p>安全套接字层（SSL）—— 现在在技术上称为 <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">传输层安全 (TLS)</a> —— 是客户端和服务器间加密通信的通用构建块。应用可能以错误的方式使用 SSL， 从而导致恶意实体能够拦截网络上的应用数据。为了帮助您确保您的应用中不会发生这种情况，本文重点介绍了使用安全网络协议的常见陷阱，并解决了关于使用 <a href="http://en.wikipedia.org/wiki/Public-key_infrastructure">公钥基础设施(PKI)</a> 中更大的担忧。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/11/14/nginx_uWSGI_deply_django_on_ubuntu/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/05/26/security-ssl/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -777,7 +830,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/11/13/Netty-HTTP-on-Android/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/05/13/osi_model/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -796,7 +849,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/11/13/Netty-HTTP-on-Android/" itemprop="url">Netty HTTP on Android</a></h1>
+                <a class="post-title-link" href="/2017/05/13/osi_model/" itemprop="url">OSI 网络协议模型为什么是 7 层？</a></h1>
         
 
         <div class="post-meta">
@@ -806,9 +859,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-13T17:46:49+08:00">2016-11-13</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-13T22:15:49+08:00">2017-05-13</time>
             
 
             
@@ -826,10 +879,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/业界趣闻/" itemprop="url" rel="index"><span itemprop="name">业界趣闻</span></a></span>
 
                 
                 
@@ -839,17 +892,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/13/osi_model/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/05/13/osi_model/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/11/13/Netty-HTTP-on-Android/" class="leancloud_visitors" data-flag-title="Netty HTTP on Android">
+             <span id="/2017/05/13/osi_model/" class="leancloud_visitors" data-flag-title="OSI 网络协议模型为什么是 7 层？">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -875,11 +938,12 @@
 
       
         
-          <p>Netty是一个NIO的客户端服务器框架，它使我们可以快速而简单地开发网络应用程序，比如协议服务器和客户端。它大大简化了网络编程，比如TCP和UDP socket服务器。</p>
+          <p>OSI 网络协议模型为什么是 7 层呢？相信不少朋友心中都有这样的疑问。</p>
+<p>Douglas E. Comer 先生的个人主页上的一篇文章 <a href="http://www.cs.purdue.edu/homes/dec/essay.network.layers.html">How the 7-layer reference model was invented</a> 讲述了 OSI 7 层网络协议参考模型的由来。（Douglas E. Comer 先生在网络界的盛名不需多说，相信很多朋友都读过他的非常棒的讲述网络协议的三卷本著作《用 TCP/IP 进行网际互联》，全部或者部分。）<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/11/13/Netty-HTTP-on-Android/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/05/13/osi_model/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -931,7 +995,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/11/11/lazy-chromium-net-android-porting-guide/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/05/13/android_security_internals/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -950,7 +1014,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/11/11/lazy-chromium-net-android-porting-guide/" itemprop="url">懒人chromium net android移植指南</a></h1>
+                <a class="post-title-link" href="/2017/05/13/android_security_internals/" itemprop="url">读《Android 安全架构深究》</a></h1>
         
 
         <div class="post-meta">
@@ -960,9 +1024,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-11T14:07:49+08:00">2016-11-11</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-13T22:05:49+08:00">2017-05-13</time>
             
 
             
@@ -980,10 +1044,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/安全/" itemprop="url" rel="index"><span itemprop="name">安全</span></a></span>
 
                 
                 
@@ -993,17 +1057,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/13/android_security_internals/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/05/13/android_security_internals/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/11/11/lazy-chromium-net-android-porting-guide/" class="leancloud_visitors" data-flag-title="懒人chromium net android移植指南">
+             <span id="/2017/05/13/android_security_internals/" class="leancloud_visitors" data-flag-title="读《Android 安全架构深究》">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1029,11 +1103,12 @@
 
       
         
-          <p>﻿Chromium浏览器的网络库是一个功能非常强大的网络库，它支持的网络协议非常多，除了常见的HTTP/1.1，它还支持HTTP/2，QUIC等比较新的协议。这里我们尝试将Chromium net网络库移植到Android平台，在我们的Android应用中跑起来。</p>
+          <p>安全是一个非常立体而丰富得概念。在不同的场景下，安全有着不同的含义。</p>
+<p>比如对于网络传输，安全指的是传输的数据不会被其他人看到、篡改、伪造及仿冒，传输的数据不会遭到破坏，数据从发送端发送出来到接收端接收到，可以保持完整准确。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/11/11/lazy-chromium-net-android-porting-guide/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/05/13/android_security_internals/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1085,7 +1160,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/11/02/用FlatBuffers提升Android平台上Facebook的性能/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/04/13/Traceroute原理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1104,7 +1179,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/11/02/用FlatBuffers提升Android平台上Facebook的性能/" itemprop="url">用FlatBuffers提升Android平台上Facebook的性能</a></h1>
+                <a class="post-title-link" href="/2017/04/13/Traceroute原理/" itemprop="url">Traceroute 原理</a></h1>
         
 
         <div class="post-meta">
@@ -1114,9 +1189,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-02T21:36:49+08:00">2016-11-02</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-13T21:17:49+08:00">2017-04-13</time>
             
 
             
@@ -1134,10 +1209,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络调试/" itemprop="url" rel="index"><span itemprop="name">网络调试</span></a></span>
 
                 
                 
@@ -1147,17 +1222,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/13/Traceroute原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/04/13/Traceroute原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/11/02/用FlatBuffers提升Android平台上Facebook的性能/" class="leancloud_visitors" data-flag-title="用FlatBuffers提升Android平台上Facebook的性能">
+             <span id="/2017/04/13/Traceroute原理/" class="leancloud_visitors" data-flag-title="Traceroute 原理">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1183,11 +1268,11 @@
 
       
         
-          <p>在Facebook上，人们可以通过阅读状态更新和查看照片同他们的家人和朋友来往。在我们的后端，我们保存了组成这些连接的社交图谱的所有数据。在我们的移动客户端，我们不能下载完整的图谱，而是以一个本地的树结构的形式下载一个节点及它的一些连接。</p>
+          <p><strong>traceroute</strong>，现代 Linux 系统上的 <strong>tracepath</strong>，还有Windows 系统上的 <strong>tracert</strong>，均是用于同一目的的网络调试工具。它们用于显示数据包在IP网络中经过的路由器的IP地址。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/11/02/用FlatBuffers提升Android平台上Facebook的性能/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/04/13/Traceroute原理/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1239,7 +1324,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/11/02/在Android中使用FlatBuffers - 简介/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/04/13/初始DNS服务器地址是哪里来的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1258,7 +1343,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/11/02/在Android中使用FlatBuffers - 简介/" itemprop="url">在Android中使用FlatBuffers - 简介</a></h1>
+                <a class="post-title-link" href="/2017/04/13/初始DNS服务器地址是哪里来的/" itemprop="url">初始DNS服务器地址是哪里来的？</a></h1>
         
 
         <div class="post-meta">
@@ -1268,9 +1353,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-02T20:36:49+08:00">2016-11-02</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-13T15:17:49+08:00">2017-04-13</time>
             
 
             
@@ -1288,10 +1373,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络调试/" itemprop="url" rel="index"><span itemprop="name">网络调试</span></a></span>
 
                 
                 
@@ -1301,17 +1386,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/13/初始DNS服务器地址是哪里来的/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/04/13/初始DNS服务器地址是哪里来的/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/11/02/在Android中使用FlatBuffers - 简介/" class="leancloud_visitors" data-flag-title="在Android中使用FlatBuffers - 简介">
+             <span id="/2017/04/13/初始DNS服务器地址是哪里来的/" class="leancloud_visitors" data-flag-title="初始DNS服务器地址是哪里来的？">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1337,12 +1432,11 @@
 
       
         
-          <p>JSON - 可能每个人都知道这个轻量的数据格式几乎被用在了所有的现代服务器中。相对于过去流行的一些东西，如可怕的XML，它更轻量，更可读，对开发更友好。JSON是语言独立的数据格式，但解析和格式转化，比如转为Java对象，耗费了我们的时间和内存资源。</p>
-<p>几天以前，Facebook宣布，在它的Android app中的数据处理部分获得了巨大的性能提升。那与 几乎在整个app中丢弃JSON格式，而用FlatBuffers代替有关。请参考<a href="https://code.facebook.com/posts/872547912839369/improving-facebook-s-performance-on-android-with-flatbuffers/">这篇文章</a>来了解一些关于FlatBuffers的基本知识，以及从JSON转换到它的结果。</p>
+          <p>DNS 是互联网中非常重要的一个系统。任何主机、设备，要想访问网络，几乎都需要先通过 DNS 服务器，查询主机的 IP 地址，然后才能与目标主机通信。通常情况下，我们都是无需为主机或设备设置 DNS 服务器地址的，那么那些 DNS 服务器地址究竟是哪里来的呢？难道是厂商事先在计算机里面埋的静态地址么？如果是这样的话，如果 DNS 服务器的 IP 地址改变了要如何处理呢？这里我们就通过 Wireshark 抓包，分析一下计算机的初始 DNS 服务器地址到底是哪里来的。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/11/02/在Android中使用FlatBuffers - 简介/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/04/13/初始DNS服务器地址是哪里来的/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1394,7 +1488,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/10/29/Cronet_android_altsvc/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/03/17/HBase数据模型/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1413,7 +1507,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/10/29/Cronet_android_altsvc/" itemprop="url">Cronet android 设计与实现分析——备选服务机制</a></h1>
+                <a class="post-title-link" href="/2017/03/17/HBase数据模型/" itemprop="url">HBase数据模型</a></h1>
         
 
         <div class="post-meta">
@@ -1423,9 +1517,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-29T14:07:49+08:00">2016-10-29</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-17T11:05:49+08:00">2017-03-17</time>
             
 
             
@@ -1443,7 +1537,335 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java开发/" itemprop="url" rel="index"><span itemprop="name">Java开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/17/HBase数据模型/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/03/17/HBase数据模型/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/03/17/HBase数据模型/" class="leancloud_visitors" data-flag-title="HBase数据模型">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在 HBase 中，数据存储在表中，其中具有行和列。这个术语与关系型数据库（RDBMS）的重叠，但这不是有用的类比。相反，将 HBase 的表想象为多维的映射可能更有帮助。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/17/HBase数据模型/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/03/10/Kafka入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/03/10/Kafka入门/" itemprop="url">Kafka 入门</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-10T16:05:49+08:00">2017-03-10</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java开发/" itemprop="url" rel="index"><span itemprop="name">Java开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/10/Kafka入门/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/03/10/Kafka入门/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/03/10/Kafka入门/" class="leancloud_visitors" data-flag-title="Kafka 入门">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>这份指南假设你是新手，且还没有 Kafka 和 ZooKeeper 数据。由于 Kafka 针对基于 Unix 的平台和 Windows 平台的终端脚本是不同的，因而，在 Windows 平台下，请使用 <code>bin\windows</code> 下的来代替 <code>bin/</code> 下的，并将脚本的扩展名修改为 <code>.bat</code>。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/10/Kafka入门/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/03/09/QUIC加密协议/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/03/09/QUIC加密协议/" itemprop="url">QUIC加密协议</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-09T18:35:49+08:00">2017-03-09</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a></span>
@@ -1456,17 +1878,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/09/QUIC加密协议/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/03/09/QUIC加密协议/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2016/10/29/Cronet_android_altsvc/" class="leancloud_visitors" data-flag-title="Cronet android 设计与实现分析——备选服务机制">
+             <span id="/2017/03/09/QUIC加密协议/" class="leancloud_visitors" data-flag-title="QUIC加密协议">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1492,319 +1924,11 @@
 
       
         
-          <p>前面我们分析到，在<code>URLRequestHttpJob::StartTransactionInternal()</code>中，会通过<code>URLRequestContext</code>的<code>HttpTransactionFactory</code>创建<code>HttpTransaction</code>，在<code>URLRequestContextBuilder::Build()</code>中创建<code>HttpTransactionFactory</code>的过程如下：</p>
+          <h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>QUIC加密协议是QUIC的一部分，它为连接提供了传输安全性。QUIC加密协议是 <em>注定要消亡</em>的。未来它将由TLS 1.3替代，但在TLS 1.3 最终启用之前QUIC需要一个加密协议。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/10/29/Cronet_android_altsvc/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/10/29/Cronet_android设计与实现分析__HTTP请求启动/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Han Pengfei">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/freesoft.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WolfcsTech">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/10/29/Cronet_android设计与实现分析__HTTP请求启动/" itemprop="url">Cronet android设计与实现分析--HTTP请求启动</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-29T14:06:49+08:00">2016-10-29</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2016/10/29/Cronet_android设计与实现分析__HTTP请求启动/" class="leancloud_visitors" data-flag-title="Cronet android设计与实现分析--HTTP请求启动">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在简单地分析了cronet的初始化过程之后，我们来看HTTP请求的提交和执行。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/10/29/Cronet_android设计与实现分析__HTTP请求启动/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2016/10/29/Cronet_android设计与实现分析__库的初始化/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Han Pengfei">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/freesoft.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WolfcsTech">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/10/29/Cronet_android设计与实现分析__库的初始化/" itemprop="url">Cronet android设计与实现分析--库的初始化﻿</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-29T14:05:49+08:00">2016-10-29</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2016/10/29/Cronet_android设计与实现分析__库的初始化/" class="leancloud_visitors" data-flag-title="Cronet android设计与实现分析--库的初始化﻿">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Cronet的基本用法"><a href="#Cronet的基本用法" class="headerlink" title="Cronet的基本用法"></a>Cronet的基本用法</h1><p>我们从一段代码来开始我们对Cronet android设计与实现的探索，这段代码向我们展示要如何使用Cronet为android提供的Java接口来做HTTP请求。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/10/29/Cronet_android设计与实现分析__库的初始化/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/03/09/QUIC加密协议/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1845,7 +1969,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1892,8 +2016,8 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">168</span>
-                    <span class="site-state-item-name">posts</span>
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
               
@@ -1943,8 +2067,10 @@
                     
                       
                     
+                      
+                    
                     <span class="site-state-item-count">19</span>
-                    <span class="site-state-item-name">categories</span>
+                    <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
               
@@ -2016,8 +2142,12 @@
                     
                       
                     
+                      
+                    
+                      
+                    
                     <span class="site-state-item-count">30</span>
-                    <span class="site-state-item-name">tags</span>
+                    <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
               
@@ -2076,10 +2206,6 @@
                     <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
                   </li>
                 
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
-                  </li>
-                
               </ul>
             </div>
           
@@ -2106,7 +2232,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -2120,7 +2246,7 @@
 
 
 
-  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -2128,7 +2254,7 @@
 
 
 
-  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
 
 
 
@@ -2249,21 +2375,35 @@
 
 
 
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
 
 
 
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
 
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
 
 
   
@@ -2273,113 +2413,6 @@
 
 
   
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
 
   
 

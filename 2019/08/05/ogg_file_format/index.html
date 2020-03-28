@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,音视频开发," />
+
+
+<meta name="description" content="关于本备忘录这份备忘录为互联网社区提供信息。它不描述任何种类的互联网标准。分发这份备忘录不受任何限制。
+版权声明Copyright (C) The Internet Society (2003)。All Rights Reserved。
+摘要这份文档描述 Ogg 流格式的版本 0，它是媒体流的一个通用，可自由使用的封装格式。它能够在单个流中封装任何种类和数量的视频和音频编码格式，以及其它数据流。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ogg 封装格式版本 0">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/08/05/ogg_file_format/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="关于本备忘录这份备忘录为互联网社区提供信息。它不描述任何种类的互联网标准。分发这份备忘录不受任何限制。
+版权声明Copyright (C) The Internet Society (2003)。All Rights Reserved。
+摘要这份文档描述 Ogg 流格式的版本 0，它是媒体流的一个通用，可自由使用的封装格式。它能够在单个流中封装任何种类和数量的视频和音频编码格式，以及其它数据流。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-1dfffb42927afec8.png">
+<meta property="og:updated_time" content="2019-08-16T08:54:33.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ogg 封装格式版本 0">
+<meta name="twitter:description" content="关于本备忘录这份备忘录为互联网社区提供信息。它不描述任何种类的互联网标准。分发这份备忘录不受任何限制。
+版权声明Copyright (C) The Internet Society (2003)。All Rights Reserved。
+摘要这份文档描述 Ogg 流格式的版本 0，它是媒体流的一个通用，可自由使用的封装格式。它能够在单个流中封装任何种类和数量的视频和音频编码格式，以及其它数据流。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-1dfffb42927afec8.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/08/05/ogg_file_format/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Ogg 封装格式版本 0 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/08/05/ogg_file_format/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Ogg 封装格式版本 0</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T21:30:49+08:00">2019-08-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/音视频开发/" itemprop="url" rel="index"><span itemprop="name">音视频开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/05/ogg_file_format/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/05/ogg_file_format/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/08/05/ogg_file_format/" class="leancloud_visitors" data-flag-title="Ogg 封装格式版本 0">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="关于本备忘录"><a href="#关于本备忘录" class="headerlink" title="关于本备忘录"></a>关于本备忘录</h1><p>这份备忘录为互联网社区提供信息。它不描述任何种类的互联网标准。分发这份备忘录不受任何限制。</p>
+<h1 id="版权声明"><a href="#版权声明" class="headerlink" title="版权声明"></a>版权声明</h1><p>Copyright (C) The Internet Society (2003)。All Rights Reserved。</p>
+<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>这份文档描述 Ogg 流格式的版本 0，它是媒体流的一个通用，可自由使用的封装格式。它能够在单个流中封装任何种类和数量的视频和音频编码格式，以及其它数据流。<br><a id="more"></a></p>
+<h1 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h1><p>本文档中的关键字 “MUST”，”MUST NOT”，”REQUIRED”，”SHALL”，”SHALL NOT”，”SHOULD”，”SHOULD NOT”，”RECOMMENDED”，”MAY”，和 “OPTIONAL” 按 <a href="https://tools.ietf.org/html/bcp14" target="_blank" rel="external">BCP 14</a>，<a href="https://tools.ietf.org/html/rfc2119" target="_blank" rel="external">RFC 2119</a> [<a href="https://tools.ietf.org/html/rfc3533#ref-2" target="_blank" rel="external">2</a>] 中的描述解释。</p>
+<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h1><p>Ogg 流格式作为一个更大的项目的一部分而开发，该项目旨在在整个计算社区中，包括互联网社区，为多媒体内容的编码和解码（codec）创建一系列可自由使用且可自由地以软件或硬件重新实现的组件。这就是以 Xiph.Org 为代表的 Ogg 开发者的意图，它可以自由使用而无需担心知识产权问题。</p>
+<p>本文档描述 Ogg 流格式，以及如何使用它封装一个或多个由编码器创建的一个或多个媒体流。Ogg 传输流被设计用于为更高层的由原始的、未封装的包组成的编解码器流，如 Vorbis 音频编解码器，或者即将来到的 Tarkin 和 Theora 视频编解码器，提供分帧、错误保护及 seeking 结构。它能够交错不同的二进制媒体，和其它由编码器以数据包序列的形式准备的连续时间数据流。Ogg 提供充足的信息，以适当地在最初的包边界处把不同的数据分离回这些编码器创建的数据包，而无需依赖解码来找到包边界。</p>
+<p>请注意 MIME 类型 <code>application/ogg</code> 已经向 IANA 注册。</p>
+<h1 id="2-定义"><a href="#2-定义" class="headerlink" title="2. 定义"></a>2. 定义</h1><p>为了描述 Ogg 封装过程，将使用一系列其含义需要得到良好理解的术语。因此，在我们开始描述通用媒体流封装格式的需求、封装过程和具体的 Ogg 流格式之前，先定义一些最基本的术语。请参考附录了解更为完整的术语表。</p>
+<p>Ogg 封装的输出是被称为 “物理（Ogg）流” 的东西。它封装一个或多个编码器创建的称为 “逻辑流” 的流。提供给 Ogg 封装过程的逻辑流具有一定的结构，比如，它被分割为一系列所谓的“包”。包由逻辑流的编码器创建，并表示只对该编码器有意义的实体（比如，一个未压缩的流可以使用视频帧作为包）。它们不需要包含边界信息 —— 它们连在一起就像没有任何标记的随机字节流。</p>
+<p>请注意，本文档中使用的术语 “包” 不是用来表示网络传输的实体的。</p>
+<h1 id="3-通用封装格式的需求"><a href="#3-通用封装格式的需求" class="headerlink" title="3. 通用封装格式的需求"></a>3. 通用封装格式的需求</h1><p>Ogg 背后的设计思路是提供一个通用的，线性的媒体传输格式，以方便独立于媒体数据编码格式的一种或几种交叉媒体流，基于文件的存储和基于流的传输。这样一种封装格式需要提供：</p>
+<ul>
+<li>逻辑流的分帧。</li>
+<li>不同逻辑流的交错。</li>
+<li>错误探测。</li>
+<li>解析错误后的恢复。</li>
+<li>为实现对流中任意位置的直接随机存取的位置标记。</li>
+<li>流的能力（比如，构建一个 100% 完整的流不需要 seeking）。</li>
+<li>开销小（比如包边界标记、高层分帧、同步和 seeking 使用不超过接近 1 - 2% 的流带宽）。</li>
+<li>支持快速解析简单。</li>
+<li>简单的多物理流连接机制。</li>
+</ul>
+<p>Ogg 考虑了所有这些设计因素。Ogg 以不超过接近 1 - 2% 的开销支持逻辑流的分帧和交错，seeking 标记，错误探测，和解析错误后的流重同步。它是封装连续时间流的通用框架。它不关心它封装的编解码数据的任何特有信息，并因此独立于任何媒体编解码器。</p>
+<p>Ogg 文件组成的逻辑描述：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-1dfffb42927afec8.png" alt="Ogg 文件组成的逻辑描述"></p>
+<h1 id="4-Ogg-流格式"><a href="#4-Ogg-流格式" class="headerlink" title="4. Ogg 流格式"></a>4. Ogg 流格式</h1><p>物理 Ogg 流由多个保存在所谓的“页” 中的逻辑流数据交错构成。来自于多个逻辑流的所有的页是有序的，它们在页级多路复用。逻辑流由物理流的每个页头部中唯一的序列号标识。这个唯一的序列号随机创建，它与逻辑流描绘的内容或编码器没有任何关联。所有逻辑流的页并发地交替，但它们无需按常规顺序排列 -  它们只需在逻辑流内部连续。Ogg 解多路复用并重建最初的逻辑流，通过按顺序从物理流中获取页，并把它们重定向到适当的逻辑解码实体来完成。</p>
+<p>每个 Ogg 页只包含一种类型的数据，因为它只属于一个逻辑流。页大小可变，且有一个页头部，其中包含封装和错误恢复信息。Ogg 物理流中的每个逻辑流以一个特殊的起始页（bos=beginning of stream）开始，并以一个特殊的页（eos=end of stream）结束。</p>
+<p>bos 页包含唯一地标识编解码类型的信息，并 <strong><em>可能</em></strong> 包含设置解码过程的信息。bos 页还应该包含关于编码的媒体的信息 - 比如，对于音频来说，它应该包含采样率和通道数。按照惯例，bos 页开始处的一些字节包含唯一地标识所需的编解码器的幻数。开发新编解码器的人有责任确保他/她的编解码器能够可靠地与所有正在使用的编解码器区分开来。没有固定的方法探测编解码器标识标记的结束。bos 页的格式依赖于编解码器，因此必须在逻辑流类型的封装规范中给出。Ogg 允许但不强制在逻辑流的 bos 页之后包含一些二级头部包，但这些包必须在任何逻辑流数据包之前。这些后来的头部包被分割放进整数个页中，其中不包含任何数据包。因此，物理流以所有逻辑流的 bos 页开始，其中每个页包含一个初始头部包，然后是所有流的二级头部包，再然后是包含数据包的页。</p>
+<p>一个或多个逻辑流的封装规范称为“媒体映射”。媒体映射的一个例子是 “Ogg Vorbis”，它使用 Ogg 框架为基于流的存储（比如文件）和传输（比如 TCP 流或管道）封装 Vorbis 编码的音频数据。Ogg Vorbis 在 Ogg Vorb bos 页提供 Vorbis 编解码器的名称和修订版，采样率和音频质量。它还为每个逻辑流使用两个额外的头部页。Ogg Vorbis bos 页以字节 0x01 开始，然后是 “vorbis”（一个总共包含 7 个字节的标识符）。</p>
+<p>Ogg 支持两种类型的复用：同时复用（所谓的“分组”）和连续的多路复用（所谓的“链接”）。分组定义如何在同一物理流中按页顺序交错多个逻辑流。比如需要交错一个视频流及在多个逻辑流中使用多个不同编解码器的同步音频流的情况，可以使用分组。另一方面，链接定义了一种简单的机制来连接物理 Ogg 流，它通常在流应用中被用到。</p>
+<p>在分组机制中，所有逻辑流的所有 bos 页必须同时出现在 Ogg 流的开始处。媒体映射描述了初始页的顺序。比如，特定 Ogg 视频和 Ogg 音频流的分组机制可以指定物理流必须以逻辑视频流的 bos 页开始，然后是音频流的 bos 页。与 bos 页不同，逻辑流的 eos 页不需要所有的连续出现。Eos 页可以是 ‘nil’ 页，即，不含内容但只有包含位置信息的页头部，并在页头部中设置了 eos 标记的页。每个分组的逻辑流必须具有在物理流范围内唯一的序列号。</p>
+<p>在链接机制中，完整的逻辑流被连接在一起。流之间不重叠，比如，一个给定逻辑流的 eos 页后面紧跟着的是下一个的 bos 页。每个链接的逻辑流必须具有在物理流范围内唯一的序列号。</p>
+<p>连续地链接并发的多路复用流的组也是可能的。这种组，当解链接时，必须是一个有效的同时复用流。下图展示了一个物理流的示例原理图，它遵守分组和链式多路复用流的所有规则。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">        物理流，包含分组和链接的不同逻辑流的页</div><div class="line">-------------------------------------------------------------</div><div class="line">|<span class="string">*A*</span>|<span class="string">*B*</span>|<span class="string">*C*</span>|<span class="string">A</span>|<span class="string">A</span>|<span class="string">C</span>|<span class="string">B</span>|<span class="string">A</span>|<span class="string">B</span>|<span class="string">#A#</span>|<span class="string">C</span>|<span class="string">...</span>|<span class="string">B</span>|<span class="string">C</span>|<span class="string">#B#</span>|<span class="string">#C#</span>|<span class="string">*D*</span>|<span class="string">D</span>|<span class="string">...</span>|<span class="string">#D#</span>|</div><div class="line">-------------------------------------------------------------</div><div class="line"> bos bos bos             eos           eos eos bos       eos</div></pre></td></tr></table></figure>
+<p>在这个例子中，有两个链接的物理流，其中第一个是三个逻辑流 A，B 和 C 的分组流。第二个物理流链接在分组流的结束位置之后，它在它所有的分组逻辑流的 eos 页之后结束。可以看到，分组流一起开始 —— 所有的 bos 页必须在任何数据页出现前出现。还可以看到的是，同时复用流的页不需要与常规顺序一致。还可以看到的是，一个分组流可以在组内其它流结束之前很久结束。</p>
+<p>除了每个逻辑流属于不同的编解码器之外，Ogg 不了解任何关于编解码器数据特有的信息，来自于编解码器的数据按顺序到达，并具有位置标记（所谓的 “颗粒位置”）。Ogg 没有 ‘时间’ 的概念：它只知道顺序递增没有单位的位置标记。应用只能通过可以访问编解码器 API 分配和转换颗粒位置和时间的更高层获得时差信息。</p>
+<p>使用 Ogg 的媒体映射的专有定义可以添加更多关于它的 Ogg 流格式特有的使用限制。比如，专有的媒体映射可以要求所有分组流的所有 eos 页以直接顺序出现。媒体映射的一个例子是 “Ogg Vorbis” 规范。另一个例子是即将到来的 “Ogg Theora” 规范，它封装 Theora 编码的视频数据及常常伴有的 Vorbis 流，以用于在 Ogg 中包含同步的音频和视频。由于 Ogg 不描述封装的同时复用流间的时间关系，音频和视频流间的时间同步将在媒体映射中描述。为了使用流机制，通常会按时间顺序交错来自不同逻辑流的页。</p>
+<h1 id="5-封装过程"><a href="#5-封装过程" class="headerlink" title="5. 封装过程"></a>5. 封装过程</h1><p>不同逻辑流的多路复用过程发生在上述页的层面。然而编码器交付给 Ogg 的流的形式是 “包”，其中包边界依赖于编码格式。现在描述将包封装为页的过程。</p>
+<p>从 Ogg 的视角来看，包可以具有任意大小。专门的媒体映射将定义如何分组或分割来自于特定媒体编码器的包。由于 Ogg 页的最大大小大约为 64 kBytes，有时一个包不得不通过多个页分发。为了简化该过程，Ogg 把每个包分割为 255 字节长的块外加最后更短的块。这些块被称为 “Ogg 段”。它们只是一个逻辑的结构，且本身没有头部。</p>
+<p>一组连续的段被封装为一个变长的页，其中头部位于前面。页头部中的段表描述页中包含的段的 <strong><em>“接头值”</em></strong> (大小)。页头部中的一个标记描述页是否包含前一页的延续包。注意值为 255 的接头值意味着当前包的后面还有第二个接头值，值小于 255 则意味着当前的包中这许多额外的数据之后包就结束了。<strong><em>255 字节（或者 255 字节的倍数）的包由值为 0 的接头值终止。</em></strong> 注意 ‘nil’ (0 长度) 包不是错误；除了头部中值为 0 的接头值外不包含其它东西。</p>
+<p>该编码针对速度和预期大小主要在 50 至 200 字节之间的包进行了优化。（主要是音频流和低码率的视频流。）这是一个设计理由，而不是建议。这种编码既避免了对数据包施加最大大小限制，也避免了对小数据包施加最小的开销限制。相反，例如，在每个包的头部简单地使用两个字节，并且最大包大小为 32 kBytes，那么小包 (通常小于255字节) 就会受到两倍于分段开销的惩罚。使用建议的接头值，小数据包耗费最小可能的字节对齐开销(1字节)，而大数据包( &gt; 512字节) 耗费相当固定的 ~0.5% 的编码空间开销。</p>
+<p>下图展示使用 Ogg 和分组机制的媒体映射的原理示意图：<br><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">          具有包边界的逻辑流</div><div class="line"> -----------------------------------------------------------------</div><div class="line"> &gt; |<span class="string">       packet_1             </span>|<span class="string"> packet_2         </span>|<span class="string"> packet_3 </span>|<span class="string">  &lt;</span></div><div class="line"> -----------------------------------------------------------------</div><div class="line"></div><div class="line">                     |<span class="string">分段 (只是逻辑上的)</span></div><div class="line">                     v</div><div class="line"></div><div class="line">      packet_1 (5 段)          packet_2 (4 段)    p_3 (2 段)</div><div class="line">     ------------------------------ -------------------- ------------</div><div class="line"> ..  |<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string">seg_4</span>|<span class="string">s_5 </span>|<span class="string"> </span>|<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>||<span class="string"> </span>|<span class="string">seg_1</span>|<span class="string">s_2 </span>|<span class="string"> ..</span></div><div class="line">     ------------------------------ -------------------- ------------</div><div class="line"></div><div class="line">                     |<span class="string"> 页封装</span></div><div class="line">                     v</div><div class="line"></div><div class="line"> page_1 (packet_1 data)   page_2 (pket_1 data)   page_3 (packet_2 data)</div><div class="line">------------------------  ----------------  ------------------------</div><div class="line">|<span class="string">H</span>|<span class="string">------------------- </span>|<span class="string">  </span>|<span class="string">H</span>|<span class="string">----------- </span>|<span class="string">  </span>|<span class="string">H</span>|<span class="string">------------------- </span>|</div><div class="line">|<span class="string">D</span>||<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string"> </span>|<span class="string">  </span>|<span class="string">D</span>|<span class="string">seg_4</span>|<span class="string">s_5 </span>|<span class="string"> </span>|<span class="string">  </span>|<span class="string">D</span>||<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string"> </span>|<span class="string"> ...</span></div><div class="line">|<span class="string">R</span>|<span class="string">------------------- </span>|<span class="string">  </span>|<span class="string">R</span>|<span class="string">----------- </span>|<span class="string">  </span>|<span class="string">R</span>|<span class="string">------------------- </span>|</div><div class="line">------------------------  ----------------  ------------------------</div><div class="line"></div><div class="line">                     |<span class="string"></span></div><div class="line">其它逻                |</div><div class="line">辑流    ---------|<span class="string">    </span>|</div><div class="line">的页            |<span class="string"> MUX </span>|</div><div class="line">                -------</div><div class="line">                   |<span class="string"></span></div><div class="line">                   v</div><div class="line"></div><div class="line">              page_1  page_2          page_3</div><div class="line">      ------  ------  -------  -----  -------</div><div class="line"> ...  ||<span class="string">   </span>|<span class="string">  </span>||<span class="string">   </span>|<span class="string">  </span>||<span class="string">    </span>|<span class="string">  </span>||<span class="string">  </span>|<span class="string">  </span>||<span class="string">    </span>|<span class="string">  ...</span></div><div class="line">      ------  ------  -------  -----  -------</div><div class="line">              物理 Ogg 流</div></pre></td></tr></table></figure></p>
+<p>在这个例子中，我们截取了一个逻辑比特流封装过程的快照。我们可以看到编解码器提供的将流细分成数据包的部分。Ogg 封装过程将包分割成段。这个例子中的包相当大，以致于 packet_1 被分割为 5 段 - 4 个 255 字节的段和最后更小的段。Packet_2 被分割为 4 段 - 3 个 255 字节的段和最后的非常小的段 - packet_3 被分割为两个段。封装过程随后创建页，在这个例子中相当小。Page_1 由 packet_1 的前三个段组成，page_2 包含 packet_1 剩余的 2 个段，page_3 包含 packet_2 的前三个段。最后，这个逻辑流与其它逻辑流复用相同的物理 Ogg 流。</p>
+<h1 id="6-Ogg-页格式"><a href="#6-Ogg-页格式" class="headerlink" title="6. Ogg 页格式"></a>6. Ogg 页格式</h1><p>物理 Ogg 流由一系列相互连接的页组成。页的大小可变，通常为 4-8 kB，最大为 65307 字节。页头部包含从物理流中解复用逻辑流所需的所有信息，并执行基本的错误恢复和 seeking 标记。每个页都是自包含的实体，页解码机制可以识别、验证它，且一次处理单个页而无需整体个流。</p>
+<p>Ogg 页头部格式如下：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="code"> 0                   1                   2                   3</span></div><div class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1| Byte</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">| capture_pattern: Magic number for page start "OggS"           | 0-3</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">| version       | header_type   | granule_position              | 4-7</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">|                                                               | 8-11</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">|                               | bitstream_serial_number       | 12-15</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">|                               | page_sequence_number          | 16-19</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">|                               | CRC_checksum                  | 20-23</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">|                               |page_segments  | segment_table | 24-27</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div><div class="line"><span class="section">| ...                                                           | 28-</span></div><div class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</div></pre></td></tr></table></figure>
+<p>上面的字节中 LSb (最低有效位) 在前边。大于一个字节的字段被编码为 LSB （最低有效字节）优先。</p>
+<p>页头部的字段具有如下含义：</p>
+<ol>
+<li>capture_pattern：一个 4 字节的字段，它表示页的开始。它包含幻数：<pre><code>0x4f &apos;O&apos;
+0x67 &apos;g&apos;
+0x67 &apos;g&apos;
+0x53 &apos;S
+</code></pre></li>
+</ol>
+<p>它帮助解码器查找页边界，并在解析损坏的流后恢复同步。找到 capture pattern 之后，解码器通过计算并比较校验和来验证页同步和完整性。</p>
+<ol>
+<li><p>stream_structure_version：1 个字节，表示这个流中使用的 Ogg 文件格式的版本号（本文档描述的为版本 0）。</p>
+</li>
+<li><p>header_type_flag：这个 1 字节字段中的位标识了这个页的特定类型。</p>
+<ul>
+<li><p>位 0x01</p>
+<ul>
+<li>设置：这个页中包含的包是前一页数据的延续。</li>
+<li>未设置：页中包含一个全新的包</li>
+</ul>
+</li>
+<li><p>位 0x02</p>
+<ul>
+<li>设置：这是某个逻辑流的第一个页（bos）</li>
+<li>未设置：这不是一个首页</li>
+</ul>
+</li>
+<li><p>位 0x04</p>
+<ul>
+<li>设置：这是某个逻辑流的最后一个页（bos）</li>
+<li>未设置：这个页不是末尾页</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>granule_position：一个包含位置信息的 8 字节字段。比如，对于一个音频流，它<strong>可能</strong>包含到当前页结束为止的所有帧编码的 PCM 样本的总数。对于视频流，它 <strong>可能</strong> 包含此页及之前页包含的所有编码的视频帧的总数。这是给解码器的一种提示，并给了它一些时间和位置信息。它的含义依赖于逻辑流的编解码器，并在特定的媒体映射中指定。特殊值 -1（以 2 的补码）表示此页上没有包完成。</p>
+</li>
+<li><p>bitstream_serial_number：包含唯一的序列号的 4 字节字段，用于标识逻辑流。</p>
+</li>
+<li><p>page_sequence_number：包含页序列号的 4 字节字段，解码器可以据此确定页的丢失。这个序列号在每个逻辑流上分别递增。</p>
+</li>
+<li><p>CRC_checksum：包含当前页（包括 CRC 字段为 0 的头部和页内容）的 32 位校验和的 4 字节字段。生成器多项式是 0x04c11db7。</p>
+</li>
+<li><p>number_page_segments：1 字节，给出了段表中编码的段项的个数。</p>
+</li>
+<li><p>segment_table：number_page_segments 个字节，包含这个页中所有段的接头值。每个字节包含一个接头值。</p>
+</li>
+</ol>
+<p>页的字节总数的计算方式如下：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attr">page_size</span> = header_size + sum(lacing_values: <span class="number">1</span>..number_page_segments) [Byte]</div></pre></td></tr></table></figure></p>
+<h1 id="7-安全注意事项"><a href="#7-安全注意事项" class="headerlink" title="7. 安全注意事项"></a>7. 安全注意事项</h1><p>Ogg 封装格式是一个容器格式，它只封装内容（比如 Vorbis 编码的音频）。它不为它自己或它包含的内容提供任何通用的加密或签名机制。然而，它封装的任何种类的内容只要有编解码器，就能包含加密和签名的内容数据。它也可能添加外部的安全机制来加密或签名 Ogg 物理流，从而提供内容保密性和真实性。</p>
+<p>由于 Ogg 封装二进制数据，因此在 Ogg 流中包含可执行内容也是可能的。使用 Ogg 格式实现的应用中这可能是个问题，特别是当 Ogg 被用于在网络场景下进行流式传输或文件传输时。因此，Ogg 在那里不构成威胁。然而，解码 Ogg 和它封装的内容的应用需要确保正确地处理流的管理，如缓冲区溢出诸如此类的问题。</p>
+<h1 id="8-参考文献"><a href="#8-参考文献" class="headerlink" title="8. 参考文献"></a>8. 参考文献</h1><p>[1] Walleij, L., “The application/ogg Media Type”, <a href="https://tools.ietf.org/html/rfc3534" target="_blank" rel="external">RFC 3534</a>, May 2003.</p>
+<p>[2] Bradner, S., “Key words for use in RFCs to Indicate Requirement Levels”, <a href="https://tools.ietf.org/html/bcp14" target="_blank" rel="external">BCP 14</a>, <a href="https://tools.ietf.org/html/rfc2119" target="_blank" rel="external">RFC 2119</a>, March 1997.</p>
+<h1 id="附录-A-缩略和术语表"><a href="#附录-A-缩略和术语表" class="headerlink" title="附录 A. 缩略和术语表"></a>附录 A. 缩略和术语表</h1><p>bos 页：逻辑流的初始页（流的开始），它包含标识编解码器类型的信息和其它解码相关的信息</p>
+<p>链接（或连续的多路复用）：连接两个或更多完整的物理 Ogg 流。</p>
+<p>eos 页：逻辑流的最后页（流的结束）。</p>
+<p>颗粒位置：页头部中存储的特定逻辑流的递增的位置数。它的含义依赖于该逻辑流的编解码器，并专用于专门的媒体映射。</p>
+<p>分组（或同时复用）：在满足所有分组的逻辑流的 bos 页必须出现在任何数据页之前这一限制的前提下，交替多个逻辑流的页为一个完整的 Ogg 流。</p>
+<p>接头值：页头部中的段表中的一个项，表示关联的段的大小。</p>
+<p>逻辑流：编码媒体流的结果构成的一系列位。</p>
+<p>媒体映射：Ogg 封装格式的一种特定用法，以及一个（组）特定的编解码器。</p>
+<p>(Ogg) 包：逻辑流的子部分，它由编码器为流创建，并表示对于编码器而言有意义的实体，但对于 Ogg 封装而言只是一系列位。</p>
+<p>(Ogg) 页：物理流由一系列只包含一个逻辑流的数据的 Ogg 页组成。它常常包含一个包的一组连续的段，但有时包太大，需要分割在多个页中。</p>
+<p>物理 (Ogg) 流：一个或多个逻辑流的 Ogg 封装所产生的位序列。它由来自于逻辑流的一系列页组成，但有个限制，一个逻辑流的页必须以正确的顺序出现。</p>
+<p>(Ogg) 段：Ogg 封装过程把每个包分割为 255 字节的块及小于 255 字节的最后一个小块。这些块称为段。</p>
+<p><a href="https://tools.ietf.org/html/rfc3533" target="_blank" rel="external">原文</a></p>
+<p>参考文档<br><a href="https://www.xiph.org/" target="_blank" rel="external">Xiph.org</a><br><a href="https://wiki.xiph.org/OggOpus" target="_blank" rel="external">OggOpus</a><br><a href="https://tools.ietf.org/pdf/rfc6716.pdf" target="_blank" rel="external">RFC 6716, Definition of the Opus Audio Codec</a><br><a href="http://www.opus-codec.org/release/dev/2018/09/18/opusfile-0_11.html" target="_blank" rel="external">opusfile 0.11</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/音视频开发/" rel="tag"># 音视频开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/01/googletest_primer/" rel="next" title="Googletest 入门">
+                <i class="fa fa-chevron-left"></i> Googletest 入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/22/googletest_impl_analysis/" rel="prev" title="Googletest 实现简要分析">
+                Googletest 实现简要分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于本备忘录"><span class="nav-number">1.</span> <span class="nav-text">关于本备忘录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#版权声明"><span class="nav-number">2.</span> <span class="nav-text">版权声明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#摘要"><span class="nav-number">3.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#术语"><span class="nav-number">4.</span> <span class="nav-text">术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-简介"><span class="nav-number">5.</span> <span class="nav-text">1. 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-定义"><span class="nav-number">6.</span> <span class="nav-text">2. 定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-通用封装格式的需求"><span class="nav-number">7.</span> <span class="nav-text">3. 通用封装格式的需求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Ogg-流格式"><span class="nav-number">8.</span> <span class="nav-text">4. Ogg 流格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-封装过程"><span class="nav-number">9.</span> <span class="nav-text">5. 封装过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Ogg-页格式"><span class="nav-number">10.</span> <span class="nav-text">6. Ogg 页格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-安全注意事项"><span class="nav-number">11.</span> <span class="nav-text">7. 安全注意事项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-参考文献"><span class="nav-number">12.</span> <span class="nav-text">8. 参考文献</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录-A-缩略和术语表"><span class="nav-number">13.</span> <span class="nav-text">附录 A. 缩略和术语表</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

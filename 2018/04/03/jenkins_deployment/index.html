@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="开发流程," />
+
+
+<meta name="description" content="Jenkins 的简单部署在安装了 Jenkins 运行所需的依赖（主要是 JDK）之后，可以通过如下步骤简单快速地部署 Jenkins：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jenkins 在 Tomcat 中的部署及代码静态检查工具集成">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/04/03/jenkins_deployment/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Jenkins 的简单部署在安装了 Jenkins 运行所需的依赖（主要是 JDK）之后，可以通过如下步骤简单快速地部署 Jenkins：">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-445e10a5742089cb.jpg">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-c98b2e793e1bec91.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-0376c9b201833b8f.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-2d0b3e8a817bb7e7.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-8c1b42e146acb8d2.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-e4769bf6fde33ca5.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-0ee0700fe76db0ef.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-29758e2e07b59a6c.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-eb0216367b88b45e.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-55b435b08191794b.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-916733363733cf6f.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-491c8b952e81fad0.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-5c1a68eeacad2f58.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-61712adb0ee66fb6.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-99cf50f73e0855e8.png">
+<meta property="og:updated_time" content="2018-04-04T02:47:11.081Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jenkins 在 Tomcat 中的部署及代码静态检查工具集成">
+<meta name="twitter:description" content="Jenkins 的简单部署在安装了 Jenkins 运行所需的依赖（主要是 JDK）之后，可以通过如下步骤简单快速地部署 Jenkins：">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-445e10a5742089cb.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/04/03/jenkins_deployment/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Jenkins 在 Tomcat 中的部署及代码静态检查工具集成 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/04/03/jenkins_deployment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Jenkins 在 Tomcat 中的部署及代码静态检查工具集成</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-03T21:17:49+08:00">2018-04-03</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/开发流程/" itemprop="url" rel="index"><span itemprop="name">开发流程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/03/jenkins_deployment/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/04/03/jenkins_deployment/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/03/jenkins_deployment/" class="leancloud_visitors" data-flag-title="Jenkins 在 Tomcat 中的部署及代码静态检查工具集成">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Jenkins-的简单部署"><a href="#Jenkins-的简单部署" class="headerlink" title="Jenkins 的简单部署"></a>Jenkins 的简单部署</h1><p>在安装了 Jenkins 运行所需的依赖（主要是 JDK）之后，可以通过如下步骤简单快速地部署 Jenkins：<br><a id="more"></a></p>
+<ol>
+<li><p><a href="http://mirrors.jenkins.io/war-stable/latest/jenkins.war" target="_blank" rel="external">下载 Jenkins</a>.</p>
+</li>
+<li><p>打开终端并切换至下载目录。</p>
+</li>
+<li><p>运行命令 <code>java -jar jenkins.war --httpPort=8080</code>。<br><code>--httpPort</code> 参数用于指定 Jenkins 服务运行的端口。这条命令将运行 Jenkins 服务。</p>
+</li>
+<li><p>打开浏览器并输入网址 <code>http://localhost:8080</code>。<br>URL 中的端口需要与上面运行 Jenkins 时指定的端口一致。在浏览器中我们能看到 Jenkins 的页面了。</p>
+</li>
+<li><p>按照指示完成安装过程。<br>安装插件，并对 Jenkins 做配置。</p>
+</li>
+</ol>
+<h1 id="Jenkins-在-Tomcat-中的部署"><a href="#Jenkins-在-Tomcat-中的部署" class="headerlink" title="Jenkins 在 Tomcat 中的部署"></a>Jenkins 在 Tomcat 中的部署</h1><p>虽然上面的 Jenkins 部署很方便快捷，但是服务管理却不是很方便。Jenkins 作为一个 Java Web 应用，其 war 包可以非常方便的部署在 Tomcat 容器中。Tomcat 在 Ubuntu 系统中的安装过程可以参考 <a href="https://www.wolfcstech.com/2017/02/24/Install_Tomcat8_on_Ubuntu16.04/">Ubuntu 16.04 Tomcat 8安装指南</a> 一文。</p>
+<p>要在 Tomcat 容器中部署 Jenkins，只需将 jenkins.war 复制到 <code>$TOMCAT_HOME/webapps</code>，然后通过 URL  <a href="http://yourhost/jenkins" target="_blank" rel="external">http://yourhost/jenkins</a> 访问即可。</p>
+<p>如果 Tomcat 容器中只部署 Jenkins 服务，可以移除 <code>$TOMCAT_HOME/webapps</code> 目录中的所有内容，然后将 jenkins.war 放进这个目录中并重命名为 ROOT.war（注意大小写要保持一致）。Tomcat 将展开这个文件并创建 ROOT 目录，然后我们应该可以在 <a href="http://yourhost" target="_blank" rel="external">http://yourhost</a> 看到 Jenkins，而无需任何额外的路径（如果采用了 Tomcat 的默认配置，应该是 <a href="http://yourhost:8080）" target="_blank" rel="external">http://yourhost:8080）</a></p>
+<p>如 <a href="https://www.wolfcstech.com/2017/02/24/Install_Tomcat8_on_Ubuntu16.04/">Ubuntu 16.04 Tomcat 8安装指南</a> 一文的介绍，如果为 Tomcat 建立了 systemd 服务文件，可以通过如下命令重启 Tomcat 服务：<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo systemctl <span class="literal">stop</span> tomcat</div><div class="line">$ sudo systemctl <span class="literal">start</span> tomcat</div></pre></td></tr></table></figure></p>
+<p>并可以通过如下命令查看 Tomcat 的运行状态：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>sudo systemctl status tomcat</div></pre></td></tr></table></figure></p>
+<p>在 Jenkins 服务启动之前，设置环境变量 <code>JENKINS_HOME</code> 可以指定 Jenkins 服务的主目录。这可以通过为 Tomcat 的 systemd 服务文件 <code>/etc/systemd/system/tomcat.service</code> 添加如下的行来实现：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attr">Environment</span>=JENKINS_HOME=/opt/tomcat/jenkins_home</div></pre></td></tr></table></figure></p>
+<p>这行配置在启动 Tomcat 容器之前，导出环境变量。</p>
+<p>更多关于在 Tomcat 中部署 Jenkins 的内容可以参考 <a href="https://wiki.jenkins.io/display/JENKINS/Tomcat" target="_blank" rel="external"><em>Tomcat</em> - <em>Jenkins</em> - <em>Jenkins</em> <em>Wiki</em></a>。</p>
+<h1 id="nginx-反向代理"><a href="#nginx-反向代理" class="headerlink" title="nginx 反向代理"></a>nginx 反向代理</h1><p>将 Tomcat 容器作为 Web 服务器不是那么的方便，通过 nginx 做反向代理会好很多。在 Ubuntu 中可以通过如下命令安装并运行 nginx：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>sudo apt-get install nginx</div><div class="line"><span class="variable">$ </span>sudo nginx</div></pre></td></tr></table></figure></p>
+<p>修改 nginx 的配置文件 <code>/etc/nginx/nginx.conf</code>，在 <code>http</code> 块的最后添加如下几行为 Jenkins 设置反向代理：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">    <span class="attribute">server_name</span> <span class="number">59.111.103.32</span>;</div><div class="line">    <span class="attribute">location</span> / &#123;</div><div class="line">       <span class="attribute">proxy_pass</span> http://127.0.0.1:8080;</div><div class="line">        <span class="attribute">proxy_redirect</span> <span class="literal">off</span>;</div><div class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</div><div class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</div><div class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</div><div class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-Proto <span class="variable">$scheme</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>随后，就可以通过 <a href="http://yourhost" target="_blank" rel="external">http://yourhost</a> URL，经过 nginx 访问 Jenkins 服务了。登陆之后，打开 Jenkins 左上角的 <strong><em>Jenkins</em></strong> -&gt; <strong><em>Manage Jenkins</em></strong> -&gt; <strong><em>Configure System</em></strong> Jenkins 全局配置页面，滚动到 <strong><em>Jenkins Location</em></strong> 的部分，正确配置 <strong><em>Jenkins URL</em></strong>：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-445e10a5742089cb.jpg" alt=""></p>
+<p>Jenkins 作为一个强大的持续集成平台，其强大之处的重要体现就是，支持许许多多的插件，可以将功能强大的第三方工具集成进来，代码质量保障相关的工具，比如代码的静态检查工具，是其中比较常用的一些。常用的代码静态检查工具有 PMD，FindBugs，Android Lint，CheckStyle 和 SonarQube Scanner 等。</p>
+<h1 id="PMD"><a href="#PMD" class="headerlink" title="PMD"></a>PMD</h1><p>PMD 是一个可扩展跨语言的静态代码分析器。它查找常见的编程缺陷，如未使用的变量，空 catch 块，不必要的对象创建，等等。此外它还包含 CPD，复制粘贴探测器。CPD 查找重复代码。</p>
+<p>PMD 扫描 <strong><em>Java 和其它编程语言</em></strong> 的源代码，并查找像下面这样的潜在问题：</p>
+<ul>
+<li>可能的 bugs - 空的 try/catch/finally/switch 声明</li>
+<li>死码 - 未使用的本地变量，参数和私有方法</li>
+<li>次优代码 - 无用的 String/StringBuffer 使用</li>
+<li>过于复杂的表达式 - 不必要的 if 声明，可能可以写成 while 的 for 循环</li>
+</ul>
+<p>CPD，复制粘贴探测器，查找多种语言的重复代码：</p>
+<ul>
+<li>重复代码常常是由复制粘贴产生的。这意味着，bugs 也被复制粘贴了。修正它们意味着，修正所有重复的代码。</li>
+</ul>
+<p>在正式开始集成 PMD 之前，首先需要通过 Jenkins 左上角的 <strong><em>Jenkins</em></strong> -&gt; <strong><em>Manage Jenkins</em></strong> -&gt; <strong><em>Manage Plugins</em></strong>，在 Jenkins 中安装 PMD 的插件：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-c98b2e793e1bec91.png" alt=""></p>
+<p>我们通过为 Jenkins Project 添加 Post-build Action 来集成 PMD。打开 Jenkins  Project 的主页，点击左边的 <code>Configure</code> 打开工程的配置页面，找到页面最下边的 <code>Post-build Actions</code>，点击 <code>Add post-build action</code> 的下拉箭头，并找到 <code>Publish PMD analysis results</code>，添加 PMD post-build action，如下图：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-0376c9b201833b8f.png" alt=""></p>
+<p>在 <code>PMD results</code> 输入框中输入 PMD 检查结果文件的路径，这个结果文件需要我们在构建期间调用 PMD 工具生成。配置了 PMD post-build action 之后，点击左下角的 <code>Save</code> 按钮保存退出配置。</p>
+<p>使用 PMD 工具生成源代码的静态检查分析报告的方法如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>cd <span class="variable">$HOME</span></div><div class="line"><span class="variable">$ </span>wget <span class="symbol">https:</span>/<span class="regexp">/github.com/pmd</span><span class="regexp">/pmd/releases</span><span class="regexp">/download/pmd</span>_releases%<span class="number">2</span>F6.<span class="number">2.0</span>/pmd-bin-<span class="number">6.2</span>.<span class="number">0</span>.zip</div><div class="line"><span class="variable">$ </span>unzip pmd-bin-<span class="number">6.2</span>.<span class="number">0</span>.zip</div><div class="line"><span class="variable">$ </span><span class="keyword">alias</span> pmd=<span class="string">"$HOME/pmd-bin-6.2.0/bin/run.sh pmd"</span></div><div class="line"><span class="variable">$ </span>pmd -d /usr/src -f xml -r pmd.xml -rulesets java-basic,java-design</div></pre></td></tr></table></figure></p>
+<p>PMD 工具的 <code>-d</code> 参数用于指定项目的源码路径，<code>-f</code> 参数用于指定输出报告文件的格式，<code>-r</code> 用于指定输出报告文件的文件名，<code>-rulesets</code> 则用于指定检查规则集合。这个命令将产生名为 <code>pmd.xml</code> 的 XML 格式的检查报告，这也是 Jenkins 的 PMD 插件所支持的格式。</p>
+<p>在下载并安装 PMD 工具之后，在 Jenkins 工程的构建脚本中执行 PMD 工具产生检查报告，如将 PMD 检查的功能集成进一个用 Python 写的构建脚本：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_pmd</span><span class="params">(wrapper_module_name, target_module_name)</span>:</span></div><div class="line">    <span class="keyword">if</span> <span class="string">"PMD_ROOT_PATH"</span> <span class="keyword">not</span> <span class="keyword">in</span> os.environ.keys():</div><div class="line">        print(<span class="string">"Cannot find PMD"</span>)</div><div class="line">        <span class="keyword">return</span></div><div class="line"></div><div class="line">    pmd_root_path = os.environ[<span class="string">"PMD_ROOT_PATH"</span>]</div><div class="line">    pmd_cmd_path = pmd_root_path + os.path.sep + <span class="string">"bin/run.sh"</span></div><div class="line">    src_dir = wrapper_module_name + os.path.sep + target_module_name + os.path.sep + <span class="string">"src/main/java"</span></div><div class="line">    pmd_cmd_path = <span class="string">"%s pmd -d %s -f xml -r pmd.xml -rulesets java-basic,java-design"</span> % (pmd_cmd_path, src_dir)</div><div class="line"></div><div class="line">    print(pmd_cmd_path)</div><div class="line"></div><div class="line">    os.system(pmd_cmd_path)</div></pre></td></tr></table></figure></p>
+<p>Jenkins 工程在构建结束之后，将根据配置的 <code>PMD results</code> 路径查找 PMD 检查的结果，并将结果展示在 Jenkins 工程的主页面上，如下图所示：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-2d0b3e8a817bb7e7.png" alt=""></p>
+<p>点击 <code>PMD Trend</code> 将可以看到 PMD 检查的详细结果，如下图：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-8c1b42e146acb8d2.png" alt=""></p>
+<p>关于 PMD 工具用法更详细的内容，可以参考它的 <a href="https://pmd.github.io/pmd-6.2.0/" target="_blank" rel="external">主页</a> 和 <a href="https://pmd.github.io/pmd-6.2.0/" target="_blank" rel="external">官方文档</a>。</p>
+<h1 id="FindBugs"><a href="#FindBugs" class="headerlink" title="FindBugs"></a>FindBugs</h1><p>FindBugs 是另一个强大的静态代码检查工具，它主要用于查找 <strong><em>Java 代码</em></strong> 中的 bugs，它查找 正确性 bugs，糟糕的做法及 Dodgy 等<a href="http://findbugs.sourceforge.net/demo.html" target="_blank" rel="external">问题</a>。</p>
+<p>与在 Jenkins 中集成 PMD 类似，同样需要先在 Jenkins 中为 FindBugs 安装插件：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-e4769bf6fde33ca5.png" alt=""></p>
+<p>然后配置 Jenkins 工程，添加 post-build action <code>Publish FindBugs analysis results</code>，如下图：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-0ee0700fe76db0ef.png" alt=""></p>
+<p><code>FindBugs results</code> 输入框中需要输入 FindBugs 工具代码检查的结果文件。Jenkins 将在构建结束之后，扫描这个文件，并在页面中展示出来。</p>
+<p>在 Jenkins 工程的构建阶段，需要调用 FindBugs 工具生成检查报告，方法如下：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ cd $HOME</div><div class="line">$ wget <span class="symbol">https:</span>/<span class="regexp">/jaist.dl.sourceforge.net/project</span><span class="regexp">/findbugs/findbugs</span><span class="regexp">/3.0.1/findbugs</span>-<span class="number">3.0</span>.<span class="number">1</span>.tar.gz</div><div class="line">$ tar xvf findbugs-<span class="number">3.0</span>.<span class="number">1</span>.tar.gz</div><div class="line">$ findbugs-<span class="number">3.0</span>.<span class="number">1</span>/bin/findbugs -textui -low -xml -output findbugs.xml <span class="class"><span class="keyword">module</span>/<span class="title">build</span>/<span class="title">intermediates</span>/<span class="title">bundles</span>/<span class="title">debug</span>/<span class="title">classes</span>.<span class="title">jar</span></span></div></pre></td></tr></table></figure></p>
+<p>FindBugs 提供了两种用户界面，分别是 GUI 和命令行用户界面，在 Jenkins 的构建脚本中，我们以命令行界面执行 <code>findbugs</code>，这通过 <code>-textui</code> 参数来指定。<code>-low</code> 参数用于指明希望输出所有类型的问题，<code>-xml</code> 参数用于指定生成的检查报告的文件格式，<code>-output</code> 参数指明输出文件名，最后是模块编译生成的 class jar 文件。</p>
+<p>在 Jenkins 服务器上下载安装了 FindBugs 工具之后，集成代码检查过程进 Python 构建脚本的方法大体如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_findbugs</span><span class="params">(wrapper_module_name, target_module_name)</span>:</span></div><div class="line">    <span class="keyword">if</span> <span class="string">"FIND_BUGS_ROOT_PATH"</span> <span class="keyword">not</span> <span class="keyword">in</span> os.environ.keys():</div><div class="line">        print(<span class="string">"Cannot find findbugs"</span>)</div><div class="line">        <span class="keyword">return</span></div><div class="line">    findbugs_root_path = os.environ[<span class="string">"FIND_BUGS_ROOT_PATH"</span>]</div><div class="line">    findbugs_cmd_path = findbugs_root_path + os.path.sep + <span class="string">"bin/findbugs"</span></div><div class="line"></div><div class="line">    class_file_path = wrapper_module_name + os.path.sep + target_module_name + os.path.sep + <span class="string">"build/intermediates/bundles/debug/classes.jar"</span></div><div class="line">    findbugs_cmd_path = <span class="string">"%s -textui -low -xml -output findbugs.xml %s"</span> % (findbugs_cmd_path, class_file_path)</div><div class="line"></div><div class="line">    print(findbugs_cmd_path)</div><div class="line"></div><div class="line">    os.system(findbugs_cmd_path)</div></pre></td></tr></table></figure></p>
+<p>在 Jenkins 的构建任务结束之后，它扫描 FindBugs 的检查结果，并展示出来：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-29758e2e07b59a6c.png" alt="截图_2018-04-03_11-00-44.png"></p>
+<p>点进去可以查看更详细的找到的问题：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-eb0216367b88b45e.png" alt=""></p>
+<p>关于 FindBugs 更详细的内容，可以参考其<a href="http://findbugs.sourceforge.net/" target="_blank" rel="external">主页</a>和<a href="http://findbugs.sourceforge.net/manual/index.html" target="_blank" rel="external">文档</a>。</p>
+<p>总结一下 PMD、FindBugs 集成进 Jenkins 的流程：</p>
+<ul>
+<li>全局 Jenkins 配置方面，为相应的代码静态检查工具安装插件。</li>
+<li>在 Jenkins 工程配置中，为相应的代码静态检查工具添加 post-build action，配置检查结果文件的存放路径。</li>
+<li>为 Jenkins 服务器下载并安装代码静态检查工具。</li>
+<li>在 Jenkins 工程的构建脚本中，调用代码检查工具生成检查报告文件。</li>
+</ul>
+<p>其它的代码静态检查工具集成进 Jenkins 的过程与此类似，如 Checkstyle 和 Android Lint。</p>
+<h1 id="Checkstyle"><a href="#Checkstyle" class="headerlink" title="Checkstyle"></a>Checkstyle</h1><p>Checkstyle 是一个帮助程序员编写符合某一编码规范的 <strong><em>Java 代码</em></strong> 的开发工具。为它提供编码规范的定义文件和源代码，它自动检查源代码中不符合规范的地方。编码规范的定义文件可以自行配置，比较常用的 Java 代码编码规范如 <a href="http://www.oracle.com/technetwork/java/javase/documentation/codeconvtoc-136057.html" target="_blank" rel="external">Sun 代码规范</a> 和 <a href="http://checkstyle.sourceforge.net/reports/google-java-style-20170228.html" target="_blank" rel="external">Google Java 代码规范</a>。</p>
+<p>在 Jenkins 中集成 Checkstyle 的整体过程与集成 PMD 和 FindBugs 的过程类似。需要为 Checkstyle 安装的插件为 <code>Checkstyle Plug-in</code>，需要为 Jenkins 工程添加的 post-build action 为 <code>Publish Checkstyle analysis results</code>。下载并安装 Checkstyle 工具的方法如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ </span>wget <span class="symbol">https:</span>/<span class="regexp">/excellmedia.dl.sourceforge.net/project</span><span class="regexp">/checkstyle/checkstyle</span><span class="regexp">/8.8/checkstyle</span>-<span class="number">8.8</span>-bin.tar.gz</div><div class="line"><span class="variable">$ </span>tar xvf checkstyle-<span class="number">8.8</span>-bin.tar.gz</div></pre></td></tr></table></figure></p>
+<p>此外还需要自己定义或下载公开的代码风格定义文件，如 Sun 代码规范 <a href="https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/sun_checks.xml" target="_blank" rel="external">sun_checks.xml</a> 和 Google Java 代码规范 <a href="https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml" target="_blank" rel="external">google_checks.xml</a></p>
+<p>执行 Checkstyle 工具生成检查报告的方法如下：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ java -jar checkstyle-<span class="number">8.8</span>/checkstyle-<span class="number">8.8</span>-all<span class="selector-class">.jar</span> com<span class="selector-class">.puppycrawl</span><span class="selector-class">.tools</span><span class="selector-class">.checkstyle</span><span class="selector-class">.Main</span> -c checkstyle_config/google_checks<span class="selector-class">.xml</span> module/src/main/java -f xml -o checkstyle-result.xml</div></pre></td></tr></table></figure></p>
+<p>Checkstyle 工具的 <code>-c</code> 参数用于指定代码风格的定义文件，<code>-f</code> 参数用于指定用于指定输出检查报告文加的格式，<code>-o</code> 参数用于指定输出报告文件的文件名，同时需要为 Checkstyle 指定项目的 Java 源代码路径。上面的命令中 Checkstyle 将输出文件名为 <code>checkstyle-result.xml</code> 格式为 xml 的检查报告。</p>
+<p>将 Checkstyle 工具集成进 Python 的工程构建脚本的方法如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_checkstyle</span><span class="params">(wrapper_module_name, target_module_name)</span>:</span></div><div class="line">    <span class="keyword">if</span> <span class="string">"CHECKSTYLE_ROOT_PATH"</span> <span class="keyword">not</span> <span class="keyword">in</span> os.environ.keys():</div><div class="line">        print(<span class="string">"Cannot find Checkstyle"</span>)</div><div class="line">        <span class="keyword">return</span></div><div class="line">    jar_path = os.environ[<span class="string">"CHECKSTYLE_ROOT_PATH"</span>] + os.path.sep + <span class="string">"checkstyle-8.8-all.jar"</span></div><div class="line">    checkstyle_cmd = <span class="string">"java -jar "</span> + jar_path + <span class="string">" com.puppycrawl.tools.checkstyle.Main"</span></div><div class="line">    script_path = __file__</div><div class="line">    config_file_path = os.path.dirname(script_path) + os.path.sep + <span class="string">"checkstyle_config/google_checks.xml"</span></div><div class="line">    checkstyle_cmd = checkstyle_cmd + <span class="string">" -c "</span> + config_file_path</div><div class="line">    src_dir = <span class="string">" "</span> + wrapper_module_name + os.path.sep + target_module_name + os.path.sep + <span class="string">"src/main/java"</span></div><div class="line">    checkstyle_cmd = checkstyle_cmd + src_dir + <span class="string">" -f xml -o checkstyle-result.xml"</span></div><div class="line"></div><div class="line">    print(checkstyle_cmd)</div><div class="line"></div><div class="line">    os.system(checkstyle_cmd)</div></pre></td></tr></table></figure></p>
+<p>Jenkins 在工程构建结束之后，扫描 Checkstyle 的检查报告，并展示出来：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-55b435b08191794b.png" alt="截图_2018-04-03_11-34-05.png"></p>
+<p>Checkstyle 更详细的用法可以参考其<a href="http://checkstyle.sourceforge.net/" target="_blank" rel="external">主页</a> 和它的 <a href="http://checkstyle.sourceforge.net/cmdline.html" target="_blank" rel="external">命令行用法说明文档</a>。</p>
+<h1 id="Android-Lint"><a href="#Android-Lint" class="headerlink" title="Android Lint"></a>Android Lint</h1><p>将 Android Lint 集成进 Jenkins 的过程，与前面的那些 PMD、FindBugs 和 Checkstyle 的过程类似，只是需要安装的 Jenkins 插件为 <a href="https://wiki.jenkins-ci.org/display/JENKINS/Android+Lint+Plugin" target="_blank" rel="external">Android Lint Plugin</a>，需要为 Jenkins 工程添加的 post-build action 为 <code>Publish Android Lint results</code>。</p>
+<p>更为简单的是，Android Lint 是 Android Sdk 中的工具，因而无需单独下载安装。对于 Gradle 工程而言，甚至无需单独运行 Android lint 工具，而只需运行 <code>lintDebug</code> 或 <code>lintRelease</code> gradle 任务即可，它们将在模块的 <code>build/reports/lint-results*.xml</code> 处生成 检查报告。</p>
+<p>在 Python 的 Jenkins 工程构建脚本中生成 Android Lint 检查报告的方法如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_android_lint</span><span class="params">(target_module_name)</span>:</span></div><div class="line">    lint_task_name = <span class="string">":%s:lintDebug"</span> % target_module_name</div><div class="line">    os.system(<span class="string">"./gradlew "</span> + lint_task_name)</div></pre></td></tr></table></figure></p>
+<p>Android Lint 的检查结果类似于下面这样：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-916733363733cf6f.png" alt=""></p>
+<h1 id="SonaQube-Scanner"><a href="#SonaQube-Scanner" class="headerlink" title="SonaQube Scanner"></a>SonaQube Scanner</h1><p>SonaQube 是一个开源的代码质量分析管理平台，它专注于持续地分析和测量技术方面的质量，从项目组合到方法。通过插件，它可以支持包括 Java，C#，C/C++，PL/SQL，Cobol，JavaScrip，Groovy 等在内的 <a href="https://www.sonarsource.com/products/codeanalyzers/" target="_blank" rel="external">20 多种编程语言</a> 的代码质量检测与管理。</p>
+<p>SonaQube 对代码质量的管理通过 Web 服务 SonaQube 提供，代码质量检测通过 SonaQube Scanner 完成。通常的流程是，SonaQube Scanner 执行代码的静态检查分析，然后将检查的结果传给 SonaQube 服务，SonaQube 服务解析并展示分析结果。</p>
+<p>SonaQube Scanner 可以集成进 MSBuild，Maven，Gradle，Ant 等构建系统中，当然也可以集成进 Jenkins 或在命令行上运行。</p>
+<h2 id="安装-SonaQube-服务"><a href="#安装-SonaQube-服务" class="headerlink" title="安装 SonaQube 服务"></a>安装 SonaQube 服务</h2><p>在 Jenkins 中集成 SonaQube Scanner，分析结果依然需要由 SonaQube 服务来解析与展示，因而首先需要安装 SonaQube 服务。在 SonarQube 的<a href="https://www.sonarqube.org/downloads/" target="_blank" rel="external">下载页面</a> 选择需要的版本并下载，如 SonarQube 6.7.2 (LTS *) 。</p>
+<p>下载完成后，执行如下命令安装并启动 SonaQube 服务：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ unzip sonarqube<span class="number">-6.7</span><span class="number">.2</span>.zip</div><div class="line">$ sonarqube<span class="number">-6.7</span><span class="number">.2</span>/bin/linux-x86<span class="number">-64</span>/sonar.sh start</div></pre></td></tr></table></figure></p>
+<p>SonarQube 自带数据库和 Web 服务器，因而通过上面简单的两条命令，就可以将 SonaQube 服务运行起来了。默认情况下，SonaQube 服务运行于 9000 端口上：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-491c8b952e81fad0.png" alt=""></p>
+<p>但需要注意不能以 root 用户启动 SonaQube 服务，否则将启动失败。通过 <code>sonarqube-6.7.2/logs/</code> 目录下的 ElasticSearch 日志文件 es.log 和 SonaQube 日志文件 sonar.log 可以看到这一点。为了获得更好的性能和稳定性，可以使用外部的数据库服务， SonaQube 服务对此提供了良好的支持。关于 SonaQube 服务安装配置更详细的过程，可以参考 SonaQube 的官方文档 <a href="https://docs.sonarqube.org/display/SONAR/Installing+the+Server" target="_blank" rel="external">Installing the Server</a>。</p>
+<h2 id="命令行运行-SonaQube-Scanner"><a href="#命令行运行-SonaQube-Scanner" class="headerlink" title="命令行运行 SonaQube Scanner"></a>命令行运行 SonaQube Scanner</h2><p>SonaQube Scanner 可以集成进 MSBuild，Maven，Gradle，Ant 及 Jenkins 等工具中，也可以在命令上独立运行。首先下载并安装 SonaQube Scanner：<br><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ wget https://sonarsource.bintray.com/Distribution/sonar-scanner-<span class="keyword">cli</span>/sonar-scanner-<span class="keyword">cli</span>-<span class="number">3.1</span><span class="meta">.0</span><span class="meta">.1141</span>-linux.zip</div><div class="line">$ unzip sonar-scanner-<span class="keyword">cli</span>-<span class="number">3.1</span><span class="meta">.0</span><span class="meta">.1141</span>-linux.zip</div></pre></td></tr></table></figure></p>
+<p>然后为要检查的工程编写属性配置文件 sonar-project.properties，如：<br><figure class="highlight vbnet"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">java-<span class="keyword">module</span>.sonar.projectName=Java <span class="keyword">Module</span></div><div class="line">java-<span class="keyword">module</span>.sonar.language=java</div><div class="line"><span class="meta"># .表示projectBaseDir指定的目录</span></div><div class="line">java-<span class="keyword">module</span>.sonar.sources=study-project/<span class="keyword">lib</span>-<span class="keyword">module</span>-question/src/main/java</div><div class="line">java-<span class="keyword">module</span>.sonar.projectBaseDir=study-project/<span class="keyword">lib</span>-<span class="keyword">module</span>-question</div><div class="line">sonar.binaries=classes</div><div class="line">sonar.projectKey=study-project</div><div class="line">sonar.sources=study-project/<span class="keyword">lib</span>-<span class="keyword">module</span>-question/src/main/java</div><div class="line">sonar.java.binaries=study-project/<span class="keyword">lib</span>-<span class="keyword">module</span>-question/build/intermediates/bundles/debug/classes.jar</div></pre></td></tr></table></figure></p>
+<p>上面的配置中，<code>sonar.projectKey</code> 用于指定工程名称，工程名称标识一个工程，SonaQube Scanner 在检查结束之后向 SonaQube 服务发布检查结果，SonaQube 服务以工程为单位展示检查结果。<code>sonar.sources</code> 用于指定要检查的源码的路径。<code>sonar.java.binaries</code> 用于指定编译生成的 jar 文件的路径。</p>
+<p>在命令行中，在 sonar-project.properties 文件的相同目录下，执行如下命令：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sonar-scanner<span class="number">-3.1</span><span class="number">.0</span><span class="number">.1141</span>-linux/bin/sonar-scanner</div></pre></td></tr></table></figure></p>
+<p>它将根据 sonar-project.properties 配置文件的内容静态分析源码，并将结果发布给 SonaQube 服务。默认情况下，分析结果将发布给位于 <code>http://localhost:9000</code> 的 SonaQube 服务。但可以通过如下配置项来进行定制：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sonar<span class="selector-class">.host</span><span class="selector-class">.url</span>=http:<span class="comment">//localhost:9000</span></div><div class="line">sonar.login=apitoken/username</div><div class="line">sonar.password=blank/passwd</div></pre></td></tr></table></figure></p>
+<p>关于 SonaQube Scanner 执行、配置更详细的信息，可以参考官方文档 <a href="https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner" target="_blank" rel="external">Analyzing with SonarQube Scanner</a>、<a href="https://docs.sonarqube.org/display/SCAN/Advanced+SonarQube+Scanner+Usages" target="_blank" rel="external">Advanced SonarQube Scanner Usages</a><br> 和 <a href="https://docs.sonarqube.org/display/SONAR/Analysis+Parameters" target="_blank" rel="external">Analysis Parameters</a>。</p>
+<h2 id="在-Jenkins-中集成-SonaQube-Scanner"><a href="#在-Jenkins-中集成-SonaQube-Scanner" class="headerlink" title="在 Jenkins 中集成 SonaQube Scanner"></a>在 Jenkins 中集成 SonaQube Scanner</h2><p>同样需要先为 SonaQube Scanner 安装插件，这次为 <code>SonarQube Scanner for Jenkins</code>。然后以管理员身份登录 Jenkins，并进入 <strong><em>Manage Jenkins</em></strong> &gt; <strong><em>Configure System</em></strong>。向下滚动到 <strong><em>SonarQube configuration</em></strong> 的部分，点击 <strong><em>Add SonarQube</em></strong>，然后按提示输入对应的值，如下图这样：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-5c1a68eeacad2f58.png" alt=""></p>
+<p>其中 <code>Name</code> 一栏输入 SonaQube 的名称，名称任意取。<code>Server URL</code> 一栏输入 SonaQube 服务的 Url。<code>Server authentication token</code> 输入用户认证 token，这个 token 是由 SonaQube 服务生成的。</p>
+<p>登录 SonaQube 服务（如第一次以 admin（用户名）/admin（密码）登录 SonaQube 服务）之后，点击右上角的用户图标，选择 <strong><em>My Account</em></strong>，打开账户主页，并选择 <strong><em>Security</em></strong>：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-61712adb0ee66fb6.png" alt=""></p>
+<p>在 <strong><em>Generate New Token:</em></strong> 输入框中输入 token 名称，token 名称可任意选择，然后点击 <strong><em>Generate</em></strong> 生成 token。如 SonaQube 服务给出的提示，生成的 token 需要复制出去，这个 token 将无法被再次看到。这个 token 即是前面需要提供给 Jenkins 的 <code>Server authentication token</code>。</p>
+<p>然后执行 Jenkins 全局的一些配置，具体而言，是添加 SonarQube Scanner：</p>
+<ol>
+<li>以管理员身份登录 Jenkins，然后进入 <strong><em>Manage Jenkins</em></strong> -&gt; <strong><em>Global Tool Configuration</em></strong>。</li>
+<li>滚动到 <strong><em>SonarQube Scanner</em></strong> 配置部分，并点击 <strong><em>Add SonarQube Scanner</em></strong>。它基于典型的 Jenkins 工具自动安装。当然也可以选择指向一个已经安装的 SonarQube Scanner 版本（反选 ‘Install automatically’）。</li>
+</ol>
+<p>最后是 Jenkins 工程的配置：</p>
+<ol>
+<li>打开 Jenkins 工程的配置页面，滚动到 <strong><em>Build</em></strong> 部分。</li>
+<li>为 Jenkins 工程的构建添加 <em>SonarQube Scanner</em> 构建步骤。</li>
+<li>配置 SonarQube 分析属性。也可以指向一个已有的 <em>sonar-project.properties</em> 文件或直接在 <strong><em>Analysis properties</em></strong> 字段设置分析属性，如下图：</li>
+</ol>
+<p><img src="https://www.wolfcstech.com/images/1315506-99cf50f73e0855e8.png" alt=""></p>
+<p>然后点击左下角的 <code>Save</code>，保存并结束配置。后面在执行 Jenkins Project 的构建任务时，SonarQube Scanner 将执行，生成分析报告并发送给 SonaQube 服务，报告有 SonaQube 解析并展示。更多内容请参考 <a href="https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Jenkins" target="_blank" rel="external">Analyzing with SonarQube Scanner for Jenkins</a>。</p>
+<p>参考文档</p>
+<p><a href="https://jenkins.io/doc/pipeline/tour/getting-started/" target="_blank" rel="external">Getting started with the Guided Tour</a><br><a href="https://wiki.jenkins.io/display/JENKINS/Tomcat" target="_blank" rel="external">Tomcat - Jenkins - Jenkins Wiki</a><br><a href="https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Jenkins" target="_blank" rel="external">Analyzing with SonarQube Scanner for Jenkins</a><br><a href="https://www.ibm.com/developerworks/cn/devops/1612_qusm_jenkins/index.html" target="_blank" rel="external">使用 Jenkins 与 Sonar 集成对代码进行持续检测</a><br><a href="https://blog.csdn.net/hunterno4/article/details/11687269" target="_blank" rel="external">SonarQube代码质量管理平台安装与使用</a><br><a href="https://docs.sonarqube.org/display/SCAN/Analyzing+Source+Code" target="_blank" rel="external">Analyzing Source Code</a></p>
+<p><strong>除非其它特别说明，你可以转载这篇文章，但请加入文章作者和出处。谢谢。</strong></p>
+<p>Dong.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/开发流程/" rel="tag"># 开发流程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/26/gitlab_trigger_jenkins_build/" rel="next" title="GitLab 自动触发 Jenkins 构建">
+                <i class="fa fa-chevron-left"></i> GitLab 自动触发 Jenkins 构建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/01/deep_thinking/" rel="prev" title="深度思考">
+                深度思考 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Jenkins-的简单部署"><span class="nav-number">1.</span> <span class="nav-text">Jenkins 的简单部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Jenkins-在-Tomcat-中的部署"><span class="nav-number">2.</span> <span class="nav-text">Jenkins 在 Tomcat 中的部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx-反向代理"><span class="nav-number">3.</span> <span class="nav-text">nginx 反向代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PMD"><span class="nav-number">4.</span> <span class="nav-text">PMD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FindBugs"><span class="nav-number">5.</span> <span class="nav-text">FindBugs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Checkstyle"><span class="nav-number">6.</span> <span class="nav-text">Checkstyle</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-Lint"><span class="nav-number">7.</span> <span class="nav-text">Android Lint</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SonaQube-Scanner"><span class="nav-number">8.</span> <span class="nav-text">SonaQube Scanner</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-SonaQube-服务"><span class="nav-number">8.1.</span> <span class="nav-text">安装 SonaQube 服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令行运行-SonaQube-Scanner"><span class="nav-number">8.2.</span> <span class="nav-text">命令行运行 SonaQube Scanner</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-Jenkins-中集成-SonaQube-Scanner"><span class="nav-number">8.3.</span> <span class="nav-text">在 Jenkins 中集成 SonaQube Scanner</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

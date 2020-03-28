@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Android开发," />
+
+
+<meta name="description" content="目前在 Android 应用开发中，可用的 PDF 文档展示的开源项目好几个，最为方便的是 AndroidPdfViewer，它基于 PdfiumAndroid 开发而来，而后者则是由 AOSP 中的 pdfium 封转而来。另外一个 PDF 文档显示的开源项目 mupdf 也非常强大。本文简单分析 MuPDF 库的 Android 封装。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mupdf-android-viewer 设计与实现浅析">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/06/11/mupdf_android_viewer/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="目前在 Android 应用开发中，可用的 PDF 文档展示的开源项目好几个，最为方便的是 AndroidPdfViewer，它基于 PdfiumAndroid 开发而来，而后者则是由 AOSP 中的 pdfium 封转而来。另外一个 PDF 文档显示的开源项目 mupdf 也非常强大。本文简单分析 MuPDF 库的 Android 封装。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-50e57820c1107be9.png">
+<meta property="og:updated_time" content="2018-06-11T12:04:31.097Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mupdf-android-viewer 设计与实现浅析">
+<meta name="twitter:description" content="目前在 Android 应用开发中，可用的 PDF 文档展示的开源项目好几个，最为方便的是 AndroidPdfViewer，它基于 PdfiumAndroid 开发而来，而后者则是由 AOSP 中的 pdfium 封转而来。另外一个 PDF 文档显示的开源项目 mupdf 也非常强大。本文简单分析 MuPDF 库的 Android 封装。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-50e57820c1107be9.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/06/11/mupdf_android_viewer/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>mupdf-android-viewer 设计与实现浅析 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/06/11/mupdf_android_viewer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mupdf-android-viewer 设计与实现浅析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-11T19:05:49+08:00">2018-06-11</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/11/mupdf_android_viewer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/06/11/mupdf_android_viewer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/06/11/mupdf_android_viewer/" class="leancloud_visitors" data-flag-title="mupdf-android-viewer 设计与实现浅析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目前在 Android 应用开发中，可用的 PDF 文档展示的开源项目好几个，最为方便的是 <a href="https://github.com/barteksc/AndroidPdfViewer" target="_blank" rel="external">AndroidPdfViewer</a>，它基于 <a href="https://github.com/mshockwave/PdfiumAndroid" target="_blank" rel="external">PdfiumAndroid</a> 开发而来，而后者则是由 AOSP 中的 pdfium 封转而来。另外一个 PDF 文档显示的开源项目 mupdf 也非常强大。本文简单分析 MuPDF 库的 Android 封装。<br><a id="more"></a><br>MuPDF 是一个用于查看和改变 PDF，XPS 和 E-book 文档的开源软件框架。它为多个不同的平台提供了查看器，命令行工具，以及软件库以用于构建工具和应用程序。</p>
+<p>mupdf-android-viewer 是 MuPDF 为 Android 平台提供的查看器，它的代码可以通过 Git 下载得到：<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ git <span class="keyword">clone</span> <span class="title">git</span>://git.ghostscript.com/mupdf-android-viewer.git</div></pre></td></tr></table></figure></p>
+<p>mupdf-android-viewer 工程的目录结构很简单：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div></pre></td><td class="code"><pre><div class="line">mupdf-android-viewer$ tree</div><div class="line">.</div><div class="line">├── app</div><div class="line">│   ├── build<span class="selector-class">.gradle</span></div><div class="line">│   └── src</div><div class="line">│       └── main</div><div class="line">│           ├── AndroidManifest<span class="selector-class">.xml</span></div><div class="line">│           ├── java</div><div class="line">│           │   └── com</div><div class="line">│           │       └── artifex</div><div class="line">│           │           └── mupdf</div><div class="line">│           │               └── viewer</div><div class="line">│           │                   └── app</div><div class="line">│           │                       └── LibraryActivity<span class="selector-class">.java</span></div><div class="line">│           └── res</div><div class="line">│               ├── drawable</div><div class="line">│               │   └── ic_mupdf<span class="selector-class">.xml</span></div><div class="line">│               └── values</div><div class="line">│                   └── strings<span class="selector-class">.xml</span></div><div class="line">├── build<span class="selector-class">.gradle</span></div><div class="line">├── COPYING</div><div class="line">├── gradle</div><div class="line">│   └── wrapper</div><div class="line">│       ├── gradle-wrapper<span class="selector-class">.jar</span></div><div class="line">│       └── gradle-wrapper<span class="selector-class">.properties</span></div><div class="line">├── gradlew</div><div class="line">├── gradlew<span class="selector-class">.bat</span></div><div class="line">├── jni</div><div class="line">├── lib</div><div class="line">│   ├── build<span class="selector-class">.gradle</span></div><div class="line">│   └── src</div><div class="line">│       └── main</div><div class="line">│           ├── AndroidManifest<span class="selector-class">.xml</span></div><div class="line">│           ├── java</div><div class="line">│           │   └── com</div><div class="line">│           │       └── artifex</div><div class="line">│           │           └── mupdf</div><div class="line">│           │               └── viewer</div><div class="line">│           │                   ├── CancellableAsyncTask<span class="selector-class">.java</span></div><div class="line">│           │                   ├── CancellableTaskDefinition<span class="selector-class">.java</span></div><div class="line">│           │                   ├── DocumentActivity<span class="selector-class">.java</span></div><div class="line">│           │                   ├── MuPDFCancellableTaskDefinition<span class="selector-class">.java</span></div><div class="line">│           │                   ├── MuPDFCore<span class="selector-class">.java</span></div><div class="line">│           │                   ├── OutlineActivity<span class="selector-class">.java</span></div><div class="line">│           │                   ├── PageAdapter<span class="selector-class">.java</span></div><div class="line">│           │                   ├── PageView<span class="selector-class">.java</span></div><div class="line">│           │                   ├── ReaderView<span class="selector-class">.java</span></div><div class="line">│           │                   ├── SearchTask<span class="selector-class">.java</span></div><div class="line">│           │                   ├── SearchTaskResult<span class="selector-class">.java</span></div><div class="line">│           │                   └── Stepper<span class="selector-class">.java</span></div><div class="line">│           └── res</div><div class="line">│               ├── drawable</div><div class="line">│               │   ├── <span class="selector-tag">button</span><span class="selector-class">.xml</span></div><div class="line">│               │   ├── ic_chevron_left_white_24dp<span class="selector-class">.xml</span></div><div class="line">│               │   ├── ic_chevron_right_white_24dp<span class="selector-class">.xml</span></div><div class="line">│               │   ├── ic_close_white_24dp<span class="selector-class">.xml</span></div><div class="line">│               │   ├── ic_link_white_24dp<span class="selector-class">.xml</span></div><div class="line">│               │   ├── ic_search_white_24dp<span class="selector-class">.xml</span></div><div class="line">│               │   ├── ic_toc_white_24dp<span class="selector-class">.xml</span></div><div class="line">│               │   ├── page_indicator<span class="selector-class">.xml</span></div><div class="line">│               │   ├── seek_line<span class="selector-class">.xml</span></div><div class="line">│               │   └── seek_thumb<span class="selector-class">.xml</span></div><div class="line">│               ├── layout</div><div class="line">│               │   └── document_activity<span class="selector-class">.xml</span></div><div class="line">│               └── values</div><div class="line">│                   ├── colors<span class="selector-class">.xml</span></div><div class="line">│                   └── strings<span class="selector-class">.xml</span></div><div class="line">├── Makefile</div><div class="line">├── README</div><div class="line">└── settings<span class="selector-class">.gradle</span></div><div class="line"></div><div class="line"><span class="number">27</span> directories, <span class="number">41</span> files</div></pre></td></tr></table></figure></p>
+<p>其中 <code>settings.gradle</code> 内容如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">include</span> <span class="string">':jni'</span></div><div class="line"><span class="keyword">include</span> <span class="string">':lib'</span></div><div class="line"><span class="keyword">include</span> <span class="string">':app'</span></div></pre></td></tr></table></figure></p>
+<p>mupdf-android-viewer 主要由三个模块组成，分别为 app，lib 和 jni，app 是 Android MuPDF 查看器的应用程序主工程，jni 是 MuPDF 的核心库，lib 是基于 MuPDF 核心库封装出来的用于显示 PDF 文档的 UI 控件库。Android MuPDF 查看器应用程序基于 lib 库构建而成。</p>
+<p>MuPDF 的 核心库可以有两个来源，一是远程 Maven 仓库，其中 Maven 仓库的地址为 <code>http://maven.ghostscript.com/</code>，Android 核心库的坐标为 <code>com.artifex.mupdf:fitz:1.13.0</code>，这可以从 <code>mupdf-android-viewer/build.gradle</code> 和 <code>mupdf-android-viewer/lib/build.gradle</code> 文件中看出来；二是由源码编译而来，编译的方法如 <a href="https://www.wolfcstech.com/2018/06/06/android-build-viewer/">为 Android 编译 MuPDF 查看器</a> 一文所示，MuPDF 的 核心库的源码下载之后位于 <code>mupdf-android-viewer/jni</code> 目录下。</p>
+<p>MuPDF 的 Android 核心库又由三个部分组成，分别为它所依赖的第三方库，MuPDF 本地层库和 MuPDF 本地层库的 JNI 封装。其中 MuPDF 本地层库的 JNI 封装位于 <code>mupdf-android-viewer/jni/libmupdf/platform/java</code>，MuPDF 本地层库位于 <code>mupdf-android-viewer/jni/libmupdf/source</code>，依赖的第三方库则位于 <code>mupdf-android-viewer/jni/libmupdf/thirdparty</code>。</p>
+<p>MuPDF Android 查看器的整体组件结构如下图所示：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-50e57820c1107be9.png" alt="截图_2018-06-07_17-18-34.png"></p>
+<p>MuPDF UI 控件库的代码位于 <code>mupdf-android-viewer/lib</code>，它连接了上层的 Android 应用程序和下层的 MuPDF 核心库，其中 MuPDFCore 类封装了 MuPDF 核心库用 JNI 封装的底层 MuPDF 库的 Java 接口；<code>ReaderView</code>、<code>PageAdapter</code>、<code>PageView</code>、<code>SearchTask</code> 和 <code>SearchTaskResult</code> 基于 MuPDFCore 类实现 Android 应用程序的 UI 组件，以方便在 Android 应用中查看 PDF 文件；DocumentActivity 和 <code>OutlineActivity</code> 是两个 Activity，这两个页面分别用于显示 PDF 文档及 PDF 文档的目录。</p>
+<p>MuPDFCore 类的定义如下：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.artifex.mupdf.viewer;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.Cookie;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.Document;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.Outline;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.Page;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.Link;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.DisplayList;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.Rect;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.RectI;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.Matrix;</div><div class="line"><span class="keyword">import</span> com.artifex.mupdf.fitz.android.AndroidDrawDevice;</div><div class="line"></div><div class="line"><span class="keyword">import</span> android.content.Context;</div><div class="line"><span class="keyword">import</span> android.graphics.Bitmap;</div><div class="line"><span class="keyword">import</span> android.graphics.PointF;</div><div class="line"><span class="keyword">import</span> android.graphics.RectF;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.util.ArrayList;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MuPDFCore</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> resolution;</div><div class="line">	<span class="keyword">private</span> Document doc;</div><div class="line">	<span class="keyword">private</span> Outline[] outline;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> pageCount = <span class="number">-1</span>;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> currentPage;</div><div class="line">	<span class="keyword">private</span> Page page;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">float</span> pageWidth;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">float</span> pageHeight;</div><div class="line">	<span class="keyword">private</span> DisplayList displayList;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MuPDFCore</span><span class="params">(String filename)</span> </span>&#123;</div><div class="line">		doc = Document.openDocument(filename);</div><div class="line">		pageCount = doc.countPages();</div><div class="line">		resolution = <span class="number">160</span>;</div><div class="line">		currentPage = <span class="number">-1</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MuPDFCore</span><span class="params">(<span class="keyword">byte</span> buffer[], String magic)</span> </span>&#123;</div><div class="line">		doc = Document.openDocument(buffer, magic);</div><div class="line">		pageCount = doc.countPages();</div><div class="line">		resolution = <span class="number">160</span>;</div><div class="line">		currentPage = <span class="number">-1</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="function">String <span class="title">getTitle</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="function"><span class="keyword">return</span> doc.<span class="title">getMetaData</span><span class="params">(Document.META_INFO_TITLE)</span></span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">int</span> <span class="title">countPages</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> pageCount;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">gotoPage</span><span class="params">(<span class="keyword">int</span> pageNum)</span> </span>&#123;</div><div class="line">		<span class="comment">/* <span class="doctag">TODO:</span> page cache */</span></div><div class="line">		<span class="keyword">if</span> (pageNum &gt; pageCount<span class="number">-1</span>)</div><div class="line">			pageNum = pageCount<span class="number">-1</span>;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (pageNum &lt; <span class="number">0</span>)</div><div class="line">			pageNum = <span class="number">0</span>;</div><div class="line">		<span class="keyword">if</span> (pageNum != currentPage) &#123;</div><div class="line">			currentPage = pageNum;</div><div class="line">			<span class="keyword">if</span> (page != <span class="keyword">null</span>)</div><div class="line">				page.destroy();</div><div class="line">			page = <span class="keyword">null</span>;</div><div class="line">			<span class="keyword">if</span> (displayList != <span class="keyword">null</span>)</div><div class="line">				displayList.destroy();</div><div class="line">			displayList = <span class="keyword">null</span>;</div><div class="line">			page = doc.loadPage(pageNum);</div><div class="line">			Rect b = page.getBounds();</div><div class="line">			pageWidth = b.x1 - b.x0;</div><div class="line">			pageHeight = b.y1 - b.y0;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="function">PointF <span class="title">getPageSize</span><span class="params">(<span class="keyword">int</span> pageNum)</span> </span>&#123;</div><div class="line">		gotoPage(pageNum);</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> PointF(pageWidth, pageHeight);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">if</span> (displayList != <span class="keyword">null</span>)</div><div class="line">			displayList.destroy();</div><div class="line">		displayList = <span class="keyword">null</span>;</div><div class="line">		<span class="keyword">if</span> (page != <span class="keyword">null</span>)</div><div class="line">			page.destroy();</div><div class="line">		page = <span class="keyword">null</span>;</div><div class="line">		<span class="keyword">if</span> (doc != <span class="keyword">null</span>)</div><div class="line">			doc.destroy();</div><div class="line">		doc = <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">drawPage</span><span class="params">(Bitmap bm, <span class="keyword">int</span> pageNum,</span></span></div><div class="line">			<span class="keyword">int</span> pageW, <span class="keyword">int</span> pageH,</div><div class="line">			<span class="keyword">int</span> patchX, <span class="keyword">int</span> patchY,</div><div class="line">			<span class="keyword">int</span> patchW, <span class="keyword">int</span> patchH,</div><div class="line">			Cookie cookie) &#123;</div><div class="line">		gotoPage(pageNum);</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (displayList == <span class="keyword">null</span>)</div><div class="line">			displayList = page.toDisplayList(<span class="keyword">false</span>);</div><div class="line"></div><div class="line">		<span class="keyword">float</span> zoom = resolution / <span class="number">72</span>;</div><div class="line">		Matrix ctm = <span class="keyword">new</span> Matrix(zoom, zoom);</div><div class="line">		RectI bbox = <span class="keyword">new</span> RectI(page.getBounds().transform(ctm));</div><div class="line">		<span class="keyword">float</span> xscale = (<span class="keyword">float</span>)pageW / (<span class="keyword">float</span>)(bbox.x1-bbox.x0);</div><div class="line">		<span class="keyword">float</span> yscale = (<span class="keyword">float</span>)pageH / (<span class="keyword">float</span>)(bbox.y1-bbox.y0);</div><div class="line">		ctm.scale(xscale, yscale);</div><div class="line"></div><div class="line">		AndroidDrawDevice dev = <span class="keyword">new</span> AndroidDrawDevice(bm, patchX, patchY);</div><div class="line">		displayList.run(dev, ctm, cookie);</div><div class="line">		dev.destroy();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">updatePage</span><span class="params">(Bitmap bm, <span class="keyword">int</span> pageNum,</span></span></div><div class="line">			<span class="keyword">int</span> pageW, <span class="keyword">int</span> pageH,</div><div class="line">			<span class="keyword">int</span> patchX, <span class="keyword">int</span> patchY,</div><div class="line">			<span class="keyword">int</span> patchW, <span class="keyword">int</span> patchH,</div><div class="line">			Cookie cookie) &#123;</div><div class="line">		drawPage(bm, pageNum, pageW, pageH, patchX, patchY, patchW, patchH, cookie);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> Link[] getPageLinks(<span class="keyword">int</span> pageNum) &#123;</div><div class="line">		gotoPage(pageNum);</div><div class="line">		<span class="function"><span class="keyword">return</span> page.<span class="title">getLinks</span><span class="params">()</span></span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> RectF[] searchPage(<span class="keyword">int</span> pageNum, String text) &#123;</div><div class="line">		gotoPage(pageNum);</div><div class="line">		Rect[] rs = page.search(text);</div><div class="line">		RectF[] rfs = <span class="keyword">new</span> RectF[rs.length];</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i &lt; rs.length; ++i)</div><div class="line">			rfs[i] = <span class="keyword">new</span> RectF(rs[i].x0, rs[i].y0, rs[i].x1, rs[i].y1);</div><div class="line">		<span class="keyword">return</span> rfs;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">boolean</span> <span class="title">hasOutline</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">if</span> (outline == <span class="keyword">null</span>)</div><div class="line">			outline = doc.loadOutline();</div><div class="line">		<span class="keyword">return</span> outline != <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">private</span> <span class="function"><span class="keyword">void</span> <span class="title">flattenOutlineNodes</span><span class="params">(ArrayList&lt;OutlineActivity.Item&gt; result, Outline list[], String indent)</span> </span>&#123;</div><div class="line">		<span class="keyword">for</span> (Outline node : list) &#123;</div><div class="line">			<span class="keyword">if</span> (node.title != <span class="keyword">null</span>)</div><div class="line">				result.add(<span class="keyword">new</span> OutlineActivity.Item(indent + node.title, node.page));</div><div class="line">			<span class="keyword">if</span> (node.down != <span class="keyword">null</span>)</div><div class="line">				flattenOutlineNodes(result, node.down, indent + <span class="string">"    "</span>);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> ArrayList&lt;OutlineActivity.Item&gt; getOutline() &#123;</div><div class="line">		ArrayList&lt;OutlineActivity.Item&gt; result = <span class="keyword">new</span> ArrayList&lt;OutlineActivity.Item&gt;();</div><div class="line">		flattenOutlineNodes(result, outline, <span class="string">""</span>);</div><div class="line">		<span class="keyword">return</span> result;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">boolean</span> <span class="title">needsPassword</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="function"><span class="keyword">return</span> doc.<span class="title">needsPassword</span><span class="params">()</span></span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">boolean</span> <span class="title">authenticatePassword</span><span class="params">(String password)</span> </span>&#123;</div><div class="line">		<span class="function"><span class="keyword">return</span> doc.<span class="title">authenticatePassword</span><span class="params">(password)</span></span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>由  MuPDFCore 类的实现不难看出，MuPDF 核心库在查看 PDF 文件方面所提供的功能如下：</p>
+<p><strong>1.</strong> ：解析 PDF 文档。这主要是在 <code>MuPDFCore</code> 类的构造函数里完成的，通过 <code>com.artifex.mupdf.fitz.Document</code> 类的 <code>openDocument()</code> 方法执行。PDF 文档解析完成之后，可以借助于 <code>com.artifex.mupdf.fitz.Document</code> 的对象获得 PDF 文档的标题，页数等信息。<br><strong>2.</strong> ：跳转到 PDF 文档的特定页上。这主要通过 <code>gotoPage()</code> 方法完成。这将为目标页创建 <code>com.artifex.mupdf.fitz.Page</code> 对象，并可以获得这一页绘制之后的尺寸。<br><strong>3.</strong> ：将 PDF 文档特定页的内容绘制到 Bitmap 上。绘制通过 <code>com.artifex.mupdf.fitz.Page</code> 对象创建的 <code>com.artifex.mupdf.fitz.DisplayList</code> 对象完成。在绘制的时候，还会根据 Bitmap 的尺寸和 PDF 目标文档的尺寸做一定的放缩。<br><strong>4.</strong> ：在 PDF 文档中搜索特定的字符串。在 PDF 文档的特定页执行的搜索操作以找到的文本在该页中占据的矩形框的数组的形式返回。<br><strong>5.</strong> ：获得 PDF 文档的目录信息。这主要是通过 <code>hasOutline()</code> 和 <code>getOutline()</code> 方法实现的。其中目录项由 <code>OutlineActivity.Item</code> 描述：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OutlineActivity</span> <span class="keyword">extends</span> <span class="title">ListActivity</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Item</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line">		<span class="keyword">public</span> String title;</div><div class="line">		<span class="keyword">public</span> <span class="keyword">int</span> page;</div><div class="line">		<span class="function"><span class="keyword">public</span> <span class="title">Item</span><span class="params">(String title, <span class="keyword">int</span> page)</span> </span>&#123;</div><div class="line">			<span class="keyword">this</span>.title = title;</div><div class="line">			<span class="keyword">this</span>.page = page;</div><div class="line">		&#125;</div><div class="line">		<span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">			<span class="keyword">return</span> title;</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p><code>OutlineActivity.Item</code> 描述了特定目录项的标题及该目录项在 PDF 文档中的页码。<br><strong>6.</strong> ：判断查看 PDF 文档是否需要密码，以及配置认证密码。这主要是通过 <code>needsPassword()</code> 和 <code>authenticatePassword(String password)</code> 方法实现的。</p>
+<p>MuPDF 核心库提供的最主要的功能是解析 PDF 文档，跳转到特定页，并将该页的实际内容绘制到 Bitmap 上。基于 MuPDF 核心库实现 Android 应用程序的 UI 控件，最主要要做的即是创建、管理并展示 PDF 文档中各页的 Bitmap 图片。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android开发/" rel="tag"># Android开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/06/android-build-viewer/" rel="next" title="为 Android 编译 MuPDF 查看器">
+                <i class="fa fa-chevron-left"></i> 为 Android 编译 MuPDF 查看器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/18/bep_0003/" rel="prev" title="BitTorrent协议规范">
+                BitTorrent协议规范 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

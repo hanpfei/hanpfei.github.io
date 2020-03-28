@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="网络技术," />
+
+
+<meta name="description" content="WebSocket 是 HTML5 的一个引入注目的特性，它通常用于 Web 端，为构建实时的 Web 应用提供方便。WebSocket 是一个基于 TCP 的协议，它借助于 HTTP 请求，建立客户端与服务器端之间的双向通道，通道建立完成后，客户端和服务器端都可以通过这条通道方便地收发消息，因而 WebSocket 一向有着 “Web 的 TCP” 之称。
+WebSocket 不是 JavaSc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ WebSocket 库">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/08/31/cpp_websocket/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="WebSocket 是 HTML5 的一个引入注目的特性，它通常用于 Web 端，为构建实时的 Web 应用提供方便。WebSocket 是一个基于 TCP 的协议，它借助于 HTTP 请求，建立客户端与服务器端之间的双向通道，通道建立完成后，客户端和服务器端都可以通过这条通道方便地收发消息，因而 WebSocket 一向有着 “Web 的 TCP” 之称。
+WebSocket 不是 JavaSc">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-4499065962276452.png">
+<meta property="og:updated_time" content="2018-07-26T07:54:05.897Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++ WebSocket 库">
+<meta name="twitter:description" content="WebSocket 是 HTML5 的一个引入注目的特性，它通常用于 Web 端，为构建实时的 Web 应用提供方便。WebSocket 是一个基于 TCP 的协议，它借助于 HTTP 请求，建立客户端与服务器端之间的双向通道，通道建立完成后，客户端和服务器端都可以通过这条通道方便地收发消息，因而 WebSocket 一向有着 “Web 的 TCP” 之称。
+WebSocket 不是 JavaSc">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-4499065962276452.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/08/31/cpp_websocket/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>C++ WebSocket 库 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/08/31/cpp_websocket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++ WebSocket 库</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-31T17:50:49+08:00">2018-08-31</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络技术/" itemprop="url" rel="index"><span itemprop="name">网络技术</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/31/cpp_websocket/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/08/31/cpp_websocket/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/08/31/cpp_websocket/" class="leancloud_visitors" data-flag-title="C++ WebSocket 库">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>WebSocket 是 HTML5 的一个引入注目的特性，它通常用于 Web 端，为构建实时的 Web 应用提供方便。WebSocket 是一个基于 TCP 的协议，它借助于 HTTP 请求，建立客户端与服务器端之间的双向通道，通道建立完成后，客户端和服务器端都可以通过这条通道方便地收发消息，因而 WebSocket 一向有着 “Web 的 TCP” 之称。</p>
+<p>WebSocket 不是 JavaScript 的一个接口，而是一个定义良好的基于消息的协议。得益于不同平台对于 WebSocket 协议的广泛实现，它更为跨多种平台的 <strong><em>实时网络应用程序</em></strong> 开发提供了极大的方便。除了可以在前端开发的 JavaScript 中使用 WebSocket 之外，我们也可以在 Java、C++、Go、Rust 等编程语言平台中使用 WebSocket。<br><a id="more"></a><br><code>uWebSockets</code> 是一个 C/C++ 的 WebSocket 库，它的 <a href="https://github.com/uNetworking/uWebSockets" target="_blank" rel="external">GitHub 主页</a> 列出了一些常见的 WebSocket 实现库的对比，如下图：<br><img src="https://www.wolfcstech.com/images/1315506-4499065962276452.png" alt="overview.png"></p>
+<p>其中，ws-rs，<a href="https://ws-rs.org/" target="_blank" rel="external">项目主页</a>，<a href="https://github.com/housleyjk/ws-rs" target="_blank" rel="external">GitHub 主页</a>，是一个轻量级的，事件驱动的用于 Rust 的 WebSocket 库。Gorilla，<a href="http://www.gorillatoolkit.org/" target="_blank" rel="external">项目主页</a>，<a href="https://github.com/gorilla" target="_blank" rel="external">GitHub 主页</a>，是 Go 语言的 Web 工具包，它包含了 WebSocket 的实现，WebSocket 实现的 <a href="https://github.com/gorilla/websocket" target="_blank" rel="external">GitHub 主页</a>。websockets，<a href="https://websockets.readthedocs.io/en/stable/" target="_blank" rel="external">项目主页</a>，<a href="https://github.com/aaugustin/websockets/" target="_blank" rel="external">GitHub 主页</a>，是一个 Python 的 WebSocket 实现。Socket.IO，<a href="https://socket.io/" target="_blank" rel="external">项目主页</a>，<a href="https://github.com/socketio" target="_blank" rel="external">GitHub 主页</a>，主要是 Node.JS 服务器的实时应用框架，其中包含了 WebSocket 的实现。其它库则都是 C/C++ 的 WebSocket 实现。</p>
+<p>从中我们可以捞到 uWebSockets、Crow、websocketpp、Beast 这样几个 C/C++ 的 WebSocket 库。此外，还有 libwebsockets 和 POCO 库的 WebSocket 模块可以用。这里汇总已知的可以在 C++ 中使用的 WebSocket 库。</p>
+<h2 id="uWebSockets"><a href="#uWebSockets" class="headerlink" title="uWebSockets"></a>uWebSockets</h2><p><a href="https://github.com/uNetworking/uWebSockets" target="_blank" rel="external">GitHub 主页</a></p>
+<p>uWebSockets，µWS (“microWS”) 是一个客户端和服务器的 WebSocket 和 HTTP 实现。它简单、高效且轻量级。</p>
+<h2 id="Crow"><a href="#Crow" class="headerlink" title="Crow"></a>Crow</h2><p><a href="https://github.com/ipkn/crow" target="_blank" rel="external">GitHub 主页</a></p>
+<p>Crow 是一个 Web 微框架。</p>
+<h2 id="websocketpp（WebSocket-）"><a href="#websocketpp（WebSocket-）" class="headerlink" title="websocketpp（WebSocket++）"></a>websocketpp（WebSocket++）</h2><p><a href="https://github.com/zaphoyd/websocketpp" target="_blank" rel="external">GitHub 主页</a><br><a href="https://www.zaphoyd.com/websocketpp" target="_blank" rel="external">项目主页</a></p>
+<p>websocketpp 是 C++ 的 WebSocket 客户端/服务器库。它是一个开源的只包含头文件的 C++ 库，它实现了 RFC6455 WebSocket 协议。它允许向 C++ 程序中集成 WebSocket 客户端和服务器功能。它使用可交换的网络传输模块，包括基于 C++ iostreams 的和基于 <a href="http://www.boost.org/doc/libs/1_48_0/doc/html/boost_asio.html" target="_blank" rel="external">Boost Asio</a> 的。</p>
+<h2 id="Beast"><a href="#Beast" class="headerlink" title="Beast"></a>Beast</h2><p><a href="https://github.com/boostorg/beast" target="_blank" rel="external">GitHub 主页</a><br><a href="http://www.boost.org/doc/libs/1_66_0/libs/beast/doc/html/index.html" target="_blank" rel="external">项目主页</a></p>
+<p>基于 Boost.Asio 以 C++11 构建的 HTTP 和 WebSocket 库。Boost 项目的 HTTP 和 WebSocket 库。</p>
+<h2 id="Poco-Websocket"><a href="#Poco-Websocket" class="headerlink" title="Poco Websocket"></a>Poco Websocket</h2><p><a href="https://github.com/pocoproject/poco" target="_blank" rel="external">GitHub 主页</a><br><a href="https://pocoproject.org/" target="_blank" rel="external">项目主页</a></p>
+<p>POCO C++ 库是一个跨平台的 C++ 网络库。其中包含了 WebSocket 的实现模块。</p>
+<h2 id="libwebsockets"><a href="#libwebsockets" class="headerlink" title="libwebsockets"></a>libwebsockets</h2><p><a href="https://github.com/warmcat/libwebsockets" target="_blank" rel="external">GitHub 主页</a></p>
+<p>规范 libwebsockets.org websocket 库</p>
+<p>参考资料：</p>
+<p><a href="http://www.myhack58.com/Article/68/2014/51982.htm" target="_blank" rel="external">C++ WebSocket++ 的Client使用详解</a></p>
+<p><a href="https://blog.gmem.cc/websocket-library-for-c-or-cpp" target="_blank" rel="external">基于C/C++的WebSocket库</a></p>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络技术/" rel="tag"># 网络技术</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/01/zookeeperTutorial/" rel="next" title="使用ZooKeeper编程 - 快速教程">
+                <i class="fa fa-chevron-left"></i> 使用ZooKeeper编程 - 快速教程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/31/pub_push_services/" rel="prev" title="第三方推送服务">
+                第三方推送服务 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#uWebSockets"><span class="nav-number">1.</span> <span class="nav-text">uWebSockets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Crow"><span class="nav-number">2.</span> <span class="nav-text">Crow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#websocketpp（WebSocket-）"><span class="nav-number">3.</span> <span class="nav-text">websocketpp（WebSocket++）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Beast"><span class="nav-number">4.</span> <span class="nav-text">Beast</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Poco-Websocket"><span class="nav-number">5.</span> <span class="nav-text">Poco Websocket</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#libwebsockets"><span class="nav-number">6.</span> <span class="nav-text">libwebsockets</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

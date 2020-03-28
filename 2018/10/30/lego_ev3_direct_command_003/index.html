@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,ROS," />
+
+
+<meta name="description" content="移动电机是EV3的核心。机器人需要移动的能力，因此你需要知道它是如何完成的。请参阅文档 EV3 Firmware Developer Kit 中的第 4.9 部分，以获得与电机相对应的操作的第一印象。几乎所有这些都以相同的两个参数开头：
+
+LAYER：如果组合多个 EV3 brick 作为单个机器，则声明其中一个是主机，最多3个额外 brick 作为主机从机。然后将操作发送到主机，主机将其发送给主">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EV3 直接命令 - 第 3 课 遥控车辆">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/10/30/lego_ev3_direct_command_003/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="移动电机是EV3的核心。机器人需要移动的能力，因此你需要知道它是如何完成的。请参阅文档 EV3 Firmware Developer Kit 中的第 4.9 部分，以获得与电机相对应的操作的第一印象。几乎所有这些都以相同的两个参数开头：
+
+LAYER：如果组合多个 EV3 brick 作为单个机器，则声明其中一个是主机，最多3个额外 brick 作为主机从机。然后将操作发送到主机，主机将其发送给主">
+<meta property="og:updated_time" content="2018-10-30T12:11:13.945Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EV3 直接命令 - 第 3 课 遥控车辆">
+<meta name="twitter:description" content="移动电机是EV3的核心。机器人需要移动的能力，因此你需要知道它是如何完成的。请参阅文档 EV3 Firmware Developer Kit 中的第 4.9 部分，以获得与电机相对应的操作的第一印象。几乎所有这些都以相同的两个参数开头：
+
+LAYER：如果组合多个 EV3 brick 作为单个机器，则声明其中一个是主机，最多3个额外 brick 作为主机从机。然后将操作发送到主机，主机将其发送给主">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/10/30/lego_ev3_direct_command_003/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>EV3 直接命令 - 第 3 课 遥控车辆 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/10/30/lego_ev3_direct_command_003/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">EV3 直接命令 - 第 3 课 遥控车辆</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-30T20:15:49+08:00">2018-10-30</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/30/lego_ev3_direct_command_003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/30/lego_ev3_direct_command_003/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/10/30/lego_ev3_direct_command_003/" class="leancloud_visitors" data-flag-title="EV3 直接命令 - 第 3 课 遥控车辆">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>移动电机是EV3的核心。机器人需要移动的能力，因此你需要知道它是如何完成的。请参阅文档 <em>EV3 Firmware Developer Kit</em> 中的第 4.9 部分，以获得与电机相对应的操作的第一印象。几乎所有这些都以相同的两个参数开头：</p>
+<ul>
+<li><p>LAYER：如果组合多个 EV3 brick 作为单个机器，则声明其中一个是主机，最多3个额外 brick 作为主机从机。然后将操作发送到主机，主机将其发送给主机从机。这就是 LAYER 的含义。Layer 0x|00| 是主机，layers 0x|01|，0x|02| 和 0x|03| 是它的可选从机。在没有从机的标准情况下，我们将设置 LAYER = 0x|00|。我们的直接命令代码可以连接多个 EV3 设备。因此，我认为不需要不同的参数 LAYER 值。</p>
+</li>
+<li><p>NO 或 NOS：电机端口以字母 A，B，C 和 D 标识。在直接命令的层面，你可以通过数字命名它们，A = 0x|01|，B = 0x|02|，C = 0x|04| 和 D = 0x|08|。如果你将这些数字写为二进制表示，则 A = 0b 0000 0001，B = 0b 0000 0010，C = 0b 0000 0100 和 C = 0b 0000 1000，你看，后半个字节可以解释为一系列的四个标志。你可以组合这些标志。如果你处理端口 A 和 C 的电机操作，则设置 NOS = 0x|05| 或 0b 0000 0101。如果参数名称为 NO，则只能处理单个电机端口。NOS是说，你可以处理一个或多个端口。</p>
+<a id="more"></a>
+<h1 id="启动和停止电机"><a href="#启动和停止电机" class="headerlink" title="启动和停止电机"></a>启动和停止电机</h1></li>
+</ul>
+<p>将一些电机插入你选择的端口，然后以全功率启动它们。这通过以下直接命令完成：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">----------------------------------------------               </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\l</span>a<span class="symbol">\n</span>o<span class="symbol">\p</span>ower<span class="symbol">\o</span>p<span class="symbol">\l</span>a<span class="symbol">\n</span>o<span class="symbol">\ </span>             </div><div class="line">  ----------------------------------------------             </div><div class="line">0x|0D:00|2A:00|80|00:00|A4|00|0F|81:64|A6|00|0F|             </div><div class="line">  ----------------------------------------------             </div><div class="line">   <span class="symbol">\ </span>13  <span class="symbol">\ </span>42  <span class="symbol">\n</span>o<span class="symbol">\ </span>0,0 <span class="symbol">\O</span> <span class="symbol">\0</span> <span class="symbol">\a</span> <span class="symbol">\ </span>100 <span class="symbol">\O</span> <span class="symbol">\0</span> <span class="symbol">\a</span> <span class="symbol">\ </span>            </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\l</span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\l</span> <span class="symbol">\ </span>           </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\l</span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\l</span> <span class="symbol">\ </span>          </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>         </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>        </div><div class="line">        <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>       </div><div class="line">         <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>      </div><div class="line">          <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\P</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>     </div><div class="line">           <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\o</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    </div><div class="line">            <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\w</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\a</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>   </div><div class="line">             <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\r</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>  </div><div class="line">              <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\r</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> </div><div class="line">               ----------------------------------------------</div></pre></td></tr></table></figure></p>
+<p>过了一段时间，你，你的父母，兄弟姐妹或孩子会对全动力马达的声音感到紧张。如果你是一个爱好和平的人，你应该发送以下直接命令：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">----------------------------------              </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\l</span>a<span class="symbol">\n</span>o<span class="symbol">\b</span>r<span class="symbol">\ </span>            </div><div class="line">  ----------------------------------            </div><div class="line">0x|09:00|2A:00|00|00:00|A3|00|0F|00|            </div><div class="line">  ----------------------------------            </div><div class="line">   <span class="symbol">\ </span>9   <span class="symbol">\ </span>42  <span class="symbol">\r</span>e<span class="symbol">\ </span>0,0 <span class="symbol">\O</span> <span class="symbol">\0</span> <span class="symbol">\a</span> <span class="symbol">\n</span>o<span class="symbol">\ </span>           </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\l</span> <span class="symbol">\ </span> <span class="symbol">\ </span>          </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\l</span> <span class="symbol">\ </span> <span class="symbol">\ </span>         </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>        </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>       </div><div class="line">        <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>      </div><div class="line">         <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>     </div><div class="line">          <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    </div><div class="line">           <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>   </div><div class="line">            <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\o</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>  </div><div class="line">             <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> </div><div class="line">              ----------------------------------</div></pre></td></tr></table></figure></p>
+<p>我们看到了三个新操作：</p>
+<ul>
+<li><p>opOutput_Power = 0x|A4|，参数是</p>
+<ul>
+<li>LAYER</li>
+<li>NOS</li>
+<li>POWER：指定输出功率 [-100 – 100 %]（负值意味着相反的方向）</li>
+</ul>
+</li>
+<li><p>opOutput_Start = 0x|A6|，参数是</p>
+<ul>
+<li>LAYER</li>
+<li>NOS</li>
+</ul>
+</li>
+<li><p>opOutput_Stop = 0x|A3|，参数是</p>
+<ul>
+<li>LAYER</li>
+<li>NOS</li>
+<li>BRAKE：指定制动级别 [0：浮动，1：制动]。这不是被动制动器，其中电动机固定在其位置上。它是一个主动的，电机试图回到原来的位置，这需要能量！</li>
+</ul>
+</li>
+</ul>
+<p>通过这三个操作，我们可以启动和停止电机。我们还应该讨论另一个，它设定了极性。通常，电动机的运动以前后方向描述，并且使用正数和负数。如果我们的机器结构导致极性相反，则有一个操作，可以改变它：</p>
+<ul>
+<li>opOutput_Polarity = 0x|A7|，参数是<ul>
+<li>LAYER</li>
+<li>NOS</li>
+<li>POLARITY：指定极性 [-1, 0, 1]<ul>
+<li>-1：电机将向后运行</li>
+<li>0：电机将反方向运行</li>
+<li>-1：电机将向前运行</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>定义速度而不是功率通常是更好的选择。幸运的是，乐高电机固定的电机，我们可以通过以下操作轻松定义电机运动的恒定速度：</p>
+<ul>
+<li>opOutput_Speed = 0x|A5|，参数是<ul>
+<li>LAYER</li>
+<li>NOS</li>
+<li>SPEED：指定输出速度 [-100 – 100 %]（负值意味着相反的方向）</li>
+</ul>
+</li>
+</ul>
+<p>请构造一辆由两个电机驱动的车辆，一个用于左侧，另一个用于右侧。精心设计的例子是：</p>
+<ul>
+<li><a href="http://robotsquare.com/2015/10/06/explor3r-building-instructions" target="_blank" rel="external">http://robotsquare.com/2015/10/06/explor3r-building-instructions</a></li>
+<li><a href="http://robotsquare.com/wp-content/uploads/2013/10/45544_educator.pdf" target="_blank" rel="external">http://robotsquare.com/wp-content/uploads/2013/10/45544_educator.pdf</a></li>
+<li><a href="http://www.lego.com/en-gb/mindstorms/build-a-robot/track3r" target="_blank" rel="external">http://www.lego.com/en-gb/mindstorms/build-a-robot/track3r</a></li>
+<li><a href="http://www.lego.com/en-gb/mindstorms/build-a-robot/robodoz3r" target="_blank" rel="external">http://www.lego.com/en-gb/mindstorms/build-a-robot/robodoz3r</a></li>
+</ul>
+<p>但一个简单的也将满足我们的需求。将右侧电机连接到端口 A，将左侧电机连接到端口 D，并发送以下直接命令：<br><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">-------------------------------------------               </div><div class="line"> <span class="symbol">\ </span>len <span class="symbol">\ </span>cnt <span class="symbol">\t</span>y<span class="symbol">\ </span>hd  <span class="symbol">\o</span>p<span class="symbol">\l</span>a<span class="symbol">\n</span>o<span class="symbol">\s</span>p<span class="symbol">\o</span>p<span class="symbol">\l</span>a<span class="symbol">\n</span>o<span class="symbol">\ </span>             </div><div class="line">  -------------------------------------------             </div><div class="line">0x|0C:00|2A:00|80|00:00|A5|00|09|3D|A6|00|09|             </div><div class="line">  -------------------------------------------             </div><div class="line">   <span class="symbol">\ </span>12  <span class="symbol">\ </span>42  <span class="symbol">\n</span>o<span class="symbol">\ </span>0,0 <span class="symbol">\O</span> <span class="symbol">\0</span> <span class="symbol">\A</span> <span class="symbol">\-</span>3<span class="symbol">\O</span> <span class="symbol">\0</span> <span class="symbol">\A</span> <span class="symbol">\ </span>            </div><div class="line">    <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\+</span> <span class="symbol">\ </span> <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\+</span> <span class="symbol">\ </span>           </div><div class="line">     <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\D</span> <span class="symbol">\ </span> <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\D</span> <span class="symbol">\ </span>          </div><div class="line">      <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\p</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>         </div><div class="line">       <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\u</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>        </div><div class="line">        <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>       </div><div class="line">         <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\_</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\_</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>      </div><div class="line">          <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\S</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>     </div><div class="line">           <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\p</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>    </div><div class="line">            <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\a</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>   </div><div class="line">             <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\e</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\r</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span>  </div><div class="line">              <span class="symbol">\ </span>    <span class="symbol">\ </span>    <span class="symbol">\ </span> <span class="symbol">\ </span>    <span class="symbol">\d</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\t</span> <span class="symbol">\ </span> <span class="symbol">\ </span> <span class="symbol">\ </span> </div><div class="line">               -------------------------------------------</div></pre></td></tr></table></figure></p>
+<p>希望你的车辆以低速直行。使用上面的直接命令（opOutput_Stop）来停止它。</p>
+<h1 id="遥控车辆"><a href="#遥控车辆" class="headerlink" title="遥控车辆"></a>遥控车辆</h1><p>现在是编写实际应用程序的时候了。使用遥控 EV3 车辆给你的朋友或孩子留下深刻印象。我们从一个简单的遥控器开始，并使用键盘箭头键来改变速度和方向。首先将新操作添加到 EV3 类，然后编写远程控制程序。像往常一样，我已经以python3 完成了它：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> curses</div><div class="line"><span class="keyword">import</span> ev3</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">move</span><span class="params">(speed: int, turn: int)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    <span class="keyword">global</span> myEV3, stdscr</div><div class="line">    stdscr.addstr(<span class="number">5</span>, <span class="number">0</span>, <span class="string">'speed: &#123;&#125;, turn: &#123;&#125;      '</span>.format(speed, turn))</div><div class="line">    <span class="keyword">if</span> turn &gt; <span class="number">0</span>:</div><div class="line">        speed_right = speed</div><div class="line">        speed_left  = round(speed * (<span class="number">1</span> - turn / <span class="number">100</span>))</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        speed_right = round(speed * (<span class="number">1</span> + turn / <span class="number">100</span>))</div><div class="line">        speed_left  = speed</div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        ev3.opOutput_Speed,</div><div class="line">        ev3.LCX(<span class="number">0</span>),                       <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(ev3.PORT_A),              <span class="comment"># NOS</span></div><div class="line">        ev3.LCX(speed_right),             <span class="comment"># SPEED</span></div><div class="line">        ev3.opOutput_Speed,</div><div class="line">        ev3.LCX(<span class="number">0</span>),                       <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(ev3.PORT_D),              <span class="comment"># NOS</span></div><div class="line">        ev3.LCX(speed_left),              <span class="comment"># SPEED</span></div><div class="line">        ev3.opOutput_Start,</div><div class="line">        ev3.LCX(<span class="number">0</span>),                       <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(ev3.PORT_A + ev3.PORT_D)  <span class="comment"># NOS</span></div><div class="line">    ])</div><div class="line">    myEV3.send_direct_cmd(ops)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stop</span><span class="params">()</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    <span class="keyword">global</span> myEV3, stdscr</div><div class="line">    stdscr.addstr(<span class="number">5</span>, <span class="number">0</span>, <span class="string">'vehicle stopped                         '</span>)</div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        ev3.opOutput_Stop,</div><div class="line">        ev3.LCX(<span class="number">0</span>),                       <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(ev3.PORT_A + ev3.PORT_D), <span class="comment"># NOS</span></div><div class="line">        ev3.LCX(<span class="number">0</span>)                        <span class="comment"># BRAKE</span></div><div class="line">    ])</div><div class="line">    myEV3.send_direct_cmd(ops)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">react</span><span class="params">(c)</span>:</span></div><div class="line">    <span class="keyword">global</span> speed, turn</div><div class="line">    <span class="keyword">if</span> c <span class="keyword">in</span> [ord(<span class="string">'q'</span>), <span class="number">27</span>, ord(<span class="string">'p'</span>)]:</div><div class="line">        stop()</div><div class="line">        <span class="keyword">return</span></div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_LEFT:</div><div class="line">        turn += <span class="number">5</span></div><div class="line">        turn = min(turn, <span class="number">200</span>)</div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_RIGHT:</div><div class="line">        turn -= <span class="number">5</span></div><div class="line">        turn = max(turn, <span class="number">-200</span>)</div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_UP:</div><div class="line">        speed += <span class="number">5</span></div><div class="line">        speed = min(speed, <span class="number">100</span>)</div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_DOWN:</div><div class="line">        speed -= <span class="number">5</span></div><div class="line">        speed = max(speed, <span class="number">-100</span>)</div><div class="line">    move(speed, turn)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">(window)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    <span class="keyword">global</span> stdscr</div><div class="line">    stdscr = window</div><div class="line">    stdscr.clear()      <span class="comment"># print introduction</span></div><div class="line">    stdscr.refresh()</div><div class="line">    stdscr.addstr(<span class="number">0</span>, <span class="number">0</span>, <span class="string">'Use Arrows to navigate your EV3-vehicle'</span>)</div><div class="line">    stdscr.addstr(<span class="number">1</span>, <span class="number">0</span>, <span class="string">'Pause your vehicle with key &lt;p&gt;'</span>)</div><div class="line">    stdscr.addstr(<span class="number">2</span>, <span class="number">0</span>, <span class="string">'Terminate with key &lt;q&gt;'</span>)</div><div class="line"></div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        c = stdscr.getch()</div><div class="line">        <span class="keyword">if</span> c <span class="keyword">in</span> [ord(<span class="string">'q'</span>), <span class="number">27</span>]:</div><div class="line">            react(c)</div><div class="line">            <span class="keyword">break</span></div><div class="line">        <span class="keyword">elif</span> c <span class="keyword">in</span> [ord(<span class="string">'p'</span>),</div><div class="line">                   curses.KEY_RIGHT, curses.KEY_LEFT, curses.KEY_UP, curses.KEY_DOWN]:</div><div class="line">            react(c)</div><div class="line"></div><div class="line">speed = <span class="number">0</span></div><div class="line">turn  = <span class="number">0</span>   </div><div class="line">myEV3 = ev3.EV3(protocol=ev3.BLUETOOTH, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">stdscr = <span class="keyword">None</span></div><div class="line"></div><div class="line"><span class="comment"># ops = opOutput_Polarity + b'\x00' + LCX(PORT_A + PORT_D) + LCX(-1)</span></div><div class="line"><span class="comment"># myEV3.send_direct_cmd(ops)</span></div><div class="line"></div><div class="line">curses.wrapper(main)</div></pre></td></tr></table></figure></p>
+<p>一些说明：</p>
+<ul>
+<li>我使用模块 <code>curses</code> 来实现键盘事件的事件处理程序。</li>
+<li>方法 <code>wrapper</code> 控制资源键盘和终端。它改变终端的行为，创建一个窗口对象并调用函数 <code>main</code>。</li>
+<li>函数 <code>main</code> 将一些文本写入终端，然后等待键事件（方法 <code>getch</code>）。</li>
+<li>如果其中一个相关键命中，则调用函数 <code>react</code>，键 <code>&lt;q&gt;</code> 或 <code>&lt;Ctrl-c&gt;</code> 打破循环。</li>
+<li>变量 <code>speed</code> 定义了更快轮子的速度。</li>
+<li>变量 <code>turn</code> 定义方向。值 0 表示直行，正值表示左转，负值表示右转。转弯的绝对值大意味着转弯的半径小。最大值+200 和最小值 -200 意味着在原地盘旋。在下一课中，我们将回到驱动转弯的这个定义。</li>
+<li>我在第 5 步改变了 <code>speed</code> 和 <code>turn</code>。这似乎是精确度和反应速度之间的良好折衷。</li>
+<li>也许，你的车辆结构需要改变两个车轮的极性。这由注释掉的代码完成。</li>
+<li>右轮连接到端口 A，左侧连接到端口 D。</li>
+<li>对于低速，由于四舍五入到整数值，转弯半径的精度变得更差。</li>
+</ul>
+<h1 id="中断作为一种设计理念"><a href="#中断作为一种设计理念" class="headerlink" title="中断作为一种设计理念"></a>中断作为一种设计理念</h1><p>上一课，我们将中断与不耐烦和乖巧的人进行了比较。本课程表明，这种行为恰恰是一种切实可行的设计理念。</p>
+<p>遥控程序发送无限的命令，如果不被下一个命令中断，它将永久地移动电机。控制驾驶的人类希望纠正立即生效。这是绝对正确的，新命令会中断旧命令。</p>
+<p>该设计概念的另一个积极方面是直接命令的执行时间短。它们不耗时。电机的运动持续很长时间，但是当电机获得新参数时，直接命令已经执行完成。控制立即返回，程序是自由的，以执行下一个任务。资源 EV3 设备未被阻塞，它可用于下一个直接命令。</p>
+<p>你已经看到了如何编码远程控制的中断过程。中心部分是一个请求关键事件的循环。如果相关的按键事件发生，则调用一个函数，该函数更改运动的参数并向 EV3 设备发送直接命令。</p>
+<p>当我们在 c’’（上一课）中玩三合一时，我们避免了中断。我们有一个固定的所有音调时间表。我们的意见是，每次中断都会扰乱计划，需要加以防范。在绘制三角形时，我们已经讨论了两种时序选择，通过直接命令或本地程序。也可以使用本地程序中的调度并使用中断来播放三元组。这是获得正确时序的替代方法：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env python3</div><div class="line"></div><div class="line">import ev3, <span class="selector-tag">time</span></div><div class="line"></div><div class="line">my_ev3 = ev3.EV3(protocol=ev3<span class="selector-class">.BLUETOOTH</span>, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line"></div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_RED</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">1</span>),</div><div class="line">    ev3.LCX(<span class="number">262</span>),</div><div class="line">    ev3.LCX(<span class="number">0</span>)</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line"><span class="selector-tag">time</span>.sleep(<span class="number">0.5</span>)</div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_GREEN</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">1</span>),</div><div class="line">    ev3.LCX(<span class="number">330</span>),</div><div class="line">    ev3.LCX(<span class="number">0</span>)</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line"><span class="selector-tag">time</span>.sleep(<span class="number">0.5</span>)</div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_RED</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">1</span>),</div><div class="line">    ev3.LCX(<span class="number">392</span>),</div><div class="line">    ev3.LCX(<span class="number">0</span>)</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line"><span class="selector-tag">time</span>.sleep(<span class="number">0.5</span>)</div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_RED_FLASH</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.TONE</span>,</div><div class="line">    ev3.LCX(<span class="number">1</span>),</div><div class="line">    ev3.LCX(<span class="number">523</span>),</div><div class="line">    ev3.LCX(<span class="number">0</span>)</div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div><div class="line"><span class="selector-tag">time</span>.sleep(<span class="number">2</span>)</div><div class="line">ops = b<span class="string">''</span>.join([</div><div class="line">    ev3<span class="selector-class">.opUI_Write</span>,</div><div class="line">    ev3<span class="selector-class">.LED</span>,</div><div class="line">    ev3<span class="selector-class">.LED_GREEN</span>,</div><div class="line">    ev3<span class="selector-class">.opSound</span>,</div><div class="line">    ev3<span class="selector-class">.BREAK</span></div><div class="line">])</div><div class="line">my_ev3.send_direct_cmd(ops)</div></pre></td></tr></table></figure>
+<p>此版本还实现了固定的调度，但时间发生在程序中而不是 EV3 设备上（在直接命令中）。同样，这有一定的优势，它不阻塞 EV3 设备。只要我们一次只执行一个任务，阻塞就无关紧要了。如果我们试图结合独立的声音和点击驱动，且并行执行任务，则本地时序和中断是必须的。</p>
+<p>如果我们在上面的程序中设置 sync_mode == SYNC，数据流量会增长，但我们不会听到任何差异。值得反思的是，该程序同步运行，因为没有直接命令是耗时的。sync_mode == ASYNC 或 sync_mode == STD 是为异步执行设计的，但我们也可以使用这些设置编写同步执行代码。异步执行仅在直接命令耗时（时间由直接命令完成）且本地程序不等待直接命令结束时。中断有助于避免耗时的直接命令，并且是同步执行。</p>
+<h1 id="继承-EV3"><a href="#继承-EV3" class="headerlink" title="继承 EV3"></a>继承 EV3</h1><p>到目前为止，我们直接在我们的程序中编写了操作。这需要封装和抽象。我想特化类，一个用于带两个驱动轮的车辆，一个用于音调和音乐等等。设计应该允许它们平并行使用。我的解决方案是大量的 EV3 类的子类，它们都与同一个 EV3 设备通信。这就是说，它们必须共享资源。为了实现这一点，我修改了 EV3 类的构造函数：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">|  __init__(<span class="built_in">self</span>, protocol:str=<span class="literal">None</span>, host:str=<span class="literal">None</span>, ev3_obj=<span class="literal">None</span>)</div><div class="line">|      Establish a connection <span class="keyword">to</span> a LEGO EV3 device</div><div class="line">|      </div><div class="line">|      <span class="built_in">Keyword</span> Arguments (either protocol <span class="literal">and</span> host <span class="literal">or</span> ev3_obj):</div><div class="line">|      protocol: <span class="literal">None</span>, <span class="string">'Bluetooth'</span>, <span class="string">'Usb'</span> <span class="literal">or</span> <span class="string">'Wifi'</span></div><div class="line">|      host: <span class="literal">None</span> <span class="literal">or</span> mac<span class="params">-address</span> of the LEGO EV3 (f.i. <span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">|      ev3_obj: <span class="literal">None</span> <span class="literal">or</span> an existing EV3 object (its connections will be used)</div></pre></td></tr></table></figure>
+<p>代码是：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">EV3</span>:</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, protocol: str=None, host: str=None, ev3_obj=None)</span>:</span></div><div class="line">        <span class="keyword">assert</span> ev3_obj <span class="keyword">or</span> protocol, \</div><div class="line">            <span class="string">'Either protocol or ev3_obj needs to be given'</span></div><div class="line">        <span class="keyword">if</span> ev3_obj:</div><div class="line">            <span class="keyword">assert</span> isinstance(ev3_obj, EV3), \</div><div class="line">                <span class="string">'ev3_obj needs to be instance of EV3'</span></div><div class="line">            self._protocol = ev3_obj._protocol</div><div class="line">            self._device = ev3_obj._device</div><div class="line">            self._socket = ev3_obj._socket</div><div class="line">        <span class="keyword">elif</span> protocol:</div><div class="line">            <span class="keyword">assert</span> protocol <span class="keyword">in</span> [BLUETOOTH, WIFI, USB], \</div><div class="line">                <span class="string">'Protocol '</span> + protocol + <span class="string">'is not valid'</span></div><div class="line">            self._protocol = <span class="keyword">None</span></div><div class="line">            self._device = <span class="keyword">None</span></div><div class="line">            self._socket = <span class="keyword">None</span></div><div class="line">            <span class="keyword">if</span> protocol == BLUETOOTH:</div><div class="line">                <span class="keyword">assert</span> host, <span class="string">'Protocol '</span> + protocol + <span class="string">'needs host-id'</span></div><div class="line">                self._connect_bluetooth(host)</div><div class="line">            <span class="keyword">elif</span> protocol == WIFI:</div><div class="line">                self._connect_wifi()</div><div class="line">            <span class="keyword">elif</span> protocol == USB:</div><div class="line">                self._connect_usb()</div><div class="line">        self._verbosity = <span class="number">0</span></div><div class="line">        self._sync_mode = STD</div><div class="line">        self._msg_cnt = <span class="number">41</span></div></pre></td></tr></table></figure></p>
+<p>一些注解：</p>
+<ul>
+<li>有两种创建类 EV3 的新实例的方式：<ul>
+<li>和以前一样，使用参数 <code>protocol</code> 和 <code>host</code> 调用构造函数以获取新连接。</li>
+<li>另一种方法是使用现有的 EV3 对象作为参数 <code>ev3_obj</code> 调用它，使用其中的连接。</li>
+</ul>
+</li>
+<li>这不仅限于连接。对于将来的扩展，我们可以共享任何资源。</li>
+<li>每个类都有自己的 <code>_verbosity</code> 和 <code>_sync_mode</code>。这是 OK 的，但我们使消息计数器 <code>_msg_cnt</code> 成为一个类属性：<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">EV3</span>:</span></div><div class="line">    <span class="type">_msg_cnt = 41</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>考虑到这一点，我编写了类 <code>TwoWheelVehicle</code>，这里是它的构造函数：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">TwoWheelVehicle</span><span class="params">(ev3.EV3)</span>:</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(</span></span></div><div class="line">            self,</div><div class="line">            protocol: str=None,</div><div class="line">            host: str=None,</div><div class="line">            ev3_obj: ev3.EV3=None</div><div class="line">    ):</div><div class="line">        super().__init__(protocol=protocol, host=host, ev3_obj=ev3_obj)</div><div class="line">        self._polarity = <span class="number">1</span></div><div class="line">        self._port_left = ev3.PORT_D</div><div class="line">        self._port_right = ev3.PORT_A</div></pre></td></tr></table></figure></p>
+<p>我添加了两个方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">move</span><span class="params">(self, speed: int, turn: int)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    <span class="keyword">assert</span> self._sync_mode != ev3.SYNC, <span class="string">"no unlimited operations allowed in sync_mode SYNC"</span></div><div class="line">    <span class="keyword">assert</span> isinstance(speed, int), <span class="string">"speed needs to be an integer value"</span></div><div class="line">    <span class="keyword">assert</span> <span class="number">-100</span> &lt;= speed <span class="keyword">and</span> speed &lt;= <span class="number">100</span>, <span class="string">"speed needs to be in range [-100 - 100]"</span></div><div class="line">    <span class="keyword">assert</span> isinstance(turn, int), <span class="string">"turn needs to be an integer value"</span></div><div class="line">    <span class="keyword">assert</span> <span class="number">-200</span> &lt;= turn <span class="keyword">and</span> turn &lt;= <span class="number">200</span>, <span class="string">"turn needs to be in range [-200 - 200]"</span></div><div class="line">    <span class="keyword">if</span> self._polarity == <span class="number">-1</span>:</div><div class="line">        speed *= <span class="number">-1</span></div><div class="line">    <span class="keyword">if</span> self._port_left &lt; self._port_right:</div><div class="line">        turn *= <span class="number">-1</span></div><div class="line">    <span class="keyword">if</span> turn &gt; <span class="number">0</span>:</div><div class="line">        speed_right = speed</div><div class="line">        speed_left  = round(speed * (<span class="number">1</span> - turn / <span class="number">100</span>))</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        speed_right = round(speed * (<span class="number">1</span> + turn / <span class="number">100</span>))</div><div class="line">        speed_left  = speed</div><div class="line">    ops = <span class="string">b''</span>.join([</div><div class="line">        ev3.opOutput_Speed,</div><div class="line">        ev3.LCX(<span class="number">0</span>),              <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(PORT_A),         <span class="comment"># NOS</span></div><div class="line">        ev3.LCX(speed_right),    <span class="comment"># SPEED</span></div><div class="line">        ev3.opOutput_Speed,</div><div class="line">        ev3.LCX(<span class="number">0</span>),              <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(PORT_D),         <span class="comment"># NOS</span></div><div class="line">        ev3.LCX(speed_left),     <span class="comment"># SPEED</span></div><div class="line">        ev3.opOutput_Start,</div><div class="line">        ev3.LCX(<span class="number">0</span>),              <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(PORT_A + PORT_D) <span class="comment"># NOS</span></div><div class="line">    ])</div><div class="line">    self.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>和<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stop</span><span class="params">(self, brake: bool=False)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    <span class="keyword">assert</span> isinstance(brake, bool), <span class="string">"brake needs to be a boolean value"</span></div><div class="line">    <span class="keyword">if</span> brake:</div><div class="line">        br = <span class="number">1</span></div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        br = <span class="number">0</span></div><div class="line">    ops_stop = <span class="string">b''</span>.join([</div><div class="line">        ev3.opOutput_Stop,</div><div class="line">        ev3.LCX(<span class="number">0</span>),                                  <span class="comment"># LAYER</span></div><div class="line">        ev3.LCX(self._port_left + self._port_right), <span class="comment"># NOS</span></div><div class="line">        ev3.LCX(br)                                  <span class="comment"># BRAKE</span></div><div class="line">    ])</div><div class="line">    self.send_direct_cmd(ops)</div></pre></td></tr></table></figure></p>
+<p>我们需要三个属性：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">polarity</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="keyword">return</span> self._polarity</div><div class="line"><span class="meta">@polarity.setter</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">polarity</span><span class="params">(self, value: int)</span>:</span></div><div class="line">    <span class="keyword">assert</span> isinstance(value, int), <span class="string">"polarity needs to be of type int"</span></div><div class="line">    <span class="keyword">assert</span> value <span class="keyword">in</span> [<span class="number">1</span>, <span class="number">-1</span>], <span class="string">"allowed polarity values are: -1 or 1"</span></div><div class="line">    self._polarity = value</div><div class="line"></div><div class="line"><span class="meta">@property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">port_right</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="keyword">return</span> self._port_right</div><div class="line"><span class="meta">@port_right.setter</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">port_right</span><span class="params">(self, value: int)</span>:</span></div><div class="line">    <span class="keyword">assert</span> isinstance(value, int), <span class="string">"port needs to be of type int"</span></div><div class="line">    <span class="keyword">assert</span> value <span class="keyword">in</span> [ev3.PORT_A, ev3.PORT_B, ev3.PORT_C, ev3.PORT_D], <span class="string">"value is not an allowed port"</span></div><div class="line">    self._port_right = value</div><div class="line"></div><div class="line"><span class="meta">@property</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">port_left</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="keyword">return</span> self._port_left</div><div class="line"><span class="meta">@port_left.setter</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">port_left</span><span class="params">(self, value: int)</span>:</span></div><div class="line">    <span class="keyword">assert</span> isinstance(value, int), <span class="string">"port needs to be of type int"</span></div><div class="line">    <span class="keyword">assert</span> value <span class="keyword">in</span> [ev3.PORT_A, ev3.PORT_B, ev3.PORT_C, ev3.PORT_D], <span class="string">"value is not an allowed port"</span></div><div class="line">    self._port_left = value</div></pre></td></tr></table></figure></p>
+<p>就是这样，我们有了一个新类 <code>TwoWheelVehicle</code>，它具有这样的 API：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">Help</span> <span class="keyword">on</span> <span class="keyword">module</span> ev3_vehicle:</div><div class="line"></div><div class="line"><span class="keyword">NAME</span></div><div class="line">    ev3_vehicle - EV3 vehicle</div><div class="line"></div><div class="line">CLASSES</div><div class="line">    ev3.EV3(builtins.object)</div><div class="line">        TwoWheelVehicle</div><div class="line">    </div><div class="line">    <span class="keyword">class</span> TwoWheelVehicle(ev3.EV3)</div><div class="line">     |  ev3.EV3 vehicle <span class="keyword">with</span> two drived Wheels</div><div class="line">     |  </div><div class="line">     |  Method resolution <span class="keyword">order</span>:</div><div class="line">     |      TwoWheelVehicle</div><div class="line">     |      ev3.EV3</div><div class="line">     |      builtins.object</div><div class="line">     |  </div><div class="line">     |  Methods defined here:</div><div class="line">     |  </div><div class="line">     |  __init__(<span class="keyword">self</span>, protocol:<span class="keyword">str</span>=<span class="keyword">None</span>, host:<span class="keyword">str</span>=<span class="keyword">None</span>, ev3_obj:ev3.EV3=<span class="keyword">None</span>)</div><div class="line">     |      Establish a <span class="keyword">connection</span> <span class="keyword">to</span> a LEGO EV3 device</div><div class="line">     |      </div><div class="line">     |      Keyword Arguments (either protocol <span class="keyword">and</span> host <span class="keyword">or</span> ev3_obj):</div><div class="line">     |      protocol</div><div class="line">     |        BLUETOOTH == <span class="string">'Bluetooth'</span></div><div class="line">     |        USB == <span class="string">'Usb'</span></div><div class="line">     |        WIFI == <span class="string">'Wifi'</span></div><div class="line">     |      host: mac-address <span class="keyword">of</span> the LEGO EV3 (f.i. <span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">     |      ev3_obj: an existing EV3 <span class="keyword">object</span> (its connections will be used)</div><div class="line">     |  </div><div class="line">     |  <span class="keyword">move</span>(<span class="keyword">self</span>, speed:<span class="built_in">int</span>, turn:<span class="built_in">int</span>) -&gt; <span class="keyword">None</span></div><div class="line">     |      <span class="keyword">Start</span> <span class="keyword">unlimited</span> <span class="keyword">movement</span> <span class="keyword">of</span> the vehicle</div><div class="line">     |      </div><div class="line">     |      Arguments:</div><div class="line">     |      speed: speed <span class="keyword">in</span> <span class="keyword">percent</span> [<span class="number">-100</span> - <span class="number">100</span>]</div><div class="line">     |        &gt; <span class="number">0</span>: forward</div><div class="line">     |        &lt; <span class="number">0</span>: backward</div><div class="line">     |      turn: <span class="keyword">type</span> <span class="keyword">of</span> turn [<span class="number">-200</span> - <span class="number">200</span>]</div><div class="line">     |        <span class="number">-200</span>: circle <span class="keyword">right</span> <span class="keyword">on</span> place</div><div class="line">     |        <span class="number">-100</span>: turn <span class="keyword">right</span> <span class="keyword">with</span> unmoved <span class="keyword">right</span> wheel</div><div class="line">     |         <span class="number">0</span>  : straight</div><div class="line">     |         <span class="number">100</span>: turn <span class="keyword">left</span> <span class="keyword">with</span> unmoved <span class="keyword">left</span> wheel</div><div class="line">     |         <span class="number">200</span>: circle <span class="keyword">left</span> <span class="keyword">on</span> place</div><div class="line">     |  </div><div class="line">     |  <span class="keyword">stop</span>(<span class="keyword">self</span>, brake:bool=<span class="literal">False</span>) -&gt; <span class="keyword">None</span></div><div class="line">     |      <span class="keyword">Stop</span> <span class="keyword">movement</span> <span class="keyword">of</span> the vehicle</div><div class="line">     |      </div><div class="line">     |      Arguments:</div><div class="line">     |      brake: flag <span class="keyword">if</span> activating brake</div><div class="line">     |  </div><div class="line">     |  <span class="comment">----------------------------------------------------------------------</span></div><div class="line">     |  <span class="keyword">Data</span> descriptors defined here:</div><div class="line">     |  </div><div class="line">     |  polarity</div><div class="line">     |      polarity <span class="keyword">of</span> motor rotation (<span class="keyword">values</span>: <span class="number">-1</span>, <span class="number">1</span>, <span class="keyword">default</span>: <span class="number">1</span>)</div><div class="line">     |  </div><div class="line">     |  port_left</div><div class="line">     |      port <span class="keyword">of</span> <span class="keyword">left</span> wheel (<span class="keyword">default</span>: PORT_D)</div><div class="line">     |  </div><div class="line">     |  port_right</div><div class="line">     |      port <span class="keyword">of</span> <span class="keyword">right</span> wheel (<span class="keyword">default</span>: PORT_A)</div><div class="line">     |  </div><div class="line">     |  <span class="comment">----------------------------------------------------------------------</span></div><div class="line">     |  Methods inherited <span class="keyword">from</span> ev3.EV3:</div><div class="line">     |  </div><div class="line">     |  __del__(<span class="keyword">self</span>)</div><div class="line">     |      closes the <span class="keyword">connection</span> <span class="keyword">to</span> the LEGO EV3</div><div class="line">     |  </div><div class="line">     |  send_direct_cmd(<span class="keyword">self</span>, ops:<span class="keyword">bytes</span>, local_mem:<span class="built_in">int</span>=<span class="number">0</span>, global_mem:<span class="built_in">int</span>=<span class="number">0</span>) -&gt; <span class="keyword">bytes</span></div><div class="line">     |      Send a direct command <span class="keyword">to</span> the LEGO EV3</div><div class="line">     |      </div><div class="line">     |      Arguments:</div><div class="line">     |      ops: holds netto <span class="keyword">data</span> <span class="keyword">only</span> (<span class="keyword">operations</span>), the <span class="keyword">following</span> <span class="keyword">fields</span> <span class="keyword">are</span> added:</div><div class="line">     |        <span class="keyword">length</span>: <span class="number">2</span> <span class="keyword">bytes</span>, <span class="keyword">little</span> <span class="keyword">endian</span></div><div class="line">     |        counter: <span class="number">2</span> <span class="keyword">bytes</span>, <span class="keyword">little</span> <span class="keyword">endian</span></div><div class="line">     |        <span class="keyword">type</span>: <span class="number">1</span> <span class="keyword">byte</span>, DIRECT_COMMAND_REPLY <span class="keyword">or</span> DIRECT_COMMAND_NO_REPLY</div><div class="line">     |        header: <span class="number">2</span> <span class="keyword">bytes</span>, holds <span class="keyword">sizes</span> <span class="keyword">of</span> <span class="keyword">local</span> <span class="keyword">and</span> <span class="keyword">global</span> <span class="keyword">memory</span></div><div class="line">     |      </div><div class="line">     |      Keyword Arguments:</div><div class="line">     |      local_mem: <span class="keyword">size</span> <span class="keyword">of</span> the <span class="keyword">local</span> <span class="keyword">memory</span></div><div class="line">     |      global_mem: <span class="keyword">size</span> <span class="keyword">of</span> the <span class="keyword">global</span> <span class="keyword">memory</span></div><div class="line">     |      </div><div class="line">     |      <span class="keyword">Returns</span>: </div><div class="line">     |        sync_mode <span class="keyword">is</span> <span class="keyword">STD</span>: reply (<span class="keyword">if</span> global_mem &gt; <span class="number">0</span>) <span class="keyword">or</span> message counter</div><div class="line">     |        sync_mode <span class="keyword">is</span> ASYNC: message counter</div><div class="line">     |        sync_mode <span class="keyword">is</span> <span class="keyword">SYNC</span>: reply <span class="keyword">of</span> the LEGO EV3</div><div class="line">     |  </div><div class="line">     |  wait_for_reply(<span class="keyword">self</span>, counter:<span class="keyword">bytes</span>) -&gt; <span class="keyword">bytes</span></div><div class="line">     |      Ask the LEGO EV3 <span class="keyword">for</span> a reply <span class="keyword">and</span> <span class="keyword">wait</span> <span class="keyword">until</span> it <span class="keyword">is</span> received</div><div class="line">     |      </div><div class="line">     |      Arguments:</div><div class="line">     |      counter: <span class="keyword">is</span> the message counter <span class="keyword">of</span> the <span class="keyword">corresponding</span> send_direct_cmd</div><div class="line">     |      </div><div class="line">     |      <span class="keyword">Returns</span>:</div><div class="line">     |      reply <span class="keyword">to</span> the direct command</div><div class="line">     |  </div><div class="line">     |  <span class="comment">----------------------------------------------------------------------</span></div><div class="line">     |  <span class="keyword">Data</span> descriptors inherited <span class="keyword">from</span> ev3.EV3:</div><div class="line">     |  </div><div class="line">     |  __dict__</div><div class="line">     |      dictionary <span class="keyword">for</span> <span class="keyword">instance</span> <span class="keyword">variables</span> (<span class="keyword">if</span> defined)</div><div class="line">     |  </div><div class="line">     |  __weakref__</div><div class="line">     |      <span class="keyword">list</span> <span class="keyword">of</span> weak <span class="keyword">references</span> <span class="keyword">to</span> the <span class="keyword">object</span> (<span class="keyword">if</span> defined)</div><div class="line">     |  </div><div class="line">     |  sync_mode</div><div class="line">     |      <span class="keyword">sync</span> <span class="keyword">mode</span> (standard, <span class="keyword">asynchronous</span>, <span class="keyword">synchronous</span>)</div><div class="line">     |      </div><div class="line">     |      <span class="keyword">STD</span>:   <span class="keyword">Use</span> DIRECT_COMMAND_REPLY <span class="keyword">if</span> global_mem &gt; <span class="number">0</span>,</div><div class="line">     |             <span class="keyword">wait</span> <span class="keyword">for</span> reply <span class="keyword">if</span> there <span class="keyword">is</span> one.</div><div class="line">     |      ASYNC: <span class="keyword">Use</span> DIRECT_COMMAND_REPLY <span class="keyword">if</span> global_mem &gt; <span class="number">0</span>,</div><div class="line">     |             <span class="keyword">never</span> <span class="keyword">wait</span> <span class="keyword">for</span> reply (it<span class="string">'s the task of the calling program).</span></div><div class="line">     |      SYNC:  Always use DIRECT_COMMAND_REPLY and wait for reply.</div><div class="line">     |      </div><div class="line">     |      The general idea is:</div><div class="line">     |      ASYNC: Interruption or EV3 device queues direct commands,</div><div class="line">     |             control directly comes back.</div><div class="line">     |      SYNC:  EV3 device is blocked until direct command is finished,</div><div class="line">     |             control comes back, when direct command is finished.               </div><div class="line">     |      STD:   NO_REPLY like ASYNC with interruption or EV3 queuing,</div><div class="line">     |             REPLY like SYNC, synchronicity of program and EV3 device.</div><div class="line">     |  </div><div class="line">     |  verbosity</div><div class="line">     |      level of verbosity (prints on stdout).</div></pre></td></tr></table></figure></p>
+<p>从现在开始，当我们使用两个驱动车轮移动车辆时，我们将使用<code>ClassWheelVehicle</code>。实际上这不仅仅是一个练习，而是一个真实的东西，但下一课，我们将为这个类添加功能。你可能会问，如果努力和利益真的是平衡的话。但是看，我们的程序变短了：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python3</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> curses</div><div class="line"><span class="keyword">import</span> ev3, ev3_vehicle</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">react</span><span class="params">(c)</span>:</span></div><div class="line">    <span class="keyword">global</span> speed, turn, my_vehicle</div><div class="line">    <span class="keyword">if</span> c <span class="keyword">in</span> [ord(<span class="string">'q'</span>), <span class="number">27</span>, ord(<span class="string">'p'</span>)]:</div><div class="line">        my_vehicle.stop()</div><div class="line">        <span class="keyword">return</span></div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_LEFT:</div><div class="line">        turn += <span class="number">5</span></div><div class="line">        turn = min(turn, <span class="number">200</span>)</div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_RIGHT:</div><div class="line">        turn -= <span class="number">5</span></div><div class="line">        turn = max(turn, <span class="number">-200</span>)</div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_UP:</div><div class="line">        speed += <span class="number">5</span></div><div class="line">        speed = min(speed, <span class="number">100</span>)</div><div class="line">    <span class="keyword">elif</span> c == curses.KEY_DOWN:</div><div class="line">        speed -= <span class="number">5</span></div><div class="line">        speed = max(speed, <span class="number">-100</span>)</div><div class="line">    stdscr.addstr(<span class="number">5</span>, <span class="number">0</span>, <span class="string">'speed: &#123;&#125;, turn: &#123;&#125;      '</span>.format(speed, turn))</div><div class="line">    my_vehicle.move(speed, turn)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">(window)</span> -&gt; <span class="keyword">None</span>:</span></div><div class="line">    <span class="keyword">global</span> stdscr</div><div class="line">    stdscr = window</div><div class="line">    stdscr.clear()      <span class="comment"># print introduction</span></div><div class="line">    stdscr.refresh()</div><div class="line">    stdscr.addstr(<span class="number">0</span>, <span class="number">0</span>, <span class="string">'Use Arrows to navigate your EV3-vehicle'</span>)</div><div class="line">    stdscr.addstr(<span class="number">1</span>, <span class="number">0</span>, <span class="string">'Pause your vehicle with key &lt;p&gt;'</span>)</div><div class="line">    stdscr.addstr(<span class="number">2</span>, <span class="number">0</span>, <span class="string">'Terminate with key &lt;q&gt;'</span>)</div><div class="line"></div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        c = stdscr.getch()</div><div class="line">        <span class="keyword">if</span> c <span class="keyword">in</span> [ord(<span class="string">'q'</span>), <span class="number">27</span>]:</div><div class="line">            react(c)</div><div class="line">            <span class="keyword">break</span></div><div class="line">        <span class="keyword">elif</span> c <span class="keyword">in</span> [ord(<span class="string">'p'</span>),</div><div class="line">                   curses.KEY_RIGHT, curses.KEY_LEFT, curses.KEY_UP, curses.KEY_DOWN]:</div><div class="line">            react(c)</div><div class="line"></div><div class="line">speed = <span class="number">0</span></div><div class="line">turn  = <span class="number">0</span>   </div><div class="line">my_vehicle = ev3_vehicle.TwoWheelVehicle(protocol=ev3.BLUETOOTH, host=<span class="string">'00:16:53:42:2B:99'</span>)</div><div class="line">stdscr = <span class="keyword">None</span></div><div class="line"></div><div class="line">curses.wrapper(main)</div></pre></td></tr></table></figure></p>
+<p>如果你下载了 <a href="https://github.com/ChristophGaukel/ev3-python3" target="_blank" rel="external">ev3-python3</a> 的模块 <code>ev3_vehicle.py</code>，你需要以两个额外的参数 <code>radius_wheel</code> 和 <code>tread</code> 调用 <code>TwoWheelVehicle</code> 的构造函数。目前你可以将它们设置为任何正值。</p>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>现在我们知道了，如何移动电机，我们获得了两个重要设计概念的经验，即中断和子类化。此外我们编写的东西像个真正的应用程序了，一个车辆的遥控器。</p>
+<p>我希望，你的遥控器工作良好，并使你成为一个技术明星。我们即将结束本课程。浏览文档 <em>EV3 Firmware Developer Kit</em> 告诉您，移动电机存在许多额外的操作。其中大多数是为了精确，同步和平滑的运动。这将是我们下一课的主题。我希望能再次见到你。</p>
+<p><a href="http://ev3directcommands.blogspot.com/2016/01/ev3-direct-commands-lesson-03-pre.html" target="_blank" rel="external">原文</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/ROS/" rel="tag"># ROS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/30/lego_ev3_direct_command_002/" rel="next" title="EV3 直接命令 - 第 2 课 让你的 EV3 做点什么">
+                <i class="fa fa-chevron-left"></i> EV3 直接命令 - 第 2 课 让你的 EV3 做点什么
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/31/lego_ev3_direct_command_004/" rel="prev" title="EV3 直接命令 - 第 4 课 用两个驱动轮精确地移动小车">
+                EV3 直接命令 - 第 4 课 用两个驱动轮精确地移动小车 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#启动和停止电机"><span class="nav-number">1.</span> <span class="nav-text">启动和停止电机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#遥控车辆"><span class="nav-number">2.</span> <span class="nav-text">遥控车辆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#中断作为一种设计理念"><span class="nav-number">3.</span> <span class="nav-text">中断作为一种设计理念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#继承-EV3"><span class="nav-number">4.</span> <span class="nav-text">继承 EV3</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结论"><span class="nav-number">5.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

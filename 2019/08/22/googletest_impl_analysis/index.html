@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="C/C++开发," />
+
+
+<meta name="description" content="借助于 Googletest 测试框架，我们只需编写测试用例代码，并定义简单的 main() 函数，编译之后并运行即可以把我们的测试用例跑起来。(更详细的内容可参考 Googletest 入门)。但 main() 函数调用 RUN_ALL_TESTS() 时，是如何找到并运行我们编写的测试用例代码的呢？本文尝试找寻 Googletest 框架背后隐藏的这些秘密。（代码分析基于 git@github">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Googletest 实现简要分析">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/08/22/googletest_impl_analysis/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="借助于 Googletest 测试框架，我们只需编写测试用例代码，并定义简单的 main() 函数，编译之后并运行即可以把我们的测试用例跑起来。(更详细的内容可参考 Googletest 入门)。但 main() 函数调用 RUN_ALL_TESTS() 时，是如何找到并运行我们编写的测试用例代码的呢？本文尝试找寻 Googletest 框架背后隐藏的这些秘密。（代码分析基于 git@github">
+<meta property="og:updated_time" content="2019-08-23T09:52:54.785Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Googletest 实现简要分析">
+<meta name="twitter:description" content="借助于 Googletest 测试框架，我们只需编写测试用例代码，并定义简单的 main() 函数，编译之后并运行即可以把我们的测试用例跑起来。(更详细的内容可参考 Googletest 入门)。但 main() 函数调用 RUN_ALL_TESTS() 时，是如何找到并运行我们编写的测试用例代码的呢？本文尝试找寻 Googletest 框架背后隐藏的这些秘密。（代码分析基于 git@github">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/08/22/googletest_impl_analysis/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Googletest 实现简要分析 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/08/22/googletest_impl_analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Googletest 实现简要分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-22T21:05:49+08:00">2019-08-22</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C-C-开发/" itemprop="url" rel="index"><span itemprop="name">C/C++开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/22/googletest_impl_analysis/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/22/googletest_impl_analysis/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/08/22/googletest_impl_analysis/" class="leancloud_visitors" data-flag-title="Googletest 实现简要分析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>借助于 Googletest 测试框架，我们只需编写测试用例代码，并定义简单的 <code>main()</code> 函数，编译之后并运行即可以把我们的测试用例跑起来。(更详细的内容可参考 <a href="https://www.wolfcstech.com/2019/08/01/googletest_primer/">Googletest 入门</a>)。但 <code>main()</code> 函数调用 <code>RUN_ALL_TESTS()</code> 时，是如何找到并运行我们编写的测试用例代码的呢？本文尝试找寻 Googletest 框架背后隐藏的这些秘密。（代码分析基于 <code>git@github.com:google/googletest.git</code> 的 commit 2134e3fd857d952e03ce76064fad5ac6e9036104 的版本。）<br><a id="more"></a></p>
+<h1 id="从-TEST-和-TEST-F-说起"><a href="#从-TEST-和-TEST-F-说起" class="headerlink" title="从 TEST 和 TEST_F 说起"></a>从 TEST 和 TEST_F 说起</h1><p><code>googletest/googletest/include/gtest/gtest.h</code> 中 <code>TEST</code> 和 <code>TEST_F</code> 两个宏的定义如下：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Note that we call GetTestTypeId() instead of GetTypeId&lt;</span></div><div class="line"><span class="comment">// ::testing::Test&gt;() here to get the type ID of testing::Test.  This</span></div><div class="line"><span class="comment">// is to work around a suspected linker bug when using Google Test as</span></div><div class="line"><span class="comment">// a framework on Mac OS X.  The bug causes GetTypeId&lt;</span></div><div class="line"><span class="comment">// ::testing::Test&gt;() to return different values depending on whether</span></div><div class="line"><span class="comment">// the call is from the Google Test framework itself or from user test</span></div><div class="line"><span class="comment">// code.  GetTestTypeId() is guaranteed to always return the same</span></div><div class="line"><span class="comment">// value, as it always calls GetTypeId&lt;&gt;() from the Google Test</span></div><div class="line"><span class="comment">// framework.</span></div><div class="line"><span class="selector-id">#define</span> <span class="selector-tag">GTEST_TEST</span>(test_suite_name, test_name)             \</div><div class="line">  <span class="selector-tag">GTEST_TEST_</span>(test_suite_name, test_name, ::<span class="attribute">testing</span>::Test, \</div><div class="line">              ::<span class="attribute">testing</span>::<span class="attribute">internal</span>::GetTestTypeId())</div><div class="line"></div><div class="line"><span class="comment">// Define this macro to 1 to omit the definition of TEST(), which</span></div><div class="line"><span class="comment">// is a generic name and clashes with some other libraries.</span></div><div class="line"><span class="selector-id">#if</span> !<span class="selector-tag">GTEST_DONT_DEFINE_TEST</span></div><div class="line"><span class="selector-id">#define</span> <span class="selector-tag">TEST</span>(test_suite_name, test_name) <span class="selector-tag">GTEST_TEST</span>(test_suite_name, test_name)</div><div class="line"><span class="selector-id">#endif</span></div><div class="line"></div><div class="line"><span class="comment">// Defines a test that uses a test fixture.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// The first parameter is the name of the test fixture class, which</span></div><div class="line"><span class="comment">// also doubles as the test suite name.  The second parameter is the</span></div><div class="line"><span class="comment">// name of the test within the test suite.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// A test fixture class must be declared earlier.  The user should put</span></div><div class="line"><span class="comment">// the test code between braces after using this macro.  Example:</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//   class FooTest : public testing::Test &#123;</span></div><div class="line"><span class="comment">//    protected:</span></div><div class="line"><span class="comment">//     void SetUp() override &#123; b_.AddElement(3); &#125;</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//     Foo a_;</span></div><div class="line"><span class="comment">//     Foo b_;</span></div><div class="line"><span class="comment">//   &#125;;</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//   TEST_F(FooTest, InitializesCorrectly) &#123;</span></div><div class="line"><span class="comment">//     EXPECT_TRUE(a_.StatusIsOK());</span></div><div class="line"><span class="comment">//   &#125;</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//   TEST_F(FooTest, ReturnsElementCountCorrectly) &#123;</span></div><div class="line"><span class="comment">//     EXPECT_EQ(a_.size(), 0);</span></div><div class="line"><span class="comment">//     EXPECT_EQ(b_.size(), 1);</span></div><div class="line"><span class="comment">//   &#125;</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// GOOGLETEST_CM0011 DO NOT DELETE</span></div><div class="line"><span class="selector-id">#define</span> <span class="selector-tag">TEST_F</span>(test_fixture, test_name)\</div><div class="line">  <span class="selector-tag">GTEST_TEST_</span>(test_fixture, test_name, test_fixture, \</div><div class="line">              ::<span class="attribute">testing</span>::<span class="attribute">internal</span>::GetTypeId&lt;test_fixture&gt;())</div></pre></td></tr></table></figure></p>
+<p><code>TEST</code> 和 <code>TEST_F</code> 两个宏最终都借助于 <code>GTEST_TEST_</code> 宏完成其工作。</p>
+<p><code>googletest/googletest/include/gtest/internal/gtest-internal.h</code> 中 <code>GTEST_TEST_</code> 宏的定义如下：<br><figure class="highlight livescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="regexp">// Expands to the name of the class that implements the given test.</span></div><div class="line"><span class="comment">#define GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) \</span></div><div class="line">  test_suite_name<span class="comment">##_##test_name##_Test</span></div><div class="line"></div><div class="line">// Helper macro <span class="keyword">for</span> defining tests.</div><div class="line"><span class="comment">#define GTEST_TEST_(test_suite_name, test_name, parent_class, parent_id)      \</span></div><div class="line">  <span class="class"><span class="keyword">class</span> <span class="title">GTEST_TEST_CLASS_NAME_</span>(<span class="title">test_suite_name</span>, <span class="title">test_name</span>)                    \</span></div><div class="line">      : public parent_class &#123;                                                 <span class="string">\</span></div><div class="line">   public:                                                                    <span class="string">\</span></div><div class="line">    GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)() &#123;&#125;                   <span class="string">\</span></div><div class="line">                                                                              <span class="string">\</span></div><div class="line">   private:                                                                   <span class="string">\</span></div><div class="line">    virtual <span class="literal">void</span> TestBody();                                                  <span class="string">\</span></div><div class="line">    static ::testing::TestInfo* <span class="keyword">const</span> test_info_ GTEST_ATTRIBUTE_UNUSED_;     <span class="string">\</span></div><div class="line">    GTEST_DISALLOW_COPY_AND_ASSIGN_(GTEST_TEST_CLASS_NAME_(test_suite_name,   <span class="string">\</span></div><div class="line">                                                           test_name));       <span class="string">\</span></div><div class="line">  &#125;;                                                                          <span class="string">\</span></div><div class="line">                                                                              <span class="string">\</span></div><div class="line">  ::testing::TestInfo* <span class="keyword">const</span> GTEST_TEST_CLASS_NAME_(test_suite_name,          <span class="string">\</span></div><div class="line">                                                    test_name)::test_info_ =  <span class="string">\</span></div><div class="line">      ::testing::internal::MakeAndRegisterTestInfo(                           <span class="string">\</span></div><div class="line">          <span class="comment">#test_suite_name, #test_name, nullptr, nullptr,                     \</span></div><div class="line">          ::testing::internal::CodeLocation(__FILE__, __LINE__), (parent_id), <span class="string">\</span></div><div class="line">          ::testing::internal::SuiteApiResolver&lt;                              <span class="string">\</span></div><div class="line">              parent_class&gt;::GetSetUpCaseOrSuite(__FILE__, __LINE__),         <span class="string">\</span></div><div class="line">          ::testing::internal::SuiteApiResolver&lt;                              <span class="string">\</span></div><div class="line">              parent_class&gt;::GetTearDownCaseOrSuite(__FILE__, __LINE__),      <span class="string">\</span></div><div class="line">          <span class="keyword">new</span> ::testing::internal::TestFactoryImpl&lt;GTEST_TEST_CLASS_NAME_(    <span class="string">\</span></div><div class="line">              test_suite_name, test_name)&gt;);                                  <span class="string">\</span></div><div class="line">  <span class="literal">void</span> GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)::TestBody()</div></pre></td></tr></table></figure></p>
+<p><code>GTEST_TEST_</code> 宏定义一个类，它为定义的类实现如下特性：</p>
+<ul>
+<li>类名：类名由测试套件名、测试用例名和字符串 <code>Test</code> 3 部分组成，不同部分用下划线分割。如 <code>TEST_F(FooTest, InitializesCorrectly)</code> 和 <code>TEST(FooTest, InitializesCorrectly)</code> 定义的类名为 <code>FooTest_InitializesCorrectly_Test</code>。</li>
+<li>父类：<code>GTEST_TEST_</code> 宏定义的类继承自传给它的 <code>parent_class</code> 参数类。对于 <code>TEST_F</code> 宏而言，就是测试套件名，对于 <code>TEST</code> 则是 <code>::testing::Test</code> 类。</li>
+<li><code>GTEST_TEST_</code> 宏为它定义的类定义了一个空的默认构造函数。</li>
+<li><code>GTEST_TEST_</code> 宏为它定义的类定义并初始化类型为 <code>::testing::TestInfo* const</code> 的静态成员变量 <code>test_info_</code>，这个指针变量指向由 <code>::testing::internal::MakeAndRegisterTestInfo()</code> 函数创建的 <code>::testing::TestInfo</code> 类型对象。<code>::testing::internal::MakeAndRegisterTestInfo()</code> 函数还会将测试用例的信息注册给 <strong><em>Google Test</em></strong>。</li>
+<li><code>GTEST_TEST_</code> 宏为它定义的类定义 <code>TestBody()</code> 虚函数覆盖父类的对应函数，函数的函数体正是我们编写的测试用例代码，这也就是为什么我们在测试用例代码体中打断点时，看到调用栈，代码是位于名为 <code>TestBody()</code> 的函数中的原因。</li>
+<li>通过宏 <code>GTEST_DISALLOW_COPY_AND_ASSIGN_</code> 实现类对象的禁用拷贝构造和赋值。</li>
+</ul>
+<p><code>::testing::internal::MakeAndRegisterTestInfo()</code> 函数定义（<code>googletest/googletest/src/gtest.cc</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Creates a new TestInfo object and registers it with Google Test;</span></div><div class="line"><span class="comment">// returns the created object.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// Arguments:</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//   test_suite_name:   name of the test suite</span></div><div class="line"><span class="comment">//   name:             name of the test</span></div><div class="line"><span class="comment">//   type_param:       the name of the test's type parameter, or NULL if</span></div><div class="line"><span class="comment">//                     this is not a typed or a type-parameterized test.</span></div><div class="line"><span class="comment">//   value_param:      text representation of the test's value parameter,</span></div><div class="line"><span class="comment">//                     or NULL if this is not a value-parameterized test.</span></div><div class="line"><span class="comment">//   code_location:    code location where the test is defined</span></div><div class="line"><span class="comment">//   fixture_class_id: ID of the test fixture class</span></div><div class="line"><span class="comment">//   set_up_tc:        pointer to the function that sets up the test suite</span></div><div class="line"><span class="comment">//   tear_down_tc:     pointer to the function that tears down the test suite</span></div><div class="line"><span class="comment">//   factory:          pointer to the factory that creates a test object.</span></div><div class="line"><span class="comment">//                     The newly created TestInfo instance will assume</span></div><div class="line"><span class="comment">//                     ownership of the factory object.</span></div><div class="line"><span class="function">TestInfo* <span class="title">MakeAndRegisterTestInfo</span><span class="params">(</span></span></div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* test_suite_name, <span class="keyword">const</span> <span class="keyword">char</span>* name, <span class="keyword">const</span> <span class="keyword">char</span>* type_param,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* value_param, CodeLocation code_location,</div><div class="line">    TypeId fixture_class_id, SetUpTestSuiteFunc set_up_tc,</div><div class="line">    TearDownTestSuiteFunc tear_down_tc, TestFactoryBase* factory) &#123;</div><div class="line">  TestInfo* <span class="keyword">const</span> test_info =</div><div class="line">      <span class="keyword">new</span> TestInfo(test_suite_name, name, type_param, value_param,</div><div class="line">                   code_location, fixture_class_id, factory);</div><div class="line">  GetUnitTestImpl()-&gt;AddTestInfo(set_up_tc, tear_down_tc, test_info);</div><div class="line">  <span class="keyword">return</span> test_info;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="测试用例的注册"><a href="#测试用例的注册" class="headerlink" title="测试用例的注册"></a>测试用例的注册</h1><p>在通过 <code>TEST</code> 和 <code>TEST_F</code> 宏定义测试用例时，这些宏实际上将会为测试用例定义一个类，这个类包含一个静态成员变量，在这个静态成员变量初始化时，在 <code>::testing::internal::MakeAndRegisterTestInfo()</code> 函数中向 <strong><em>Google Test</em></strong> 注册测试用例，具体而言，通过 <code>::testing::internal::UnitTestImpl::AddTestInfo()</code> 函数注册测试用例，该函数在 <code>googletest/googletest/src/gtest-internal-inl.h</code> 中定义，定义如下：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Adds a TestInfo to the unit test.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// Arguments:</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//   set_up_tc:    pointer to the function that sets up the test suite</span></div><div class="line"><span class="comment">//   tear_down_tc: pointer to the function that tears down the test suite</span></div><div class="line"><span class="comment">//   test_info:    the TestInfo object</span></div><div class="line">void AddTestInfo(internal::SetUpTestSuiteFunc set_up_tc,</div><div class="line">                 internal::TearDownTestSuiteFunc tear_down_tc,</div><div class="line">                 TestInfo* test_info) &#123;</div><div class="line">  <span class="comment">// In order to support thread-safe death tests, we need to</span></div><div class="line">  <span class="comment">// remember the original working directory when the test program</span></div><div class="line">  <span class="comment">// was first invoked.  We cannot do this in RUN_ALL_TESTS(), as</span></div><div class="line">  <span class="comment">// the user may have changed the current directory before calling</span></div><div class="line">  <span class="comment">// RUN_ALL_TESTS().  Therefore we capture the current directory in</span></div><div class="line">  <span class="comment">// AddTestInfo(), which is called to register a TEST or TEST_F</span></div><div class="line">  <span class="comment">// before main() is reached.</span></div><div class="line">  <span class="keyword">if</span> (original_working_dir_.IsEmpty()) &#123;</div><div class="line">    original_working_dir_.Set(FilePath::GetCurrentDir());</div><div class="line">    GTEST_CHECK_(!original_working_dir_.IsEmpty())</div><div class="line">        &lt;&lt; <span class="string">"Failed to get the current working directory."</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  GetTestSuite(test_info-&gt;test_suite_name(), test_info-&gt;type_param(),</div><div class="line">               set_up_tc, tear_down_tc)</div><div class="line">      -&gt;AddTestInfo(test_info);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>::testing::internal::UnitTestImpl::AddTestInfo()</code> 函数根据测试套件名字等参数获得测试套件；然后将测试用例添加进测试套件中。</p>
+<p><code>googletest/googletest/src/gtest.cc</code> 中用于获得测试套件的 <code>::testing::internal::UnitTestImpl::GetTestSuite()</code> 函数定义如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Finds and returns a TestSuite with the given name.  If one doesn't</span></div><div class="line"><span class="comment">// exist, creates one and returns it.  It's the CALLER'S</span></div><div class="line"><span class="comment">// RESPONSIBILITY to ensure that this function is only called WHEN THE</span></div><div class="line"><span class="comment">// TESTS ARE NOT SHUFFLED.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// Arguments:</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">//   test_suite_name: name of the test suite</span></div><div class="line"><span class="comment">//   type_param:     the name of the test suite's type parameter, or NULL if</span></div><div class="line"><span class="comment">//                   this is not a typed or a type-parameterized test suite.</span></div><div class="line"><span class="comment">//   set_up_tc:      pointer to the function that sets up the test suite</span></div><div class="line"><span class="comment">//   tear_down_tc:   pointer to the function that tears down the test suite</span></div><div class="line">TestSuite* UnitTestImpl::GetTestSuite(</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* test_suite_name, <span class="keyword">const</span> <span class="keyword">char</span>* type_param,</div><div class="line">    internal::SetUpTestSuiteFunc set_up_tc,</div><div class="line">    internal::TearDownTestSuiteFunc tear_down_tc) &#123;</div><div class="line">  <span class="comment">// Can we find a TestSuite with the given name?</span></div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> test_suite =</div><div class="line">      <span class="built_in">std</span>::find_if(test_suites_.rbegin(), test_suites_.rend(),</div><div class="line">                   TestSuiteNameIs(test_suite_name));</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (test_suite != test_suites_.rend()) <span class="keyword">return</span> *test_suite;</div><div class="line"></div><div class="line">  <span class="comment">// No.  Let's create one.</span></div><div class="line">  <span class="keyword">auto</span>* <span class="keyword">const</span> new_test_suite =</div><div class="line">      <span class="keyword">new</span> TestSuite(test_suite_name, type_param, set_up_tc, tear_down_tc);</div><div class="line"></div><div class="line">  <span class="comment">// Is this a death test suite?</span></div><div class="line">  <span class="keyword">if</span> (internal::UnitTestOptions::MatchesFilter(test_suite_name,</div><div class="line">                                               kDeathTestSuiteFilter)) &#123;</div><div class="line">    <span class="comment">// Yes.  Inserts the test suite after the last death test suite</span></div><div class="line">    <span class="comment">// defined so far.  This only works when the test suites haven't</span></div><div class="line">    <span class="comment">// been shuffled.  Otherwise we may end up running a death test</span></div><div class="line">    <span class="comment">// after a non-death test.</span></div><div class="line">    ++last_death_test_suite_;</div><div class="line">    test_suites_.insert(test_suites_.begin() + last_death_test_suite_,</div><div class="line">                        new_test_suite);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// No.  Appends to the end of the list.</span></div><div class="line">    test_suites_.push_back(new_test_suite);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  test_suite_indices_.push_back(<span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(test_suite_indices_.size()));</div><div class="line">  <span class="keyword">return</span> new_test_suite;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>::testing::internal::UnitTestImpl::GetTestSuite()</code> 函数：</p>
+<ol>
+<li>根据传入的测试套件名在测试套件 vector 中查找测试套件，如果找到就返回。</li>
+<li>在测试套件 vector 中没有找到对应的测试套件，创建一个测试套件 <code>TestSuite</code> 对象。 </li>
+<li>测试套件名字与 death test 测试套件名规则匹配时，创建的测试套件被放在测试套件 vector 的前面，并在执行时先执行。</li>
+<li>测试套件名字与 death test 测试套件名规则不匹配时，创建的测试套件被放在测试套件 vector 的后面，并在执行时后执行。</li>
+</ol>
+<p>向 <code>TestSuite</code> 添加测试用例的 <code>TestSuite::AddTestInfo()</code> 函数定义（<code>googletest/googletest/src/gtest.cc</code>）如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Adds a test to this test suite.  Will delete the test upon</span></div><div class="line"><span class="comment">// destruction of the TestSuite object.</span></div><div class="line"><span class="keyword">void</span> TestSuite::AddTestInfo(TestInfo* test_info) &#123;</div><div class="line">  test_info_list_.push_back(test_info);</div><div class="line">  test_indices_.push_back(<span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(test_indices_.size()));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="测试用例的执行"><a href="#测试用例的执行" class="headerlink" title="测试用例的执行"></a>测试用例的执行</h1><p>在 <code>main()</code> 函数中，通过调用 <code>testing::InitGoogleTest(&amp;argc, argv)</code> 和 <code>RUN_ALL_TESTS()</code> 执行所有的测试用例。<code>testing::InitGoogleTest(&amp;argc, argv)</code> 主要用于解析命令行参数，如 filter 等，这里不再详细分析。<code>googletest/googletest/include/gtest/gtest.h</code> 中的 <code>RUN_ALL_TESTS()</code> 函数定义如下：<br><figure class="highlight zephir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Use this function in main() to run all tests.  It returns 0 if all</span></div><div class="line"><span class="comment">// tests are successful, or 1 otherwise.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// RUN_ALL_TESTS() should be invoked after the command line has been</span></div><div class="line"><span class="comment">// parsed by InitGoogleTest().</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// This function was formerly a macro; thus, it is in the global</span></div><div class="line"><span class="comment">// namespace and has an all-caps name.</span></div><div class="line"><span class="keyword">int</span> RUN_ALL_TESTS() GTEST_MUST_USE_RESULT_;</div><div class="line"></div><div class="line">inline <span class="keyword">int</span> RUN_ALL_TESTS() &#123;</div><div class="line">  <span class="keyword">return</span> ::testing::UnitTest::GetInstance()-&gt;Run();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>RUN_ALL_TESTS()</code> 函数调用 <code>googletest/googletest/src/gtest.cc</code> 中定义的 <code>UnitTest::Run()</code> 函数执行所有的测试用例：<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Runs all tests in this UnitTest object and prints the result.</span></div><div class="line"><span class="comment">// Returns 0 if successful, or 1 otherwise.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// We don't protect this under mutex_, as we only support calling it</span></div><div class="line"><span class="comment">// from the main thread.</span></div><div class="line"><span class="keyword">int</span> UnitTest::Run() &#123;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">bool</span> in_death_test_child_process =</div><div class="line">      <span class="keyword">internal</span>::GTEST_FLAG(internal_run_death_test).length() &gt; <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Google Test implements this protocol for catching that a test</span></div><div class="line">  <span class="comment">// program exits before returning control to Google Test:</span></div><div class="line">  <span class="comment">//</span></div><div class="line">  <span class="comment">//   1. Upon start, Google Test creates a file whose absolute path</span></div><div class="line">  <span class="comment">//      is specified by the environment variable</span></div><div class="line">  <span class="comment">//      TEST_PREMATURE_EXIT_FILE.</span></div><div class="line">  <span class="comment">//   2. When Google Test has finished its work, it deletes the file.</span></div><div class="line">  <span class="comment">//</span></div><div class="line">  <span class="comment">// This allows a test runner to set TEST_PREMATURE_EXIT_FILE before</span></div><div class="line">  <span class="comment">// running a Google-Test-based test program and check the existence</span></div><div class="line">  <span class="comment">// of the file at the end of the test execution to see if it has</span></div><div class="line">  <span class="comment">// exited prematurely.</span></div><div class="line"></div><div class="line">  <span class="comment">// If we are in the child process of a death test, don't</span></div><div class="line">  <span class="comment">// create/delete the premature exit file, as doing so is unnecessary</span></div><div class="line">  <span class="comment">// and will confuse the parent process.  Otherwise, create/delete</span></div><div class="line">  <span class="comment">// the file upon entering/leaving this function.  If the program</span></div><div class="line">  <span class="comment">// somehow exits before this function has a chance to return, the</span></div><div class="line">  <span class="comment">// premature-exit file will be left undeleted, causing a test runner</span></div><div class="line">  <span class="comment">// that understands the premature-exit-file protocol to report the</span></div><div class="line">  <span class="comment">// test as having failed.</span></div><div class="line">  <span class="keyword">const</span> <span class="keyword">internal</span>::ScopedPrematureExitFile premature_exit_file(</div><div class="line">      in_death_test_child_process</div><div class="line">          ? nullptr</div><div class="line">          : <span class="keyword">internal</span>::posix::GetEnv(<span class="string">"TEST_PREMATURE_EXIT_FILE"</span>));</div><div class="line"></div><div class="line">  <span class="comment">// Captures the value of GTEST_FLAG(catch_exceptions).  This value will be</span></div><div class="line">  <span class="comment">// used for the duration of the program.</span></div><div class="line">  impl()-&gt;set_catch_exceptions(GTEST_FLAG(catch_exceptions));</div><div class="line"></div><div class="line"><span class="meta">#if GTEST_OS_WINDOWS</span></div><div class="line">  <span class="comment">// Either the user wants Google Test to catch exceptions thrown by the</span></div><div class="line">  <span class="comment">// tests or this is executing in the context of death test child</span></div><div class="line">  <span class="comment">// process. In either case the user does not want to see pop-up dialogs</span></div><div class="line">  <span class="comment">// about crashes - they are expected.</span></div><div class="line">  <span class="keyword">if</span> (impl()-&gt;catch_exceptions() || in_death_test_child_process) &#123;</div><div class="line"><span class="meta"># if !GTEST_OS_WINDOWS_MOBILE &amp;&amp; !GTEST_OS_WINDOWS_PHONE &amp;&amp; !GTEST_OS_WINDOWS_RT</span></div><div class="line">    <span class="comment">// SetErrorMode doesn't exist on CE.</span></div><div class="line">    SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOALIGNMENTFAULTEXCEPT |</div><div class="line">                 SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);</div><div class="line"><span class="meta"># endif  // !GTEST_OS_WINDOWS_MOBILE</span></div><div class="line"></div><div class="line"><span class="meta"># if (defined(_MSC_VER) || GTEST_OS_WINDOWS_MINGW) &amp;&amp; !GTEST_OS_WINDOWS_MOBILE</span></div><div class="line">    <span class="comment">// Death test children can be terminated with _abort().  On Windows,</span></div><div class="line">    <span class="comment">// _abort() can show a dialog with a warning message.  This forces the</span></div><div class="line">    <span class="comment">// abort message to go to stderr instead.</span></div><div class="line">    _set_error_mode(_OUT_TO_STDERR);</div><div class="line"><span class="meta"># endif</span></div><div class="line"></div><div class="line"><span class="meta"># if defined(_MSC_VER) &amp;&amp; !GTEST_OS_WINDOWS_MOBILE</span></div><div class="line">    <span class="comment">// In the debug version, Visual Studio pops up a separate dialog</span></div><div class="line">    <span class="comment">// offering a choice to debug the aborted program. We need to suppress</span></div><div class="line">    <span class="comment">// this dialog or it will pop up for every EXPECT/ASSERT_DEATH statement</span></div><div class="line">    <span class="comment">// executed. Google Test will notify the user of any unexpected</span></div><div class="line">    <span class="comment">// failure via stderr.</span></div><div class="line">    <span class="keyword">if</span> (!GTEST_FLAG(break_on_failure))</div><div class="line">      _set_abort_behavior(</div><div class="line">          <span class="number">0x0</span>,                                    <span class="comment">// Clear the following flags:</span></div><div class="line">          _WRITE_ABORT_MSG | _CALL_REPORTFAULT);  <span class="comment">// pop-up window, core dump.</span></div><div class="line"><span class="meta"># endif</span></div><div class="line">  &#125;</div><div class="line"><span class="meta">#endif  // GTEST_OS_WINDOWS</span></div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="keyword">internal</span>::HandleExceptionsInMethodIfSupported(</div><div class="line">      impl(),</div><div class="line">      &amp;<span class="keyword">internal</span>::UnitTestImpl::RunAllTests,</div><div class="line">      <span class="string">"auxiliary test code (environments or event listeners)"</span>) ? <span class="number">0</span> : <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>internal::HandleExceptionsInMethodIfSupported()</code> 是 Google test 定义的一个用于执行类的成员函数的函数，这里不再详细分析这个函数的实现。<code>UnitTest::Run()</code> 函数实际上通过 <code>googletest/googletest/src/gtest.cc</code> 中定义的 <code>internal::UnitTestImpl::RunAllTests()</code> 函数执行所有的测试用例：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Runs all tests in this UnitTest object, prints the result, and</span></div><div class="line"><span class="comment">// returns true if all tests are successful.  If any exception is</span></div><div class="line"><span class="comment">// thrown during a test, the test is considered to be failed, but the</span></div><div class="line"><span class="comment">// rest of the tests will still be run.</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// When parameterized tests are enabled, it expands and registers</span></div><div class="line"><span class="comment">// parameterized tests first in RegisterParameterizedTests().</span></div><div class="line"><span class="comment">// All other functions called from RunAllTests() may safely assume that</span></div><div class="line"><span class="comment">// parameterized tests are ready to be counted and run.</span></div><div class="line"><span class="keyword">bool</span> UnitTestImpl::RunAllTests() &#123;</div><div class="line">  <span class="comment">// True iff Google Test is initialized before RUN_ALL_TESTS() is called.</span></div><div class="line">  <span class="keyword">const</span> <span class="keyword">bool</span> gtest_is_initialized_before_run_all_tests = GTestIsInitialized();</div><div class="line"></div><div class="line">  <span class="comment">// Do not run any test if the --help flag was specified.</span></div><div class="line">  <span class="keyword">if</span> (g_help_flag)</div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Repeats the call to the post-flag parsing initialization in case the</span></div><div class="line">  <span class="comment">// user didn't call InitGoogleTest.</span></div><div class="line">  PostFlagParsingInit();</div><div class="line"></div><div class="line">  <span class="comment">// Even if sharding is not on, test runners may want to use the</span></div><div class="line">  <span class="comment">// GTEST_SHARD_STATUS_FILE to query whether the test supports the sharding</span></div><div class="line">  <span class="comment">// protocol.</span></div><div class="line">  internal::WriteToShardStatusFileIfNeeded();</div><div class="line"></div><div class="line">  <span class="comment">// True iff we are in a subprocess for running a thread-safe-style</span></div><div class="line">  <span class="comment">// death test.</span></div><div class="line">  <span class="keyword">bool</span> in_subprocess_for_death_test = <span class="literal">false</span>;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">if</span> GTEST_HAS_DEATH_TEST</span></div><div class="line">  in_subprocess_for_death_test =</div><div class="line">      (internal_run_death_test_flag_.get() != <span class="literal">nullptr</span>);</div><div class="line"><span class="meta"># <span class="meta-keyword">if</span> defined(GTEST_EXTRA_DEATH_TEST_CHILD_SETUP_)</span></div><div class="line">  <span class="keyword">if</span> (in_subprocess_for_death_test) &#123;</div><div class="line">    GTEST_EXTRA_DEATH_TEST_CHILD_SETUP_();</div><div class="line">  &#125;</div><div class="line"><span class="meta"># <span class="meta-keyword">endif</span>  <span class="comment">// defined(GTEST_EXTRA_DEATH_TEST_CHILD_SETUP_)</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span>  <span class="comment">// GTEST_HAS_DEATH_TEST</span></span></div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">bool</span> should_shard = ShouldShard(kTestTotalShards, kTestShardIndex,</div><div class="line">                                        in_subprocess_for_death_test);</div><div class="line"></div><div class="line">  <span class="comment">// Compares the full test names with the filter to decide which</span></div><div class="line">  <span class="comment">// tests to run.</span></div><div class="line">  <span class="keyword">const</span> <span class="keyword">bool</span> has_tests_to_run = FilterTests(should_shard</div><div class="line">                                              ? HONOR_SHARDING_PROTOCOL</div><div class="line">                                              : IGNORE_SHARDING_PROTOCOL) &gt; <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Lists the tests and exits if the --gtest_list_tests flag was specified.</span></div><div class="line">  <span class="keyword">if</span> (GTEST_FLAG(list_tests)) &#123;</div><div class="line">    <span class="comment">// This must be called *after* FilterTests() has been called.</span></div><div class="line">    ListTestsMatchingFilter();</div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  random_seed_ = GTEST_FLAG(shuffle) ?</div><div class="line">      GetRandomSeedFromFlag(GTEST_FLAG(random_seed)) : <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="comment">// True iff at least one test has failed.</span></div><div class="line">  <span class="keyword">bool</span> failed = <span class="literal">false</span>;</div><div class="line"></div><div class="line">  TestEventListener* repeater = listeners()-&gt;repeater();</div><div class="line"></div><div class="line">  start_timestamp_ = GetTimeInMillis();</div><div class="line">  repeater-&gt;OnTestProgramStart(*parent_);</div><div class="line"></div><div class="line">  <span class="comment">// How many times to repeat the tests?  We don't want to repeat them</span></div><div class="line">  <span class="comment">// when we are inside the subprocess of a death test.</span></div><div class="line">  <span class="keyword">const</span> <span class="keyword">int</span> repeat = in_subprocess_for_death_test ? <span class="number">1</span> : GTEST_FLAG(repeat);</div><div class="line">  <span class="comment">// Repeats forever if the repeat count is negative.</span></div><div class="line">  <span class="keyword">const</span> <span class="keyword">bool</span> gtest_repeat_forever = repeat &lt; <span class="number">0</span>;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; gtest_repeat_forever || i != repeat; i++) &#123;</div><div class="line">    <span class="comment">// We want to preserve failures generated by ad-hoc test</span></div><div class="line">    <span class="comment">// assertions executed before RUN_ALL_TESTS().</span></div><div class="line">    ClearNonAdHocTestResult();</div><div class="line"></div><div class="line">    <span class="keyword">const</span> TimeInMillis start = GetTimeInMillis();</div><div class="line"></div><div class="line">    <span class="comment">// Shuffles test suites and tests if requested.</span></div><div class="line">    <span class="keyword">if</span> (has_tests_to_run &amp;&amp; GTEST_FLAG(shuffle)) &#123;</div><div class="line">      random()-&gt;Reseed(<span class="keyword">static_cast</span>&lt;UInt32&gt;(random_seed_));</div><div class="line">      <span class="comment">// This should be done before calling OnTestIterationStart(),</span></div><div class="line">      <span class="comment">// such that a test event listener can see the actual test order</span></div><div class="line">      <span class="comment">// in the event.</span></div><div class="line">      ShuffleTests();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Tells the unit test event listeners that the tests are about to start.</span></div><div class="line">    repeater-&gt;OnTestIterationStart(*parent_, i);</div><div class="line"></div><div class="line">    <span class="comment">// Runs each test suite if there is at least one test to run.</span></div><div class="line">    <span class="keyword">if</span> (has_tests_to_run) &#123;</div><div class="line">      <span class="comment">// Sets up all environments beforehand.</span></div><div class="line">      repeater-&gt;OnEnvironmentsSetUpStart(*parent_);</div><div class="line">      ForEach(environments_, SetUpEnvironment);</div><div class="line">      repeater-&gt;OnEnvironmentsSetUpEnd(*parent_);</div><div class="line"></div><div class="line">      <span class="comment">// Runs the tests only if there was no fatal failure or skip triggered</span></div><div class="line">      <span class="comment">// during global set-up.</span></div><div class="line">      <span class="keyword">if</span> (Test::IsSkipped()) &#123;</div><div class="line">        <span class="comment">// Emit diagnostics when global set-up calls skip, as it will not be</span></div><div class="line">        <span class="comment">// emitted by default.</span></div><div class="line">        TestResult&amp; test_result =</div><div class="line">            *internal::GetUnitTestImpl()-&gt;current_test_result();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; test_result.total_part_count(); ++j) &#123;</div><div class="line">          <span class="keyword">const</span> TestPartResult&amp; test_part_result =</div><div class="line">              test_result.GetTestPartResult(j);</div><div class="line">          <span class="keyword">if</span> (test_part_result.type() == TestPartResult::kSkip) &#123;</div><div class="line">            <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; result = test_part_result.message();</div><div class="line">            <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, result.c_str());</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">        fflush(<span class="built_in">stdout</span>);</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!Test::HasFatalFailure()) &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> test_index = <span class="number">0</span>; test_index &lt; total_test_suite_count();</div><div class="line">             test_index++) &#123;</div><div class="line">          GetMutableSuiteCase(test_index)-&gt;Run();</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      <span class="comment">// Tears down all environments in reverse order afterwards.</span></div><div class="line">      repeater-&gt;OnEnvironmentsTearDownStart(*parent_);</div><div class="line">      <span class="built_in">std</span>::for_each(environments_.rbegin(), environments_.rend(),</div><div class="line">                    TearDownEnvironment);</div><div class="line">      repeater-&gt;OnEnvironmentsTearDownEnd(*parent_);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    elapsed_time_ = GetTimeInMillis() - start;</div><div class="line"></div><div class="line">    <span class="comment">// Tells the unit test event listener that the tests have just finished.</span></div><div class="line">    repeater-&gt;OnTestIterationEnd(*parent_, i);</div><div class="line"></div><div class="line">    <span class="comment">// Gets the result and clears it.</span></div><div class="line">    <span class="keyword">if</span> (!Passed()) &#123;</div><div class="line">      failed = <span class="literal">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Restores the original test order after the iteration.  This</span></div><div class="line">    <span class="comment">// allows the user to quickly repro a failure that happens in the</span></div><div class="line">    <span class="comment">// N-th iteration without repeating the first (N - 1) iterations.</span></div><div class="line">    <span class="comment">// This is not enclosed in "if (GTEST_FLAG(shuffle)) &#123; ... &#125;", in</span></div><div class="line">    <span class="comment">// case the user somehow changes the value of the flag somewhere</span></div><div class="line">    <span class="comment">// (it's always safe to unshuffle the tests).</span></div><div class="line">    UnshuffleTests();</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (GTEST_FLAG(shuffle)) &#123;</div><div class="line">      <span class="comment">// Picks a new random seed for each iteration.</span></div><div class="line">      random_seed_ = GetNextRandomSeed(random_seed_);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  repeater-&gt;OnTestProgramEnd(*parent_);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (!gtest_is_initialized_before_run_all_tests) &#123;</div><div class="line">    ColoredPrintf(</div><div class="line">        COLOR_RED,</div><div class="line">        <span class="string">"\nIMPORTANT NOTICE - DO NOT IGNORE:\n"</span></div><div class="line">        <span class="string">"This test program did NOT call "</span> GTEST_INIT_GOOGLE_TEST_NAME_</div><div class="line">        <span class="string">"() before calling RUN_ALL_TESTS(). This is INVALID. Soon "</span> GTEST_NAME_</div><div class="line">        <span class="string">" will start to enforce the valid usage. "</span></div><div class="line">        <span class="string">"Please fix it ASAP, or IT WILL START TO FAIL.\n"</span>);  <span class="comment">// NOLINT</span></div><div class="line"><span class="meta">#<span class="meta-keyword">if</span> GTEST_FOR_GOOGLE_</span></div><div class="line">    ColoredPrintf(COLOR_RED,</div><div class="line">                  <span class="string">"For more details, see http://wiki/Main/ValidGUnitMain.\n"</span>);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span>  <span class="comment">// GTEST_FOR_GOOGLE_</span></span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> !failed;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>internal::UnitTestImpl::RunAllTests()</code> 函数通过 <code>internal::UnitTestImpl::GetMutableSuiteCase()</code> 函数拿到测试套件 <code>TestSuite</code> 并执行其 <code>Run()</code> 函数：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">void TestSuite::Run() &#123;</div><div class="line">  <span class="keyword">if</span> (!should_run_) <span class="keyword">return</span>;</div><div class="line"></div><div class="line">  internal::UnitTestImpl* <span class="keyword">const</span> <span class="keyword">impl</span> = internal::GetUnitTestImpl();</div><div class="line">  <span class="keyword">impl</span>-&gt;set_current_test_suite(this);</div><div class="line"></div><div class="line">  TestEventListener* repeater = UnitTest::GetInstance()-&gt;listeners().repeater();</div><div class="line"></div><div class="line">  <span class="comment">// Call both legacy and the new API</span></div><div class="line">  repeater-&gt;OnTestSuiteStart(*this);</div><div class="line"><span class="comment">//  Legacy API is deprecated but still available</span></div><div class="line">#ifndef GTEST_REMOVE_LEGACY_TEST_CASEAPI</div><div class="line">  repeater-&gt;OnTestCaseStart(*this);</div><div class="line">#endif  <span class="comment">//  GTEST_REMOVE_LEGACY_TEST_CASEAPI</span></div><div class="line"></div><div class="line">  <span class="keyword">impl</span>-&gt;os_stack_trace_getter()-&gt;UponLeavingGTest();</div><div class="line">  internal::HandleExceptionsInMethodIfSupported(</div><div class="line">      this, &amp;TestSuite::RunSetUpTestSuite, <span class="string">"SetUpTestSuite()"</span>);</div><div class="line"></div><div class="line">  start_timestamp_ = internal::GetTimeInMillis();</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; total_test_count(); i++) &#123;</div><div class="line">    GetMutableTestInfo(i)-&gt;Run();</div><div class="line">  &#125;</div><div class="line">  elapsed_time_ = internal::GetTimeInMillis() - start_timestamp_;</div><div class="line"></div><div class="line">  <span class="keyword">impl</span>-&gt;os_stack_trace_getter()-&gt;UponLeavingGTest();</div><div class="line">  internal::HandleExceptionsInMethodIfSupported(</div><div class="line">      this, &amp;TestSuite::RunTearDownTestSuite, <span class="string">"TearDownTestSuite()"</span>);</div><div class="line"></div><div class="line">  <span class="comment">// Call both legacy and the new API</span></div><div class="line">  repeater-&gt;OnTestSuiteEnd(*this);</div><div class="line"><span class="comment">//  Legacy API is deprecated but still available</span></div><div class="line">#ifndef GTEST_REMOVE_LEGACY_TEST_CASEAPI</div><div class="line">  repeater-&gt;OnTestCaseEnd(*this);</div><div class="line">#endif  <span class="comment">//  GTEST_REMOVE_LEGACY_TEST_CASEAPI</span></div><div class="line"></div><div class="line">  <span class="keyword">impl</span>-&gt;set_current_test_suite(nullptr);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>TestSuite::Run()</code> 函数通过 <code>GetMutableTestInfo()</code> 函数获得 <code>TestInfo</code> 并执行其 <code>Run()</code> 函数，<code>TestInfo::Run()</code> 函数定义如下：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Creates the test object, runs it, records its result, and then</span></div><div class="line"><span class="comment">// deletes it.</span></div><div class="line">void TestInfo::Run() &#123;</div><div class="line">  <span class="keyword">if</span> (!should_run_) <span class="keyword">return</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Tells UnitTest where to store test result.</span></div><div class="line">  internal::UnitTestImpl* <span class="keyword">const</span> <span class="keyword">impl</span> = internal::GetUnitTestImpl();</div><div class="line">  <span class="keyword">impl</span>-&gt;set_current_test_info(this);</div><div class="line"></div><div class="line">  TestEventListener* repeater = UnitTest::GetInstance()-&gt;listeners().repeater();</div><div class="line"></div><div class="line">  <span class="comment">// Notifies the unit test event listeners that a test is about to start.</span></div><div class="line">  repeater-&gt;OnTestStart(*this);</div><div class="line"></div><div class="line">  <span class="keyword">const</span> TimeInMillis start = internal::GetTimeInMillis();</div><div class="line"></div><div class="line">  <span class="keyword">impl</span>-&gt;os_stack_trace_getter()-&gt;UponLeavingGTest();</div><div class="line"></div><div class="line">  <span class="comment">// Creates the test object.</span></div><div class="line">  Test* <span class="keyword">const</span> test = internal::HandleExceptionsInMethodIfSupported(</div><div class="line">      factory_, &amp;internal::TestFactoryBase::CreateTest,</div><div class="line">      <span class="string">"the test fixture's constructor"</span>);</div><div class="line"></div><div class="line">  <span class="comment">// Runs the test if the constructor didn't generate a fatal failure or invoke</span></div><div class="line">  <span class="comment">// GTEST_SKIP().</span></div><div class="line">  <span class="comment">// Note that the object will not be null</span></div><div class="line">  <span class="keyword">if</span> (!Test::HasFatalFailure() &amp;&amp; !Test::IsSkipped()) &#123;</div><div class="line">    <span class="comment">// This doesn't throw as all user code that can throw are wrapped into</span></div><div class="line">    <span class="comment">// exception handling code.</span></div><div class="line">    test-&gt;Run();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (test != nullptr) &#123;</div><div class="line">    <span class="comment">// Deletes the test object.</span></div><div class="line">    <span class="keyword">impl</span>-&gt;os_stack_trace_getter()-&gt;UponLeavingGTest();</div><div class="line">    internal::HandleExceptionsInMethodIfSupported(</div><div class="line">        test, &amp;Test::DeleteSelf_, <span class="string">"the test fixture's destructor"</span>);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  result_.set_start_timestamp(start);</div><div class="line">  result_.set_elapsed_time(internal::GetTimeInMillis() - start);</div><div class="line"></div><div class="line">  <span class="comment">// Notifies the unit test event listener that a test has just finished.</span></div><div class="line">  repeater-&gt;OnTestEnd(*this);</div><div class="line"></div><div class="line">  <span class="comment">// Tells UnitTest to stop associating assertion results to this</span></div><div class="line">  <span class="comment">// test.</span></div><div class="line">  <span class="keyword">impl</span>-&gt;set_current_test_info(nullptr);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>TestInfo::Run()</code> 函数创建测试用例类对象，并执行其 <code>Run()</code> 函数。<code>Test::Run()</code> 执行测试用例定义的 <code>SetUp()</code>，测试用例主体 <code>TestBody()</code> 函数，和 <code>TearDown()</code> 函数：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Runs the test and updates the test result.</span></div><div class="line">void Test::Run() &#123;</div><div class="line">  <span class="keyword">if</span> (!HasSameFixtureClass()) <span class="keyword">return</span>;</div><div class="line"></div><div class="line">  internal::UnitTestImpl* <span class="keyword">const</span> <span class="keyword">impl</span> = internal::GetUnitTestImpl();</div><div class="line">  <span class="keyword">impl</span>-&gt;os_stack_trace_getter()-&gt;UponLeavingGTest();</div><div class="line">  internal::HandleExceptionsInMethodIfSupported(this, &amp;Test::SetUp, <span class="string">"SetUp()"</span>);</div><div class="line">  <span class="comment">// We will run the test only if SetUp() was successful and didn't call</span></div><div class="line">  <span class="comment">// GTEST_SKIP().</span></div><div class="line">  <span class="keyword">if</span> (!HasFatalFailure() &amp;&amp; !IsSkipped()) &#123;</div><div class="line">    <span class="keyword">impl</span>-&gt;os_stack_trace_getter()-&gt;UponLeavingGTest();</div><div class="line">    internal::HandleExceptionsInMethodIfSupported(</div><div class="line">        this, &amp;Test::TestBody, <span class="string">"the test body"</span>);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// However, we want to clean up as much as possible.  Hence we will</span></div><div class="line">  <span class="comment">// always call TearDown(), even if SetUp() or the test body has</span></div><div class="line">  <span class="comment">// failed.</span></div><div class="line">  <span class="keyword">impl</span>-&gt;os_stack_trace_getter()-&gt;UponLeavingGTest();</div><div class="line">  internal::HandleExceptionsInMethodIfSupported(</div><div class="line">      this, &amp;Test::TearDown, <span class="string">"TearDown()"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>测试用例的调用执行过程大概是这样的：</p>
+<p><code>RUN_ALL_TESTS()</code> -&gt; <code>UnitTest::Run()</code> -&gt; <code>UnitTestImpl::RunAllTests()</code> -&gt; <code>TestSuite::Run()</code> -&gt; <code>TestInfo::Run()</code> -&gt; <code>Test::Run()</code> -&gt; <code>Test::TestBody()</code>。</p>
+<p>Done。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C-C-开发/" rel="tag"># C/C++开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/05/ogg_file_format/" rel="next" title="Ogg 封装格式版本 0">
+                <i class="fa fa-chevron-left"></i> Ogg 封装格式版本 0
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/29/draft-ietf-quic-recovery/" rel="prev" title="QUIC 丢包检测和拥塞控制">
+                QUIC 丢包检测和拥塞控制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从-TEST-和-TEST-F-说起"><span class="nav-number">1.</span> <span class="nav-text">从 TEST 和 TEST_F 说起</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试用例的注册"><span class="nav-number">2.</span> <span class="nav-text">测试用例的注册</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试用例的执行"><span class="nav-number">3.</span> <span class="nav-text">测试用例的执行</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

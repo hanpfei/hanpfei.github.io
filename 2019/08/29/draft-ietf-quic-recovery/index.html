@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="网络协议,翻译,QUIC," />
+
+
+<meta name="description" content="摘要本文档描述 QUIC 的丢包检测和拥塞控制机制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="QUIC 丢包检测和拥塞控制">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/08/29/draft-ietf-quic-recovery/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="摘要本文档描述 QUIC 的丢包检测和拥塞控制机制。">
+<meta property="og:updated_time" content="2019-10-25T03:44:45.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="QUIC 丢包检测和拥塞控制">
+<meta name="twitter:description" content="摘要本文档描述 QUIC 的丢包检测和拥塞控制机制。">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/08/29/draft-ietf-quic-recovery/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>QUIC 丢包检测和拥塞控制 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/08/29/draft-ietf-quic-recovery/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">QUIC 丢包检测和拥塞控制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-29T21:37:49+08:00">2019-08-29</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/29/draft-ietf-quic-recovery/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/29/draft-ietf-quic-recovery/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/08/29/draft-ietf-quic-recovery/" class="leancloud_visitors" data-flag-title="QUIC 丢包检测和拥塞控制">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>本文档描述 QUIC 的丢包检测和拥塞控制机制。<br><a id="more"></a></p>
+<h1 id="读者注意"><a href="#读者注意" class="headerlink" title="读者注意"></a>读者注意</h1><p>本草案的讨论位于 QUIC 工作组的邮件列表（quic@ietf.org），邮件列表的存档位于 <a href="https://mailarchive.ietf.org/arch/search/?email_list=quic" target="_blank" rel="external">https://mailarchive.ietf.org/arch/search/?email_list=quic</a> [<a href="https://tools.ietf.org/html/draft-ietf-quic-recovery-20#ref-1" target="_blank" rel="external">1</a>]。</p>
+<p>工作组信息可以 <a href="https://github.com/quicwg" target="_blank" rel="external">https://github.com/quicwg</a> [<a href="https://tools.ietf.org/html/draft-ietf-quic-recovery-20#ref-2" target="_blank" rel="external">2</a>] 找到；源码及问题清单可以在 <a href="https://github.com/quicwg/base-drafts/labels/-recovery" target="_blank" rel="external">https://github.com/quicwg/base-drafts/labels/-recovery</a> [<a href="https://tools.ietf.org/html/draft-ietf-quic-recovery-20#ref-3" target="_blank" rel="external">3</a>] 找到。</p>
+<h1 id="本备忘录的状态"><a href="#本备忘录的状态" class="headerlink" title="本备忘录的状态"></a>本备忘录的状态</h1><p>本互联网草案的提交完全符合 <a href="https://tools.ietf.org/html/bcp78" target="_blank" rel="external">BCP 78</a> 和 <a href="https://tools.ietf.org/html/bcp79" target="_blank" rel="external">BCP 79</a> 的规定。</p>
+<p>互联网草案是互联网工程任务组（IETF）的工作文档。请注意，其他组也可能以互联网草案分发工作文档。当前的互联网草案列表位于 <a href="https://datatracker.ietf.org/drafts/current/" target="_blank" rel="external">https://datatracker.ietf.org/drafts/current/</a>。</p>
+<p>互联网草案是草案文档，它们最长的有效期为 6 个月，且可能在任何时间被其它文档更新，替代，或废弃。使用互联网草案作为参考资料或引用它们，而不是把它们作为 “正在进行的工作” 是不恰当的。</p>
+<p>本互联网草案将在 2020 年 2 月 29 日过期。</p>
+<h1 id="版权声明"><a href="#版权声明" class="headerlink" title="版权声明"></a>版权声明</h1><p>版权所有（c）2019 IETF Trust 和被确定为文件作者的人员。保留一切权力。</p>
+<p>本文档受 <a href="https://tools.ietf.org/html/bcp78" target="_blank" rel="external">BCP 78</a> 和 IETF Trust 有关IETF 文件的法律规定（<a href="https://trustee.ietf.org/license-info）的约束，该文件自本文档发布之日起生效。" target="_blank" rel="external">https://trustee.ietf.org/license-info）的约束，该文件自本文档发布之日起生效。</a> 请仔细阅读这些文档，它们描述了关于本文档，你的权利和限制。 从本文档中提取的代码组件必须包含 Trust Legal Provisions 第 4.e 节所述的简化 BSD 许可文本，且如简化的 BSD 许可证所述，不提供担保。</p>
+<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h1><p>QUIC 是一个基于 UDP 的新的多路复用且安全的传输协议。QUIC 建立于数十年传输及安全经验的基础之上，并实现了使它成为现代的有吸引力的通用传输协议的机制。QUIC 协议如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 所述。</p>
+<p>QUIC 实现了已有的 TCP 丢包恢复机制的思路和想法，包括各种 RFC 中描述的，多种互联网草案，以及在 Linux TCP 实现中流行的那些。本文档描述 QUIC 拥塞控制和丢包恢复，及适用的地方，属性等效 TCP 的 RFCs，互联网草案，学术论文，和/或 TCP 实现。</p>
+<h1 id="2-规约和定义"><a href="#2-规约和定义" class="headerlink" title="2. 规约和定义"></a>2. 规约和定义</h1><p>本文档中的关键字 “MUST”，”MUST NOT”，”REQUIRED”，”SHALL”，”SHALL NOT”，”SHOULD”，”SHOULD NOT”，”RECOMMENDED”，”MAY”，和 “OPTIONAL” 按 <a href="https://tools.ietf.org/html/bcp14" target="_blank" rel="external">BCP 14</a>，<a href="https://tools.ietf.org/html/rfc2119" target="_blank" rel="external">RFC 2119</a> [<a href="https://tools.ietf.org/html/rfc3533#ref-2" target="_blank" rel="external">2</a>] 中的描述解释，当且仅当它们如这里所示全部以大写形式出现的时候。</p>
+<p>本文档中使用的术语定义如下：</p>
+<p> ACK-only：只包含一个或多个 ACK 帧的任何包。</p>
+<p> In-flight：当非 ACK-only 的包已经被发送，但还没有被确认、宣布丢失或连同旧的秘钥一起丢弃时，被认为是 in-flight 的。</p>
+<p> ACK 诱发帧：除 ACK 和 PADDING 外的所有帧被认为是 ACK 诱发帧。</p>
+<p> ACK 诱发包：包含 ACK 诱发帧的包在最大 ACK 延迟内诱发一个来自于接收者的 ACK，被称为 ACK 诱发包。</p>
+<p> 加密包：在初始化或握手包中发送的包含加密数据的包。</p>
+<p> 乱序包：没有为它的包号空间的最大接收包包号精确地递增一的包。当更早的包丢失或延迟时包乱序到达。</p>
+<h1 id="3-QUIC-传输机制的设计"><a href="#3-QUIC-传输机制的设计" class="headerlink" title="3. QUIC 传输机制的设计"></a>3. QUIC 传输机制的设计</h1><p>QUIC 中所有的传输发送时都带有一个包级的头部，它指示加密级别并包含一个包序列号（下文称为包号）。加密级别指示包号空间，如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 所述。在一个连接的生命周期中的包号空间内包号从不重复。一个空间内包号单调递增，以防止歧义。</p>
+<p>这种设计消除了在传输和重传之间的二义性消除的需要，并从 TCP 丢包探测机制的 QUIC 翻译中消除了显著的复杂性。</p>
+<p>QUIC 包可以包含不同类型的多个帧。恢复机制确保需要可靠递送的数据和帧被确认或被宣布丢失，并在必要时在新包中发送。包中包含的帧的类型影响恢复和拥塞控制逻辑：</p>
+<ul>
+<li><p>所有的包都被确认，尽管包含非 ACK 诱发帧的包只与 ACK 诱发包一起确认。</p>
+</li>
+<li><p>包含加密帧的长头部包对于 QUIC 握手的性能非常重要，因此使用更短的确认定时器。</p>
+</li>
+<li><p>只包含 ACK 帧的包不计入拥塞控制限制，且不被认为是 in-flight 的。</p>
+</li>
+<li><p>PADDING 帧使得包贡献 in flight 的字节数，但不直接导致确认的发送。</p>
+</li>
+</ul>
+<h2 id="3-1-QUIC-和-TCP-之间的相关差异"><a href="#3-1-QUIC-和-TCP-之间的相关差异" class="headerlink" title="3.1 QUIC 和 TCP 之间的相关差异"></a>3.1 QUIC 和 TCP 之间的相关差异</h2><p>熟悉 TCP 的丢失检测和拥塞控制的读者将发现这里的算法与 TCP 那些众所周知的算法是并行的。然而，QUIC 和 TCP 之间的协议差异导致了算法上的差异。我们将在下面简要地描述这些协议差异。</p>
+<h3 id="3-1-1-单独的包号空间"><a href="#3-1-1-单独的包号空间" class="headerlink" title="3.1.1 单独的包号空间"></a>3.1.1 单独的包号空间</h3><p>QUIC 为每个加密级别使用单独的包号空间，除了 0-RTT 和所有代的 1-RTT 密钥使用相同的包号空间。单独的包号空间确保一个加密级别上发送的包的确认不会导致不同加密级别上发送的包的虚假重传。拥塞控制和往返时间 (RTT) 测量是跨包号空间统一的。</p>
+<h3 id="3-1-2-单调递增的包号"><a href="#3-1-2-单调递增的包号" class="headerlink" title="3.1.2 单调递增的包号"></a>3.1.2 单调递增的包号</h3><p>TCP 将发送端的传输顺序与接收端的交付顺序合并在一起，这会导致携带相同序列号的相同数据的重传，从而导致 “重传歧义”。QUIC将两者分开：QUIC 使用包号来指示传输顺序，并且所有的应用程序数据都在一个或多个流中发送，交付顺序由 STREAM 帧中编码的流偏移确定。</p>
+<p>QUIC 的包号在包号空间内严格递增，并直接编码传输顺序。较高的包号表示该数据包是较晚发送的，而较低的包号表示该数据包发送的较早。当检测到包含 ACK 诱发帧的包丢失时，QUIC 会将必要的帧重新打包进具有新包号的新数据包中，则当收到 ACK 时，这种做法可以消除该 ACK 在确认哪个数据包的歧义性。因此，可以进行更精确的 RTT 测量，很容易检查到虚假重传，并且可以仅仅基于包号来统一应用诸如快速重传这样的机制。</p>
+<p>这个设计点大大简化了 QUIC 的丢失检测机制。大多数 TCP 机制都会隐式地尝试根据 TCP 序列号推断传输顺序 - 这是一项比较艰难的任务，特别是当 TCP 时间戳不可用时。</p>
+<h3 id="3-1-3-更清晰的丢失世代"><a href="#3-1-3-更清晰的丢失世代" class="headerlink" title="3.1.3 更清晰的丢失世代"></a>3.1.3 更清晰的丢失世代</h3><p>QUIC 在一个包发送后被声明且确认为丢失时结束一个丢失世代。TCP 等待包号空间中的空位被填满，因此如果一段数据在一行中丢失了多次，丢失世代可能在多个往返中都不会结束。由于每个世代中这些情况都应该减小拥塞窗口仅一次，QUIC 可以在每个发生丢包的往返中精确地执行一次，而 TCP 可能只能跨多个往返执行一次。</p>
+<h3 id="3-1-4-No-Reneging"><a href="#3-1-4-No-Reneging" class="headerlink" title="3.1.4 No Reneging"></a>3.1.4 No Reneging</h3><p>QUIC ACK 包含类似于 TCP SACK 的信息，但 QUIC 不允许任何被确认的包被 reneged，从而极大地简化了双方的实现，并降低了发送方的内存压力。</p>
+<h3 id="3-1-5-更多-ACK-范围"><a href="#3-1-5-更多-ACK-范围" class="headerlink" title="3.1.5 更多 ACK 范围"></a>3.1.5 更多 ACK 范围</h3><p>QUIC 支持多 ACK 范围，与 TCP 的 3 SACK 范围相反。在高丢包环境，这将加速恢复，降低伪重传，并确保发送过程不依赖于超时。</p>
+<h3 id="3-1-6-延迟的确认的显式修正"><a href="#3-1-6-延迟的确认的显式修正" class="headerlink" title="3.1.6 延迟的确认的显式修正"></a>3.1.6 延迟的确认的显式修正</h3><p>当收到一个包且对应的确认被发送时，QUIC 端点测量两端的延迟，这允许对端维护一个更精确的往返时间测量值（参考 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#host-delay" target="_blank" rel="external">第 4.4 节</a>）。</p>
+<h1 id="4-生成确认包"><a href="#4-生成确认包" class="headerlink" title="4. 生成确认包"></a>4. 生成确认包</h1><p>一个确认 SHOULD （应该）在第二个 ack 诱发包收到之后就立即发送。QUIC 算法不假设对端在第二个 ack 诱发包收到之后立即发送 ACK。</p>
+<p>为了加速丢包恢复并减少超时，一个端点 SHOULD （应该）在它收到一个乱序的 ACK 诱发包时立即发送一个 ACK 帧。端点 MAY（可以）持续在后续每收到一个包时立即发送 ACK 帧，但端点 SHOULD （应该）在 1/8 x RTT 周期之后返回确认每个其它的包，除非收到了更多的乱序 ACK 诱发包。如果每个后续的 ACK 诱发包到达的都是乱序的，则每次收到 ACK 诱发包都 SHOULD （应该）立即发送一个 ACK 帧。</p>
+<p>如果收到的包在其 IP 头中带有 ECN 拥塞经历 (CE) 码点，则端点SHOULD （应该）立即用一个 ACK 帧来响应，即使包是按序到达的。这样做减小对端对拥塞事件的响应时间。</p>
+<p>如果一个端点中已经有多个包可用了，则端点 MAY（可以）在响应中发送 ACK 帧之前处理它们。端点可以决定是否应该立即发送确认或延迟到处理了一批包之后。</p>
+<h2 id="4-1-加密握手数据"><a href="#4-1-加密握手数据" class="headerlink" title="4.1 加密握手数据"></a>4.1 加密握手数据</h2><p>为了快速完成握手并避免由于加密重传超时引起的伪重传，加密包SHOULD （应该）使用一个非常短的 ACK 延迟，比如本地计时器粒度。当加密栈指示那个包号空间的所有数据都已经收到时，SHOULD （应该）立即发送 ACK 帧。</p>
+<h2 id="4-2-ACK-范围"><a href="#4-2-ACK-范围" class="headerlink" title="4.2 ACK 范围"></a>4.2 ACK 范围</h2><p>当发送 ACK 帧时，包含一个或多个确认的包的范围。包含更老的包降低了由于前面发送的 ACK 帧丢失导致的伪重传的机会，以更大的 ACK 帧为代价。</p>
+<p>ACK 帧 SHOULD （应该）总是确认最近收到的包，乱序的包越多，快速发送一个更新的 ACK 帧越重要，以阻止对端声明一个包丢失及虚假重传它包含的帧。</p>
+<p>下面是一个建议的决定在 ACK 帧中包含什么包的方法。</p>
+<h2 id="4-3-ACK-帧的接收端追踪"><a href="#4-3-ACK-帧的接收端追踪" class="headerlink" title="4.3 ACK 帧的接收端追踪"></a>4.3 ACK 帧的接收端追踪</h2><p>当发送包含 ACK 帧的数据包时，可以保存在该帧中确认的最大值。当包含 ACK 帧的数据包被确认时，接收方可以停止确认小于或等于发送的 ACK 帧中确认的最大值的数据包。</p>
+<p>在没有 ACK 帧丢失的情况下，算法允许最小 1 个 RTT 的重排序。在 ACK 帧丢失和重排序的情况下，此方法不能保证发送方在每个确认不再包含在 ACK 帧中之前看到它们。数据包可以被乱序接收，且包含它们的所有后续 ACK 帧都可能丢失。在这种情况下，丢失恢复算法可能会导致虚假重传，但发送方将继续发送过程。</p>
+<h2 id="4-4-测量并报告主机延迟"><a href="#4-4-测量并报告主机延迟" class="headerlink" title="4.4 测量并报告主机延迟"></a>4.4 测量并报告主机延迟</h2><p>端点有意地测量当一个 ACK 诱发帧被收到及对应的确认被发送之间引入的延迟。端点在 ACK 帧的 ACK 延迟字段中为最大的被确认包编码这个延迟（参考 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 的第 19.3 节）。这允许 ACK 的接收者为任何有意的延迟做调整，这对于延迟的确认很重要，当计算路径 RTT 时。数据包在被处理前可能由主机的 OS 内核或其它什么东西持有。一个端点在给一个 ACK 帧填充其 ACK 延迟字段时 SHOULD NOT（不应该）包含这些无意的延迟。</p>
+<p>一个端点 MUST NOT（一定不能）过度地推迟 ACK 诱发包的确认。最大的 ack 延迟在 max_ack_delay 传输参数中沟通；参考 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 的第 18.2 节。max_ack_delay 意味着一个显式的约定：一个端点保证从不会延迟一个 ACK 诱发包的确认超过这个字段指示的值。如果做到了这一点，任何多余的都可计入 RTT 估计值并可能导致对端的虚假重传。对于初始化和握手包，使用 0 值 max_ack_delay。</p>
+<h1 id="4-估计往返时间"><a href="#4-估计往返时间" class="headerlink" title="4 估计往返时间"></a>4 估计往返时间</h1><p>在高层，一个端点测量包被发送的时间到它被确认的时间作为往返时间（RTT）样本。端点使用 RTT 样本和对端报告的主机延迟（<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#host-delay" target="_blank" rel="external">第 4.4 节</a>）生成一个连接的 RTT 的统计描述。端点计算如下三个值：连接生命周期中观察到的最小值（min_rtt），指数加权移动平均（smoothed_rtt），观察到的 RTT 样本的变化（rttvar）。</p>
+<h2 id="4-1-生成-RTT-样本"><a href="#4-1-生成-RTT-样本" class="headerlink" title="4.1 生成 RTT 样本"></a>4.1 生成 RTT 样本</h2><p>端点在接收到满足如下两个条件的 ACK 帧时生成一个 RTT 样本：</p>
+<ul>
+<li>最大的被确认包号是新确认的，且</li>
+<li>至少有一个新确认的包是 ACK 诱发包。</li>
+</ul>
+<p>RTT 样本，latest_rtt 以自最大的被确认包被发送之后流逝的时间计：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attr">latest_rtt</span> = ack_time - send_time_of_largest_acked</div></pre></td></tr></table></figure></p>
+<p>RTT 样本只使用接收到的 ACK 帧中的最大被确认包生成。这是因为对端只针对 ACK 帧中的最大被确认包报告主机延迟。尽管报告的主机延迟不被用于 RTT 样本测量，但它被用于在后续计算 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#smoothed-rtt" target="_blank" rel="external">第 5.3 节</a> 的 smoothed_rtt 和 rttvar 中调整 RTT 样本。</p>
+<p>为了避免使用相同的包生成多个 RTT 样本，如果它没有新确认最大已确认包，则ACK 帧 SHOULD NOT（不应该）被用于更新 RTT 估计。</p>
+<p>RTT MUST NOT（一定不能）在收到的 ACK 帧没有新确认至少一个 ACK 诱发帧时生成。对端不在收到一个只包含非 ACK 诱发帧的包时发送 ACK 帧，因此后续发送的 ACK 帧可能包含一个任意大的 ACK 延迟字段。忽略这样的 ACK 帧避免后续的 smoothed_rtt 和 rttvar 计算中的并发症。</p>
+<p>当一个 RTT 内收到多个 ACK 帧时，发送者可能每 RTT 生成多个 RTT 样本。如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6298" target="_blank" rel="external">[RFC6298]</a> 给出的建议，这样做可能导致 smoothed_rtt 和 rttvar 中不充分的历史。确保那个 RTT 估计保留足够的历史是一个开放的研究课题。</p>
+<h2 id="4-2-估计-min-rtt"><a href="#4-2-估计-min-rtt" class="headerlink" title="4.2 估计 min_rtt"></a>4.2 估计 min_rtt</h2><p>min_rtt 是在连接的整个声明周期中观察到的最小的 RTT。在采集到连接中的第一个样本时设置为 latest_rtt，后续采集到样本时设置为 min_rtt 和 latest_rtt 之中较小的那个。</p>
+<p>一个端点在计算 min_rtt 时只使用本地观察到的时间，且不根据对端报告的主机延迟做调整。这样做允许端点完全基于它所观察到的为 smoothed_rtt 设置一个更低的边界（参见 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#smoothed-rtt" target="_blank" rel="external">第 4.3 节</a>），并限制由于对端错误报告的延迟导致的潜在的错误估计。</p>
+<h2 id="4-3-估计-smoothed-rtt-和-rttvar"><a href="#4-3-估计-smoothed-rtt-和-rttvar" class="headerlink" title="4.3 估计 smoothed_rtt 和 rttvar"></a>4.3 估计 smoothed_rtt 和 rttvar</h2><p>smoothed_rtt 是端点的 RTT 样本的指数加权移动平均，rttvar 是端点估计 RTT 样本的方差。</p>
+<p>smoothed_rtt 的计算使用针对主机延时调整之后的路径延迟。对于在 ApplicationData 包号空间中发送的包，对端限制为一个 ACK 诱发包发送的确认的任何延时不能大于它在 max_ack_delay 传输参数中广告的值。因此，当对端报告一个大于它的 max_ack_delay 的 Ack Delay 时，则延迟被归因于失去了对端的控制，比如对端的调度器延迟，或前面的 ACK 帧丢失。因此，任何超出对端的 max_ack_delay 的延迟都被有效地视为路径延迟的一部分，并被纳入 smoothed_rtt 的评估中。</p>
+<p>当使用对端报告的确认延迟调整 RTT 样本时，一个端点：</p>
+<ul>
+<li>必须（MUST ）忽略初始化和握手包号空间中发送的包的 ACK  帧的 Ack Delay 字段。</li>
+<li>必须（MUST ）使用比 ACK 帧的 Ack Delay 字段报告的值和对端的 max_ack_delay 传输参数更小的值。</li>
+<li>如果最终的 RTT 样本小于 min_rtt，则必须不（MUST NOT）应用调整。这限制了误报的对端可能导致的对 smoothed_rtt 的低估。</li>
+</ul>
+<p>连接中的第一个 RTT 样本到达时，smoothed_rtt  被设置为 latest_rtt。</p>
+<p>smoothed_rtt 和 rttvar 按如下的方式计算，类似于 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6298" target="_blank" rel="external">[RFC6298]</a>。</p>
+<p>连接中的第一个 RTT 样本到达时：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attr">smoothed_rtt</span> = latest_rtt</div><div class="line"><span class="attr">rttvar</span> = latest_rtt / <span class="number">2</span></div></pre></td></tr></table></figure></p>
+<p>在后续的 RTT 样本中：<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="attr">ack_delay</span> = min(Ack Delay <span class="keyword">in</span> ACK Frame, max_ack_delay)</div><div class="line"><span class="attr">adjusted_rtt</span> = latest_rtt</div><div class="line"><span class="keyword">if</span> (min_rtt + ack_delay &lt; latest_rtt):</div><div class="line">  <span class="attr">adjusted_rtt</span> = latest_rtt - ack_delay</div><div class="line"><span class="attr">smoothed_rtt</span> = <span class="number">7</span>/<span class="number">8</span> * smoothed_rtt + <span class="number">1</span>/<span class="number">8</span> * adjusted_rtt</div><div class="line"><span class="attr">rttvar_sample</span> = abs(smoothed_rtt - adjusted_rtt)</div><div class="line"><span class="attr">rttvar</span> = <span class="number">3</span>/<span class="number">4</span> * rttvar + <span class="number">1</span>/<span class="number">4</span> * rttvar_sample</div></pre></td></tr></table></figure></p>
+<h1 id="5-丢包检测"><a href="#5-丢包检测" class="headerlink" title="5. 丢包检测"></a>5. 丢包检测</h1><p>QUIC 发送端同时使用确认信息和超时来探测丢失的包，这一节将提供这些算法的描述。</p>
+<p>如果一个包丢失了，则 QUIC 传输需要从这次丢失中恢复，比如通过重传数据，发送一个更新的帧，或放弃帧。更多信息，请参考  <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 的 13.3 节。</p>
+<h2 id="5-1-基于确认的检测"><a href="#5-1-基于确认的检测" class="headerlink" title="5.1 基于确认的检测"></a>5.1 基于确认的检测</h2><p>基于确认的丢包探测实现了 TCP 的快速重传 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC5681" target="_blank" rel="external">[RFC5681]</a>，Early Retransmit(ER) <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC5827" target="_blank" rel="external">[RFC5827]</a>，FACK <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#FACK" target="_blank" rel="external">[FACK]</a>，SACK 丢包恢复<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6675" target="_blank" rel="external">[RFC6675]</a>，和 RACK <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RACK" target="_blank" rel="external">[RACK]</a> 机制。这一节提供了这些算法在 QUIC 中是如何实现的概述。</p>
+<p>如果一个包满足如下的所有条件，则它被声明为丢失：</p>
+<ul>
+<li>包未确认，在传输中，以及先于被确认的包发送。</li>
+<li>它的包号是 kPacketThreshold，小于一个确认的包(<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#packet-threshold" target="_blank" rel="external">第 5.1.1 节</a>)，或者它在过去发送了足够长的时间(<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#time-threshold" target="_blank" rel="external">第 5.1.2 节</a>)。</li>
+</ul>
+<p>确认表示后面发送的一个包已经送达，而包和时间阈值为包的重新排序提供了一定的容忍度。虚假地将数据包声明为丢失会导致不必要的重发，并可能由于拥塞控制器在检测到丢失时的动作而导致性能下降。检测到虚假重发并增加包或时间的重排序阈值的实现可以选择从较小的初始重排序阈值开始，以最小化恢复延迟。</p>
+<h3 id="5-1-1-包阈值"><a href="#5-1-1-包阈值" class="headerlink" title="5.1.1 包阈值"></a>5.1.1 包阈值</h3><p>数据包重新排序阈值 (kPacketThreshold) 的推荐（RECOMMENDED ）初值为3，基于TCP丢失检测的最佳实践  <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC5681" target="_blank" rel="external">[RFC5681]</a> <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6675" target="_blank" rel="external">[RFC6675]</a>。</p>
+<p>一些网络可能表现出更高程度的重排序，导致发送方检测到虚假的丢包。实现者可以使用为 TCP 开发的算法，比如 TCP-NCR <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC4653" target="_blank" rel="external">[RFC4653]</a>，来提高 QUIC 的重新排序弹性。</p>
+<h3 id="5-1-2-时间阈值"><a href="#5-1-2-时间阈值" class="headerlink" title="5.1.2 时间阈值"></a>5.1.2 时间阈值</h3><p>一旦在相同的包号空间内的较晚的包被确认，如果数据包在发送之后经过了一个阈值时间量，端点应该（SHOULD ）声明该包丢失。为了避免过早地声明包丢失，这个时间阈值必须（MUST ）设置为至少是 kGranularity。时间阈值为：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kTimeThreshold * max(<span class="name">smoothed_rtt</span>, latest_rtt, kGranularity)</div></pre></td></tr></table></figure></p>
+<p>如果在最大的已确认的包之前发送的包还不能被声明丢失，那么应该（SHOULD ）为剩余的时间设置一个定时器。</p>
+<p>使用 max(smoothed_rtt, latest_rtt) 可以避免以下两种情况：</p>
+<ul>
+<li>最新的 RTT 样本低于经过平滑处理的 RTT，可能是由于在确认包遇到较短路径时进行了重新排序</li>
+<li>最新的 RTT 样本高于平滑 RTT，这可能是由于实际 RTT 的持续增长，但平滑 RTT 还没有赶上。</li>
+</ul>
+<p>建议（RECOMMENDED ）的时间阈值(kTimeThreshold)，表示为往返时间的乘数，是 9/8。</p>
+<p>实现可以（MAY ）使用绝对阈值、来自以前连接的阈值、自适应阈值或包括 RTT 方差进行实验。较小的阈值会降低重新排序的弹性并增加虚假重发，较大的阈值会增加丢失检测延迟。</p>
+<h2 id="5-2-探测超时"><a href="#5-2-探测超时" class="headerlink" title="5.2 探测超时"></a>5.2 探测超时</h2><p>当在预期的时间内没有确认 ACK 诱发包或握手尚未完成时，探测超时(PTO)触发发送一个或两个探测数据报。PTO 使连接能够从丢失的尾包或确认中恢复。在 QUIC 中使用的 PTO 算法实现了 Tail Loss Probe <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RACK" target="_blank" rel="external">[RACK]</a>、RTO <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC5681" target="_blank" rel="external">[RFC5681]</a> 和 TCP 的 F-RTO 算法 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC5682" target="_blank" rel="external">[RFC5682]</a> 的可靠性功能，超时计算基于 TCP 的重传超时周期 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6298" target="_blank" rel="external">[RFC6298]</a>。</p>
+<h3 id="5-2-1-计算-PTO"><a href="#5-2-1-计算-PTO" class="headerlink" title="5.2.1 计算 PTO"></a>5.2.1 计算 PTO</h3><p>当一个 ACK 诱发包被传输时，发送方为 PTO 周期安排一个定时器，如下所示：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attr">PTO</span> = smoothed_rtt + max(<span class="number">4</span>*rttvar, kGranularity) + max_ack_delay</div></pre></td></tr></table></figure></p>
+<p>kGranularity，smoothed_rtt，rttvar, 和 max_ack_delay 在<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#ld-consts-of-interest" target="_blank" rel="external">附录 A.2</a> 和<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#ld-vars-of-interest" target="_blank" rel="external">附录 A.3</a> 中定义。</p>
+<p>PTO 周期是指发送方应该等待接收到发送的报文的确认包的时间。这段时间包括估计的网络往返时间（smoothed_rtt），估计的 (4*rttvar) 的方差，和 max_ack_delay，以充分考虑接收方可能延迟发送确认的最大时间。</p>
+<p>必须将 PTO 值至少设置为 kGranularity，以避免计时器立即过期。</p>
+<p>当 PTO 计时器到期时，必须（MUST）将 PTO 周期设置为当前值的两倍。送方速率的指数级降低非常重要，因为 PTO 可能由于严重的拥塞而导致数据包丢失或确认。正在经历连续 PTO 的连接的寿命受到端点的空闲超时的限制。</p>
+<p>发送方在每次发送 ACK 诱发包时计算其 PTO 计时器。如果发送方知道在短时间内将发送更多 ACK 诱发包，则可以通过设置更少的计时器来优化此操作。</p>
+<p>如果设置了时间阈值 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#time-threshold" target="_blank" rel="external">5.1.2 节</a> 丢失检测计时器，则不设置探测计时器。时间阈值丢失检测计时器预期将比 PTO 更早过期，并且不太可能造成虚假重传。</p>
+<h2 id="5-3-握手和新路径"><a href="#5-3-握手和新路径" class="headerlink" title="5.3 握手和新路径"></a>5.3 握手和新路径</h2><p>新连接或新路径的初始探测超时应设置为初始 RTT的两倍。相同网络上恢复的连接应该（SHOULD ）使用前面的连接最后的经平滑处理的 RTT 值作为恢复的连接的初始 RTT。如果之前没有可用的 RTT，则应（SHOULD）将初始 RTT 设置为 500ms，导致 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6298" target="_blank" rel="external">[RFC6298]</a> 中建议的 1 秒初始超时。</p>
+<p>连接可以（MAY）使用发送 PATH_CHALLENGE 和接收 PATH_RESPONSE 之间的延迟作为新路径的种子 initial_rtt，但不应（SHOULD NOT）将此延迟视为 RTT 样本。</p>
+<p>在服务器验证路径上的客户端地址之前，它可以发送的数据量是有限的，如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 的 8.1 节所描述的。</p>
+<p>初始加密时的数据必须在握手数据之前重新传输，而握手加密时的数据必须在任何 ApplicationData 数据之前重新传输。如果没有数据可以发送，那么PTO 警报必须在从客户端接收到数据后才能启动。</p>
+<p>由于服务器可能被阻塞，直到从客户端接收到更多的数据包，所以客户端负责发送数据包来解除服务器阻塞，直到服务器完成地址验证（参考 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 的第 8 节）。也就是说，如果客户端还没有收到一次握手或 1-RTT 数据包的确认，则客户端必须（MUST）设置探测计时器。</p>
+<p>在握手完成之前，如果生成的 RTT 样本很少甚至没有，则可能是由于客户端的 RTT 估计值不正确而导致探测器计时器过期。为了让客户端改进它的 RTT估计，它发送的新包必须是 ACK 诱发包。如果握手密钥对客户端可用，它必须（MUST）发送一个握手包，否则它必须（MUST）在 UDP 数据报中发送一个至少 1200 字节的初始数据包。</p>
+<p>初始包和握手包可能永远不会被确认，但是当初始和握手密钥被丢弃时，它们将被从在途字节中删除。</p>
+<h3 id="5-3-1-发送探测包"><a href="#5-3-1-发送探测包" class="headerlink" title="5.3.1 发送探测包"></a>5.3.1 发送探测包</h3><p>当 PTO 计时器过期时，发送方必须发送至少一个 ACK 诱发包作为探测，除非没有可用的数据可供发送。一个端点最多可以（MAY）发送两个完整大小的数据报，其中包含 ACK 诱发包，以避免由于单个丢失的数据报而导致昂贵的连续 PTO 过期。</p>
+<p>发送方可能没有新的或以前发送过的数据要发送。比如，考虑下列事件序列：新的应用程序数据在STREAM 帧中发送，被丢失，然后在一个新的数据包中重传，然后最初的传输被确认。在没有任何新的应用程序数据的情况下，PTO 定时器到期现在会发现发送者没有新的或以前发送过的数据要发送。</p>
+<p>当没有要发送的数据时，发送方应该（SHOULD）在单个包中发送 PING 或其它 ACK 诱发帧，重新设置 PTO 计时器。</p>
+<p>另一种方法是，发送方可以（MAY）将任何仍在传输中的包标记为丢失，而不是发送 ACK 诱发包。这样做可以避免发送额外的数据包，但是会增加由于过于频繁地声明丢失而导致拥塞控制器不必要地降低速率的风险。</p>
+<p>连续的 PTO 周期呈指数级增长，因此，随着网络中数据包的不断丢失，连接恢复延迟也呈指数级增长。在 PTO 过期时发送两个数据包可以提高对数据包丢失的弹性，从而降低连续发生 PTO 事件的概率。</p>
+<p>PTO 时发送的探测包必须是 ACK 诱发包。如果可能，探测包应该（SHOULD）携带新数据。当新数据不可用时，当流控制不允许发送新数据时，或者为了减少丢失恢复延迟时，探测包可以（MAY）携带重传的未确认数据。实现可以（MAY）使用其他策略来确定探测包的内容，包括根据应用程序的优先级发送新的或重传的数据。</p>
+<p>当 PTO 计时器多次过期且无法发送新数据时，实现必须在每次发送相同的有效负载和发送不同的有效负载之间进行选择。发送相同的有效负载可能更简单，并确保优先级最高的帧先到达。每次发送不同的有效载荷可以减少虚假重传的机会。</p>
+<h3 id="5-3-2-丢失探测"><a href="#5-3-2-丢失探测" class="headerlink" title="5.3.2 丢失探测"></a>5.3.2 丢失探测</h3><p>当接收到一个 ACK 帧，该帧新确认一个或多个数据包时，就建立了数据包的传输或丢失。</p>
+<p>PTO 定时器过期事件不表示包丢失，并且不能（MUST NOT）导致先前未确认的包被标记为丢失。当接收到新确认了包的确认包时，根据包和时间阈值机制进行丢失检测；参见 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#ack-loss-detection" target="_blank" rel="external">5.1 节</a>。</p>
+<h2 id="5-4-重试和版本协商"><a href="#5-4-重试和版本协商" class="headerlink" title="5.4 重试和版本协商"></a>5.4 重试和版本协商</h2><p>重试或版本协商包会导致客户端发送另一个初始包，从而有效地重新启动连接进程，并重新设置拥塞控制和丢失恢复状态，包括重新设置任何挂起的计时器。这两个包都表示收到了初始值，但没有进行处理。两个包都不能被当作是对初始包的确认。</p>
+<p>但是，客户端可以（MAY ）计算到服务器的 RTT 估计值，为从发送第一个初始值到收到重试或版本协商包的时间内。客户端可以（MAY ）使用此值为 RTT 估计器的种子，用于随后到服务器的连接重试。</p>
+<h2 id="5-5-丢弃密钥和包状态"><a href="#5-5-丢弃密钥和包状态" class="headerlink" title="5.5 丢弃密钥和包状态"></a>5.5 丢弃密钥和包状态</h2><p>当包保护密钥被丢弃时（参考 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TLS" target="_blank" rel="external">[QUIC-TLS]</a> 的 4.9 节），所有使用这些密钥发送的数据包都不能再被确认，因为它们的确认不能再被处理。发送方必须（MUST）丢弃与这些包关联的所有恢复状态，并且必须（MUST）从在途字节数中删除它们。</p>
+<p>端点一旦开始交换握手包，就停止发送和接收初始包（参考 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TRANSPORT" target="_blank" rel="external">[QUIC-TRANSPORT]</a> 的 17.2.2.1 节）。此时，所有在途的初始包的恢复状态都被丢弃。</p>
+<p>当 0-RTT 被拒绝时，所有在途的 0-RTT 数据包的恢复状态将被丢弃。</p>
+<p>如果服务器接受了 0-RTT，但没有缓存在初始包之前到达的 0-RTT 包，早期 0-RTT 数据包将被声明丢失，但预计这种情况不会经常发生。</p>
+<p>使用密钥加密的数据包被确认或声明丢失后，密钥将被丢弃。然而，一旦握手密钥可用，最初的秘密可能很快就会被销毁（参考 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#QUIC-TLS" target="_blank" rel="external">[QUIC-TLS]</a> 的 4.9.1 节）。</p>
+<h2 id="5-6-讨论"><a href="#5-6-讨论" class="headerlink" title="5.6 讨论"></a>5.6 讨论</h2><p>大多数常量来自于 internet 上广泛部署的 TCP 实现中的最佳公共实践。例外如下。</p>
+<p>选择较短的延迟 ack 时间为 25ms，因为较长的延迟 ack 可能延迟丢失恢复，并且对于少于每 25ms 发送一次数据包的少量连接，确认每个数据包有利于拥塞控制和丢失恢复。</p>
+<h1 id="6-拥塞控制"><a href="#6-拥塞控制" class="headerlink" title="6. 拥塞控制"></a>6. 拥塞控制</h1><p>QUIC 的拥塞控制基于 TCP NewReno <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6582" target="_blank" rel="external">[RFC6582]</a>。NewReno 是一种基于拥塞窗口的拥塞控制。QUIC 以字节而不是包的形式指定拥塞窗口，这是由于更好的控制和易于进行适当的字节计数 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC3465" target="_blank" rel="external">[RFC3465]</a>。</p>
+<p>如果要增加 bytes_in_flight (定义在 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#vars-of-interest" target="_blank" rel="external">附录 B.2</a> 中) 将超出可用的拥塞窗口，QUIC 主机一定不能（MUST NOT）发送数据包，除非该数据包是在 PTO 定时器过期后发送的探测数据包，如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#pto" target="_blank" rel="external">5.2 节</a> 所述。</p>
+<p>实现可以（MAY）使用其它的拥塞控制算法，比如 Cubic <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC8312" target="_blank" rel="external">[RFC8312]</a>，端点之间可能（MAY）使用不同的算法。QUIC 为拥塞控制提供的信号是通用的，并被设计来支持不同的算法。</p>
+<h2 id="6-1-显示拥塞通告"><a href="#6-1-显示拥塞通告" class="headerlink" title="6.1 显示拥塞通告"></a>6.1 显示拥塞通告</h2><p>如果路径已经被验证支持 ECN，QUIC 将 IP 报头中有拥塞经验的codepoint 视为拥塞的信号。此文档描述当其对端接收到具有拥塞经验的codepoint 的包时端点的响应。如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC8311" target="_blank" rel="external">[RFC8311]</a> 中的讨论，允许端点使用其它响应函数进行实验。</p>
+<h2 id="6-2-慢启动"><a href="#6-2-慢启动" class="headerlink" title="6.2 慢启动"></a>6.2 慢启动</h2><p>QUIC 以慢启动的方式启动每个连接，当丢包或增加进 ECN-CE 计数器中时退出慢启动。当拥塞窗口小于 ssthresh 时，QUIC重新进入慢启动，这只有在声明了持久拥塞之后才会发生。尽管处于慢启动中，QUIC 依然在每个确认被处理时增加拥塞窗口大小被确认的字节数。</p>
+<h2 id="6-3-拥塞避免"><a href="#6-3-拥塞避免" class="headerlink" title="6.3 拥塞避免"></a>6.3 拥塞避免</h2><p>慢启动退出进入到拥塞避免。NewReno 中的拥塞避免使用了一种加法增加乘法减少 (AIMD) 的方法，它在每次拥塞窗口被确认时给拥塞窗口增加一个最大的包大小。当探测到丢包时，NewReno 给拥塞窗口减半，并把慢启动阈值设置为新的拥塞窗口。</p>
+<h2 id="6-4-恢复周期"><a href="#6-4-恢复周期" class="headerlink" title="6.4 恢复周期"></a>6.4 恢复周期</h2><p>恢复是从检测到丢失的包或 ECN-CE计 数器中的增加开始的一段时间。由于 QUIC 不重传数据包，所以它将恢复结束定义为恢复开始后发送的一个数据包被确认。这与 TCP 的恢复的定义稍微有点不同，它在启动了恢复的丢失的数据包被确认时结束。</p>
+<p>恢复期将拥塞窗口的减少限制为每往返一次。在恢复期间，无论是新的丢包还是 ECN-CE 计数器增加，拥塞窗口保持不变。</p>
+<h2 id="6-5-忽略不可解密的包的丢失"><a href="#6-5-忽略不可解密的包的丢失" class="headerlink" title="6.5 忽略不可解密的包的丢失"></a>6.5 忽略不可解密的包的丢失</h2><p>在握手期间，某些包保护密钥可能在包到达时不可用。特别是，握手和 0-RTT 包在初始包到达之前无法处理，1-RTT 包在握手完成之前无法处理。端点可以忽略丢失的握手、0-RTT 和 1-RTT包，这些包可能在对等方拥有处理这些包的包保护密钥之前到达。</p>
+<h2 id="6-6-探测超时"><a href="#6-6-探测超时" class="headerlink" title="6.6 探测超时"></a>6.6 探测超时</h2><p>探测数据包不能（MUST NOT）被拥塞控制器阻塞。但是，发送方必须（MUST）将这些包计入正在发送中的包，因为这些包增加了网络负载，但没有造成包丢失。请注意，发送探测数据包可能会导致发送方的在途字节超过拥塞窗口，直到接收到确认，确定数据包丢失或发送。</p>
+<h2 id="6-7-持续拥塞"><a href="#6-7-持续拥塞" class="headerlink" title="6.7 持续拥塞"></a>6.7 持续拥塞</h2><p>当接收到一个 ACK 帧，该帧确定在足够长的时间内发送的所有在途数据包丢失，则认为网络正在经历持久拥塞。通常，这可以由连续的 PTOs 确定，但是由于 PTO 定时器在发送一个新 ACK 诱发包时被重置，所以必须使用一个显式的持续时间来处理那些 PTOs 没有发生或被大量延迟的情况。这个持续时间的计算如下：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">(<span class="name">smoothed_rtt</span> + <span class="number">4</span> * rttvar + max_ack_delay) *</div><div class="line">    kPersistentCongestionThreshold</div></pre></td></tr></table></figure></p>
+<p>比如，假设：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">smoothed_rtt = <span class="number">1</span> rttvar = <span class="number">0</span> max_ack_delay = <span class="number">0</span> kPersistentCongestionThreshold = <span class="number">3</span></div></pre></td></tr></table></figure></p>
+<p>如果一个 ACK 诱发包在 time = 0 时发送，则下面的场景将演示持续拥塞：</p>
+<table>
+<thead>
+<tr>
+<th>t=0</th>
+<th>Send Pkt #1 (App Data)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t=1</td>
+<td>Send Pkt #2 (PTO 1)</td>
+</tr>
+<tr>
+<td>t=3</td>
+<td>Send Pkt #3 (PTO 2)</td>
+</tr>
+<tr>
+<td>t=7</td>
+<td>Send Pkt #4 (PTO 3)</td>
+</tr>
+<tr>
+<td>t=8</td>
+<td>Recv ACK of Pkt #4</td>
+</tr>
+</tbody>
+</table>
+<p>当在 t=8 处收到包 4 的 ACK 时，前三个包被确定为丢失。拥塞周期的计算方法是最老的和最新的丢失的包之间的时间：(3 - 0)= 3。持续拥塞的持续时间等于：(1 * kPersistentCongestionThreshold) = 3。由于达到了阈值，并且在最老的和最新的包之间没有一个包得到确认，所以网络被认为经历了持久拥塞。</p>
+<p>当确认持久拥塞时，发送方的拥塞窗口必须（MUST）减小到最小拥塞窗口(kMinimumWindow)。这种在持久拥塞时断崖式减小拥塞窗口的响应，在功能上类似于 TCP <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC5681" target="_blank" rel="external">[RFC5681]</a> 中的尾丢失探测(TLP)  <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RACK" target="_blank" rel="external">[RACK]</a> 后，发送方对重传超时 (RTO) 的响应。</p>
+<h2 id="6-8-平滑（步调，发送节奏）"><a href="#6-8-平滑（步调，发送节奏）" class="headerlink" title="6.8 平滑（步调，发送节奏）"></a>6.8 平滑（步调，发送节奏）</h2><p>本文档没有描述 pacer，但建议（RECOMMENDED）发送方根据拥塞控制器的输入对所有在途数据包进行平滑发送。例如，当与基于窗口的控制器一起使用时，pacer 可以将拥塞窗口分布在经过平滑处理的 RTT 上，而pacer 可以使用基于速率的控制器的速率估计值。</p>
+<p>实现应该小心地设计它的拥塞控制器，使其能够很好地与 pacer 一起工作。例如，pacer 可能会封装拥塞控制器并控制拥塞窗口的可用性，或者pacer 可能会把由拥塞控制器传递给它的包平滑发出。ACK 帧的及时送达对于有效的丢失恢复是很重要的。因此，只包含 ACK 帧的包不应该被 paced，以避免延迟它们被发送给对等方。</p>
+<p>在网络中不加任何延迟地发送多个数据包会导致数据包爆发，这可能会造成短期的拥塞和丢包。实现必须（MUST）使用 pacing，或者将这种突发限制在最小 10 <em> kMaxDatagramSize和max(2</em> kMaxDatagramSize, 14720)，与推荐的初始拥塞窗口相同。</p>
+<p>作为一个众所周知且公开可用的流 pacer 实现的例子，实现者可以参考 Linux (3.11 以后) 中的公平队列包调度器 (fq qdisc)。</p>
+<h2 id="6-9-未充分利用的拥塞窗口"><a href="#6-9-未充分利用的拥塞窗口" class="headerlink" title="6.9 未充分利用的拥塞窗口"></a>6.9 未充分利用的拥塞窗口</h2><p>当传输中的字节小于拥塞窗口，且发送没有速度限制时，则拥塞窗口未得到充分利用。当出现这种情况时，无论是慢启动还是拥塞避免，都不应该（SHOULD NOT）增加拥塞窗口。这可能是由于应用程序数据或流控制信用不足造成的。</p>
+<p>发送方可以（MAY）使用 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC7661" target="_blank" rel="external">[RFC7661]</a> 第 4.3 节中描述的pipeACK 方法来确定拥塞窗口是否被充分利用。</p>
+<p>Pace 数据包 (参见<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#pacing" target="_blank" rel="external">第6.8节</a>) 的发送方，可能会延迟发送包，并且由于这种延迟而不能充分利用拥塞窗口。发送方不应该认为自己的应用程序有限，如果它将充分利用拥塞窗口而没有 pacing 延迟。</p>
+<p>发送方可以（MAY）实现替代机制来在利用率不足的时期之后更新其拥塞窗口，例如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC7661" target="_blank" rel="external">[RFC7661]</a> 中为TCP提出的机制。</p>
+<h1 id="7-安全注意事项"><a href="#7-安全注意事项" class="headerlink" title="7. 安全注意事项"></a>7. 安全注意事项</h1><h2 id="7-1-拥塞信号"><a href="#7-1-拥塞信号" class="headerlink" title="7.1 拥塞信号"></a>7.1 拥塞信号</h2><p>拥塞控制本质上涉及使用来自未经身份验证的实体的信号 - 丢包和 ECN codepoints 都包括。路径上的攻击者可能欺骗或修改这些信号。攻击者可能通过丢包导致端点降低它们的速率，或通过修改 ECN codepoints 改变发送速率。</p>
+<h2 id="7-2-流量分析"><a href="#7-2-流量分析" class="headerlink" title="7.2 流量分析"></a>7.2 流量分析</h2><p>只携带 ACK 帧的包可以通过观察包的大小来直观地识别。确认模式可能会暴露有关链接特征或应用程序行为的信息。端点可以使用 PADDING 帧或将确认与其它帧绑定以减少泄漏信息。</p>
+<h2 id="7-3-误报-ECN-标记"><a href="#7-3-误报-ECN-标记" class="headerlink" title="7.3 误报 ECN 标记"></a>7.3 误报 ECN 标记</h2><p>接收方可能误报 ECN 标记来改变发送方的拥塞响应。取消 ECN-CE 标记的报告可能会导致发送方增加其发送速率。这种增加可能导致拥塞和丢包。</p>
+<p>发送方可以（MAY）尝试通过标记偶尔与 ECN-CE 一起发送的包来检测报告是否被抑制。如果使用 ECN-CE 标记的包在确认时没有被报告为已被标记，则发送方应（SHOULD）针对该路径禁用 ECN。</p>
+<p>报告额外的 ECN-CE 标记将导致发送方降低其发送速率，这在效果上类似于广告减少连接流控制限制，因此这样做没有任何好处。</p>
+<p>端点选择它们使用的拥塞控制器。尽管拥塞控制器通常将 ECN-CE 标记的报告视为等同于丢包<a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC8311" target="_blank" rel="external">[RFC8311]</a>，但每个控制器的确切响应可能不同。因此，无法正确响应有关 ECN 标记的信息是很难检测到的。</p>
+<h2 id="8-IANA-注意事项"><a href="#8-IANA-注意事项" class="headerlink" title="8. IANA 注意事项"></a>8. IANA 注意事项</h2><p>本文档没有 IANA 操作。然而。</p>
+<h1 id="9-参考文献"><a href="#9-参考文献" class="headerlink" title="9. 参考文献"></a>9. 参考文献</h1><h2 id="9-1-引用标准"><a href="#9-1-引用标准" class="headerlink" title="9.1 引用标准"></a>9.1 引用标准</h2><table>
+<thead>
+<tr>
+<th>[QUIC-TLS]</th>
+<th>Thomson, M. and S. Turner, “<a href="https://tools.ietf.org/html/draft-ietf-quic-tls" target="_blank" rel="external">Using TLS to Secure QUIC</a>“, Internet-Draft draft-ietf-quic-tls, October 2019.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[QUIC-TRANSPORT]</td>
+<td>Iyengar, J. and M. Thomson, “<a href="https://tools.ietf.org/html/draft-ietf-quic-transport" target="_blank" rel="external">QUIC: A UDP-Based Multiplexed and Secure Transport</a>“, Internet-Draft draft-ietf-quic-transport, October 2019.</td>
+</tr>
+<tr>
+<td>[RFC2119]</td>
+<td>Bradner, S., “<a href="https://tools.ietf.org/html/rfc2119" target="_blank" rel="external">Key words for use in RFCs to Indicate Requirement Levels</a>“, BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
+</tr>
+<tr>
+<td>[RFC8174]</td>
+<td>Leiba, B., “<a href="https://tools.ietf.org/html/rfc8174" target="_blank" rel="external">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>“, BCP 14, RFC 8174, DOI 10.17487/RFC8174, May 2017.</td>
+</tr>
+<tr>
+<td>[RFC8311]</td>
+<td>Black, D., “<a href="https://tools.ietf.org/html/rfc8311" target="_blank" rel="external">Relaxing Restrictions on Explicit Congestion Notification (ECN) Experimentation</a>“, RFC 8311, DOI 10.17487/RFC8311, January 2018.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-2-参考资料"><a href="#9-2-参考资料" class="headerlink" title="9.2 参考资料"></a>9.2 参考资料</h2><table>
+<thead>
+<tr>
+<th>[FACK]</th>
+<th>Mathis, M. and J. Mahdavi, “Forward Acknowledgement: Refining TCP Congestion Control”, ACM SIGCOMM , August 1996.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[RACK]</td>
+<td>Cheng, Y., Cardwell, N., Dukkipati, N. and P. Jha, “<a href="https://tools.ietf.org/html/draft-ietf-tcpm-rack-05" target="_blank" rel="external">RACK: a time-based fast loss detection algorithm for TCP</a>“, Internet-Draft draft-ietf-tcpm-rack-05, April 2019.</td>
+</tr>
+<tr>
+<td>[RFC3465]</td>
+<td>Allman, M., “<a href="https://tools.ietf.org/html/rfc3465" target="_blank" rel="external">TCP Congestion Control with Appropriate Byte Counting (ABC)</a>“, RFC 3465, DOI 10.17487/RFC3465, February 2003.</td>
+</tr>
+<tr>
+<td>[RFC4653]</td>
+<td>Bhandarkar, S., Reddy, A., Allman, M. and E. Blanton, “<a href="https://tools.ietf.org/html/rfc4653" target="_blank" rel="external">Improving the Robustness of TCP to Non-Congestion Events</a>“, RFC 4653, DOI 10.17487/RFC4653, August 2006.</td>
+</tr>
+<tr>
+<td>[RFC5681]</td>
+<td>Allman, M., Paxson, V. and E. Blanton, “<a href="https://tools.ietf.org/html/rfc5681" target="_blank" rel="external">TCP Congestion Control</a>“, RFC 5681, DOI 10.17487/RFC5681, September 2009.</td>
+</tr>
+<tr>
+<td>[RFC5682]</td>
+<td>Sarolahti, P., Kojo, M., Yamamoto, K. and M. Hata, “<a href="https://tools.ietf.org/html/rfc5682" target="_blank" rel="external">Forward RTO-Recovery (F-RTO): An Algorithm for Detecting Spurious Retransmission Timeouts with TCP</a>“, RFC 5682, DOI 10.17487/RFC5682, September 2009.</td>
+</tr>
+<tr>
+<td>[RFC5827]</td>
+<td>Allman, M., Avrachenkov, K., Ayesta, U., Blanton, J. and P. Hurtig, “<a href="https://tools.ietf.org/html/rfc5827" target="_blank" rel="external">Early Retransmit for TCP and Stream Control Transmission Protocol (SCTP)</a>“, RFC 5827, DOI 10.17487/RFC5827, May 2010.</td>
+</tr>
+<tr>
+<td>[RFC6298]</td>
+<td>Paxson, V., Allman, M., Chu, J. and M. Sargent, “<a href="https://tools.ietf.org/html/rfc6298" target="_blank" rel="external">Computing TCP’s Retransmission Timer</a>“, RFC 6298, DOI 10.17487/RFC6298, June 2011.</td>
+</tr>
+<tr>
+<td>[RFC6582]</td>
+<td>Henderson, T., Floyd, S., Gurtov, A. and Y. Nishida, “<a href="https://tools.ietf.org/html/rfc6582" target="_blank" rel="external">The NewReno Modification to TCP’s Fast Recovery Algorithm</a>“, RFC 6582, DOI 10.17487/RFC6582, April 2012.</td>
+</tr>
+<tr>
+<td>[RFC6675]</td>
+<td>Blanton, E., Allman, M., Wang, L., Jarvinen, I., Kojo, M. and Y. Nishida, “<a href="https://tools.ietf.org/html/rfc6675" target="_blank" rel="external">A Conservative Loss Recovery Algorithm Based on Selective Acknowledgment (SACK) for TCP</a>“, RFC 6675, DOI 10.17487/RFC6675, August 2012.</td>
+</tr>
+<tr>
+<td>[RFC6928]</td>
+<td>Chu, J., Dukkipati, N., Cheng, Y. and M. Mathis, “<a href="https://tools.ietf.org/html/rfc6928" target="_blank" rel="external">Increasing TCP’s Initial Window</a>“, RFC 6928, DOI 10.17487/RFC6928, April 2013.</td>
+</tr>
+<tr>
+<td>[RFC7661]</td>
+<td>Fairhurst, G., Sathiaseelan, A. and R. Secchi, “<a href="https://tools.ietf.org/html/rfc7661" target="_blank" rel="external">Updating TCP to Support Rate-Limited Traffic</a>“, RFC 7661, DOI 10.17487/RFC7661, October 2015.</td>
+</tr>
+<tr>
+<td>[RFC8312]</td>
+<td>Rhee, I., Xu, L., Ha, S., Zimmermann, A., Eggert, L. and R. Scheffenegger, “<a href="https://tools.ietf.org/html/rfc8312" target="_blank" rel="external">CUBIC for Fast Long-Distance Networks</a>“, RFC 8312, DOI 10.17487/RFC8312, February 2018.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="附录-A-丢包恢复伪代码"><a href="#附录-A-丢包恢复伪代码" class="headerlink" title="附录 A. 丢包恢复伪代码"></a>附录 A. 丢包恢复伪代码</h1><p>现在我们描述一个 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#loss-detection" target="_blank" rel="external">第 6 节</a> 所述的丢包探测机制的示例实现。</p>
+<h2 id="A-1-跟踪发送数据包"><a href="#A-1-跟踪发送数据包" class="headerlink" title="A.1 跟踪发送数据包"></a>A.1 跟踪发送数据包</h2><h3 id="A-1-1-发送数据包字段"><a href="#A-1-1-发送数据包字段" class="headerlink" title="A.1.1 发送数据包字段"></a>A.1.1 发送数据包字段</h3><p> packet_number：发送的数据包的包号。</p>
+<p> ack_eliciting：用于表示一个包是否是 ACK 诱发包的布尔值。如果为真，则预期将收到一个确认，尽管对端可能延迟发送包含它的 ACK 帧直到 MaxAckDelay。</p>
+<p> in_flight：用于表示包是否被计入 in flight 值的布尔值。</p>
+<p> sent_bytes：包中发送的字节数，不包括 UDP 或 IP 头部，但包含 QUIC 帧头部。</p>
+<p> time_sent：发送包的时间。</p>
+<h2 id="A-2-重要的常量"><a href="#A-2-重要的常量" class="headerlink" title="A.2 重要的常量"></a>A.2 重要的常量</h2><p>丢包恢复中使用的常量基于 RFCs，论文，和常见实践的结合。一些可能需要改变或协商以便更好地适应各种环境。</p>
+<p> kPacketThreshold：包阈值丢失探测认为一个包丢失前最大的重排序包个数。RECOMMENDED （建议）值取 3。</p>
+<p> kTimeThreshold：时间阈值丢失探测认为一个包丢失前最大的重排序时间。以RTT 系数的方式指定。RECOMMENDED （建议）值取 9/8。</p>
+<p> kGranularity：计时器粒度。这是一个系统相关的值。然而，实现 SHOULD（应该）使用一个不小于 1 ms 的值。</p>
+<p> kInitialRtt：在取得一个 RTT 采样前使用的 RTT。RECOMMENDED （建议）值取 500ms。</p>
+<p> kPacketNumberSpace：列举三种包号空间的枚举。<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">enum</span> <span class="title">kPacketNumberSpace</span> &#123;</span></div><div class="line">  Initial,</div><div class="line">  Handshake,</div><div class="line">  ApplicationData,</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="A-3-重要的变量"><a href="#A-3-重要的变量" class="headerlink" title="A.3 重要的变量"></a>A.3 重要的变量</h2><p>实现拥塞控制机制所需的变量在本节描述：</p>
+<p>latest_rtt：当接收前一个未确认包的 ack 时执行最新的 RTT 测量。</p>
+<p>smoothed_rtt：连接的平滑 RTT，如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6298" target="_blank" rel="external">[RFC6298]</a> 所述的方式计算。</p>
+<p>rttvar：RTT 方差，如 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6298" target="_blank" rel="external">[RFC6298]</a> 所述的方式计算。</p>
+<p>min_rtt：连接看到的最小 RTT，忽略 ack 延时。</p>
+<p>max_ack_delay：接收者预期的 ApplicationData 包号空间中的包的延迟确认的最大时间。接收的 ACK 帧中实际的 ack_delay 可能由于 late timers，重排序，或 ACKs 丢失而更大。</p>
+<p>loss_detection_timer：用于丢包探测的多模态计时器。</p>
+<p>pto_count：在没有收到 ack 的情况下发送 PTO 的次数。</p>
+<p>time_of_last_sent_ack_eliciting_packet：最近的 ack 诱发包发送的时间。</p>
+<p>largest_acked_packet[kPacketNumberSpace]：目前为止包号空间中已经确认的最大包号。</p>
+<p>loss_time[kPacketNumberSpace]：该包号空间中的下一个包被认为丢失的时间，根据时间上超过了重排序窗口。</p>
+<p>sent_packets[kPacketNumberSpace]：包号空间中的包号与有关它们的信息的关联。在上面的 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#tracking-sent-packets" target="_blank" rel="external">附录 A.1</a> 中描述。</p>
+<h2 id="A-4-初始化"><a href="#A-4-初始化" class="headerlink" title="A.4 初始化"></a>A.4 初始化</h2><p>在连接开始的时候，按如下方式初始化丢包探测变量：<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">loss_detection_timer.reset()</div><div class="line"><span class="attr">pto_count</span> = <span class="number">0</span></div><div class="line"><span class="attr">latest_rtt</span> = <span class="number">0</span></div><div class="line"><span class="attr">smoothed_rtt</span> = <span class="number">0</span></div><div class="line"><span class="attr">rttvar</span> = <span class="number">0</span></div><div class="line"><span class="attr">min_rtt</span> = <span class="number">0</span></div><div class="line"><span class="attr">max_ack_delay</span> = <span class="number">0</span></div><div class="line"><span class="attr">time_of_last_sent_ack_eliciting_packet</span> = <span class="number">0</span></div><div class="line">for pn_space <span class="keyword">in</span> [ Initial, Handshake, ApplicationData ]:</div><div class="line">  largest_acked_packet[pn_space] = infinite</div><div class="line">  loss_time[pn_space] = <span class="number">0</span></div></pre></td></tr></table></figure></p>
+<h2 id="A-5-发送一个包"><a href="#A-5-发送一个包" class="headerlink" title="A.5 发送一个包"></a>A.5 发送一个包</h2><p>发送一个包之后，存储关于包的信息。OnPacketSent 的参数在上面的 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#sent-packets-fields" target="_blank" rel="external">附录 A.1.1</a> 中详细描述。</p>
+<p>OnPacketSent 的伪代码如下：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">OnPacketSent(packet_number, pn_space, ack_eliciting,</div><div class="line">             in_flight, sent_bytes):</div><div class="line">  sent_packets[pn_space][packet_number]<span class="selector-class">.packet_number</span> =</div><div class="line">                                           packet_number</div><div class="line">  sent_packets[pn_space][packet_number]<span class="selector-class">.time_sent</span> = now</div><div class="line">  sent_packets[pn_space][packet_number]<span class="selector-class">.ack_eliciting</span> =</div><div class="line">                                           ack_eliciting</div><div class="line">  sent_packets[pn_space][packet_number]<span class="selector-class">.in_flight</span> = in_flight</div><div class="line">  <span class="keyword">if</span> (in_flight):</div><div class="line">    <span class="keyword">if</span> (ack_eliciting):</div><div class="line">      time_of_last_sent_ack_eliciting_packet = now</div><div class="line">    OnPacketSentCC(sent_bytes)</div><div class="line">    sent_packets[pn_space][packet_number]<span class="selector-class">.size</span> = sent_bytes</div><div class="line">    SetLossDetectionTimer()</div></pre></td></tr></table></figure></p>
+<h2 id="A-6-接收到一个确认"><a href="#A-6-接收到一个确认" class="headerlink" title="A.6 接收到一个确认"></a>A.6 接收到一个确认</h2><p>当接收到一个 ACK 帧时，它可以新确认任意数量的包。OnAckReceived 和 UpdateRtt 的伪代码如下：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">OnAckReceived(ack, pn_space):</div><div class="line">  if (largest_acked_packet[pn_space] == infinite):</div><div class="line">    largest_acked_packet[pn_space] = ack.largest_acked</div><div class="line">  else:</div><div class="line">    largest_acked_packet[pn_space] =</div><div class="line">        max(largest_acked_packet[pn_space], ack.largest_acked)</div><div class="line"></div><div class="line">  // Nothing to <span class="keyword">do</span> <span class="keyword">if</span> there <span class="keyword">are</span> <span class="keyword">no</span> newly acked packets.</div><div class="line">  newly_acked_packets = DetermineNewlyAckedPackets(ack, pn_space)</div><div class="line">  <span class="keyword">if</span> (newly_acked_packets.empty()):</div><div class="line">    <span class="keyword">return</span></div><div class="line"></div><div class="line">  // <span class="keyword">If</span> the largest acknowledged <span class="keyword">is</span> newly acked <span class="keyword">and</span></div><div class="line">  // <span class="keyword">at</span> <span class="keyword">least</span> one ack-eliciting was newly acked, <span class="keyword">update</span> the RTT.</div><div class="line">  <span class="keyword">if</span> (sent_packets[pn_space][ack.largest_acked] &amp;&amp;</div><div class="line">      IncludesAckEliciting(newly_acked_packets)):</div><div class="line">    latest_rtt =</div><div class="line">      <span class="keyword">now</span> - sent_packets[pn_space][ack.largest_acked].time_sent</div><div class="line">    ack_delay = <span class="number">0</span></div><div class="line">    <span class="keyword">if</span> (pn_space == ApplicationData):</div><div class="line">      ack_delay = ack.ack_delay</div><div class="line">    UpdateRtt(ack_delay)</div><div class="line"></div><div class="line">  // Process ECN information <span class="keyword">if</span> present.</div><div class="line">  <span class="keyword">if</span> (ACK frame contains ECN information):</div><div class="line">      ProcessECN(ack, pn_space)</div><div class="line"></div><div class="line">  <span class="keyword">for</span> acked_packet <span class="keyword">in</span> newly_acked_packets:</div><div class="line">    OnPacketAcked(acked_packet.packet_number, pn_space)</div><div class="line"></div><div class="line">  DetectLostPackets(pn_space)</div><div class="line"></div><div class="line">  pto_count = <span class="number">0</span></div><div class="line"></div><div class="line">  SetLossDetectionTimer()</div><div class="line"></div><div class="line"></div><div class="line">UpdateRtt(ack_delay):</div><div class="line">  // <span class="keyword">First</span> RTT sample.</div><div class="line">  <span class="keyword">if</span> (smoothed_rtt == <span class="number">0</span>):</div><div class="line">    min_rtt = latest_rtt</div><div class="line">    smoothed_rtt = latest_rtt</div><div class="line">    rttvar = latest_rtt / <span class="number">2</span></div><div class="line">    <span class="keyword">return</span></div><div class="line"></div><div class="line">  // min_rtt ignores ack delay.</div><div class="line">  min_rtt = <span class="keyword">min</span>(min_rtt, latest_rtt)</div><div class="line">  // <span class="keyword">Limit</span> ack_delay <span class="keyword">by</span> max_ack_delay</div><div class="line">  ack_delay = <span class="keyword">min</span>(ack_delay, max_ack_delay)</div><div class="line">  // Adjust <span class="keyword">for</span> ack delay <span class="keyword">if</span> plausible.</div><div class="line">  adjusted_rtt = latest_rtt</div><div class="line">  <span class="keyword">if</span> (latest_rtt &gt; min_rtt + ack_delay):</div><div class="line">    adjusted_rtt = latest_rtt - ack_delay</div><div class="line"></div><div class="line">  rttvar = <span class="number">3</span>/<span class="number">4</span> * rttvar + <span class="number">1</span>/<span class="number">4</span> * <span class="keyword">abs</span>(smoothed_rtt - adjusted_rtt)</div><div class="line">  smoothed_rtt = <span class="number">7</span>/<span class="number">8</span> * smoothed_rtt + <span class="number">1</span>/<span class="number">8</span> * adjusted_rtt</div></pre></td></tr></table></figure></p>
+<h2 id="A-7-包被确认时"><a href="#A-7-包被确认时" class="headerlink" title="A.7 包被确认时"></a>A.7 包被确认时</h2><p>当包第一次被确认时，如下的 OnPacketAcked 函数被调用。注意，单个 ACK 帧可能新确认多个包。OnPacketAcked 必须为这些新确认的包中的每一个都调用一次。</p>
+<p>OnPacketAcked 接收两个参数：acked_packet，它是 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#sent-packets-fields" target="_blank" rel="external">附录 A.1.1</a> 中详述的结构体，以及这个 ACK 帧发送到的目标包号空间。</p>
+<p>OnPacketAcked 的伪代码如下：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">OnPacketAcked</span>(acked_packet, pn_space):</div><div class="line">  <span class="selector-tag">if</span> (acked_packet.in_flight):</div><div class="line">    <span class="selector-tag">OnPacketAckedCC</span>(acked_packet)</div><div class="line">  <span class="selector-tag">sent_packets</span><span class="selector-attr">[pn_space]</span><span class="selector-class">.remove</span>(acked_packet.packet_number)</div></pre></td></tr></table></figure></p>
+<h2 id="A-8-设置丢包探测定时器"><a href="#A-8-设置丢包探测定时器" class="headerlink" title="A.8 设置丢包探测定时器"></a>A.8 设置丢包探测定时器</h2><p>QUIC 丢包探测为所有的超时丢包探测使用一个单独的定时器。计时器的持续时间基于计时器的模式，该模式在下面的包和计时器事件中设置。下面定义的 SetLossDetectionTimer 函数展示了如何设置单个定时器。</p>
+<p>这种算法可能会导致定时器设置过时，特别是如果定时器唤醒晚了。设置过时的定时器 SHOULD 立即启动。</p>
+<p>SetLossDetectionTimer 的伪代码如下：<br><figure class="highlight coq"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">// Returns the earliest loss_time and the packet number</div><div class="line">// space it's from.  Returns <span class="number">0</span> <span class="keyword">if</span> all times are <span class="number">0.</span></div><div class="line">GetEarliestLossTime():</div><div class="line">  <span class="built_in">time</span> = loss_time[<span class="keyword">Initial</span>]</div><div class="line">  space = <span class="keyword">Initial</span></div><div class="line">  <span class="keyword">for</span> pn_space <span class="built_in">in</span> [ Handshake, ApplicationData ]:</div><div class="line">    <span class="keyword">if</span> (loss_time[pn_space] != <span class="number">0</span> &amp;&amp;</div><div class="line">        (<span class="built_in">time</span> == <span class="number">0</span> |<span class="type">| loss_time</span>[pn_space] &lt; <span class="built_in">time</span>)):</div><div class="line">      <span class="built_in">time</span> = loss_time[pn_space];</div><div class="line">      space = pn_space</div><div class="line">  <span class="keyword">return</span> <span class="built_in">time</span>, space</div><div class="line"></div><div class="line">SetLossDetectionTimer():</div><div class="line">  loss_time, <span class="keyword">_</span> = GetEarliestLossTime()</div><div class="line">  <span class="keyword">if</span> (loss_time != <span class="number">0</span>):</div><div class="line">    // <span class="keyword">Time</span> threshold loss detection.</div><div class="line">    loss_detection_timer.update(loss_time)</div><div class="line">    <span class="keyword">return</span></div><div class="line"></div><div class="line">  // Don't arm timer <span class="keyword">if</span> there are no ack-eliciting packets</div><div class="line">  // <span class="built_in">in</span> flight and the handshake is complete.</div><div class="line">  <span class="keyword">if</span> (endpoint is client <span class="built_in">with</span> <span class="number">1</span>-RTT keys &amp;&amp;</div><div class="line">      no ack-eliciting packets <span class="built_in">in</span> flight):</div><div class="line">    loss_detection_timer.cancel()</div><div class="line">    <span class="keyword">return</span></div><div class="line"></div><div class="line">  // Use a default <span class="built_in">timeout</span> <span class="keyword">if</span> there are no RTT measurements</div><div class="line">  <span class="keyword">if</span> (smoothed_rtt == <span class="number">0</span>):</div><div class="line">    <span class="built_in">timeout</span> = <span class="number">2</span> * kInitialRtt</div><div class="line">  <span class="keyword">else</span>:</div><div class="line">    // Calculate PTO duration</div><div class="line">    <span class="built_in">timeout</span> = smoothed_rtt + max(<span class="number">4</span> * rttvar, kGranularity) +</div><div class="line">      max_ack_delay</div><div class="line">  <span class="built_in">timeout</span> = <span class="built_in">timeout</span> * (<span class="number">2</span> ^ pto_count)</div><div class="line"></div><div class="line">  loss_detection_timer.update(</div><div class="line">    time_of_last_sent_ack_eliciting_packet + <span class="built_in">timeout</span>)</div></pre></td></tr></table></figure></p>
+<h2 id="A-9-超时"><a href="#A-9-超时" class="headerlink" title="A.9 超时"></a>A.9 超时</h2><p>当丢包探测定时器超时时，定时器的模式决定了将被执行的行为。</p>
+<p>OnLossDetectionTimeout 的伪代码如下：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">OnLossDetectionTimeout():</div><div class="line">  loss_time, pn_space = GetEarliestLossTime()</div><div class="line">  <span class="keyword">if</span> (loss_time != 0):</div><div class="line">    // Time threshold loss Detection</div><div class="line">    DetectLostPackets(pn_space)</div><div class="line">    SetLossDetectionTimer()</div><div class="line">    <span class="keyword">return</span></div><div class="line"></div><div class="line">  <span class="keyword">if</span> (endpoint is client without 1-RTT keys):</div><div class="line">    // Client sends an anti-deadlock packet: Initial is padded</div><div class="line">    // to earn more anti-amplification credit,</div><div class="line">    // a Handshake packet proves address ownership.</div><div class="line">    <span class="keyword">if</span> (has Handshake keys):</div><div class="line">      SendOneAckElicitingHandshakePacket()</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">      SendOneAckElicitingPaddedInitialPacket()</div><div class="line">  <span class="keyword">else</span>:</div><div class="line">    // PTO. Send <span class="keyword">new</span> data <span class="keyword">if</span> available, <span class="keyword">else</span> retransmit old data.</div><div class="line">    // If neither is available, send a single PING frame.</div><div class="line">    SendOneOrTwoAckElicitingPackets()</div><div class="line"></div><div class="line">  pto_count++</div><div class="line">  SetLossDetectionTimer()</div></pre></td></tr></table></figure></p>
+<h2 id="A-10-探测丢失的包"><a href="#A-10-探测丢失的包" class="headerlink" title="A.10 探测丢失的包"></a>A.10 探测丢失的包</h2><p>每次收到 ACK 都调用 DetectLostPackets 并操作该包号空间上的 sent_packets。</p>
+<p>DetectLostPackets 的伪代码如下：<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">DetectLostPackets(pn_space):</div><div class="line">  <span class="keyword">assert</span>(largest_acked_packet[pn_space] != infinite)</div><div class="line">  loss_time[pn_space] = 0</div><div class="line">  lost_packets = &#123;&#125;</div><div class="line">  loss_delay = kTimeThreshold * <span class="built_in">max</span>(latest_rtt, smoothed_rtt)</div><div class="line"></div><div class="line">  <span class="comment">// Minimum time of kGranularity before packets are deemed lost.</span></div><div class="line">  loss_delay = <span class="built_in">max</span>(loss_delay, kGranularity)</div><div class="line"></div><div class="line">  <span class="comment">// Packets sent before this time are deemed lost.</span></div><div class="line">  lost_send_time = now() - loss_delay</div><div class="line"></div><div class="line">  <span class="keyword">foreach</span> unacked <span class="keyword">in</span> sent_packets[pn_space]:</div><div class="line">    <span class="keyword">if</span> (unacked.packet_number &gt; largest_acked_packet[pn_space]):</div><div class="line">      <span class="keyword">continue</span></div><div class="line"></div><div class="line">    <span class="comment">// Mark packet as lost, or set time when it should be marked.</span></div><div class="line">    <span class="keyword">if</span> (unacked.time_sent &lt;= lost_send_time ||</div><div class="line">        largest_acked_packet[pn_space] &gt;=</div><div class="line">          unacked.packet_number + kPacketThreshold):</div><div class="line">      sent_packets[pn_space].remove(unacked.packet_number)</div><div class="line">      <span class="keyword">if</span> (unacked.in_flight):</div><div class="line">        lost_packets.insert(unacked)</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">      <span class="keyword">if</span> (loss_time[pn_space] == 0):</div><div class="line">        loss_time[pn_space] = unacked.time_sent + loss_delay</div><div class="line">      <span class="keyword">else</span>:</div><div class="line">        loss_time[pn_space] = <span class="built_in">min</span>(loss_time[pn_space],</div><div class="line">                                  unacked.time_sent + loss_delay)</div><div class="line"></div><div class="line">  <span class="comment">// Inform the congestion controller of lost packets and</span></div><div class="line">  <span class="comment">// let it decide whether to retransmit immediately.</span></div><div class="line">  <span class="keyword">if</span> (!lost_packets.empty()):</div><div class="line">    OnPacketsLost(lost_packets)</div></pre></td></tr></table></figure></p>
+<h1 id="附录-B-拥塞控制伪代码"><a href="#附录-B-拥塞控制伪代码" class="headerlink" title="附录 B. 拥塞控制伪代码"></a>附录 B. 拥塞控制伪代码</h1><p>我们现在描述一个 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#congestion-control" target="_blank" rel="external">第 7 节</a> 中描述的拥塞控制器的示例实现。</p>
+<h2 id="B-1-重要的常量"><a href="#B-1-重要的常量" class="headerlink" title="B.1 重要的常量"></a>B.1 重要的常量</h2><p>拥塞控制中使用的常量是基于 RFCs，论文，和习惯做法确定的。其中的一些可能需要修改或协商，以更好地适用于各种各样的环境。</p>
+<p>kMaxDatagramSize：发送者的最大载荷大小。不包括 UDP 头和 IP 头。最大包大小用于计算初始的和最小的拥塞窗口。RECOMMENDED（建议）值取 1200。</p>
+<p>kInitialWindow：初始在途数据量的默认限制，以字节为单位。取自 <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC6928" target="_blank" rel="external">[RFC6928]</a>，但考虑到 8 字节的 UDP 头和 20 字节的 TCP 头可轻微增加。RECOMMENDED（建议）值取 10 <em> kMaxDatagramSize 和 max(2</em> kMaxDatagramSize, 14720)) 两者中小的那个。</p>
+<p>kMinimumWindow：最小的拥塞窗口字节数。RECOMMENDED（建议）值取 2 * kMaxDatagramSize。</p>
+<p>kLossReductionFactor：当探测到一个新的丢包事件时减小拥塞窗口。RECOMMENDED（建议）值取 0.5。</p>
+<p>kPersistentCongestionThreshold：持续拥塞的建立时间，以 PTO 的倍数指定。这个阈值的原理是，让一个发送者使用初始 PTOs 积极地探索，像 TCP 通过 Tail Loss Probe (TLP) <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#TLP" target="_blank" rel="external">[TLP]</a> <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RACK" target="_blank" rel="external">[RACK]</a> 做的那样，在建立持久拥塞之前，像 TCP 通过 Retransmission Timeout (RTO) <a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html#RFC5681" target="_blank" rel="external">[RFC5681]</a> 做的那样。RECOMMENDED（建议）kPersistentCongestionThreshold 的值取 3，它接近于等于 TCP 中一个 RTO 前有两个 TLPs。</p>
+<h2 id="B-2-重要的变量"><a href="#B-2-重要的变量" class="headerlink" title="B.2 重要的变量"></a>B.2 重要的变量</h2><p>实现拥塞控制机制所需的变量在本节描述。</p>
+<p>ecn_ce_counters[kPacketNumberSpace]：对端在一个 ACK 帧中报告的包号空间中的 ECN-CE 计数器的最高值。这个值用于探测报告的 ECN-CE 计数的增量。</p>
+<p>bytes_in_flight：所有已经发送的包含至少一个 ack 诱发帧或 PADDING 帧，但还没有被确认或声明丢失的包的总字节大小。这个大小不包括 IP 或 UDP 头，但是包括 QUIC 和 AEAD 头。只包含 ACK 帧的包不计入 bytes_in_flight，以确保拥塞控制不妨碍拥塞反馈。</p>
+<p>congestion_window：可以发送的在途字节的最大大小。</p>
+<p>congestion_recovery_start_time：QUIC 由于丢包或 ECN 首次探测到拥塞的时间，导致它进入拥塞恢复状态。当这个时间之后发送的包被确认时，QUIC 退出拥塞恢复状态。</p>
+<p>ssthresh：慢启动阈值的字节数。当拥塞窗口低于 ssthresh 时，模式为慢启动，且窗口随着确认的字节数而增长。</p>
+<h2 id="B-3-初始化"><a href="#B-3-初始化" class="headerlink" title="B.3 初始化"></a>B.3 初始化</h2><p>连接开始时，按如下方式初始化拥塞控制变量：<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="attr">congestion_window</span> = kInitialWindow</div><div class="line"><span class="attr">bytes_in_flight</span> = <span class="number">0</span></div><div class="line"><span class="attr">congestion_recovery_start_time</span> = <span class="number">0</span></div><div class="line"><span class="attr">ssthresh</span> = infinite</div><div class="line">for pn_space <span class="keyword">in</span> [ Initial, Handshake, ApplicationData ]:</div><div class="line">  ecn_ce_counters[pn_space] = <span class="number">0</span></div></pre></td></tr></table></figure></p>
+<h2 id="B-4-发送包"><a href="#B-4-发送包" class="headerlink" title="B.4 发送包"></a>B.4 发送包</h2><p>无论何时发送一个包，且它包含非 ACK 帧，则包增加 bytes_in_flight。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="title">OnPacketSentCC</span><span class="params">(bytes_sent)</span></span>:</div><div class="line">  bytes_in_flight += bytes_sent</div></pre></td></tr></table></figure></p>
+<h2 id="B-5-包确认时"><a href="#B-5-包确认时" class="headerlink" title="B.5 包确认时"></a>B.5 包确认时</h2><p>在丢包探测的 OnPacketAcked 中调用，并提供 sent_packets 的 acked_packet。<br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">InCongestionRecovery(sent_time):</div><div class="line">  <span class="built_in">return</span> sent_time &lt;= congestion_recovery_start_time</div><div class="line"></div><div class="line">OnPacketAckedCC(acked_packet):</div><div class="line">  <span class="comment">// Remove from bytes_in_flight.</span></div><div class="line">  bytes_in_flight -= acked_packet.<span class="built_in">size</span></div><div class="line">  <span class="built_in">if</span> (InCongestionRecovery(acked_packet.time_sent)):</div><div class="line">    <span class="comment">// Do not increase congestion window in recovery period.</span></div><div class="line">    <span class="built_in">return</span></div><div class="line">  <span class="built_in">if</span> (IsAppLimited()):</div><div class="line">    <span class="comment">// Do not increase congestion_window if application</span></div><div class="line">    <span class="comment">// limited.</span></div><div class="line">    <span class="built_in">return</span></div><div class="line">  <span class="built_in">if</span> (congestion_window &lt; ssthresh):</div><div class="line">    <span class="comment">// Slow start.</span></div><div class="line">    congestion_window += acked_packet.<span class="built_in">size</span></div><div class="line">  <span class="built_in">else</span>:</div><div class="line">    <span class="comment">// Congestion avoidance.</span></div><div class="line">    congestion_window += kMaxDatagramSize * acked_packet.<span class="built_in">size</span></div><div class="line">        / congestion_window</div></pre></td></tr></table></figure></p>
+<h2 id="B-6-新拥塞事件发生时"><a href="#B-6-新拥塞事件发生时" class="headerlink" title="B.6 新拥塞事件发生时"></a>B.6 新拥塞事件发生时</h2><p>当探测到一个新的拥塞事件时在 ProcessECN 和 OnPacketsLost 中调用。可能启动一个新的恢复周期并减小拥塞窗口。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">CongestionEvent(sent_time):</div><div class="line">  // <span class="keyword">Start</span> a <span class="keyword">new</span> congestion <span class="keyword">event</span> <span class="keyword">if</span> packet was sent <span class="keyword">after</span> the</div><div class="line">  // <span class="keyword">start</span> <span class="keyword">of</span> the previous congestion <span class="keyword">recovery</span> period.</div><div class="line">  <span class="keyword">if</span> (!InCongestionRecovery(sent_time)):</div><div class="line">    congestion_recovery_start_time = <span class="keyword">Now</span>()</div><div class="line">    congestion_window *= kLossReductionFactor</div><div class="line">    congestion_window = <span class="keyword">max</span>(congestion_window, kMinimumWindow)</div><div class="line">    ssthresh = congestion_window</div></pre></td></tr></table></figure></p>
+<h2 id="B-7-处理-ECN-信息"><a href="#B-7-处理-ECN-信息" class="headerlink" title="B.7 处理 ECN 信息"></a>B.7 处理 ECN 信息</h2><p>当从对端接收到一个带有 ECN 段的 ACK 帧时调用。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="title">ProcessECN</span><span class="params">(ack, pn_space)</span></span>:</div><div class="line">  <span class="comment">// If the ECN-CE counter reported by the peer has increased,</span></div><div class="line">  <span class="comment">// this could be a new congestion event.</span></div><div class="line">  <span class="keyword">if</span> (ack<span class="selector-class">.ce_counter</span> &gt; ecn_ce_counters[pn_space]):</div><div class="line">    ecn_ce_counters[pn_space] = ack<span class="selector-class">.ce_counter</span></div><div class="line">    CongestionEvent(sent_packets[ack.largest_acked].time_sent)</div></pre></td></tr></table></figure></p>
+<h2 id="B-8-On-Packets-Lost"><a href="#B-8-On-Packets-Lost" class="headerlink" title="B.8 On Packets Lost"></a>B.8 On Packets Lost</h2><p>当包被认为丢失时，在 DetectLostPackets 中调用。<br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">InPersistentCongestion(largest_lost_packet):</div><div class="line">  pto = smoothed_rtt + <span class="built_in">max</span>(<span class="number">4</span> * rttvar, kGranularity) +</div><div class="line">    max_ack_delay</div><div class="line">  congestion_period = pto * kPersistentCongestionThreshold</div><div class="line">  <span class="comment">// Determine if all packets in the time period before the</span></div><div class="line">  <span class="comment">// newest lost packet, including the edges, are marked</span></div><div class="line">  <span class="comment">// lost</span></div><div class="line">  <span class="built_in">return</span> AreAllPacketsLost(largest_lost_packet,</div><div class="line">                           congestion_period)</div><div class="line"></div><div class="line">OnPacketsLost(lost_packets):</div><div class="line">  <span class="comment">// Remove lost packets from bytes_in_flight.</span></div><div class="line">  <span class="built_in">for</span> (lost_packet : lost_packets):</div><div class="line">    bytes_in_flight -= lost_packet.<span class="built_in">size</span></div><div class="line">  largest_lost_packet = lost_packets.last()</div><div class="line">  CongestionEvent(largest_lost_packet.time_sent)</div><div class="line"></div><div class="line">  <span class="comment">// Collapse congestion window if persistent congestion</span></div><div class="line">  <span class="built_in">if</span> (InPersistentCongestion(largest_lost_packet)):</div><div class="line">    congestion_window = kMinimumWindow</div></pre></td></tr></table></figure></p>
+<p><a href="https://github.com/quicwg/zh-translations" target="_blank" rel="external">QUIC Protocol 相关文档中文翻译</a></p>
+<p><a href="https://quicwg.org/base-drafts/draft-ietf-quic-recovery.html" target="_blank" rel="external">原文链接</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络协议/" rel="tag"># 网络协议</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/QUIC/" rel="tag"># QUIC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/22/googletest_impl_analysis/" rel="next" title="Googletest 实现简要分析">
+                <i class="fa fa-chevron-left"></i> Googletest 实现简要分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/12/webrtc_audio_operations/" rel="prev" title="WebRTC 中的基本音频处理操作">
+                WebRTC 中的基本音频处理操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#读者注意"><span class="nav-number">2.</span> <span class="nav-text">读者注意</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本备忘录的状态"><span class="nav-number">3.</span> <span class="nav-text">本备忘录的状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#版权声明"><span class="nav-number">4.</span> <span class="nav-text">版权声明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-介绍"><span class="nav-number">5.</span> <span class="nav-text">1. 介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-规约和定义"><span class="nav-number">6.</span> <span class="nav-text">2. 规约和定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-QUIC-传输机制的设计"><span class="nav-number">7.</span> <span class="nav-text">3. QUIC 传输机制的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-QUIC-和-TCP-之间的相关差异"><span class="nav-number">7.1.</span> <span class="nav-text">3.1 QUIC 和 TCP 之间的相关差异</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-单独的包号空间"><span class="nav-number">7.1.1.</span> <span class="nav-text">3.1.1 单独的包号空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-单调递增的包号"><span class="nav-number">7.1.2.</span> <span class="nav-text">3.1.2 单调递增的包号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-3-更清晰的丢失世代"><span class="nav-number">7.1.3.</span> <span class="nav-text">3.1.3 更清晰的丢失世代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-4-No-Reneging"><span class="nav-number">7.1.4.</span> <span class="nav-text">3.1.4 No Reneging</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-5-更多-ACK-范围"><span class="nav-number">7.1.5.</span> <span class="nav-text">3.1.5 更多 ACK 范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-6-延迟的确认的显式修正"><span class="nav-number">7.1.6.</span> <span class="nav-text">3.1.6 延迟的确认的显式修正</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-生成确认包"><span class="nav-number">8.</span> <span class="nav-text">4. 生成确认包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-加密握手数据"><span class="nav-number">8.1.</span> <span class="nav-text">4.1 加密握手数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-ACK-范围"><span class="nav-number">8.2.</span> <span class="nav-text">4.2 ACK 范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-ACK-帧的接收端追踪"><span class="nav-number">8.3.</span> <span class="nav-text">4.3 ACK 帧的接收端追踪</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-测量并报告主机延迟"><span class="nav-number">8.4.</span> <span class="nav-text">4.4 测量并报告主机延迟</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-估计往返时间"><span class="nav-number">9.</span> <span class="nav-text">4 估计往返时间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-生成-RTT-样本"><span class="nav-number">9.1.</span> <span class="nav-text">4.1 生成 RTT 样本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-估计-min-rtt"><span class="nav-number">9.2.</span> <span class="nav-text">4.2 估计 min_rtt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-估计-smoothed-rtt-和-rttvar"><span class="nav-number">9.3.</span> <span class="nav-text">4.3 估计 smoothed_rtt 和 rttvar</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-丢包检测"><span class="nav-number">10.</span> <span class="nav-text">5. 丢包检测</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-基于确认的检测"><span class="nav-number">10.1.</span> <span class="nav-text">5.1 基于确认的检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-1-包阈值"><span class="nav-number">10.1.1.</span> <span class="nav-text">5.1.1 包阈值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-2-时间阈值"><span class="nav-number">10.1.2.</span> <span class="nav-text">5.1.2 时间阈值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-探测超时"><span class="nav-number">10.2.</span> <span class="nav-text">5.2 探测超时</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-计算-PTO"><span class="nav-number">10.2.1.</span> <span class="nav-text">5.2.1 计算 PTO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-握手和新路径"><span class="nav-number">10.3.</span> <span class="nav-text">5.3 握手和新路径</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-1-发送探测包"><span class="nav-number">10.3.1.</span> <span class="nav-text">5.3.1 发送探测包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-2-丢失探测"><span class="nav-number">10.3.2.</span> <span class="nav-text">5.3.2 丢失探测</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-重试和版本协商"><span class="nav-number">10.4.</span> <span class="nav-text">5.4 重试和版本协商</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-丢弃密钥和包状态"><span class="nav-number">10.5.</span> <span class="nav-text">5.5 丢弃密钥和包状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-6-讨论"><span class="nav-number">10.6.</span> <span class="nav-text">5.6 讨论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-拥塞控制"><span class="nav-number">11.</span> <span class="nav-text">6. 拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-显示拥塞通告"><span class="nav-number">11.1.</span> <span class="nav-text">6.1 显示拥塞通告</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-慢启动"><span class="nav-number">11.2.</span> <span class="nav-text">6.2 慢启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-拥塞避免"><span class="nav-number">11.3.</span> <span class="nav-text">6.3 拥塞避免</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-恢复周期"><span class="nav-number">11.4.</span> <span class="nav-text">6.4 恢复周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-5-忽略不可解密的包的丢失"><span class="nav-number">11.5.</span> <span class="nav-text">6.5 忽略不可解密的包的丢失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-6-探测超时"><span class="nav-number">11.6.</span> <span class="nav-text">6.6 探测超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-7-持续拥塞"><span class="nav-number">11.7.</span> <span class="nav-text">6.7 持续拥塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-8-平滑（步调，发送节奏）"><span class="nav-number">11.8.</span> <span class="nav-text">6.8 平滑（步调，发送节奏）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-9-未充分利用的拥塞窗口"><span class="nav-number">11.9.</span> <span class="nav-text">6.9 未充分利用的拥塞窗口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-安全注意事项"><span class="nav-number">12.</span> <span class="nav-text">7. 安全注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-拥塞信号"><span class="nav-number">12.1.</span> <span class="nav-text">7.1 拥塞信号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-流量分析"><span class="nav-number">12.2.</span> <span class="nav-text">7.2 流量分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-3-误报-ECN-标记"><span class="nav-number">12.3.</span> <span class="nav-text">7.3 误报 ECN 标记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-IANA-注意事项"><span class="nav-number">12.4.</span> <span class="nav-text">8. IANA 注意事项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-参考文献"><span class="nav-number">13.</span> <span class="nav-text">9. 参考文献</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#9-1-引用标准"><span class="nav-number">13.1.</span> <span class="nav-text">9.1 引用标准</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-参考资料"><span class="nav-number">13.2.</span> <span class="nav-text">9.2 参考资料</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录-A-丢包恢复伪代码"><span class="nav-number">14.</span> <span class="nav-text">附录 A. 丢包恢复伪代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-1-跟踪发送数据包"><span class="nav-number">14.1.</span> <span class="nav-text">A.1 跟踪发送数据包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#A-1-1-发送数据包字段"><span class="nav-number">14.1.1.</span> <span class="nav-text">A.1.1 发送数据包字段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-2-重要的常量"><span class="nav-number">14.2.</span> <span class="nav-text">A.2 重要的常量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-3-重要的变量"><span class="nav-number">14.3.</span> <span class="nav-text">A.3 重要的变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-4-初始化"><span class="nav-number">14.4.</span> <span class="nav-text">A.4 初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-5-发送一个包"><span class="nav-number">14.5.</span> <span class="nav-text">A.5 发送一个包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-6-接收到一个确认"><span class="nav-number">14.6.</span> <span class="nav-text">A.6 接收到一个确认</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-7-包被确认时"><span class="nav-number">14.7.</span> <span class="nav-text">A.7 包被确认时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-8-设置丢包探测定时器"><span class="nav-number">14.8.</span> <span class="nav-text">A.8 设置丢包探测定时器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-9-超时"><span class="nav-number">14.9.</span> <span class="nav-text">A.9 超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-10-探测丢失的包"><span class="nav-number">14.10.</span> <span class="nav-text">A.10 探测丢失的包</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录-B-拥塞控制伪代码"><span class="nav-number">15.</span> <span class="nav-text">附录 B. 拥塞控制伪代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#B-1-重要的常量"><span class="nav-number">15.1.</span> <span class="nav-text">B.1 重要的常量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-2-重要的变量"><span class="nav-number">15.2.</span> <span class="nav-text">B.2 重要的变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-3-初始化"><span class="nav-number">15.3.</span> <span class="nav-text">B.3 初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-4-发送包"><span class="nav-number">15.4.</span> <span class="nav-text">B.4 发送包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-5-包确认时"><span class="nav-number">15.5.</span> <span class="nav-text">B.5 包确认时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-6-新拥塞事件发生时"><span class="nav-number">15.6.</span> <span class="nav-text">B.6 新拥塞事件发生时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-7-处理-ECN-信息"><span class="nav-number">15.7.</span> <span class="nav-text">B.7 处理 ECN 信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-8-On-Packets-Lost"><span class="nav-number">15.8.</span> <span class="nav-text">B.8 On Packets Lost</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

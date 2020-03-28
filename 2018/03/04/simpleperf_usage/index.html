@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Android开发," />
+
+
+<meta name="description" content="Simpleperf 是 Android 的一个本地代码性能剖析工具，它是 Android 开源项目（AOSP）的一部分。Simpleperf 可以用来剖析运行于 Android 平台的 Android 应用程序和本地进程，无论是 Java 代码还是 C++ 代码它都可以剖析。对于 Android 系统，需要是 Android L （Android 5.0）及以上版本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Simpleperf 分析本地代码性能">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/03/04/simpleperf_usage/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Simpleperf 是 Android 的一个本地代码性能剖析工具，它是 Android 开源项目（AOSP）的一部分。Simpleperf 可以用来剖析运行于 Android 平台的 Android 应用程序和本地进程，无论是 Java 代码还是 C++ 代码它都可以剖析。对于 Android 系统，需要是 Android L （Android 5.0）及以上版本。">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-5d1152cb2e5e1dd1.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-4a487bce3958a206.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-333b14d9252f803c.png">
+<meta property="og:updated_time" content="2018-03-05T09:00:30.069Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Simpleperf 分析本地代码性能">
+<meta name="twitter:description" content="Simpleperf 是 Android 的一个本地代码性能剖析工具，它是 Android 开源项目（AOSP）的一部分。Simpleperf 可以用来剖析运行于 Android 平台的 Android 应用程序和本地进程，无论是 Java 代码还是 C++ 代码它都可以剖析。对于 Android 系统，需要是 Android L （Android 5.0）及以上版本。">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-5d1152cb2e5e1dd1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/03/04/simpleperf_usage/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>使用 Simpleperf 分析本地代码性能 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/03/04/simpleperf_usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用 Simpleperf 分析本地代码性能</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-04T12:46:49+08:00">2018-03-04</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/03/04/simpleperf_usage/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/03/04/simpleperf_usage/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/03/04/simpleperf_usage/" class="leancloud_visitors" data-flag-title="使用 Simpleperf 分析本地代码性能">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Simpleperf 是 Android 的一个本地代码性能剖析工具，它是 Android 开源项目（AOSP）的一部分。Simpleperf 可以用来剖析运行于 Android 平台的 Android 应用程序和本地进程，无论是 Java 代码还是 C++ 代码它都可以剖析。对于 Android 系统，需要是 Android L （Android 5.0）及以上版本。<br><a id="more"></a><br>Simpleperf 包含两部分：<code>simpleperf</code> 可执行文件和 Python 脚本。<code>simpleperf</code> 可执行文件与 linux-tools-perf 类似，但它还包含一些专门针对 Android 剖析环境的特有功能：</p>
+<ol>
+<li>它收集更多的剖析数据。性能剖析通常的工作流程是 “在设备上记录，在主机上分析并产生报告”，<code>simpleperf</code> 不只收集剖析数据的采样，它还收集需要的符号，设备信息，和记录时间等。</li>
+<li>它提供了新的记录功能。a. 当记录基于 dwarf 的调用图时，<code>simpleperf</code> 在将样本写入文件前展开调用栈。这是为了节省设备上的存储空间。b. 通过 <code>--trace-offcpu</code> 选项同时支持追踪 on CPU 时间和 off CPU 时间。</li>
+<li>它与 Android 平台密切相关。a. 了解 Android 环境，如使用系统属性启用剖析，使用 <code>run-as</code> 以应用程序上下文进行剖析。b. 由于自 Android O （Android 8.0）开始系统库使用 <code>.gnu_debugdata</code> 段构建，它支持从 <code>.gnu_debugdata</code> 段读取符号和调试信息。c. 支持剖析 apk 文件中嵌入的共享库。d. 它使用标准的 Android 调用栈展开工具，因而它的结果与其它 Android 工具一致。</li>
+<li>它为不同的用途构建可执行文件和共享库。a. 在设备上构建静态可执行文件。由于静态可执行文件不依赖任何库，<code>simpleperf</code> 可执行文件可以被 push 进任何 Android 设备并用于记录剖析数据。b. 在不同的主机上构建可执行文件：Linux，Mac 和 Windows。这些可执行文件可用于在主机上生成报告。c. 在不同主机上构建报告共享库。报告库被不同的 Python 脚本用于解析剖析数据。</li>
+</ol>
+<p>Python 脚本根据它们的功能被分为三个部分：</p>
+<ol>
+<li>用于简化剖析数据记录的脚本，如 <code>app_profiler.py</code>。</li>
+<li>用于生成剖析报告的脚本，如 <code>report.py</code>，<code>report_html.py</code>，<code>inferno</code>。</li>
+<li>用于解析剖析数据的脚本，如 <code>simpleperf_report_lib.py</code>。</li>
+</ol>
+<h2 id="获得-Simpleperf"><a href="#获得-Simpleperf" class="headerlink" title="获得 Simpleperf"></a>获得 Simpleperf</h2><p>自版本 r13 开始，NDK 中包含了 Simpleperf 工具 。 <code>simpleperf</code> 可执行文件和 Python 脚本位于 ndk 发布版的 <code>simpleperf</code> 目录下。在 r13 版的 NDK 的 <code>simpleperf</code> 目录下仅在 <code>android</code> 目录中包含用于在设备上执行的 <code>simpleperf</code> 可执行文件，和 Python 脚本 <code>simpleperf_report.py</code>。随着 NDK 的迭代发展， Simpleperf 工具集逐渐完善，在 r16b 版的 NDK 中包含较为完善的 Simpleperf 工具集。可以下载 r16b 版或更新的 NDK 来获得 Simpleperf 。</p>
+<p>同时也可以直接从 AOSP 下载获得 Simpleperf，它位于 <code>system/extras/simpleperf/scripts/</code> 目录下。通过如下命令下载 <code>system/extras</code> repo：<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ git <span class="keyword">clone</span> <span class="title">https</span>://android.googlesource.com/platform/system/extras</div></pre></td></tr></table></figure></p>
+<p>在 <code>extras/simpleperf/scripts</code> 中包含了 <code>simpleperf</code> 可执行文件和 Python 脚本，它们的功能如下：</p>
+<ul>
+<li>bin/：包含可执行文件及共享库。</li>
+<li>bin/android/${arch}/simpleperf：设备上运行的静态 <code>simpleperf</code> 可执行文件。其中 ${arch} 为目标设备的 CPU 架构，如 arm 和 arm64。</li>
+<li>bin/${host}/${arch}/simpleperf：用于主机的 <code>simpleperf</code> 可执行文件，只支持生成报告。其中 ${host} 为主机的操作系统平台，如 linux，${arch} 为主机的 CPU 架构，如 x86_64。</li>
+<li>bin/${host}/${arch}/libsimpleperf_report.${so/dylib/dll}：用于主机的报告生成库。其中 ${host} 指主机的操作系统平台，${arch} 为主机的 CPU 架构。</li>
+<li>app_profiler.py：用于记录剖析数据的 Python 脚本。</li>
+<li>binary_cache_builder.py：用于为剖析数据构建二进制缓存的 Python 脚本。</li>
+<li>report.py：用于生成剖析报告并输出到标准输出的 Python 脚本。</li>
+<li>report_html.py：用于生成剖析报告并输出为 html 文件的 Python 脚本。</li>
+<li>inferno.sh （或 Windows 平台的 inferno.bat )：用于生成火焰图并输出为 html 文件的脚本工具。</li>
+<li>inferno/：inferno 的实现。由 <code>inferno.sh</code> 使用。</li>
+<li>pprof_proto_generator.py：将剖析数据的格式转换为 <code>pprof</code> 使用的格式的 Python 脚本。</li>
+<li>report_sample.py：将剖析数据的格式转换为 <code>FlameGraph</code> 使用的格式的 Python 脚本。</li>
+<li>simpleperf_report_lib.py：解析剖析数据的库。</li>
+</ul>
+<h2 id="使用-Simpleperf-分析本地代码性能"><a href="#使用-Simpleperf-分析本地代码性能" class="headerlink" title="使用 Simpleperf 分析本地代码性能"></a>使用 Simpleperf 分析本地代码性能</h2><p>Simpleperf 只支持剖析 ELF 格式的二进制文件中的本地指令。如果 Java 代码由解释器执行，或通过 jit 缓存，则它无法用 Simpleperf 剖析。由于 Android 支持前期编译，因此可以将 Java 字节码编译为带有调试信息的本地指令。在 Android版本 &lt;= M 的设备上，我们需要 root 特权才能编译带有调试信息的 Java 字节码。 但是，在 Android版本 &gt; = N 的设备上，我们不需要 root 权限即可执行此操作。</p>
+<p>通常剖析 Android 应用程序性能包含三个步骤：</p>
+<ol>
+<li>准备应用程序。</li>
+<li>记录剖析数据。</li>
+<li>生成剖析数据的分析报告。</li>
+</ol>
+<h3 id="准备应用程序"><a href="#准备应用程序" class="headerlink" title="准备应用程序"></a>准备应用程序</h3><p>在剖析之前，我们需要将应用程序安装到 Android 设备上。为了得到有效的剖析结果，需要先做如下这些检查：</p>
+<ol>
+<li>应用程序应该是 <code>debuggable</code> 的。由于安全限制的原因，只有 <code>android::debuggable</code> 设置为 <code>true</code> 的应用程序才能剖析。（在一个已经 root 的设备上，所有应用程序都可以剖析。）在 Android Studio 中，这意味着我们需要使用 debug 构建类型，而不是 release 构建类型。</li>
+<li>运行在 Android &gt;= N 的设备上。</li>
+<li><p>在 Android O 上，将 <code>wrap.sh</code> 添加进 apk 中。为了剖析 Java 代码，我们需要 ART 以 oat 模式运行。但是在 Android O 上，<code>debuggable</code> 的应用程序强制以 jit 模式运行。为了绕过这个问题，我们需要给 apk 添加一个 <code>wrap.sh</code>。如果要在 Android O 设备上运行，并且需要剖析 Java 代码，则添加 <code>wrap.sh</code>，像下面这样修改 app 的 build.gradle 文件：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">// <span class="keyword">Set</span> <span class="keyword">when</span> building <span class="keyword">only</span> part <span class="keyword">of</span> the abis <span class="keyword">in</span> the apk.</div><div class="line"><span class="keyword">def</span> abiFiltersForWrapScript = []</div><div class="line">android &#123;</div><div class="line">    buildTypes &#123;</div><div class="line">        profiling &#123;</div><div class="line">            initWith debug</div><div class="line">            externalNativeBuild &#123;</div><div class="line">                cmake &#123;</div><div class="line">                    // cmake Debug <span class="keyword">build</span> <span class="keyword">type</span> uses -O0, which makes the code slow.</div><div class="line">                    arguments <span class="string">"-DCMAKE_BUILD_TYPE=Release"</span></div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            packagingOptions &#123;</div><div class="line">                // Contain debug info <span class="keyword">in</span> the libraries.</div><div class="line">                doNotStrip <span class="string">"**.so"</span></div><div class="line">                // <span class="keyword">Exclude</span> wrap.sh <span class="keyword">for</span> architectures <span class="keyword">not</span> built.</div><div class="line">                <span class="keyword">if</span> (abiFiltersForWrapScript) &#123;</div><div class="line">                    <span class="keyword">def</span> exclude_abis = [<span class="string">"armeabi"</span>, <span class="string">"armeabi-v7a"</span>, <span class="string">"arm64-v8a"</span>,</div><div class="line">                                        <span class="string">"x86"</span>, <span class="string">"x86_64"</span>, <span class="string">"mips"</span>, <span class="string">"mips64"</span>]</div><div class="line">                            .findAll&#123; !(it <span class="keyword">in</span> abiFiltersForWrapScript) &#125;</div><div class="line">                            .collect&#123; <span class="string">"**/"</span> + it + <span class="string">"/wrap.sh"</span> &#125;</div><div class="line">                    excludes += exclude_abis</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            // <span class="keyword">Add</span> lib/xxx/wrap.sh <span class="keyword">in</span> the apk. This <span class="keyword">is</span> <span class="keyword">to</span> <span class="keyword">enable</span> <span class="keyword">java</span> profiling <span class="keyword">on</span> Android O</div><div class="line">            // devices.</div><div class="line">            sourceSets &#123;</div><div class="line">                profiling &#123;</div><div class="line">                    resources &#123;</div><div class="line">                        srcDir &#123;</div><div class="line">                            <span class="string">"profiling_apk_add_dir"</span></div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">def</span> writeWrapScriptToFullyCompileJavaApp(wrapFile) &#123;</div><div class="line">    wrapFile.withWriter &#123; writer -&gt;</div><div class="line">        writer.write(<span class="string">'#!/system/bin/sh\n'</span>)</div><div class="line">        writer.write(<span class="string">'\$@\n'</span>)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">task createProfilingApkAddDir &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">String</span> abi : [<span class="string">"armeabi"</span>, <span class="string">"armeabi-v7a"</span>, <span class="string">"arm64-v8a"</span>, <span class="string">"x86"</span>, <span class="string">"x86_64"</span>, <span class="string">"mips"</span>, <span class="string">"mips64"</span>]) &#123;</div><div class="line">        <span class="keyword">def</span> dir = <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"app/profiling_apk_add_dir/lib/"</span> + abi)</div><div class="line">        dir.mkdirs()</div><div class="line">        <span class="keyword">def</span> wrapFile = <span class="keyword">new</span> <span class="keyword">File</span>(dir, <span class="string">"wrap.sh"</span>)</div><div class="line">        writeWrapScriptToFullyCompileJavaApp(wrapFile)</div><div class="line">        println <span class="string">"write file "</span> + wrapFile.path</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>确保使用优化标志编译 C ++ 代码。如果应用程序包含 C++ 代码，在 debug 构建类型中代码将以 <code>-O0</code> 标记编译，这使 C++ 代码变慢，为了避免这一问题，可以参考上面 Gradle 文件的写法，为 cmake 编译添加 <code>-DCMAKE_BUILD_TYPE=Release</code> 参数。</p>
+</li>
+<li>尽可能在 apk 中使用带有调试信息的本地层库。如果应用程序包含 C++ 代码或预编译的本地层代码，则尝试在 apk 中使用未 stripped 的库。这将帮助 <code>simpleperf</code> 产生更好的剖析结果。为了使用未 stripped 的库，请参考上面 Gradle 文件的写法，通过 <code>doNotStrip</code> 来使用未 stripped 的库。</li>
+</ol>
+<p>这里我们使用 Google 提供的 Demo 应用程序 SimpleperfExampleWithNative 来演示使用 Simpleperf 分析本地代码性能的过程。构建 SimpleperfExampleWithNative 为性能剖析生成 app-profiling.apk。通过如下命令下载源码，并切换至源码目录：<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ git <span class="keyword">clone</span> <span class="title">https</span>://github.com/hanpfei/SimpleperfExampleWithNative.git</div><div class="line">$ cd SimpleperfExampleWithNative/</div></pre></td></tr></table></figure></p>
+<p>添加 <code>local.properties</code> 文件，配置 SDK 和 NDK 的路径，如下面这样：<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sdk.<span class="keyword">dir</span>=<span class="variable">$&#123;sdk</span>.<span class="keyword">dir</span>&#125;</div><div class="line">ndk.<span class="keyword">dir</span>=<span class="variable">$&#123;ndk</span>.<span class="keyword">dir</span>&#125;</div></pre></td></tr></table></figure></p>
+<p>请将上面 <code>${sdk.dir}</code> 和 <code>${ndk.dir}</code> 分别替换为本地 Android SDK 和 NDK 的路径。</p>
+<p>为 Demo 应用程序 SimpleperfExampleWithNative 安装 ConstraintLayout 支持库。<br><img src="https://www.wolfcstech.com/images/1315506-5d1152cb2e5e1dd1.png" alt="安装 ConstraintLayout 支持库"></p>
+<p>通过如下命令编译并安装 SimpleperfExampleWithNative。<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ./gradlew clean assemble</div><div class="line">$ adb install -r app<span class="meta-keyword">/build/</span>outputs<span class="meta-keyword">/apk/</span>profiling/app-profiling.apk</div></pre></td></tr></table></figure></p>
+<h3 id="记录并生成剖析数据报告"><a href="#记录并生成剖析数据报告" class="headerlink" title="记录并生成剖析数据报告"></a>记录并生成剖析数据报告</h3><p>我们可以使用 <code>app-profiler.py</code> 剖析 Android 应用程序。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mkdir profile</div><div class="line">$ cd profile/</div><div class="line">$ python /media/data/osprojects/extras/simpleperf/scripts/app_profiler<span class="selector-class">.py</span> -<span class="selector-tag">p</span> com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative</span></div></pre></td></tr></table></figure></p>
+<p>这个脚本将在当前目录的 <code>perf.data</code> 文件中收集剖析数据，并在 <code>binary_cache</code> 目录下收集相关的本地层二进制文件。</p>
+<p>通常我们需要在剖析时使用应用程序，否则我们可能记录不到采样数据。但在这个例子中，<code>MainActivity</code> 启动了一个繁忙的线程。因而我们无需在剖析时使用应用程序。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">$ python /media/data/osprojects/extras/simpleperf/scripts/report<span class="selector-class">.py</span></div><div class="line">Cmdline: /data/local/tmp/simpleperf record -e task-clock:u -g -f <span class="number">1000</span> --duration <span class="number">10</span> -o /data/local/tmp/perf<span class="selector-class">.data</span> --app com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative</span></div><div class="line">Arch: arm64</div><div class="line">Event: task-clock:u (type <span class="number">1</span>, config <span class="number">1</span>)</div><div class="line">Samples: <span class="number">9914</span></div><div class="line">Event count: <span class="number">9914000000</span></div><div class="line"></div><div class="line">Overhead  Command          Pid   Tid   Shared Object                                                                              Symbol</div><div class="line"><span class="number">57.43%</span>    amplewithnative  <span class="number">8267</span>  <span class="number">8283</span>  /system/lib64/libc<span class="selector-class">.so</span>                                                                      strtol</div><div class="line"><span class="number">9.76%</span>     amplewithnative  <span class="number">8267</span>  <span class="number">8283</span>  /system/lib64/libc<span class="selector-class">.so</span>                                                                      @plt</div><div class="line"><span class="number">8.28%</span>     amplewithnative  <span class="number">8267</span>  <span class="number">8283</span>  /system/lib64/libc<span class="selector-class">.so</span>                                                                      atoi</div><div class="line"><span class="number">7.91%</span>     amplewithnative  <span class="number">8267</span>  <span class="number">8283</span>  /data/app/com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative-2</span>/lib/arm64/libnative-lib<span class="selector-class">.so</span>  BusyLoopThread(void*)</div><div class="line"><span class="number">6.62%</span>     amplewithnative  <span class="number">8267</span>  <span class="number">8283</span>  /system/lib64/libc<span class="selector-class">.so</span>                                                                      isalpha</div><div class="line"><span class="number">6.61%</span>     amplewithnative  <span class="number">8267</span>  <span class="number">8283</span>  /system/lib64/libc<span class="selector-class">.so</span>                                                                      isspace</div><div class="line"><span class="number">3.39%</span>     amplewithnative  <span class="number">8267</span>  <span class="number">8283</span>  /data/app/com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative-2</span>/lib/arm64/libnative-lib<span class="selector-class">.so</span>  @plt</div></pre></td></tr></table></figure>
+<p><code>report.py</code> 生成剖析数据的报告并输出到标准输出。</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta"># </span></div><div class="line">$  python <span class="meta-keyword">/media/</span>data<span class="meta-keyword">/osprojects/</span>extras<span class="meta-keyword">/simpleperf/</span>scripts/report_html.py</div><div class="line">$ python <span class="meta-keyword">/media/</span>data<span class="meta-keyword">/osprojects/</span>extras<span class="meta-keyword">/simpleperf/</span>scripts/report_html.py --add_source_code --source_dirs ../SimpleperfExampleWithNative/ --add_disassembly</div></pre></td></tr></table></figure>
+<p>不带参数时，<code>report_html.py</code> 用默认参数以 report.html 的形式生成报告，但也可以为它提供参数，以更好地控制它的行为。<code>report_html.py</code> 生成报告之后，会弹出一个浏览器标签来展示它，如下图这样：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-4a487bce3958a206.png" alt=""></p>
+<h3 id="记录并报告调用图"><a href="#记录并报告调用图" class="headerlink" title="记录并报告调用图"></a>记录并报告调用图</h3><p>我们可以记录并报告调用图。</p>
+<p>可以像下面这样，给 <code>-r</code> 选项添加 <code>-g</code> 参数，记录基于 dwarf 的调用图：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ python app_profiler<span class="selector-class">.py</span> -<span class="selector-tag">p</span> com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative</span> \</div><div class="line">        -r <span class="string">"-e task-clock:u -f 1000 --duration 10 -g"</span></div></pre></td></tr></table></figure></p>
+<p>也可以给 <code>-r</code> 选项添加 <code>--call-graph fp</code> 参数，记录基于栈帧的调用图：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ python app_profiler<span class="selector-class">.py</span> -<span class="selector-tag">p</span> com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative</span> \</div><div class="line">        -r <span class="string">"-e task-clock:u -f 1000 --duration 10 --call-graph fp"</span></div></pre></td></tr></table></figure></p>
+<p>产生剖析数据之后，可以通过 <code>report.py</code>、<code>report_html.py</code> 和 <code>inferno.sh</code> 生成报告。</p>
+<p>产生调用图的报告，并输出至标准输出：<br><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ python report.py -g</div><div class="line">Cmdline: /data/local/tmp/simpleperf record -e task-clock:u -f 1000 --duration 10 -g -o /data/local/tmp/perf.data --app com.example.simpleperf.simpleperfexamplewithnative</div><div class="line">Arch: arm64</div><div class="line">Event: task-clock:u (type 1, config 1)</div><div class="line">Samples: 9933</div><div class="line">Event count: 9933000000</div><div class="line"></div><div class="line">Children  Self    Command          Pid    Tid    Shared Object                                                                              Symbol</div><div class="line">100.00%   0.00%   amplewithnative  10861  10886  /system/lib64/libc.so                                                                      __start_thread</div><div class="line">       |<span class="string"></span></div><div class="line">       -- __start_thread</div><div class="line">          |</div><div class="line">           -- __pthread_start(void<span class="symbol">*</span>)</div><div class="line">              BusyLoopThread(void<span class="symbol">*</span>)</div><div class="line">               |<span class="string">--8.57%-- [hit in function]</span></div><div class="line">               |</div><div class="line">               |<span class="string">--85.23%-- atoi</span></div><div class="line">               |<span class="string">    </span>|<span class="string">--9.27%-- [hit in function]</span></div><div class="line">               |<span class="string">    </span>|</div><div class="line">               |<span class="string">    </span>|<span class="string">--86.79%-- strtol</span></div><div class="line">               |<span class="string">    </span>|<span class="string">    </span>|<span class="string">--73.67%-- [hit in function]</span></div><div class="line">               |<span class="string">    </span>|<span class="string">    </span>|</div><div class="line">               |<span class="string">    </span>|<span class="string">    </span>|<span class="string">--9.13%-- @plt</span></div><div class="line">               |<span class="string">    </span>|<span class="string">    </span>|</div><div class="line">               |<span class="string">    </span>|<span class="string">    </span>|<span class="string">--8.95%-- isalpha</span></div><div class="line">               |<span class="string">    </span>|<span class="string">    </span>|</div><div class="line">               |<span class="string">    </span>|<span class="string">     --8.25%-- isspace</span></div><div class="line">. . .</div></pre></td></tr></table></figure></p>
+<p>产生调用图的报告，并在 python Tk 的 GUI 程序中显示：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ <span class="keyword">python</span> report.<span class="keyword">py</span> -g --<span class="keyword">gui</span></div></pre></td></tr></table></figure></p>
+<p>如下图：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-333b14d9252f803c.png" alt="截图_2018-03-05_16-03-28.png"></p>
+<p>以 html 文件的形式报告调用图：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ <span class="keyword">python</span> report_html.<span class="keyword">py</span></div></pre></td></tr></table></figure></p>
+<p>以 flame 图的形式报告调用图：<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ inferno.<span class="keyword">sh</span> -<span class="keyword">sc</span></div></pre></td></tr></table></figure></p>
+<h3 id="以-html-的形式生成报告"><a href="#以-html-的形式生成报告" class="headerlink" title="以 html 的形式生成报告"></a>以 html 的形式生成报告</h3><p>我们可以使用 <code>report_html.py</code> 在 Web 浏览器中展示剖析结果。<code>report_html.py</code> 集成了图表统计信息，样本表，火焰图，源代码注释和反汇编注释。它是展示报告的建议的方式。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ <span class="keyword">python</span> report_html.<span class="keyword">py</span></div></pre></td></tr></table></figure>
+<h3 id="展示火焰图"><a href="#展示火焰图" class="headerlink" title="展示火焰图"></a>展示火焰图</h3><p>为了展示火焰图，我们首先需要记录调用图。火焰图由 <code>report_html.py</code> 在 <strong>Flamegraph</strong> 标签中展示。我们也可以使用 <code>inferno</code> 直接展示火焰图。<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ inferno.<span class="keyword">sh</span> -<span class="keyword">sc</span></div></pre></td></tr></table></figure></p>
+<p>我们也可以使用 <a href="https://github.com/brendangregg/FlameGraph" target="_blank" rel="external">https://github.com/brendangregg/FlameGraph</a> 构建火焰图。请确保已经安装了 perl。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ git clone https:<span class="comment">//github.com/brendangregg/FlameGraph.git</span></div><div class="line">$ python report_sample<span class="selector-class">.py</span> --symfs binary_cache &gt;out<span class="selector-class">.perf</span></div><div class="line">$ FlameGraph/stackcollapse-perf<span class="selector-class">.pl</span> out<span class="selector-class">.perf</span> &gt;out<span class="selector-class">.folded</span></div><div class="line">$ FlameGraph/flamegraph<span class="selector-class">.pl</span> out<span class="selector-class">.folded</span> &gt;<span class="selector-tag">a</span>.svg</div></pre></td></tr></table></figure></p>
+<h3 id="同时记录-on-CPU-时间和-off-CPU-时间"><a href="#同时记录-on-CPU-时间和-off-CPU-时间" class="headerlink" title="同时记录 on CPU 时间和 off CPU 时间"></a>同时记录 on CPU 时间和 off CPU 时间</h3><p>我们可以同时记录 on CPU 时间和 off CPU 时间</p>
+<p>首先检查设备是否支持 <code>trace-offcpu</code> 功能。<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ python run_simpleperf_on_device.py list --<span class="keyword">show</span>-features</div><div class="line">dwarf-based-<span class="keyword">call</span>-<span class="keyword">graph</span></div><div class="line"><span class="keyword">trace</span>-offcpu</div></pre></td></tr></table></figure></p>
+<p>如果 <code>trace-offcpu</code> 功能得到支持，它将显示在功能列表中。然后可以试下这个功能。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ python app_profiler<span class="selector-class">.py</span> -<span class="selector-tag">p</span> com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative</span> -<span class="selector-tag">a</span> <span class="selector-class">.SleepActivity</span> \</div><div class="line">    -r <span class="string">"-g -e task-clock:u -f 1000 --duration 10 --trace-offcpu"</span></div><div class="line">$ python report_html<span class="selector-class">.py</span> --add_disassembly --add_source_code --source_dirs ../demo</div></pre></td></tr></table></figure></p>
+<h3 id="剖析启动过程"><a href="#剖析启动过程" class="headerlink" title="剖析启动过程"></a>剖析启动过程</h3><p>我们可以在应用程序启动时就开始剖析它。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ python app_profiler<span class="selector-class">.py</span> -<span class="selector-tag">p</span> com<span class="selector-class">.example</span><span class="selector-class">.simpleperf</span><span class="selector-class">.simpleperfexamplewithnative</span> -<span class="selector-tag">a</span> <span class="selector-class">.MainActivity</span> \</div><div class="line">    --arch arm64 --profile_from_launch</div></pre></td></tr></table></figure></p>
+<h3 id="手动解析剖析数据"><a href="#手动解析剖析数据" class="headerlink" title="手动解析剖析数据"></a>手动解析剖析数据</h3><p>我们也可以编写 python 脚本手动解析剖析数据，通过使用 <code>simpleperf_report_lib.py</code>。具体可以参考 <code>report_sample.py</code> 和 <code>report_html.py</code>。</p>
+<h2 id="Simpleperf-的基本工作原理"><a href="#Simpleperf-的基本工作原理" class="headerlink" title="Simpleperf 的基本工作原理"></a>Simpleperf 的基本工作原理</h2><p>现代 CPU 具有一个硬件组件，称为性能监控单元(PMU)。PMU 具有一些硬件计数器，计数一些诸如经历了多少次 CPU 周期，执行了多少条指令，或发生了多少次缓存未命中等事件。</p>
+<p>Linux 内核将这些硬件计数器包装到硬件 perf 事件中。此外，Linux 内核还提供了独立于硬件的软件事件和跟踪点事件。Linux 内核通过 <code>perf_event_open</code> 系统调用将这些暴露给用户空间，这正是 simpleperf 所使用的机制。</p>
+<p>Simpleperf 具有三个主要的功能：stat，record 和 report。</p>
+<p>Stat 命令给出了在一段时间内被剖析的进程中发生了多少事件的摘要。以下是它的工作原理：</p>
+<ol>
+<li>给定用户选项，simpleperf 通过对 linux 内核执行系统调用来启用剖析。</li>
+<li>Linux 内核在调度到被剖析进程时启用计数器。</li>
+<li>剖析之后，simpleperf 从内核读取计数器，并报告计数器摘要。</li>
+</ol>
+<p>Record 命令记录一段时间内被剖析进程的采样。它的工作原理如下：</p>
+<ol>
+<li>给定用户选项，simpleperf 通过对 linux 内核执行系统调用来启用剖析。</li>
+<li>Simpleperf 在 simpleperf 和 linux 内核之间创建映射缓冲区。</li>
+<li>Linux 内核在调度到被剖析进程时启用计数器。</li>
+<li>每次给定数量的事件发生时，linux 内核将样本转储到映射缓冲区。</li>
+<li>Simpleperf 从映射缓冲区读取样本并生成 perf.data。</li>
+</ol>
+<p>Report 命令读取 “perf.data” 文件及所有被剖析进程用到的共享库，并输出一份报告，展示时间消耗在了哪里。</p>
+<p>Done.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android开发/" rel="tag"># Android开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/29/install_ros_on_ubuntu16_04/" rel="next" title="Ubuntu 16.04 安装 ROS">
+                <i class="fa fa-chevron-left"></i> Ubuntu 16.04 安装 ROS
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/12/Networking_optimization_study/" rel="prev" title="网络优化实践探索文章">
+                网络优化实践探索文章 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#获得-Simpleperf"><span class="nav-number">1.</span> <span class="nav-text">获得 Simpleperf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Simpleperf-分析本地代码性能"><span class="nav-number">2.</span> <span class="nav-text">使用 Simpleperf 分析本地代码性能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备应用程序"><span class="nav-number">2.1.</span> <span class="nav-text">准备应用程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#记录并生成剖析数据报告"><span class="nav-number">2.2.</span> <span class="nav-text">记录并生成剖析数据报告</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#记录并报告调用图"><span class="nav-number">2.3.</span> <span class="nav-text">记录并报告调用图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#以-html-的形式生成报告"><span class="nav-number">2.4.</span> <span class="nav-text">以 html 的形式生成报告</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#展示火焰图"><span class="nav-number">2.5.</span> <span class="nav-text">展示火焰图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同时记录-on-CPU-时间和-off-CPU-时间"><span class="nav-number">2.6.</span> <span class="nav-text">同时记录 on CPU 时间和 off CPU 时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#剖析启动过程"><span class="nav-number">2.7.</span> <span class="nav-text">剖析启动过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#手动解析剖析数据"><span class="nav-number">2.8.</span> <span class="nav-text">手动解析剖析数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Simpleperf-的基本工作原理"><span class="nav-number">3.</span> <span class="nav-text">Simpleperf 的基本工作原理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

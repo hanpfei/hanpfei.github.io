@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<html class="theme-next mist use-motion" lang="zh-CN">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -187,7 +187,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
   
   
@@ -233,37 +233,37 @@
         
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-commonweal">
           <a href="http://www.ixirong.com/404.html" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
         </li>
       
 
@@ -307,7 +307,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/09/05/live555_src_analysis_play/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo07_transparency/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -326,7 +326,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/05/live555_src_analysis_play/" itemprop="url">live555 源码分析： PLAY 的处理</a></h1>
+                <a class="post-title-link" href="/2018/01/12/pycairo07_transparency/" itemprop="url">PyCairo 中的透明度</a></h1>
         
 
         <div class="post-meta">
@@ -336,9 +336,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-05T17:05:49+08:00">2017-09-05</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T15:56:49+08:00">2018-01-12</time>
             
 
             
@@ -356,10 +356,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
 
                 
                 
@@ -369,17 +369,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo07_transparency/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/12/pycairo07_transparency/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/09/05/live555_src_analysis_play/" class="leancloud_visitors" data-flag-title="live555 源码分析： PLAY 的处理">
+             <span id="/2018/01/12/pycairo07_transparency/" class="leancloud_visitors" data-flag-title="PyCairo 中的透明度">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -405,11 +415,13 @@
 
       
         
-          <p>在 <code>SETUP</code> 请求之后，客户端会发起 <code>PLAY</code> 请求，以请求服务器开始传输音视频数据。在 <code>PLAY</code> 请求执行时，一定是已经执行过 <code>SETUP</code> 请求，建立好了客户端会话，因而会与其它要求客户端会话已经建立的请求一起，通过 <code>clientSession-&gt;handleCmd_withinSession()</code> 执行：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">strcmp</span>(cmdName, <span class="string">"TEARDOWN"</span>) == <span class="number">0</span></div><div class="line">    || <span class="built_in">strcmp</span>(cmdName, <span class="string">"PLAY"</span>) == <span class="number">0</span> || <span class="built_in">strcmp</span>(cmdName, <span class="string">"PAUSE"</span>) == <span class="number">0</span></div><div class="line">    || <span class="built_in">strcmp</span>(cmdName, <span class="string">"GET_PARAMETER"</span>) == <span class="number">0</span></div><div class="line">    || <span class="built_in">strcmp</span>(cmdName, <span class="string">"SET_PARAMETER"</span>) == <span class="number">0</span>) &#123;</div><div class="line">  <span class="keyword">if</span> (clientSession != <span class="literal">NULL</span>) &#123;</div><div class="line">    clientSession-&gt;handleCmd_withinSession(<span class="keyword">this</span>, cmdName, urlPreSuffix,</div><div class="line">        urlSuffix, (<span class="keyword">char</span> <span class="keyword">const</span>*) fRequestBuffer);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    handleCmd_sessionNotFound();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+          <p>在 PyCairo 教程的这个部分，我们将讨论透明度。我们将提供一些基本的定义和三个有趣的透明度的例子。</p>
+<p>透明度是指透过一种材料能够看到的品质。理解透明度最简单的方法是想象一块玻璃或水。技术上来说，光线可以穿过玻璃，因而我们可以看到玻璃后面的物体。</p>
+<p>在计算机图形学中，我们可以用 <em>alpha 合成</em> 实现透明度效果。Alpha 合成是一个将一幅图片和背景结合起来创建部分透明的外观的过程。合成过程使用 <em>alpha 通道</em>。在用于表达半透明（透明度）的图像文件格式中，alpha 通道是一个 8-bit 的layer。每像素额外的 8 bits 被用作一个 mask 并代表256级的半透明度。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/09/05/live555_src_analysis_play/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/12/pycairo07_transparency/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -461,7 +473,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/09/05/live555_src_analysis_setup/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo06_clippingmasking/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -480,7 +492,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/05/live555_src_analysis_setup/" itemprop="url">live555 源码分析： SETUP 的处理</a></h1>
+                <a class="post-title-link" href="/2018/01/12/pycairo06_clippingmasking/" itemprop="url">PyCairo 中的剪裁和屏蔽</a></h1>
         
 
         <div class="post-meta">
@@ -490,9 +502,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-05T11:05:49+08:00">2017-09-05</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T15:46:49+08:00">2018-01-12</time>
             
 
             
@@ -510,10 +522,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
 
                 
                 
@@ -523,17 +535,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo06_clippingmasking/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/12/pycairo06_clippingmasking/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/09/05/live555_src_analysis_setup/" class="leancloud_visitors" data-flag-title="live555 源码分析： SETUP 的处理">
+             <span id="/2018/01/12/pycairo06_clippingmasking/" class="leancloud_visitors" data-flag-title="PyCairo 中的剪裁和屏蔽">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -559,11 +581,11 @@
 
       
         
-          <p><code>SETUP</code> 请求在 RTSP 的整个工作流程中，用于建立流媒体会话。本文分析 live555 对 <code>SETUP</code> 请求的处理。<br>
+          <p>在 PyCairo 教程的这个部分，我们将讨论剪裁和屏蔽操作。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/09/05/live555_src_analysis_setup/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/12/pycairo06_clippingmasking/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -615,7 +637,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/09/04/live555_src_analysis_describe/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo05_gradients/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -634,7 +656,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/04/live555_src_analysis_describe/" itemprop="url">live555 源码分析： DESCRIBE 的处理</a></h1>
+                <a class="post-title-link" href="/2018/01/12/pycairo05_gradients/" itemprop="url">PyCairo渐变</a></h1>
         
 
         <div class="post-meta">
@@ -644,9 +666,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-04T15:05:49+08:00">2017-09-04</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T15:36:49+08:00">2018-01-12</time>
             
 
             
@@ -664,10 +686,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
 
                 
                 
@@ -677,17 +699,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo05_gradients/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/12/pycairo05_gradients/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/09/04/live555_src_analysis_describe/" class="leancloud_visitors" data-flag-title="live555 源码分析： DESCRIBE 的处理">
+             <span id="/2018/01/12/pycairo05_gradients/" class="leancloud_visitors" data-flag-title="PyCairo渐变">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -713,11 +745,12 @@
 
       
         
-          <p>前面在 <a href="http://www.jianshu.com/p/62387ac1fe41">live555 源码分析：RTSPServer</a> 中分析了 live555 中处理 RTSP 请求的大体流程，并分析了处理起来没有那么复杂的一些方法，如 <code>OPTIONS</code>，<code>GET_PARAMETER</code>，<code>SET_PARAMETER</code> 等。篇幅所限，没有分析最为重要的 <code>DESCRIBE</code>，<code>SETUP</code> 和 <code>PLAY</code> 这些方法的处理。<br>
+          <p>PyCairo 教程的这个部分，我们将讨论渐变。我们将提到线性的和径向的渐变。</p>
+<p>在计算机图形学中，渐变是从浅色到深色或从一种颜色到另一种颜色的平滑混合。在 2D 绘图程序和绘画程序中，渐变被用于创建五彩缤纷的背景和特殊的效果，也用于模拟灯光和阴影。(answers.com)<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/09/04/live555_src_analysis_describe/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/12/pycairo05_gradients/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -769,7 +802,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/09/03/live555_src_analysis_rtspserver/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo04_shapesfills/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -788,7 +821,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/03/live555_src_analysis_rtspserver/" itemprop="url">live555 源码分析：RTSPServer</a></h1>
+                <a class="post-title-link" href="/2018/01/12/pycairo04_shapesfills/" itemprop="url">PyCairo 中的形状和填充</a></h1>
         
 
         <div class="post-meta">
@@ -798,9 +831,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-03T12:05:49+08:00">2017-09-03</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T15:26:49+08:00">2018-01-12</time>
             
 
             
@@ -818,10 +851,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
 
                 
                 
@@ -831,17 +864,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo04_shapesfills/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/12/pycairo04_shapesfills/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/09/03/live555_src_analysis_rtspserver/" class="leancloud_visitors" data-flag-title="live555 源码分析：RTSPServer">
+             <span id="/2018/01/12/pycairo04_shapesfills/" class="leancloud_visitors" data-flag-title="PyCairo 中的形状和填充">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -867,11 +910,11 @@
 
       
         
-          <p>live555 使用 RTSP/RTP/RTCP 协议来实现流媒体的传输，其中使用 RTSP 来建立流媒体会话，并对流媒体会话进行控制。在 live555 中，通过类 <code>RTSPServerSupportingHTTPStreaming::RTSPClientConnectionSupportingHTTPStreaming</code> 来处理 RTSP 请求。客户端发送过来的请求在其父类 <code>GenericMediaServer::ClientConnection</code> 的 <code>incomingRequestHandler(void*, int /*mask*/)</code> 函数中接收，并在其父类 <code>RTSPServer::RTSPClientConnection</code> 的函数 <code>handleRequestBytes()</code> 中处理。<br>
+          <p>PyCairo 教程的这个部分，我们创建一些基本的和更高级的形状。我们使用纯色，模式和渐变填充这些形状。渐变将在另一章中讨论。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/09/03/live555_src_analysis_rtspserver/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/12/pycairo04_shapesfills/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -923,7 +966,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/09/01/live555_src_analysis_rtsp_rtp_rtcp_wireshark/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo03_basicdrawing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -942,7 +985,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/01/live555_src_analysis_rtsp_rtp_rtcp_wireshark/" itemprop="url">Wireshark 抓包分析 RTSP/RTP/RTCP 基本工作过程</a></h1>
+                <a class="post-title-link" href="/2018/01/12/pycairo03_basicdrawing/" itemprop="url">PyCairo 中的基本绘图</a></h1>
         
 
         <div class="post-meta">
@@ -952,9 +995,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-01T15:05:49+08:00">2017-09-01</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T15:16:49+08:00">2018-01-12</time>
             
 
             
@@ -972,10 +1015,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
 
                 
                 
@@ -985,17 +1028,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo03_basicdrawing/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/12/pycairo03_basicdrawing/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/09/01/live555_src_analysis_rtsp_rtp_rtcp_wireshark/" class="leancloud_visitors" data-flag-title="Wireshark 抓包分析 RTSP/RTP/RTCP 基本工作过程">
+             <span id="/2018/01/12/pycairo03_basicdrawing/" class="leancloud_visitors" data-flag-title="PyCairo 中的基本绘图">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1021,11 +1074,11 @@
 
       
         
-          <p>整体而言，RTSP 通常工作于可靠的传输协议 TCP 之上，就像 HTTP 那样，用于发起/结束流媒体传输，交换流媒体元信息。RTP 通常工作于 UDP 之上，用于传输实际的流媒体数据，其中的载荷格式因具体流媒体类型的不同而不同，通常有专门的 RFC 规范对其进行定义，如 H.264 编码格式视频数据的载荷格式在 <a href="https://tools.ietf.org/html/rfc6184">RFC 6184, RTP Payload Format for H.264 Video</a> 中定义，其它流媒体数据类型有其它的规范进行定义。RTCP 同样通常工作于 UDP 之上，用于对 RTP 进行控制，流媒体数据的收发端在传输过程中相互发送 RTCP 数据包，将自己这一端检测到的 QoS 等信息传递给对方，使用 RTP/RTCP 协议的应用程序，利用这些信息对收发过程进行控制。RTP 和 RTCP 在传输过程中，工作于不同的端口上。<br>
+          <p>PyCairo 教程的这个部分，我们绘制一些基本的元素。我们将使用填充和 stroke 操作，长划，线帽和线连接。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/09/01/live555_src_analysis_rtsp_rtp_rtcp_wireshark/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/12/pycairo03_basicdrawing/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1077,7 +1130,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/08/31/live555_src_analysis_mediaserver/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo02_backends/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1096,7 +1149,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/08/31/live555_src_analysis_mediaserver/" itemprop="url">live555 源码分析：MediaSever</a></h1>
+                <a class="post-title-link" href="/2018/01/12/pycairo02_backends/" itemprop="url">PyCairo 后端</a></h1>
         
 
         <div class="post-meta">
@@ -1106,9 +1159,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-31T15:05:49+08:00">2017-08-31</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T14:46:49+08:00">2018-01-12</time>
             
 
             
@@ -1126,10 +1179,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
 
                 
                 
@@ -1139,17 +1192,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo02_backends/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/12/pycairo02_backends/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/08/31/live555_src_analysis_mediaserver/" class="leancloud_visitors" data-flag-title="live555 源码分析：MediaSever">
+             <span id="/2018/01/12/pycairo02_backends/" class="leancloud_visitors" data-flag-title="PyCairo 后端">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1175,11 +1238,11 @@
 
       
         
-          <p>位于 live555 项目 mediaServer 目录下的是 “LIVE555 Media Server”，它是一个完整的 RTSP 服务器应用程序。它可以把多种媒体文件转为流，提供给请求者。<br>
+          <p>PyCairo 支持多种不同的后端。后端是可以显示 PyCairo 产生的图形的地方。我们将使用 PyCairo 创建一幅 PNG 图像，一个 PDF 文件，一个 SVG 文件，并在一个 GTK 窗口中绘制图形。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/08/31/live555_src_analysis_mediaserver/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/12/pycairo02_backends/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1231,7 +1294,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/08/30/live555_src_analysis_infrasture/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/12/pycairo01_introduction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1250,7 +1313,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/08/30/live555_src_analysis_infrasture/" itemprop="url">live555 源码分析：基础设施</a></h1>
+                <a class="post-title-link" href="/2018/01/12/pycairo01_introduction/" itemprop="url">PyCairo简介</a></h1>
         
 
         <div class="post-meta">
@@ -1260,9 +1323,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-30T15:05:49+08:00">2017-08-30</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T13:46:49+08:00">2018-01-12</time>
             
 
             
@@ -1280,10 +1343,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/图形图像/" itemprop="url" rel="index"><span itemprop="name">图形图像</span></a></span>
 
                 
                 
@@ -1293,17 +1356,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/12/pycairo01_introduction/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/12/pycairo01_introduction/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/08/30/live555_src_analysis_infrasture/" class="leancloud_visitors" data-flag-title="live555 源码分析：基础设施">
+             <span id="/2018/01/12/pycairo01_introduction/" class="leancloud_visitors" data-flag-title="PyCairo简介">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1329,11 +1402,11 @@
 
       
         
-          <p>live555 由多个模块组成，其中 UsageEnvironment 、 BasicUsageEnvironment 和 groupsock 分别提供了事件循环，输入输出，基本的数据结构，以及网络 IO 等功能，它们可以看作 live555 的基础设施。对于 live555 的源码分析，就从这些基础设施，基本的数据结构开始。<br>
+          <p>这里是 PyCairo 教程。这份教程将以 Python 语言，教给你 Cairo 2D 库基本的和一些高级的主题。在大多数例子中，我们将使用 Python GTK 作为后端来产生输出。本教程中所用到的图片可以在 <a href="http://zetcode.com/img/gfx/pycairo/images.zip">此处</a> 下载。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/08/30/live555_src_analysis_infrasture/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/12/pycairo01_introduction/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1385,7 +1458,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/08/28/live555_src_analysis_introduction/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/11/anbox_analysis002_io_model/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1404,7 +1477,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/08/28/live555_src_analysis_introduction/" itemprop="url">live555 源码分析：简介</a></h1>
+                <a class="post-title-link" href="/2018/01/11/anbox_analysis002_io_model/" itemprop="url">Anbox 实现分析 2：I/O 模型</a></h1>
         
 
         <div class="post-meta">
@@ -1414,9 +1487,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-28T22:05:49+08:00">2017-08-28</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-11T20:05:49+08:00">2018-01-11</time>
             
 
             
@@ -1434,10 +1507,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/live555/" itemprop="url" rel="index"><span itemprop="name">live555</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/虚拟化/" itemprop="url" rel="index"><span itemprop="name">虚拟化</span></a></span>
 
                 
                 
@@ -1447,17 +1520,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/11/anbox_analysis002_io_model/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/11/anbox_analysis002_io_model/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/08/28/live555_src_analysis_introduction/" class="leancloud_visitors" data-flag-title="live555 源码分析：简介">
+             <span id="/2018/01/11/anbox_analysis002_io_model/" class="leancloud_visitors" data-flag-title="Anbox 实现分析 2：I/O 模型">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1483,11 +1566,11 @@
 
       
         
-          <p>live555 是一个 C++ 开发的流媒体项目，它主要由几个用于多媒体流的库组成，其官方网站地址为 <a href="http://www.live555.com/。live555">http://www.live555.com/。live555</a> 使用开放的标准协议 (RTP/RTCP，RTSP，SIP)，方便与其它标准的流媒体组件互操作。这些库可以为 Unix-like（包括 Linux 和 Mac OS X），Windows，和 QNX （及其它 POSIX 兼容系统）等系统进行编译，它们可以被用于构建流媒体应用。除了库之外，live555 还包含了两个流媒体应用程序 “<a href="http://www.live555.com/mediaServer/">LIVE555 Media Server</a>“ 和 “<a href="http://www.live555.com/proxyServer/">LIVE555 Proxy Server</a>“，它们都是 RTSP 服务器应用程序。<br>
+          <p>Anbox 运行时主要由两个分开的实例构成，即容器管理器 ContainerManager 和会话管理器 SessionManager，但无论是 ContainerManager 还是 SessionManager，所做的最重要的事情就是处理网络 I/O 事件了。I/O 模型指一个应用处理 I/O 事件的整体框架设计，对于 Anbox 而言主要是处理各种网络 I/O 事务的整体框架设计。ContainerManager 和 SessionManager 基于一个相同的 I/O 模型运行，为了获得对 Anbox 整体行为设计的理解，有必要对其 I/O 模型有个整体的认识。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/08/28/live555_src_analysis_introduction/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/11/anbox_analysis002_io_model/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1539,7 +1622,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/08/24/h264_send_with_ortp/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/01/08/anbox_analysis001_entrance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1558,7 +1641,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/08/24/h264_send_with_ortp/" itemprop="url">使用 ortp 发送原始 H.264 码流</a></h1>
+                <a class="post-title-link" href="/2018/01/08/anbox_analysis001_entrance/" itemprop="url">Anbox 实现分析 1：程序入口</a></h1>
         
 
         <div class="post-meta">
@@ -1568,9 +1651,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-24T22:05:49+08:00">2017-08-24</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-08T21:05:49+08:00">2018-01-08</time>
             
 
             
@@ -1588,10 +1671,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/音视频开发/" itemprop="url" rel="index"><span itemprop="name">音视频开发</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/虚拟化/" itemprop="url" rel="index"><span itemprop="name">虚拟化</span></a></span>
 
                 
                 
@@ -1601,17 +1684,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/08/anbox_analysis001_entrance/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/08/anbox_analysis001_entrance/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/08/24/h264_send_with_ortp/" class="leancloud_visitors" data-flag-title="使用 ortp 发送原始 H.264 码流">
+             <span id="/2018/01/08/anbox_analysis001_entrance/" class="leancloud_visitors" data-flag-title="Anbox 实现分析 1：程序入口">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1637,11 +1730,11 @@
 
       
         
-          <p>oRTP 是一个 RTP (Real-time Transport Protocol (<a href="https://www.ietf.org/rfc/rfc3550.txt">RFC 3550</a>)) 协议的库实现，它完全以 C 语言来实现，因此方便应用于各种不同的平台。本文分享用 oRTP 发送，以 Android 的 MediaCodec 编码出来的原始 H.264 码流，又称裸流的方法。<br>
+          <p>Anbox 的总体架构如 <a href="https://www.wolfcstech.com/2017/11/28/run_anbox/">运行 Anbox</a> 一文的相关内容所述，其运行时主要由两个分开的实例构成，容器管理器和会话管理器。anbox 用同一个可执行文件，在启动时通过不同的参数实现运行时执行两块完全不同的逻辑，完成容器管理和会话管理的任务。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/08/24/h264_send_with_ortp/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2018/01/08/anbox_analysis001_entrance/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1693,7 +1786,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/08/23/h264_play/">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2017/12/24/studio_build/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Han Pengfei">
@@ -1712,7 +1805,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/08/23/h264_play/" itemprop="url">原始 H.264 码流播放</a></h1>
+                <a class="post-title-link" href="/2017/12/24/studio_build/" itemprop="url">Android Studio 构建</a></h1>
         
 
         <div class="post-meta">
@@ -1722,9 +1815,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-23T22:05:49+08:00">2017-08-23</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-24T15:15:49+08:00">2017-12-24</time>
             
 
             
@@ -1742,10 +1835,10 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/音视频开发/" itemprop="url" rel="index"><span itemprop="name">音视频开发</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android开发/" itemprop="url" rel="index"><span itemprop="name">Android开发</span></a></span>
 
                 
                 
@@ -1755,17 +1848,27 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/24/studio_build/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/12/24/studio_build/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
-             <span id="/2017/08/23/h264_play/" class="leancloud_visitors" data-flag-title="原始 H.264 码流播放">
+             <span id="/2017/12/24/studio_build/" class="leancloud_visitors" data-flag-title="Android Studio 构建">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -1791,11 +1894,11 @@
 
       
         
-          <p>我们平时遇到的视频文件各式各样，五花八门。通常它们会根据格式的不同，而有着不同的扩展名，比如 avi，rmvb，mkv，mp4 等等等。这些格式代表的都是 <strong>封装格式</strong>。<br>
+          <h1 id="获得源码"><a href="#获得源码" class="headerlink" title="获得源码"></a>获得源码</h1><h2 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h2><p>当前我们具有如下老版本 Android Studio 的分支：<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/08/23/h264_play/#more" rel="contents">
-              Read more &raquo;
+            <a class="btn" href="/2017/12/24/studio_build/#more" rel="contents">
+              阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1836,7 +1939,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1883,8 +1986,8 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">168</span>
-                    <span class="site-state-item-name">posts</span>
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
               
@@ -1934,8 +2037,10 @@
                     
                       
                     
+                      
+                    
                     <span class="site-state-item-count">19</span>
-                    <span class="site-state-item-name">categories</span>
+                    <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
               
@@ -2007,8 +2112,12 @@
                     
                       
                     
+                      
+                    
+                      
+                    
                     <span class="site-state-item-count">30</span>
-                    <span class="site-state-item-name">tags</span>
+                    <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
               
@@ -2067,10 +2176,6 @@
                     <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
                   </li>
                 
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
-                  </li>
-                
               </ul>
             </div>
           
@@ -2097,7 +2202,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -2111,7 +2216,7 @@
 
 
 
-  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -2119,7 +2224,7 @@
 
 
 
-  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
 
 
 
@@ -2240,21 +2345,35 @@
 
 
 
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
 
 
 
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
 
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
 
 
   
@@ -2264,113 +2383,6 @@
 
 
   
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
 
   
 

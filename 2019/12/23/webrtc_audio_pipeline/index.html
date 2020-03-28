@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="音视频开发," />
+
+
+<meta name="description" content="基于 RTC 场景下要解决的声音的问题，WebRTC 有一个大体如下图所示的音频处理流水线：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebRTC 的音频处理流水线">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/12/23/webrtc_audio_pipeline/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="基于 RTC 场景下要解决的声音的问题，WebRTC 有一个大体如下图所示的音频处理流水线：">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-92519e17ff0aa28b.png">
+<meta property="og:image" content="https://www.wolfcstech.com/images/1315506-12d8ce91a203a24f.png">
+<meta property="og:updated_time" content="2019-12-24T04:02:10.432Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WebRTC 的音频处理流水线">
+<meta name="twitter:description" content="基于 RTC 场景下要解决的声音的问题，WebRTC 有一个大体如下图所示的音频处理流水线：">
+<meta name="twitter:image" content="https://www.wolfcstech.com/images/1315506-92519e17ff0aa28b.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/12/23/webrtc_audio_pipeline/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>WebRTC 的音频处理流水线 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/12/23/webrtc_audio_pipeline/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">WebRTC 的音频处理流水线</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-23T23:05:49+08:00">2019-12-23</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/音视频开发/" itemprop="url" rel="index"><span itemprop="name">音视频开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/12/23/webrtc_audio_pipeline/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/12/23/webrtc_audio_pipeline/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/12/23/webrtc_audio_pipeline/" class="leancloud_visitors" data-flag-title="WebRTC 的音频处理流水线">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>基于 RTC 场景下要解决的声音的问题，WebRTC 有一个大体如下图所示的音频处理流水线：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-92519e17ff0aa28b.png" alt="Audio Pipeline"></p>
+<a id="more"></a>
+<p>WebRTC 的音频处理流水线，不是一次性建立起来的，而是分阶段分步骤建立的。整体而言，可以认为这个流水线分两个阶段建立，或者可以认为这个流水线分为两部分：一部分可称为静态流水线，另一部分可称为动态流水线，或者也可以称为前端和后端。静态流水线，在某个时间点建立一次，随后在整个 WebRTC 通信过程中基本保持不变；动态流水线则在通信过程中，可能出现较为频繁的变动，如本地打开或禁用录制启动发送或停止发送音频数据，远端发送者加入或退出频道等，都会改变动态流水线。</p>
+<p>如此，WebRTC 的音频处理流水线大致如下图所示：</p>
+<p><img src="https://www.wolfcstech.com/images/1315506-12d8ce91a203a24f.png" alt="Audio Pipeline"></p>
+<p>WebRTC 音频的静态流水线，建立之后，其相关节点状态由 <code>AudioState</code> 维护和管理。WebRTC 音频的静态流水线，主要包括 <code>AudioDeviceModule</code>，<code>AudioProcessing</code>，和 <code>AudioMixer</code> 等，其中 <code>AudioDeviceModule</code> 用于采集和播放音频数据，<code>AudioProcessing</code> 主要用于对录制的音频数据做初始处理，如回声消除，降噪等，<code>AudioMixer</code> 主要用于对远端发送过来的音频数据做混音。</p>
+<p>WebRTC 音频的静态流水线在 <code>WebRtcVoiceEngine</code> 初始化时建立：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line">void WebRtcVoiceEngine::Init() &#123;</div><div class="line">  RTC_DCHECK(worker_thread_checker_.IsCurrent());</div><div class="line">  RTC_LOG(LS_INFO) &lt;&lt; <span class="string">"WebRtcVoiceEngine::Init"</span>;</div><div class="line"></div><div class="line">  <span class="comment">// TaskQueue expects to be created/destroyed on the same thread.</span></div><div class="line">  low_priority_worker_queue_.reset(</div><div class="line">      new rtc::TaskQueue(task_queue_factory_-&gt;CreateTaskQueue(</div><div class="line">          <span class="string">"rtc-low-prio"</span>, webrtc::TaskQueueFactory::Priority::LOW)));</div><div class="line"></div><div class="line">  <span class="comment">// Load our audio codec lists.</span></div><div class="line">  RTC_LOG(LS_INFO) &lt;&lt; <span class="string">"Supported send codecs in order of preference:"</span>;</div><div class="line">  send_codecs_ = CollectCodecs(encoder_factory_-&gt;GetSupportedEncoders());</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> AudioCodec&amp; codec : send_codecs_) &#123;</div><div class="line">    RTC_LOG(LS_INFO) &lt;&lt; <span class="built_in">ToString</span>(codec);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  RTC_LOG(LS_INFO) &lt;&lt; <span class="string">"Supported recv codecs in order of preference:"</span>;</div><div class="line">  recv_codecs_ = CollectCodecs(decoder_factory_-&gt;GetSupportedDecoders());</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> AudioCodec&amp; codec : recv_codecs_) &#123;</div><div class="line">    RTC_LOG(LS_INFO) &lt;&lt; <span class="built_in">ToString</span>(codec);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">#<span class="keyword">if</span> defined(WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE)</div><div class="line">  <span class="comment">// No ADM supplied? Create a default one.</span></div><div class="line">  <span class="keyword">if</span> (!adm_) &#123;</div><div class="line">    adm_ = webrtc::AudioDeviceModule::Create(</div><div class="line">        webrtc::AudioDeviceModule::kPlatformDefaultAudio, task_queue_factory_);</div><div class="line">  &#125;</div><div class="line">#endif  <span class="comment">// WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE</span></div><div class="line">  RTC_CHECK(adm());</div><div class="line">  webrtc::adm_helpers::Init(adm());</div><div class="line">  webrtc::apm_helpers::Init(apm());</div><div class="line"></div><div class="line">  <span class="comment">// Set up AudioState.</span></div><div class="line">  &#123;</div><div class="line">    webrtc::AudioState::Config config;</div><div class="line">    <span class="keyword">if</span> (audio_mixer_) &#123;</div><div class="line">      config.audio_mixer = audio_mixer_;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      config.audio_mixer = webrtc::AudioMixerImpl::Create();</div><div class="line">    &#125;</div><div class="line">    config.audio_processing = apm_;</div><div class="line">    config.audio_device_module = adm_;</div><div class="line">    audio_state_ = webrtc::AudioState::Create(config);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Connect the ADM to our audio path.</span></div><div class="line">  adm()-&gt;RegisterAudioCallback(audio_state()-&gt;audio_transport());</div><div class="line"></div><div class="line">  <span class="comment">// Set default engine options.</span></div><div class="line">  &#123;</div><div class="line">    AudioOptions options;</div><div class="line">    options.echo_cancellation = <span class="literal">true</span>;</div><div class="line">    options.auto_gain_control = <span class="literal">true</span>;</div><div class="line">    options.noise_suppression = <span class="literal">true</span>;</div><div class="line">    options.highpass_filter = <span class="literal">true</span>;</div><div class="line">    options.stereo_swapping = <span class="literal">false</span>;</div><div class="line">    options.audio_jitter_buffer_max_packets = <span class="number">200</span>;</div><div class="line">    options.audio_jitter_buffer_fast_accelerate = <span class="literal">false</span>;</div><div class="line">    options.audio_jitter_buffer_min_delay_ms = <span class="number">0</span>;</div><div class="line">    options.audio_jitter_buffer_enable_rtx_handling = <span class="literal">false</span>;</div><div class="line">    options.typing_detection = <span class="literal">true</span>;</div><div class="line">    options.experimental_agc = <span class="literal">false</span>;</div><div class="line">    options.extended_filter_aec = <span class="literal">false</span>;</div><div class="line">    options.delay_agnostic_aec = <span class="literal">false</span>;</div><div class="line">    options.experimental_ns = <span class="literal">false</span>;</div><div class="line">    options.residual_echo_detector = <span class="literal">true</span>;</div><div class="line">    <span class="keyword">bool</span> error = ApplyOptions(options);</div><div class="line">    RTC_DCHECK(error);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  initialized_ = <span class="literal">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>WebRTC 音频静态流水线的几个节点，由外部创建好注入进来，并通过 <code>AudioState</code> 创建的 <code>AudioTransport</code> 连接起来：<code>WebRtcVoiceEngine::Init()</code><br> 根据需要创建 <code>AudioDeviceModule</code>，然后创建 <code>AudioState</code>，<code>AudioState</code> 用注入的 <code>AudioMixer</code> 和 <code>AudioProcessing</code> 创建 <code>AudioTransport</code>，<code>WebRtcVoiceEngine::Init()</code> 随后将 <code>AudioState</code> 创建的 <code>AudioTransport</code> 作为 AudioCallback 注册给 <code>AudioDeviceModule</code>。WebRTC 音频静态流水线在 <code>WebRtcVoiceEngine::Init()</code> 中建立。动态流水线和静态流水线在 <code>AudioState</code> 和 <code>AudioTransport</code> 处交汇。</p>
+<h2 id="AudioTransport"><a href="#AudioTransport" class="headerlink" title="AudioTransport"></a>AudioTransport</h2><p><code>AudioDeviceModule</code> 在录到音频数据时，将音频数据送给 <code>AudioTransport</code>，在播放音频时，也向 <code>AudioTransport</code> 拿要播放的音频数据。<code>AudioTransport</code> 是录制的音频数据和播放的音频数据的交汇点。</p>
+<p><code>AudioTransport</code> 接口的定义 (位于 <code>webrtc/src/modules/audio_device/include/audio_device_defines.h</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> AudioTransport &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="function"><span class="keyword">virtual</span> int32_t <span class="title">RecordedDataIsAvailable</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span>* audioSamples,</span></span></div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">size_t</span> nSamples,</div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">size_t</span> nBytesPerSample,</div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">size_t</span> nChannels,</div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">uint32_t</span> samplesPerSec,</div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">uint32_t</span> totalDelayMS,</div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">int32_t</span> clockDrift,</div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">uint32_t</span> currentMicLevel,</div><div class="line">                                          <span class="keyword">const</span> <span class="keyword">bool</span> keyPressed,</div><div class="line">                                          <span class="keyword">uint32_t</span>&amp; newMicLevel) = <span class="number">0</span>;  <span class="comment">// NOLINT</span></div><div class="line"></div><div class="line">  <span class="comment">// Implementation has to setup safe values for all specified out parameters.</span></div><div class="line">  <span class="function"><span class="keyword">virtual</span> int32_t <span class="title">NeedMorePlayData</span><span class="params">(<span class="keyword">const</span> <span class="keyword">size_t</span> nSamples,</span></span></div><div class="line">                                   <span class="keyword">const</span> <span class="keyword">size_t</span> nBytesPerSample,</div><div class="line">                                   <span class="keyword">const</span> <span class="keyword">size_t</span> nChannels,</div><div class="line">                                   <span class="keyword">const</span> <span class="keyword">uint32_t</span> samplesPerSec,</div><div class="line">                                   <span class="keyword">void</span>* audioSamples,</div><div class="line">                                   <span class="keyword">size_t</span>&amp; nSamplesOut,  <span class="comment">// NOLINT</span></div><div class="line">                                   <span class="keyword">int64_t</span>* elapsed_time_ms,</div><div class="line">                                   <span class="keyword">int64_t</span>* ntp_time_ms) = <span class="number">0</span>;  <span class="comment">// NOLINT</span></div><div class="line"></div><div class="line">  <span class="comment">// Method to pull mixed render audio data from all active VoE channels.</span></div><div class="line">  <span class="comment">// The data will not be passed as reference for audio processing internally.</span></div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">PullRenderData</span><span class="params">(<span class="keyword">int</span> bits_per_sample,</span></span></div><div class="line">                              <span class="keyword">int</span> sample_rate,</div><div class="line">                              <span class="keyword">size_t</span> number_of_channels,</div><div class="line">                              <span class="keyword">size_t</span> number_of_frames,</div><div class="line">                              <span class="keyword">void</span>* audio_data,</div><div class="line">                              <span class="keyword">int64_t</span>* elapsed_time_ms,</div><div class="line">                              <span class="keyword">int64_t</span>* ntp_time_ms) = <span class="number">0</span>;</div><div class="line"></div><div class="line"> <span class="keyword">protected</span>:</div><div class="line">  <span class="keyword">virtual</span> ~AudioTransport() &#123;&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>WebRTC 中的 <code>AudioTransport</code> 接口实现 <code>AudioTransportImpl</code> 定义 (位于 <code>webrtc/src/audio/audio_transport_impl.h</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> webrtc &#123;</div><div class="line"></div><div class="line"><span class="keyword">class</span> AudioSendStream;</div><div class="line"></div><div class="line"><span class="keyword">class</span> AudioTransportImpl : <span class="keyword">public</span> AudioTransport &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  AudioTransportImpl(AudioMixer* mixer, AudioProcessing* audio_processing);</div><div class="line">  ~AudioTransportImpl() override;</div><div class="line"></div><div class="line">  <span class="keyword">int32_t</span> RecordedDataIsAvailable(<span class="keyword">const</span> <span class="keyword">void</span>* audioSamples,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">size_t</span> nSamples,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">size_t</span> nBytesPerSample,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">size_t</span> nChannels,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">uint32_t</span> samplesPerSec,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">uint32_t</span> totalDelayMS,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">int32_t</span> clockDrift,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">uint32_t</span> currentMicLevel,</div><div class="line">                                  <span class="keyword">const</span> <span class="keyword">bool</span> keyPressed,</div><div class="line">                                  <span class="keyword">uint32_t</span>&amp; newMicLevel) override;</div><div class="line"></div><div class="line">  <span class="keyword">int32_t</span> NeedMorePlayData(<span class="keyword">const</span> <span class="keyword">size_t</span> nSamples,</div><div class="line">                           <span class="keyword">const</span> <span class="keyword">size_t</span> nBytesPerSample,</div><div class="line">                           <span class="keyword">const</span> <span class="keyword">size_t</span> nChannels,</div><div class="line">                           <span class="keyword">const</span> <span class="keyword">uint32_t</span> samplesPerSec,</div><div class="line">                           <span class="keyword">void</span>* audioSamples,</div><div class="line">                           <span class="keyword">size_t</span>&amp; nSamplesOut,</div><div class="line">                           <span class="keyword">int64_t</span>* elapsed_time_ms,</div><div class="line">                           <span class="keyword">int64_t</span>* ntp_time_ms) override;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">PullRenderData</span><span class="params">(<span class="keyword">int</span> bits_per_sample,</span></span></div><div class="line">                      <span class="keyword">int</span> sample_rate,</div><div class="line">                      <span class="keyword">size_t</span> number_of_channels,</div><div class="line">                      <span class="keyword">size_t</span> number_of_frames,</div><div class="line">                      <span class="keyword">void</span>* audio_data,</div><div class="line">                      <span class="keyword">int64_t</span>* elapsed_time_ms,</div><div class="line">                      <span class="keyword">int64_t</span>* ntp_time_ms) override;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">UpdateSendingStreams</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;AudioSendStream*&gt; streams,</span></span></div><div class="line">                            <span class="keyword">int</span> send_sample_rate_hz,</div><div class="line">                            <span class="keyword">size_t</span> send_num_channels);</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">SetStereoChannelSwapping</span><span class="params">(<span class="keyword">bool</span> enable)</span></span>;</div><div class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">typing_noise_detected</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line">  <span class="keyword">const</span> voe::<span class="function">AudioLevel&amp; <span class="title">audio_level</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> audio_level_; &#125;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="comment">// Shared.</span></div><div class="line">  AudioProcessing* audio_processing_ = <span class="literal">nullptr</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Capture side.</span></div><div class="line">  rtc::CriticalSection capture_lock_;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;AudioSendStream*&gt; <span class="function">sending_streams_ <span class="title">RTC_GUARDED_BY</span><span class="params">(capture_lock_)</span></span>;</div><div class="line">  <span class="function"><span class="keyword">int</span> send_sample_rate_hz_ <span class="title">RTC_GUARDED_BY</span><span class="params">(capture_lock_)</span> </span>= <span class="number">8000</span>;</div><div class="line">  <span class="keyword">size_t</span> <span class="function">send_num_channels_ <span class="title">RTC_GUARDED_BY</span><span class="params">(capture_lock_)</span> </span>= <span class="number">1</span>;</div><div class="line">  <span class="function"><span class="keyword">bool</span> typing_noise_detected_ <span class="title">RTC_GUARDED_BY</span><span class="params">(capture_lock_)</span> </span>= <span class="literal">false</span>;</div><div class="line">  <span class="function"><span class="keyword">bool</span> swap_stereo_channels_ <span class="title">RTC_GUARDED_BY</span><span class="params">(capture_lock_)</span> </span>= <span class="literal">false</span>;</div><div class="line">  PushResampler&lt;<span class="keyword">int16_t</span>&gt; capture_resampler_;</div><div class="line">  voe::AudioLevel audio_level_;</div><div class="line">  TypingDetection typing_detection_;</div><div class="line"></div><div class="line">  <span class="comment">// Render side.</span></div><div class="line">  rtc::scoped_refptr&lt;AudioMixer&gt; mixer_;</div><div class="line">  AudioFrame mixed_frame_;</div><div class="line">  <span class="comment">// Converts mixed audio to the audio device output rate.</span></div><div class="line">  PushResampler&lt;<span class="keyword">int16_t</span>&gt; render_resampler_;</div><div class="line"></div><div class="line">  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(AudioTransportImpl);</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace webrtc</span></div></pre></td></tr></table></figure></p>
+<p><code>AudioTransportImpl</code> 实现的 <code>AudioTransport</code> 接口的要求的操作：将录制的音频数据送出去，及获取播放的音频数据。</p>
+<p><code>AudioTransportImpl</code> 对象创建时保存注入的 <code>AudioMixer</code> 和 <code>AudioProcessing</code> 对象指针：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">AudioTransportImpl::AudioTransportImpl(AudioMixer* mixer,</div><div class="line">                                       AudioProcessing* audio_processing)</div><div class="line">    : audio_processing_(audio_processing), mixer_(mixer) &#123;</div><div class="line">  RTC_DCHECK(mixer);</div><div class="line">  RTC_DCHECK(audio_processing);</div><div class="line">&#125;</div><div class="line"></div><div class="line">AudioTransportImpl::~AudioTransportImpl() &#123;&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="播放"><a href="#播放" class="headerlink" title="播放"></a>播放</h3><p><code>AudioDeviceModule</code> 可以通过 <code>AudioTransportImpl</code> 的 <code>NeedMorePlayData()</code> 和 <code>PullRenderData()</code> 获取用于播放的音频数据：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Resample audio in |frame| to given sample rate preserving the</span></div><div class="line"><span class="comment">// channel count and place the result in |destination|.</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">Resample</span><span class="params">(<span class="keyword">const</span> AudioFrame&amp; frame,</span></span></div><div class="line">             <span class="keyword">const</span> <span class="keyword">int</span> destination_sample_rate,</div><div class="line">             PushResampler&lt;<span class="keyword">int16_t</span>&gt;* resampler,</div><div class="line">             <span class="keyword">int16_t</span>* destination) &#123;</div><div class="line">  <span class="keyword">const</span> <span class="keyword">int</span> number_of_channels = <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(frame.num_channels_);</div><div class="line">  <span class="keyword">const</span> <span class="keyword">int</span> target_number_of_samples_per_channel =</div><div class="line">      destination_sample_rate / <span class="number">100</span>;</div><div class="line">  resampler-&gt;InitializeIfNeeded(frame.sample_rate_hz_, destination_sample_rate,</div><div class="line">                                number_of_channels);</div><div class="line"></div><div class="line">  <span class="comment">// TODO(yujo): make resampler take an AudioFrame, and add special case</span></div><div class="line">  <span class="comment">// handling of muted frames.</span></div><div class="line">  <span class="keyword">return</span> resampler-&gt;Resample(</div><div class="line">      frame.data(), frame.samples_per_channel_ * number_of_channels,</div><div class="line">      destination, number_of_channels * target_number_of_samples_per_channel);</div><div class="line">&#125;</div><div class="line">. . . . . . </div><div class="line"><span class="comment">// Mix all received streams, feed the result to the AudioProcessing module, then</span></div><div class="line"><span class="comment">// resample the result to the requested output rate.</span></div><div class="line"><span class="keyword">int32_t</span> AudioTransportImpl::NeedMorePlayData(<span class="keyword">const</span> <span class="keyword">size_t</span> nSamples,</div><div class="line">                                             <span class="keyword">const</span> <span class="keyword">size_t</span> nBytesPerSample,</div><div class="line">                                             <span class="keyword">const</span> <span class="keyword">size_t</span> nChannels,</div><div class="line">                                             <span class="keyword">const</span> <span class="keyword">uint32_t</span> samplesPerSec,</div><div class="line">                                             <span class="keyword">void</span>* audioSamples,</div><div class="line">                                             <span class="keyword">size_t</span>&amp; nSamplesOut,</div><div class="line">                                             <span class="keyword">int64_t</span>* elapsed_time_ms,</div><div class="line">                                             <span class="keyword">int64_t</span>* ntp_time_ms) &#123;</div><div class="line">  RTC_DCHECK_EQ(<span class="keyword">sizeof</span>(<span class="keyword">int16_t</span>) * nChannels, nBytesPerSample);</div><div class="line">  RTC_DCHECK_GE(nChannels, <span class="number">1</span>);</div><div class="line">  RTC_DCHECK_LE(nChannels, <span class="number">2</span>);</div><div class="line">  RTC_DCHECK_GE(</div><div class="line">      samplesPerSec,</div><div class="line">      <span class="keyword">static_cast</span>&lt;<span class="keyword">uint32_t</span>&gt;(AudioProcessing::NativeRate::kSampleRate8kHz));</div><div class="line"></div><div class="line">  <span class="comment">// 100 = 1 second / data duration (10 ms).</span></div><div class="line">  RTC_DCHECK_EQ(nSamples * <span class="number">100</span>, samplesPerSec);</div><div class="line">  RTC_DCHECK_LE(nBytesPerSample * nSamples * nChannels,</div><div class="line">                AudioFrame::kMaxDataSizeBytes);</div><div class="line"></div><div class="line">  mixer_-&gt;Mix(nChannels, &amp;mixed_frame_);</div><div class="line">  *elapsed_time_ms = mixed_frame_.elapsed_time_ms_;</div><div class="line">  *ntp_time_ms = mixed_frame_.ntp_time_ms_;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> <span class="keyword">auto</span> error = audio_processing_-&gt;ProcessReverseStream(&amp;mixed_frame_);</div><div class="line">  RTC_DCHECK_EQ(error, AudioProcessing::kNoError);</div><div class="line"></div><div class="line">  nSamplesOut = Resample(mixed_frame_, samplesPerSec, &amp;render_resampler_,</div><div class="line">                         <span class="keyword">static_cast</span>&lt;<span class="keyword">int16_t</span>*&gt;(audioSamples));</div><div class="line">  RTC_DCHECK_EQ(nSamplesOut, nChannels * nSamples);</div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Used by Chromium - same as NeedMorePlayData() but because Chrome has its</span></div><div class="line"><span class="comment">// own APM instance, does not call audio_processing_-&gt;ProcessReverseStream().</span></div><div class="line"><span class="keyword">void</span> AudioTransportImpl::PullRenderData(<span class="keyword">int</span> bits_per_sample,</div><div class="line">                                        <span class="keyword">int</span> sample_rate,</div><div class="line">                                        <span class="keyword">size_t</span> number_of_channels,</div><div class="line">                                        <span class="keyword">size_t</span> number_of_frames,</div><div class="line">                                        <span class="keyword">void</span>* audio_data,</div><div class="line">                                        <span class="keyword">int64_t</span>* elapsed_time_ms,</div><div class="line">                                        <span class="keyword">int64_t</span>* ntp_time_ms) &#123;</div><div class="line">  RTC_DCHECK_EQ(bits_per_sample, <span class="number">16</span>);</div><div class="line">  RTC_DCHECK_GE(number_of_channels, <span class="number">1</span>);</div><div class="line">  RTC_DCHECK_GE(sample_rate, AudioProcessing::NativeRate::kSampleRate8kHz);</div><div class="line"></div><div class="line">  <span class="comment">// 100 = 1 second / data duration (10 ms).</span></div><div class="line">  RTC_DCHECK_EQ(number_of_frames * <span class="number">100</span>, sample_rate);</div><div class="line"></div><div class="line">  <span class="comment">// 8 = bits per byte.</span></div><div class="line">  RTC_DCHECK_LE(bits_per_sample / <span class="number">8</span> * number_of_frames * number_of_channels,</div><div class="line">                AudioFrame::kMaxDataSizeBytes);</div><div class="line">  mixer_-&gt;Mix(number_of_channels, &amp;mixed_frame_);</div><div class="line">  *elapsed_time_ms = mixed_frame_.elapsed_time_ms_;</div><div class="line">  *ntp_time_ms = mixed_frame_.ntp_time_ms_;</div><div class="line"></div><div class="line">  <span class="keyword">auto</span> output_samples = Resample(mixed_frame_, sample_rate, &amp;render_resampler_,</div><div class="line">                                 <span class="keyword">static_cast</span>&lt;<span class="keyword">int16_t</span>*&gt;(audio_data));</div><div class="line">  RTC_DCHECK_EQ(output_samples, number_of_channels * number_of_frames);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>NeedMorePlayData()</code> 执行如下操作：</p>
+<ol>
+<li>通过 <code>AudioMixer</code> 对远端的音频流做混音。<code>AudioTransportImpl</code> 没有直接与 <code>AudioReceiveStream</code> 建立连接，但 <code>AudioMixer</code> 的 source 实际上是 <code>AudioReceiveStream</code>。</li>
+<li>把混音后的音频数据送进 <code>AudioProcessing</code>。主要用于回声消除。</li>
+<li>对混音后的音频数据重采样。如我们前面看到的 <code>AudioMixerImpl</code> 的实现，它的混音输出采样率有它自己的决定逻辑，可能与 <code>AudioDeviceModule</code> 设备需要的不一致，这里需要按照设备的需要，将混音后的数据重采样到设备需要的采样率。</li>
+<li>返回重采样的数据。</li>
+</ol>
+<p><code>PullRenderData()</code> 的操作与 <code>NeedMorePlayData()</code> 仅有的区别在于，没有上面的第 2 步。如注释中所说，在某些情况下，混音之后的数据无需送进 <code>AudioProcessing</code>。此外，<code>PullRenderData()</code> 要求调用者只能请求单通道的音频数据，<code>NeedMorePlayData()</code> 的调用者则可以请求单通道或立体声的。</p>
+<p>重采样和混音的更多细节，这里不再赘述。</p>
+<h3 id="录制"><a href="#录制" class="headerlink" title="录制"></a>录制</h3><p><code>AudioDeviceModule</code> 可以通过 <code>AudioTransport</code> 的 <code>RecordedDataIsAvailable()</code> 把录制的数据送出去：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// We want to process at the lowest sample rate and channel count possible</span></div><div class="line"><span class="comment">// without losing information. Choose the lowest native rate at least equal to</span></div><div class="line"><span class="comment">// the minimum of input and codec rates, choose lowest channel count, and</span></div><div class="line"><span class="comment">// configure the audio frame.</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">InitializeCaptureFrame</span><span class="params">(<span class="keyword">int</span> input_sample_rate,</span></span></div><div class="line">                            <span class="keyword">int</span> send_sample_rate_hz,</div><div class="line">                            <span class="keyword">size_t</span> input_num_channels,</div><div class="line">                            <span class="keyword">size_t</span> send_num_channels,</div><div class="line">                            AudioFrame* audio_frame) &#123;</div><div class="line">  RTC_DCHECK(audio_frame);</div><div class="line">  <span class="keyword">int</span> min_processing_rate_hz = <span class="built_in">std</span>::min(input_sample_rate, send_sample_rate_hz);</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> native_rate_hz : AudioProcessing::kNativeSampleRatesHz) &#123;</div><div class="line">    audio_frame-&gt;sample_rate_hz_ = native_rate_hz;</div><div class="line">    <span class="keyword">if</span> (audio_frame-&gt;sample_rate_hz_ &gt;= min_processing_rate_hz) &#123;</div><div class="line">      <span class="keyword">break</span>;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  audio_frame-&gt;num_channels_ = <span class="built_in">std</span>::min(input_num_channels, send_num_channels);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">ProcessCaptureFrame</span><span class="params">(<span class="keyword">uint32_t</span> delay_ms,</span></span></div><div class="line">                         <span class="keyword">bool</span> key_pressed,</div><div class="line">                         <span class="keyword">bool</span> swap_stereo_channels,</div><div class="line">                         AudioProcessing* audio_processing,</div><div class="line">                         AudioFrame* audio_frame) &#123;</div><div class="line">  RTC_DCHECK(audio_processing);</div><div class="line">  RTC_DCHECK(audio_frame);</div><div class="line">  audio_processing-&gt;set_stream_delay_ms(delay_ms);</div><div class="line">  audio_processing-&gt;set_stream_key_pressed(key_pressed);</div><div class="line">  <span class="keyword">int</span> error = audio_processing-&gt;ProcessStream(audio_frame);</div><div class="line">  RTC_DCHECK_EQ(<span class="number">0</span>, error) &lt;&lt; <span class="string">"ProcessStream() error: "</span> &lt;&lt; error;</div><div class="line">  <span class="keyword">if</span> (swap_stereo_channels) &#123;</div><div class="line">    AudioFrameOperations::SwapStereoChannels(audio_frame);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">. . . . . . </div><div class="line"><span class="comment">// Not used in Chromium. Process captured audio and distribute to all sending</span></div><div class="line"><span class="comment">// streams, and try to do this at the lowest possible sample rate.</span></div><div class="line"><span class="keyword">int32_t</span> AudioTransportImpl::RecordedDataIsAvailable(</div><div class="line">    <span class="keyword">const</span> <span class="keyword">void</span>* audio_data,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> number_of_frames,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> bytes_per_sample,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> number_of_channels,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">uint32_t</span> sample_rate,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">uint32_t</span> audio_delay_milliseconds,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">int32_t</span> <span class="comment">/*clock_drift*/</span>,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">uint32_t</span> <span class="comment">/*volume*/</span>,</div><div class="line">    <span class="keyword">const</span> <span class="keyword">bool</span> key_pressed,</div><div class="line">    <span class="keyword">uint32_t</span>&amp; <span class="comment">/*new_mic_volume*/</span>) &#123;  <span class="comment">// NOLINT: to avoid changing APIs</span></div><div class="line">  RTC_DCHECK(audio_data);</div><div class="line">  RTC_DCHECK_GE(number_of_channels, <span class="number">1</span>);</div><div class="line">  RTC_DCHECK_LE(number_of_channels, <span class="number">2</span>);</div><div class="line">  RTC_DCHECK_EQ(<span class="number">2</span> * number_of_channels, bytes_per_sample);</div><div class="line">  RTC_DCHECK_GE(sample_rate, AudioProcessing::NativeRate::kSampleRate8kHz);</div><div class="line">  <span class="comment">// 100 = 1 second / data duration (10 ms).</span></div><div class="line">  RTC_DCHECK_EQ(number_of_frames * <span class="number">100</span>, sample_rate);</div><div class="line">  RTC_DCHECK_LE(bytes_per_sample * number_of_frames * number_of_channels,</div><div class="line">                AudioFrame::kMaxDataSizeBytes);</div><div class="line"></div><div class="line">  <span class="keyword">int</span> send_sample_rate_hz = <span class="number">0</span>;</div><div class="line">  <span class="keyword">size_t</span> send_num_channels = <span class="number">0</span>;</div><div class="line">  <span class="keyword">bool</span> swap_stereo_channels = <span class="literal">false</span>;</div><div class="line">  &#123;</div><div class="line">    rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;capture_lock_)</span></span>;</div><div class="line">    send_sample_rate_hz = send_sample_rate_hz_;</div><div class="line">    send_num_channels = send_num_channels_;</div><div class="line">    swap_stereo_channels = swap_stereo_channels_;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;AudioFrame&gt; audio_frame(<span class="keyword">new</span> AudioFrame());</div><div class="line">  InitializeCaptureFrame(sample_rate, send_sample_rate_hz, number_of_channels,</div><div class="line">                         send_num_channels, audio_frame.get());</div><div class="line">  voe::RemixAndResample(<span class="keyword">static_cast</span>&lt;<span class="keyword">const</span> <span class="keyword">int16_t</span>*&gt;(audio_data),</div><div class="line">                        number_of_frames, number_of_channels, sample_rate,</div><div class="line">                        &amp;capture_resampler_, audio_frame.get());</div><div class="line">  ProcessCaptureFrame(audio_delay_milliseconds, key_pressed,</div><div class="line">                      swap_stereo_channels, audio_processing_,</div><div class="line">                      audio_frame.get());</div><div class="line"></div><div class="line">  <span class="comment">// Typing detection (utilizes the APM/VAD decision). We let the VAD determine</span></div><div class="line">  <span class="comment">// if we're using this feature or not.</span></div><div class="line">  <span class="comment">// TODO(solenberg): GetConfig() takes a lock. Work around that.</span></div><div class="line">  <span class="keyword">bool</span> typing_detected = <span class="literal">false</span>;</div><div class="line">  <span class="keyword">if</span> (audio_processing_-&gt;GetConfig().voice_detection.enabled) &#123;</div><div class="line">    <span class="keyword">if</span> (audio_frame-&gt;vad_activity_ != AudioFrame::kVadUnknown) &#123;</div><div class="line">      <span class="keyword">bool</span> vad_active = audio_frame-&gt;vad_activity_ == AudioFrame::kVadActive;</div><div class="line">      typing_detected = typing_detection_.Process(key_pressed, vad_active);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Measure audio level of speech after all processing.</span></div><div class="line">  <span class="keyword">double</span> sample_duration = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span>&gt;(number_of_frames) / sample_rate;</div><div class="line">  audio_level_.ComputeLevel(*audio_frame, sample_duration);</div><div class="line"></div><div class="line">  <span class="comment">// Copy frame and push to each sending stream. The copy is required since an</span></div><div class="line">  <span class="comment">// encoding task will be posted internally to each stream.</span></div><div class="line">  &#123;</div><div class="line">    rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;capture_lock_)</span></span>;</div><div class="line">    typing_noise_detected_ = typing_detected;</div><div class="line"></div><div class="line">    RTC_DCHECK_GT(audio_frame-&gt;samples_per_channel_, <span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span> (!sending_streams_.empty()) &#123;</div><div class="line">      <span class="keyword">auto</span> it = sending_streams_.begin();</div><div class="line">      <span class="keyword">while</span> (++it != sending_streams_.end()) &#123;</div><div class="line">        <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;AudioFrame&gt; audio_frame_copy(<span class="keyword">new</span> AudioFrame());</div><div class="line">        audio_frame_copy-&gt;CopyFrom(*audio_frame);</div><div class="line">        (*it)-&gt;SendAudioData(<span class="built_in">std</span>::move(audio_frame_copy));</div><div class="line">      &#125;</div><div class="line">      <span class="comment">// Send the original frame to the first stream w/o copying.</span></div><div class="line">      (*sending_streams_.begin())-&gt;SendAudioData(<span class="built_in">std</span>::move(audio_frame));</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line">. . . . . . </div><div class="line"><span class="keyword">void</span> AudioTransportImpl::UpdateSendingStreams(</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;AudioSendStream*&gt; streams,</div><div class="line">    <span class="keyword">int</span> send_sample_rate_hz,</div><div class="line">    <span class="keyword">size_t</span> send_num_channels) &#123;</div><div class="line">  rtc::<span class="function">CritScope <span class="title">lock</span><span class="params">(&amp;capture_lock_)</span></span>;</div><div class="line">  sending_streams_ = <span class="built_in">std</span>::move(streams);</div><div class="line">  send_sample_rate_hz_ = send_sample_rate_hz;</div><div class="line">  send_num_channels_ = send_num_channels;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>AudioTransportImpl</code> 的 <code>RecordedDataIsAvailable()</code> 拿到录音得到的音频数据，对音频数据执行如下操作：</p>
+<ol>
+<li>重采样。<code>AudioDeviceModule</code> 送进来的音频数据的采样率是设备采集的原始采样率，这里需要把采集的音频数据转换为适合 WebRTC 的音频处理模块如降噪和回声消除等模块及编码器处理的采样率。</li>
+<li>对音频数据做回声消除，降噪等处理。</li>
+<li>把音频数据送出去，给注入的 <code>AudioSendStream</code>。</li>
+</ol>
+<h2 id="AudioState"><a href="#AudioState" class="headerlink" title="AudioState"></a>AudioState</h2><p><code>AudioState</code> 既是 WebRTC 音频流水线节点的容器，也可用于对这些节点做一些管理和控制，以及将不同节点粘起来构成流水线。<code>AudioState</code> 接口的定义 (位于 <code>webrtc/src/call/audio_state.h</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> webrtc &#123;</div><div class="line"></div><div class="line"><span class="keyword">class</span> AudioTransport;</div><div class="line"></div><div class="line"><span class="comment">// AudioState holds the state which must be shared between multiple instances of</span></div><div class="line"><span class="comment">// webrtc::Call for audio processing purposes.</span></div><div class="line"><span class="keyword">class</span> AudioState : <span class="keyword">public</span> rtc::RefCountInterface &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="keyword">struct</span> Config &#123;</div><div class="line">    Config();</div><div class="line">    ~Config();</div><div class="line"></div><div class="line">    <span class="comment">// The audio mixer connected to active receive streams. One per</span></div><div class="line">    <span class="comment">// AudioState.</span></div><div class="line">    rtc::scoped_refptr&lt;AudioMixer&gt; audio_mixer;</div><div class="line"></div><div class="line">    <span class="comment">// The audio processing module.</span></div><div class="line">    rtc::scoped_refptr&lt;webrtc::AudioProcessing&gt; audio_processing;</div><div class="line"></div><div class="line">    <span class="comment">// TODO(solenberg): Temporary: audio device module.</span></div><div class="line">    rtc::scoped_refptr&lt;webrtc::AudioDeviceModule&gt; audio_device_module;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="keyword">struct</span> Stats &#123;</div><div class="line">    <span class="comment">// Audio peak level (max(abs())), linearly on the interval [0,32767].</span></div><div class="line">    <span class="keyword">int32_t</span> audio_level = <span class="number">-1</span>;</div><div class="line">    <span class="comment">// See:</span></div><div class="line">    <span class="comment">// https://w3c.github.io/webrtc-stats/#dom-rtcmediastreamtrackstats-totalaudioenergy</span></div><div class="line">    <span class="keyword">double</span> total_energy = <span class="number">0.0f</span>;</div><div class="line">    <span class="keyword">double</span> total_duration = <span class="number">0.0f</span>;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">virtual</span> AudioProcessing* <span class="title">audio_processing</span><span class="params">()</span> </span>= <span class="number">0</span>;</div><div class="line">  <span class="function"><span class="keyword">virtual</span> AudioTransport* <span class="title">audio_transport</span><span class="params">()</span> </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Enable/disable playout of the audio channels. Enabled by default.</span></div><div class="line">  <span class="comment">// This will stop playout of the underlying audio device but start a task</span></div><div class="line">  <span class="comment">// which will poll for audio data every 10ms to ensure that audio processing</span></div><div class="line">  <span class="comment">// happens and the audio stats are updated.</span></div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">SetPlayout</span><span class="params">(<span class="keyword">bool</span> enabled)</span> </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Enable/disable recording of the audio channels. Enabled by default.</span></div><div class="line">  <span class="comment">// This will stop recording of the underlying audio device and no audio</span></div><div class="line">  <span class="comment">// packets will be encoded or transmitted.</span></div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">SetRecording</span><span class="params">(<span class="keyword">bool</span> enabled)</span> </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">virtual</span> Stats <span class="title">GetAudioInputStats</span><span class="params">()</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</div><div class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">SetStereoChannelSwapping</span><span class="params">(<span class="keyword">bool</span> enable)</span> </span>= <span class="number">0</span>;</div><div class="line"></div><div class="line">  <span class="keyword">static</span> rtc::scoped_refptr&lt;AudioState&gt; Create(</div><div class="line">      <span class="keyword">const</span> AudioState::Config&amp; config);</div><div class="line"></div><div class="line">  ~AudioState() override &#123;&#125;</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace webrtc</span></div></pre></td></tr></table></figure></p>
+<p>作为音频处理流水线的容器，<code>AudioState</code> 接口主要包含了 <code>AudioMixer</code>、<code>AudioProcessing</code> 和 <code>AudioDeviceModule</code>。<code>AudioState</code> 对象的创建主要通过静态工厂方法完成。</p>
+<p>WebRTC 提供了 <code>AudioState</code> 接口的实现，该实现的定义 (位于 <code>webrtc/src/audio/audio_state.h</code> ) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> webrtc &#123;</div><div class="line"></div><div class="line"><span class="keyword">class</span> AudioSendStream;</div><div class="line"><span class="keyword">class</span> AudioReceiveStream;</div><div class="line"></div><div class="line"><span class="keyword">namespace</span> internal &#123;</div><div class="line"></div><div class="line"><span class="keyword">class</span> AudioState : <span class="keyword">public</span> webrtc::AudioState &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  <span class="function"><span class="keyword">explicit</span> <span class="title">AudioState</span><span class="params">(<span class="keyword">const</span> AudioState::Config&amp; config)</span></span>;</div><div class="line">  ~AudioState() override;</div><div class="line"></div><div class="line">  <span class="function">AudioProcessing* <span class="title">audio_processing</span><span class="params">()</span> override</span>;</div><div class="line">  <span class="function">AudioTransport* <span class="title">audio_transport</span><span class="params">()</span> override</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">SetPlayout</span><span class="params">(<span class="keyword">bool</span> enabled)</span> override</span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">SetRecording</span><span class="params">(<span class="keyword">bool</span> enabled)</span> override</span>;</div><div class="line"></div><div class="line">  <span class="function">Stats <span class="title">GetAudioInputStats</span><span class="params">()</span> <span class="keyword">const</span> override</span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">SetStereoChannelSwapping</span><span class="params">(<span class="keyword">bool</span> enable)</span> override</span>;</div><div class="line"></div><div class="line">  <span class="function">AudioDeviceModule* <span class="title">audio_device_module</span><span class="params">()</span> </span>&#123;</div><div class="line">    RTC_DCHECK(config_.audio_device_module);</div><div class="line">    <span class="keyword">return</span> config_.audio_device_module.get();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">typing_noise_detected</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">AddReceivingStream</span><span class="params">(webrtc::AudioReceiveStream* stream)</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">RemoveReceivingStream</span><span class="params">(webrtc::AudioReceiveStream* stream)</span></span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">AddSendingStream</span><span class="params">(webrtc::AudioSendStream* stream,</span></span></div><div class="line">                        <span class="keyword">int</span> sample_rate_hz,</div><div class="line">                        <span class="keyword">size_t</span> num_channels);</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">RemoveSendingStream</span><span class="params">(webrtc::AudioSendStream* stream)</span></span>;</div><div class="line"></div><div class="line"> <span class="keyword">private</span>:</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">UpdateAudioTransportWithSendingStreams</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">  rtc::ThreadChecker thread_checker_;</div><div class="line">  rtc::ThreadChecker process_thread_checker_;</div><div class="line">  <span class="keyword">const</span> webrtc::AudioState::Config config_;</div><div class="line">  <span class="keyword">bool</span> recording_enabled_ = <span class="literal">true</span>;</div><div class="line">  <span class="keyword">bool</span> playout_enabled_ = <span class="literal">true</span>;</div><div class="line"></div><div class="line">  <span class="comment">// Transports mixed audio from the mixer to the audio device and</span></div><div class="line">  <span class="comment">// recorded audio to the sending streams.</span></div><div class="line">  AudioTransportImpl audio_transport_;</div><div class="line"></div><div class="line">  <span class="comment">// Null audio poller is used to continue polling the audio streams if audio</span></div><div class="line">  <span class="comment">// playout is disabled so that audio processing still happens and the audio</span></div><div class="line">  <span class="comment">// stats are still updated.</span></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;NullAudioPoller&gt; null_audio_poller_;</div><div class="line"></div><div class="line">  <span class="built_in">std</span>::<span class="built_in">unordered_set</span>&lt;webrtc::AudioReceiveStream*&gt; receiving_streams_;</div><div class="line">  <span class="keyword">struct</span> StreamProperties &#123;</div><div class="line">    <span class="keyword">int</span> sample_rate_hz = <span class="number">0</span>;</div><div class="line">    <span class="keyword">size_t</span> num_channels = <span class="number">0</span>;</div><div class="line">  &#125;;</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">map</span>&lt;webrtc::AudioSendStream*, StreamProperties&gt; sending_streams_;</div><div class="line"></div><div class="line">  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(AudioState);</div><div class="line">&#125;;</div><div class="line">&#125;  <span class="comment">// namespace internal</span></div></pre></td></tr></table></figure></p>
+<p>如上面看到的，<code>AudioState</code> 对象在 <code>WebRtcVoiceEngine::Init()</code> 创建。<code>AudioState</code> 的 <code>Create()</code> 函数定义 (位于 <code>webrtc/src/audio/audio_state.cpp</code>) 如下：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">rtc:</span><span class="symbol">:scoped_refptr&lt;AudioState&gt;</span> <span class="symbol">AudioState:</span><span class="symbol">:Create</span>(</div><div class="line">    const <span class="symbol">AudioState:</span><span class="symbol">:Config&amp;</span> config) &#123;</div><div class="line">  <span class="keyword">return</span> new <span class="symbol">rtc:</span><span class="symbol">:RefCountedObject&lt;internal</span><span class="symbol">:</span><span class="symbol">:AudioState&gt;</span>(config);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>WebRTC 中实际在用的 <code>AudioState</code> 对象为 <code>webrtc::internal::AudioState</code> 的对象。</p>
+<p><code>AudioState</code> 完成的工作主要为：</p>
+<ol>
+<li>音频流水线的节点的 Getter</li>
+<li>管理音频静态流水线和动态流水线的连接，也就是添加和移除 <code>AudioSendStream</code> 和 <code>AudioReceiveStream</code>：把 <code>AudioSendStream</code> 注入给 <code>AudioTransportImpl</code> 或从中移除，把 <code>AudioReceiveStream</code> 添加到 <code>AudioMixer</code> 或从中移除。这些接口主要由 <code>webrtc::Call</code> 使用。</li>
+<li>控制播放和录制的启动和停止。</li>
+</ol>
+<p><code>webrtc::internal::AudioState</code> 的具体实现 (位于 <code>webrtc/src/audio/audio_state.cpp</code>) 如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">namespace</span> webrtc &#123;</div><div class="line"><span class="keyword">namespace</span> internal &#123;</div><div class="line"></div><div class="line">AudioState::AudioState(<span class="keyword">const</span> AudioState::Config&amp; config)</div><div class="line">    : config_(config),</div><div class="line">      audio_transport_(config_.audio_mixer, config_.audio_processing.get()) &#123;</div><div class="line">  process_thread_checker_.Detach();</div><div class="line">  RTC_DCHECK(config_.audio_mixer);</div><div class="line">  RTC_DCHECK(config_.audio_device_module);</div><div class="line">&#125;</div><div class="line"></div><div class="line">AudioState::~AudioState() &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  RTC_DCHECK(receiving_streams_.empty());</div><div class="line">  RTC_DCHECK(sending_streams_.empty());</div><div class="line">&#125;</div><div class="line"></div><div class="line">AudioProcessing* AudioState::audio_processing() &#123;</div><div class="line">  RTC_DCHECK(config_.audio_processing);</div><div class="line">  <span class="keyword">return</span> config_.audio_processing.get();</div><div class="line">&#125;</div><div class="line"></div><div class="line">AudioTransport* AudioState::audio_transport() &#123;</div><div class="line">  <span class="keyword">return</span> &amp;audio_transport_;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> AudioState::typing_noise_detected() <span class="keyword">const</span> &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">return</span> audio_transport_.typing_noise_detected();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::AddReceivingStream(webrtc::AudioReceiveStream* stream) &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  RTC_DCHECK_EQ(<span class="number">0</span>, receiving_streams_.count(stream));</div><div class="line">  receiving_streams_.insert(stream);</div><div class="line">  <span class="keyword">if</span> (!config_.audio_mixer-&gt;AddSource(</div><div class="line">          <span class="keyword">static_cast</span>&lt;internal::AudioReceiveStream*&gt;(stream))) &#123;</div><div class="line">    RTC_DLOG(LS_ERROR) &lt;&lt; <span class="string">"Failed to add source to mixer."</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Make sure playback is initialized; start playing if enabled.</span></div><div class="line">  <span class="keyword">auto</span>* adm = config_.audio_device_module.get();</div><div class="line">  <span class="keyword">if</span> (!adm-&gt;Playing()) &#123;</div><div class="line">    <span class="keyword">if</span> (adm-&gt;InitPlayout() == <span class="number">0</span>) &#123;</div><div class="line">      <span class="keyword">if</span> (playout_enabled_) &#123;</div><div class="line">        adm-&gt;StartPlayout();</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      RTC_DLOG_F(LS_ERROR) &lt;&lt; <span class="string">"Failed to initialize playout."</span>;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::RemoveReceivingStream(webrtc::AudioReceiveStream* stream) &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">auto</span> count = receiving_streams_.erase(stream);</div><div class="line">  RTC_DCHECK_EQ(<span class="number">1</span>, count);</div><div class="line">  config_.audio_mixer-&gt;RemoveSource(</div><div class="line">      <span class="keyword">static_cast</span>&lt;internal::AudioReceiveStream*&gt;(stream));</div><div class="line">  <span class="keyword">if</span> (receiving_streams_.empty()) &#123;</div><div class="line">    config_.audio_device_module-&gt;StopPlayout();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::AddSendingStream(webrtc::AudioSendStream* stream,</div><div class="line">                                  <span class="keyword">int</span> sample_rate_hz,</div><div class="line">                                  <span class="keyword">size_t</span> num_channels) &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">auto</span>&amp; properties = sending_streams_[stream];</div><div class="line">  properties.sample_rate_hz = sample_rate_hz;</div><div class="line">  properties.num_channels = num_channels;</div><div class="line">  UpdateAudioTransportWithSendingStreams();</div><div class="line"></div><div class="line">  <span class="comment">// Make sure recording is initialized; start recording if enabled.</span></div><div class="line">  <span class="keyword">auto</span>* adm = config_.audio_device_module.get();</div><div class="line">  <span class="keyword">if</span> (!adm-&gt;Recording()) &#123;</div><div class="line">    <span class="keyword">if</span> (adm-&gt;InitRecording() == <span class="number">0</span>) &#123;</div><div class="line">      <span class="keyword">if</span> (recording_enabled_) &#123;</div><div class="line">        adm-&gt;StartRecording();</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      RTC_DLOG_F(LS_ERROR) &lt;&lt; <span class="string">"Failed to initialize recording."</span>;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::RemoveSendingStream(webrtc::AudioSendStream* stream) &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">auto</span> count = sending_streams_.erase(stream);</div><div class="line">  RTC_DCHECK_EQ(<span class="number">1</span>, count);</div><div class="line">  UpdateAudioTransportWithSendingStreams();</div><div class="line">  <span class="keyword">if</span> (sending_streams_.empty()) &#123;</div><div class="line">    config_.audio_device_module-&gt;StopRecording();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::SetPlayout(<span class="keyword">bool</span> enabled) &#123;</div><div class="line">  RTC_LOG(INFO) &lt;&lt; <span class="string">"SetPlayout("</span> &lt;&lt; enabled &lt;&lt; <span class="string">")"</span>;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">if</span> (playout_enabled_ != enabled) &#123;</div><div class="line">    playout_enabled_ = enabled;</div><div class="line">    <span class="keyword">if</span> (enabled) &#123;</div><div class="line">      null_audio_poller_.reset();</div><div class="line">      <span class="keyword">if</span> (!receiving_streams_.empty()) &#123;</div><div class="line">        config_.audio_device_module-&gt;StartPlayout();</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      config_.audio_device_module-&gt;StopPlayout();</div><div class="line">      null_audio_poller_ =</div><div class="line">          absl::make_unique&lt;NullAudioPoller&gt;(&amp;audio_transport_);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::SetRecording(<span class="keyword">bool</span> enabled) &#123;</div><div class="line">  RTC_LOG(INFO) &lt;&lt; <span class="string">"SetRecording("</span> &lt;&lt; enabled &lt;&lt; <span class="string">")"</span>;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">if</span> (recording_enabled_ != enabled) &#123;</div><div class="line">    recording_enabled_ = enabled;</div><div class="line">    <span class="keyword">if</span> (enabled) &#123;</div><div class="line">      <span class="keyword">if</span> (!sending_streams_.empty()) &#123;</div><div class="line">        config_.audio_device_module-&gt;StartRecording();</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      config_.audio_device_module-&gt;StopRecording();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">AudioState::Stats AudioState::GetAudioInputStats() <span class="keyword">const</span> &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">const</span> voe::AudioLevel&amp; audio_level = audio_transport_.audio_level();</div><div class="line">  Stats result;</div><div class="line">  result.audio_level = audio_level.LevelFullRange();</div><div class="line">  RTC_DCHECK_LE(<span class="number">0</span>, result.audio_level);</div><div class="line">  RTC_DCHECK_GE(<span class="number">32767</span>, result.audio_level);</div><div class="line">  result.total_energy = audio_level.TotalEnergy();</div><div class="line">  result.total_duration = audio_level.TotalDuration();</div><div class="line">  <span class="keyword">return</span> result;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::SetStereoChannelSwapping(<span class="keyword">bool</span> enable) &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  audio_transport_.SetStereoChannelSwapping(enable);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AudioState::UpdateAudioTransportWithSendingStreams() &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;webrtc::AudioSendStream*&gt; sending_streams;</div><div class="line">  <span class="keyword">int</span> max_sample_rate_hz = <span class="number">8000</span>;</div><div class="line">  <span class="keyword">size_t</span> max_num_channels = <span class="number">1</span>;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; kv : sending_streams_) &#123;</div><div class="line">    sending_streams.push_back(kv.first);</div><div class="line">    max_sample_rate_hz = <span class="built_in">std</span>::max(max_sample_rate_hz, kv.second.sample_rate_hz);</div><div class="line">    max_num_channels = <span class="built_in">std</span>::max(max_num_channels, kv.second.num_channels);</div><div class="line">  &#125;</div><div class="line">  audio_transport_.UpdateSendingStreams(<span class="built_in">std</span>::move(sending_streams),</div><div class="line">                                        max_sample_rate_hz, max_num_channels);</div><div class="line">&#125;</div><div class="line">&#125;  <span class="comment">// namespace internal</span></div></pre></td></tr></table></figure></p>
+<p>总结一下：</p>
+<ul>
+<li><code>WebRtcVoiceEngine::Init()</code> 建立了 WebRTC 音频处理的静态流水线。</li>
+<li><code>AudioTransport</code> 将音频处理静态流水线的各个节点粘起来。</li>
+<li><code>webrtc::Call</code> 使用 <code>AudioState</code> 将音频处理流水线的静态部分和动态部分连接起来。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/音视频开发/" rel="tag"># 音视频开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/12/webrtc_audio_operations/" rel="next" title="WebRTC 中的基本音频处理操作">
+                <i class="fa fa-chevron-left"></i> WebRTC 中的基本音频处理操作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/21/cpp_lambda_capture_mod_and_rref/" rel="prev" title="C++ lambda 捕获模式与右值引用">
+                C++ lambda 捕获模式与右值引用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AudioTransport"><span class="nav-number">1.</span> <span class="nav-text">AudioTransport</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#播放"><span class="nav-number">1.1.</span> <span class="nav-text">播放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#录制"><span class="nav-number">1.2.</span> <span class="nav-text">录制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AudioState"><span class="nav-number">2.</span> <span class="nav-text">AudioState</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

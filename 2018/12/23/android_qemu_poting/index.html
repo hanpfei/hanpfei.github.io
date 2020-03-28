@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="虚拟化," />
+
+
+<meta name="description" content="Android QEMU 模拟器是我们日常 Android 开发中一个非常有力的工具，也是一套有很多值得玩的地方的系统，它还是开源的，主要由 Google Android 在维护。（Android QEMU 模拟器的源码下载、编译及调试方法可参考Android 模拟器下载、编译及调试）目前大多数开发者所用的开发机器都是 X86 架构的，因而 Google 官方对于Android QEMU 模拟器的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android QEMU 模拟器移植 - 编译">
+<meta property="og:url" content="https://www.wolfcstech.com/2018/12/23/android_qemu_poting/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="Android QEMU 模拟器是我们日常 Android 开发中一个非常有力的工具，也是一套有很多值得玩的地方的系统，它还是开源的，主要由 Google Android 在维护。（Android QEMU 模拟器的源码下载、编译及调试方法可参考Android 模拟器下载、编译及调试）目前大多数开发者所用的开发机器都是 X86 架构的，因而 Google 官方对于Android QEMU 模拟器的">
+<meta property="og:updated_time" content="2019-05-12T01:31:48.797Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android QEMU 模拟器移植 - 编译">
+<meta name="twitter:description" content="Android QEMU 模拟器是我们日常 Android 开发中一个非常有力的工具，也是一套有很多值得玩的地方的系统，它还是开源的，主要由 Google Android 在维护。（Android QEMU 模拟器的源码下载、编译及调试方法可参考Android 模拟器下载、编译及调试）目前大多数开发者所用的开发机器都是 X86 架构的，因而 Google 官方对于Android QEMU 模拟器的">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2018/12/23/android_qemu_poting/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Android QEMU 模拟器移植 - 编译 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2018/12/23/android_qemu_poting/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android QEMU 模拟器移植 - 编译</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-23T19:05:49+08:00">2018-12-23</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/虚拟化/" itemprop="url" rel="index"><span itemprop="name">虚拟化</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/12/23/android_qemu_poting/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/12/23/android_qemu_poting/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/12/23/android_qemu_poting/" class="leancloud_visitors" data-flag-title="Android QEMU 模拟器移植 - 编译">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Android QEMU 模拟器是我们日常 Android 开发中一个非常有力的工具，也是一套有很多值得玩的地方的系统，它还是开源的，主要由 Google Android 在维护。（Android QEMU 模拟器的源码下载、编译及调试方法可参考<a href="https://www.wolfcstech.com/2017/09/11/android_emulator_dev/">Android 模拟器下载、编译及调试</a>）目前大多数开发者所用的开发机器都是 X86 架构的，因而 Google 官方对于Android QEMU 模拟器的编译和运行，也假设都是在 X86 架构平台进行的。这种假设在整个 Android QEMU 模拟器的编译和运行方面都有所体现，如编译配置仅提供了 X86 的相关选项，编译 Android QEMU 模拟器所需的一些预编译第三方库仅提供了X86 或 X86_64 的版本，编译脚本里仅有对 X86 或 X86_64 主机平台的行为定义，在代码中运行时一些关键的操作上仅有X86 或 X86_64 主机平台的定义等。<br><a id="more"></a><br>Android QEMU 模拟器的玩法很多，某些场景下会有将 Android QEMU 模拟器移植到不同的主机 CPU 架构上的需要，特别是 ARM64 平台。当前已经出现了不少 ARM64 的服务器硬件平台，可以运行完整的 Ubuntu Linux 等系统。大多数 Android 终端采用 ARM 低功耗处理器，Android 系统运行于 ARM 平台，因而大多数 Android 应用对于 ARM 平台的支持会更好一点。ARM 目标 Android 系统运行于我们日常的 X86 开发机的模拟器上时，性能都非常差。在 ARM64 平台上运行 ARM 版模拟器，同时开启 KVM，则可以获得 Android QEMU 非常好的运行性能。（KVM/ARM 虚拟化技术的更多信息，可参考<a href="[http://systems.cs.columbia.edu/projects/kvm-arm/](http://systems.cs.columbia.edu/projects/kvm-arm/"> KVM/ARM: AN OPEN-SOURCE ARM VIRTUALIZATION SYSTEM</a><br>)）ARM64 服务器 + ARM 版模拟器 + KVM 也就顺利成章地成为许多有趣的场景的技术基础。</p>
+<p>本文以 ARM64 平台为例介绍把 Android QEMU 模拟器移植到 ARM64 Ubuntu Linux 平台的过程，其中 Code base 为 2019 年 3 月拉取，qemu 所用的 branch 为 emu-2.3-release。移植过程主要分为几个步骤：</p>
+<ul>
+<li>配置编译<ul>
+<li>配置脚本成功执行</li>
+<li>预编译库的编译移植。在 Android QEMU 模拟器的源码库中有编译安装这些库的脚本，但可能需要有针对性地对脚本做些移植。具体需要移植的库主要包括如下这些：<ul>
+<li>Zlib</li>
+<li>Libpng</li>
+<li>Libxml2</li>
+<li>LibCURL</li>
+<li>LibANGLEtranslation</li>
+<li>Protobuf</li>
+<li>Breakpad</li>
+<li>Qt</li>
+<li>e2fsprogs</li>
+<li>ffmpeg</li>
+<li>x264</li>
+</ul>
+</li>
+<li>构建配置文件的移植修改，主要指 mk 文件</li>
+</ul>
+</li>
+<li>运行时问题。代码里面有一些与特定硬件平台相关的代码，需要专门针对 ARM 平台做一些适配</li>
+<li>nowindow 及功能扩充。对于某些需要运行模拟器的机器，显示模拟器的窗口可能不太方便，因而需要将模拟器中窗口显示的部分拆除掉。功能扩充则指的是，某些运行模拟器的机器，渲染能力比较弱，则可以将模拟器中虚拟 Android 系统相关的逻辑和图形渲染相关的逻辑分开在不同的机器上运行。</li>
+</ul>
+<p>解决了上面的重重困难之后，Android QEMU 模拟器应用程序本身总算是具备了运行的条件。但要真正让 Android QEMU 模拟器运行起来，还缺少一项关键的东西，那就是 AVD。有了 AVD，Android QEMU 模拟器应用程序才能知道要虚拟什么样的 Android 系统。AVD 的创建，就像我们平常在 X86 的开发机器上所做的那样，需要通过 Android SDK 来完成。除了 AVD，我们日常 Android 开发工具中必不可少的一些工具，如 adb 等也需要能够运行起来，这也离不开 Android SDK。但 Android SDK 不能用我们平常用的那个 X86 的版本，而需要用专门为 ARM 平台移植的版本。在上面的移植步骤之后增加一个关键的步骤：</p>
+<ul>
+<li>Android SDK 的移植</li>
+</ul>
+<p>本文主要关注 Android QEMU 模拟器应用程序本身的配置编译问题。</p>
+<h1 id="1-编译问题"><a href="#1-编译问题" class="headerlink" title="1. 编译问题"></a>1. 编译问题</h1><p>Android QEMU 模拟器的源码中提供了构建脚本，可以用来构建生成二进制可执行文件。具体而言，是 <code>qemu/android/rebuild.sh</code>。切换进 qemu 源码根目录，像下面这样执行 <code>qemu/android/rebuild.sh</code> 可以进行编译：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">qemu$</span> <span class="keyword">android/rebuild.sh </span>--no-tests</div><div class="line"><span class="symbol">Configuring</span> <span class="keyword">build.</span></div><div class="line"><span class="keyword">Building </span>sources.</div><div class="line"><span class="symbol">Ignoring</span> unit tests suite.</div><div class="line"><span class="symbol">Done.</span> !!</div></pre></td></tr></table></figure></p>
+<p>岁月静好，一切都是安安静静的。执行 <code>rebuild.sh</code> 脚本，并加上 <code>--help</code> 参数，可以看到这个脚本更详细的用法：<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">qemu$ android/rebuild.sh --help</div><div class="line">Configuring build.</div><div class="line"></div><div class="line">Usage: rebuild.sh [options]</div><div class="line">Options: [defaults in brackets after descriptions]</div><div class="line">Standard options:</div><div class="line">  -<span class="ruby">-help                      Print this message</span></div><div class="line">  -<span class="ruby">-cc=PATH                   Specify C compiler [gcc]</span></div><div class="line">  -<span class="ruby">-cxx=PATH                  Specify C++ compiler [g++]</span></div><div class="line">  -<span class="ruby">-no-strip                  Do <span class="keyword">not</span> strip emulator executables.</span></div><div class="line">  -<span class="ruby">-strip                     Strip emulator executables (default).</span></div><div class="line">  -<span class="ruby">-symbols                   Generating Breakpad symbol files.</span></div><div class="line">  -<span class="ruby">-no-symbols                Do <span class="keyword">not</span> generate Breakpad symbol files (default).</span></div><div class="line">  -<span class="ruby">-crash-[staging,prod]      Send crashes to specific server (no crash reporting by default).</span></div><div class="line">  -<span class="ruby">-gles=dgl                  Build the OpenGLES to Desktop OpenGL Translator (default)</span></div><div class="line">  -<span class="ruby">-gles=angle                Build the OpenGLES to ANGLE wrapper</span></div><div class="line">  -<span class="ruby">-aosp-prebuilts-dir=&lt;path&gt; Use specific prebuilt toolchain root directory [emulator/prebuilts]</span></div><div class="line">  -<span class="ruby">-out-dir=&lt;path&gt;            Use specific output directory [objs/]</span></div><div class="line">  -<span class="ruby">-mingw                     Build Windows executable on Linux</span></div><div class="line">  -<span class="ruby">-verbose                   Verbose configuration</span></div><div class="line">  -<span class="ruby">-debug                     Build debug version of the emulator</span></div><div class="line">  -<span class="ruby">-sanitizer=[...]           Build with LLVM sanitizer (sanitizer=[address, thread])</span></div><div class="line">  -<span class="ruby">-no-pcbios                 Disable copying of PC Bios files</span></div><div class="line">  -<span class="ruby">-no-tests                  Don<span class="string">'t run unit test suite</span></span></div><div class="line">  -<span class="ruby"><span class="string">-benchmarks                Build benchmark programs.</span></span></div><div class="line">  -<span class="ruby"><span class="string">-lto                       Force link-time optimization.</span></span></div><div class="line"></div><div class="line">ERROR: Configuration error, please run ./android/configure.sh to see why.</div></pre></td></tr></table></figure></p>
+<p>在执行 <code>rebuild.sh</code> 脚本时，加上 <code>--no-tests</code> 参数，可以在编译成功之后不运行单元测试，以加快编译完成时间，加上 <code>--verbose</code> 参数可以输出更详细的编译过程信息。</p>
+<p><code>rebuild.sh</code> 脚本的功能可以简单地理解为，清理之前编译遗留下来的配置文件和中间文件，执行 <code>qemu/android/configure.sh</code> 脚本完成配置，然后执行 <code>make</code> 完成编译。了解了这一点对于我们分析配置和编译过程中的错误非常有意义——当我们为出现的某个错误修改了代码时，不用每次都执行 <code>rebuild.sh</code> 脚本完整的进行一次构建来验证。</p>
+<h2 id="1-1-配置"><a href="#1-1-配置" class="headerlink" title="1.1 配置"></a>1.1 配置</h2><p>如我们上面提到的，配置在执行 <code>rebuild.sh</code> 脚本时，它调用 <code>qemu/android/configure.sh</code> 脚本完成。<code>qemu/android/configure.sh</code> 脚本也可以单独执行进行配置，如下面这样：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">qemu$ android/configure.<span class="keyword">sh</span> --<span class="keyword">no</span>-tests --<span class="keyword">verbose</span></div></pre></td></tr></table></figure></p>
+<p>在 ARM 64 Ubuntu 平台上执行 <code>qemu/android/configure.sh</code> 脚本时，遇到的第一个问题是如下的报错：<br><figure class="highlight subunit"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qemu$ android/configure.sh --no-tests --verbose</div><div class="line"><span class="keyword">ERROR: </span>aarch64 builds are not supported!</div></pre></td></tr></table></figure></p>
+<p>这主要是由 <code>qemu/android/configure.sh</code> 脚本中设置 BUILD_ARCH 的逻辑引起的，如下面这段代码（在 41 行左右）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">BUILD_ARCH=$(uname -m)</div><div class="line"><span class="keyword">case</span> <span class="string">"<span class="variable">$BUILD_ARCH</span>"</span> <span class="keyword">in</span></div><div class="line">    i?86) BUILD_ARCH=x86</div><div class="line">    ;;</div><div class="line">    x86_64|amd64) BUILD_ARCH=x86_64</div><div class="line">    ;;</div><div class="line">    *) panic <span class="string">"<span class="variable">$BUILD_ARCH</span> builds are not supported!"</span></div><div class="line">    ;;</div><div class="line"><span class="keyword">esac</span></div></pre></td></tr></table></figure></p>
+<p>需要在上面这段代码中加入对与 ARM 64 平台的支持。具体怎么加？上面的代码其实已经给出了提示，ARM 64 的 arch 值可以通过 <code>uname -m</code> 命令获得：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qemu<span class="variable">$ </span>uname -m</div><div class="line">aarch64</div></pre></td></tr></table></figure></p>
+<p>加完之后，脚本中配置 BUILD_ARCH 的代码将像下面这样：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">BUILD_ARCH=$(uname -m)</div><div class="line"><span class="keyword">case</span> <span class="string">"<span class="variable">$BUILD_ARCH</span>"</span> <span class="keyword">in</span></div><div class="line">    i?86) BUILD_ARCH=x86</div><div class="line">    ;;</div><div class="line">    x86_64|amd64) BUILD_ARCH=x86_64</div><div class="line">    ;;</div><div class="line">    aarch64) BUILD_ARCH=aarch64</div><div class="line">    ;;</div><div class="line">    *) panic <span class="string">"<span class="variable">$BUILD_ARCH</span> builds are not supported!"</span></div><div class="line">    ;;</div><div class="line"><span class="keyword">esac</span></div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>qemu/android/configure.sh</code> 脚本，遇到如下的错误：<br><figure class="highlight subunit"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">qemu$ android/configure.sh --no-tests --verbose</div><div class="line">Auto-config: --gles=dgl</div><div class="line">Auto-config: --out-dir=objs</div><div class="line">Prebuilt   : CCACHE=/usr/bin/ccache</div><div class="line"><span class="keyword">ERROR: </span>Cannot generate SDK toolchain!</div></pre></td></tr></table></figure></p>
+<p>这个错误信息在 <code>qemu/android/configure.sh</code> 脚本中抛出，但原因是在执行 <code>qemu/android/scripts/gen-android-sdk-toolchain.sh</code> 脚本时出错导致，错误的原因有多个，一是在 <code>qemu/android/scripts/utils/common.shi</code> 脚本中定义的 <code>get_build_arch()</code> 函数有 bug 所致，该函数的定义如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Return the build machine's CPU architecture.</span></div><div class="line"><span class="comment"># Valid return values are:</span></div><div class="line"><span class="comment">#     x86</span></div><div class="line"><span class="comment">#     x86_64</span></div><div class="line"><span class="function"><span class="title">get_build_arch</span></span> () &#123;</div><div class="line">    <span class="built_in">local</span> TEST</div><div class="line">    <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$_SHU_BUILD_ARCH</span>"</span> ]; <span class="keyword">then</span></div><div class="line">        <span class="keyword">case</span> $(get_build_os) <span class="keyword">in</span></div><div class="line">            linux|darwin)</div><div class="line">                _SHU_BUILD_ARCH=$(uname -m)</div><div class="line">                <span class="comment"># Kernel bitness might not match user space, so test</span></div><div class="line">                <span class="comment"># the bitness of our shell to know what the user is</span></div><div class="line">                <span class="comment"># really running.</span></div><div class="line">                TEST=$(/usr/bin/file -L <span class="variable">$SHELL</span> 2&gt;/dev/null | grep <span class="string">'x86[_-]64'</span>)</div><div class="line">                <span class="keyword">if</span> [ <span class="string">"<span class="variable">$TEST</span>"</span> ]; <span class="keyword">then</span></div><div class="line">                    _SHU_BUILD_ARCH=x86_64</div><div class="line">                <span class="keyword">fi</span></div><div class="line">                ;;</div><div class="line">            windows|cygwin)</div><div class="line">                <span class="keyword">case</span> <span class="variable">$PROCESSOR_ARCHITECTURE</span> <span class="keyword">in</span></div><div class="line">                    ADM64)</div><div class="line">                        _SHU_BUILD_ARCH=x86_64</div><div class="line">                        ;;</div><div class="line">                    *)</div><div class="line">                        _SHU_BUILD_ARCH=x86</div><div class="line">                        ;;</div><div class="line">                <span class="keyword">esac</span></div><div class="line">                ;;</div><div class="line">            *)</div><div class="line">                _SHU_BUILD_ARCH=$(uname -p)</div><div class="line">                ;;</div><div class="line">        <span class="keyword">esac</span></div><div class="line">    <span class="keyword">fi</span></div><div class="line">    <span class="built_in">echo</span> <span class="string">"<span class="variable">$_SHU_BUILD_ARCH</span>"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中 bug 主要出在 <code>TEST=$(/usr/bin/file -L $SHELL 2&gt;/dev/null | grep &#39;x86[_-]64&#39;)</code>。这一行想通过 file 命令获取 shell 程序的文件属性中 CPU 架构有关的信息来获取主机的 CPU 架构信息，但当 <code>grep &#39;x86[_-]64&#39;</code> 失败时，会导致整个脚本以非零错误值退出。另外这个函数本身没有考虑对非 x86 架构的支持。修正这个问题：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Return the build machine's CPU architecture.</span></div><div class="line"><span class="comment"># Valid return values are:</span></div><div class="line"><span class="comment">#     x86</span></div><div class="line"><span class="comment">#     x86_64</span></div><div class="line"><span class="function"><span class="title">get_build_arch</span></span> () &#123;</div><div class="line">    <span class="built_in">local</span> TEST</div><div class="line">    <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$_SHU_BUILD_ARCH</span>"</span> ]; <span class="keyword">then</span></div><div class="line">        <span class="keyword">case</span> $(get_build_os) <span class="keyword">in</span></div><div class="line">            linux|darwin)</div><div class="line">                _SHU_BUILD_ARCH=$(uname -m)</div><div class="line">                <span class="comment"># Kernel bitness might not match user space, so test</span></div><div class="line">                <span class="comment"># the bitness of our shell to know what the user is</span></div><div class="line">                <span class="comment"># really running.</span></div><div class="line">                TEST=$(/usr/bin/file -L <span class="variable">$SHELL</span> 2&gt;/dev/null | grep <span class="string">'x86[_-]64'</span> | cat)</div><div class="line">                <span class="keyword">if</span> [ <span class="string">"<span class="variable">$TEST</span>"</span> ]; <span class="keyword">then</span></div><div class="line">                    _SHU_BUILD_ARCH=x86_64</div><div class="line">                <span class="keyword">fi</span></div><div class="line">                <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$_SHU_BUILD_ARCH</span>"</span> ]; <span class="keyword">then</span></div><div class="line">                    _SHU_BUILD_ARCH=$(uname -p)</div><div class="line">                <span class="keyword">fi</span></div><div class="line">                ;;</div><div class="line">            windows|cygwin)</div><div class="line">                <span class="keyword">case</span> <span class="variable">$PROCESSOR_ARCHITECTURE</span> <span class="keyword">in</span></div><div class="line">                    ADM64)</div><div class="line">                        _SHU_BUILD_ARCH=x86_64</div><div class="line">                        ;;</div><div class="line">                    *)</div><div class="line">                        _SHU_BUILD_ARCH=x86</div><div class="line">                        ;;</div><div class="line">                <span class="keyword">esac</span></div><div class="line">                ;;</div><div class="line">            *)</div><div class="line">                _SHU_BUILD_ARCH=$(uname -p)</div><div class="line">                ;;</div><div class="line">        <span class="keyword">esac</span></div><div class="line">    <span class="keyword">fi</span></div><div class="line">    <span class="built_in">echo</span> <span class="string">"<span class="variable">$_SHU_BUILD_ARCH</span>"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>修改完问题依旧:<br><figure class="highlight subunit"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">qemu$ android/configure.sh --no-tests  --verbose</div><div class="line">Auto-config: --gles=dgl</div><div class="line">Auto-config: --out-dir=objs</div><div class="line">Prebuilt   : CCACHE=/usr/bin/ccache</div><div class="line"><span class="keyword">ERROR: </span>Host system 'linux-aarch64' is not supported by this script!</div><div class="line"><span class="keyword">ERROR: </span>Cannot generate SDK toolchain!</div></pre></td></tr></table></figure></p>
+<p>在 <code>qemu/android/scripts/gen-android-sdk-toolchain.sh</code> 中对于 <code>GNU_CONFIG_HOST</code> 和 <code>EXTRA_CFLAGS</code> 的配置也需要有对 ARM 64 平台的支持：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">   <span class="keyword">case</span> <span class="variable">$CURRENT_HOST</span> <span class="keyword">in</span></div><div class="line">       linux-aarch64)</div><div class="line">           GNU_CONFIG_HOST=aarch64-linux</div><div class="line">           ;;</div><div class="line">       linux-x86_64)</div><div class="line">           GNU_CONFIG_HOST=x86_64-linux</div><div class="line">           ;;</div><div class="line">       linux-x86)</div><div class="line">           GNU_CONFIG_HOST=i686-linux</div><div class="line">           ;;</div><div class="line">       windows-x86)</div><div class="line">           GNU_CONFIG_HOST=i686-w64-mingw32</div><div class="line">           ;;</div><div class="line">       windows-x86_64)</div><div class="line">           GNU_CONFIG_HOST=x86_64-w64-mingw32</div><div class="line">           ;;</div><div class="line">       darwin-*)</div><div class="line">           <span class="comment"># Use host compiler.</span></div><div class="line">           GNU_CONFIG_HOST=</div><div class="line">           ;;</div><div class="line">       *)</div><div class="line">           panic <span class="string">"Host system '<span class="variable">$CURRENT_HOST</span>' is not supported by this script!"</span></div><div class="line">           ;;</div><div class="line">   <span class="keyword">esac</span></div><div class="line">. . . . . .</div><div class="line">   <span class="keyword">case</span> <span class="variable">$CURRENT_HOST</span> <span class="keyword">in</span></div><div class="line">       darwin-x86_64)</div><div class="line"></div><div class="line">           common_FLAGS=<span class="string">"-target x86_64-apple-darwin12.0.0"</span></div><div class="line">           var_append common_FLAGS <span class="string">" -isysroot <span class="variable">$OSX_SDK_ROOT</span>"</span></div><div class="line">           var_append common_FLAGS <span class="string">" -mmacosx-version-min=<span class="variable">$OSX_DEPLOYMENT_TARGET</span>"</span></div><div class="line">           var_append common_FLAGS <span class="string">" -DMACOSX_DEPLOYMENT_TARGET=<span class="variable">$OSX_DEPLOYMENT_TARGET</span>"</span></div><div class="line">           EXTRA_CFLAGS=<span class="string">"<span class="variable">$common_FLAGS</span>"</span></div><div class="line">           EXTRA_CXXFLAGS=<span class="string">"<span class="variable">$common_FLAGS</span>"</span></div><div class="line">           <span class="keyword">if</span> [ <span class="string">"<span class="variable">$OPT_CXX11</span>"</span> ]; <span class="keyword">then</span></div><div class="line">               var_append EXTRA_CXXFLAGS <span class="string">"-stdlib=libc++"</span></div><div class="line">           <span class="keyword">fi</span></div><div class="line">           EXTRA_LDFLAGS=<span class="string">"-syslibroot <span class="variable">$OSX_SDK_ROOT</span>"</span></div><div class="line">           ;;</div><div class="line">       darwin-x86)</div><div class="line">           panic <span class="string">"Host system '<span class="variable">$CURRENT_HOST</span>' is not supported by this script!"</span></div><div class="line">           ;;</div><div class="line">       *-x86)</div><div class="line">           EXTRA_CFLAGS=<span class="string">"-m32"</span></div><div class="line">           EXTRA_CXXFLAGS=<span class="string">"-m32"</span></div><div class="line">           ;;</div><div class="line">       *-x86_64)</div><div class="line">           EXTRA_CFLAGS=<span class="string">"-m64"</span></div><div class="line">           EXTRA_CXXFLAGS=<span class="string">"-m64"</span></div><div class="line">           ;;</div><div class="line">       *-aarch64)</div><div class="line">           EXTRA_CFLAGS=<span class="string">""</span></div><div class="line">           EXTRA_CXXFLAGS=<span class="string">"-std=c++11"</span></div><div class="line">           EXTRA_LDFLAGS=<span class="string">""</span></div><div class="line">           ;;</div><div class="line">       *)</div><div class="line">           panic <span class="string">"Host system '<span class="variable">$CURRENT_HOST</span>' is not supported by this script!"</span></div><div class="line">           ;;</div><div class="line">   <span class="keyword">esac</span></div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>qemu/android/configure.sh</code> 脚本，遇到如下的错误：<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ android/configure.<span class="keyword">sh</span> --<span class="keyword">no</span>-tests  --verbose</div><div class="line">Auto-config: --gles=dgl</div><div class="line">Auto-config: --<span class="keyword">out</span>-<span class="keyword">dir</span>=objs</div><div class="line">Prebuilt   : CCACHE=/usr/bin/ccache</div><div class="line">Object     : objs/build/toolchain/aarch64-linux-gcc -o /tmp/android-29561-<span class="keyword">test</span>.o -c  /tmp/android-29561-<span class="keyword">test</span>.c</div><div class="line">your C compiler doesn't seem to work: objs/build/toolchain/aarch64-linux-gcc</div><div class="line">ccache: <span class="keyword">error</span>: execv of emulator/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8/bin/x86_64-linux-gcc failed: Exec <span class="keyword">format</span> <span class="keyword">error</span></div></pre></td></tr></table></figure></p>
+<p>这个是在 <code>android/configure.sh</code> 脚本中（大约115 行），调用由 <code>qemu/android/scripts/gen-android-sdk-toolchain.sh</code> 生成的 gcc 编译器包装器执行编译测试时发生的错误。<code>qemu/android/scripts/gen-android-sdk-toolchain.sh</code> 脚本会在 <code>objs/build/toolchain/</code> 目录下生成构建工具链的包装器脚本：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">qemu$ <span class="keyword">ls</span> objs/build/toolchain/</div><div class="line">aarch64-linux-<span class="keyword">ar</span>  aarch64-linux-<span class="keyword">c</span>++  aarch64-linux-g++  aarch64-linux-ld  aarch64-linux-objcopy  aarch64-linux-ranlib   aarch64-linux-strip</div><div class="line">aarch64-linux-<span class="keyword">as</span>  aarch64-linux-cpp  aarch64-linux-gcc  aarch64-linux-<span class="keyword">nm</span>  aarch64-linux-objdump  aarch64-linux-strings  pkgconfig</div></pre></td></tr></table></figure></p>
+<p>这些脚本的内容类似与下面这样：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">qemu$ cat objs/build/toolchain/aarch64-linux-gcc </div><div class="line"><span class="meta">#!/bin/sh</span></div><div class="line"><span class="comment"># Auto-generated by gen-android-sdk-toolchain.sh, DO NOT EDIT!!</span></div><div class="line"></div><div class="line"><span class="comment"># Environment setup</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># Tool invokation.</span></div><div class="line">/usr/bin/ccache emulator/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8/bin/x86_64-linux-gcc   <span class="string">"<span class="variable">$@</span>"</span></div></pre></td></tr></table></figure></p>
+<p>即 <code>qemu/android/scripts/gen-android-sdk-toolchain.sh</code> 脚本根据系统配置，将构建工具链的路径统一化。对于 ARM 64 平台的编译，上面的脚本内容显然是错误的。但这些内容是怎么来的呢？它们是在 <code>qemu/android/scripts/gen-android-sdk-toolchain.sh</code> 脚本通过 prepare_build_for_host -&gt; gen_wrapper_toolchain -&gt; gen_wrapper_program 这一系列函数调用产生的。路径中的一些前缀，在 prepare_build_for_host 函数中，通过调用定义在 <code>qemu/android/scripts/utils/aosp_dir.shi</code> 文件中的 <code>aosp_prebuilt_toolchain_subdir_for</code> 和 <code>aosp_prebuilt_toolchain_prefix_for</code> 函数获得，这两个函数缺乏对于 ARM 64 的支持。</p>
+<p>修正这个问题（即修改 <code>qemu/android/scripts/utils/aosp_dir.shi</code> 文件中的 <code>aosp_prebuilt_toolchain_subdir_for</code> 和 <code>aosp_prebuilt_toolchain_prefix_for</code> 函数定义）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Return the AOSP subdirectory that contains the prebuilt toolchain to be</span></div><div class="line"><span class="comment"># used for a given host system.</span></div><div class="line"><span class="comment"># $1: System name (e.g. 'linux' or 'linux-x86_64')</span></div><div class="line"><span class="function"><span class="title">aosp_prebuilt_toolchain_subdir_for</span></span> () &#123;</div><div class="line">    <span class="keyword">case</span> <span class="variable">$1</span> <span class="keyword">in</span></div><div class="line">        linux-aarch64)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"prebuilts/gcc/linux-aarch64/host/gcc-arm-none-eabi"</span></div><div class="line">            ;;</div><div class="line">        linux*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8"</span></div><div class="line">            ;;</div><div class="line">        darwin*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"prebuilts/clang/darwin-x86/sdk/3.5"</span></div><div class="line">            ;;</div><div class="line">        windows*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"prebuilts/gcc/linux-x86/host/x86_64-w64-mingw32-4.8"</span></div><div class="line">            ;;</div><div class="line">    <span class="keyword">esac</span></div><div class="line">&#125;</div><div class="line">. . . . . .</div><div class="line"><span class="function"><span class="title">aosp_prebuilt_toolchain_prefix_for</span></span> () &#123;</div><div class="line">    <span class="keyword">case</span> <span class="variable">$1</span> <span class="keyword">in</span></div><div class="line">        linux-aarch64)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"arm-none-eabi-"</span></div><div class="line">            ;;</div><div class="line">        linux*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"x86_64-linux-"</span></div><div class="line">            ;;</div><div class="line">        darwin*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">""</span></div><div class="line">            ;;</div><div class="line">        windows*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"x86_64-w64-mingw32-"</span></div><div class="line">            ;;</div><div class="line">    <span class="keyword">esac</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>qemu/android/configure.sh</code> 脚本，遇到如下的错误：<br><figure class="highlight vbnet"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Copying Qt prebuilt libraries <span class="keyword">from</span> emulator/prebuilts/android-emulator-build/qt</div><div class="line">Copying e2fsprogs binaries.</div><div class="line">Copying emulator/prebuilts/android-emulator-build/common/e2fsprogs/linux-x86_64/sbin/* -&gt; objs/bin64/</div><div class="line">Copying toolchain libraries <span class="keyword">to</span> bundle <span class="keyword">with</span> the program</div><div class="line">  Bundling libstdc++</div><div class="line">cp: cannot stat <span class="comment">'emulator/prebuilts/gcc/linux-aarch64/host/gcc-arm-none-eabi/arm-none-eabi/lib/libstdc++.so': No such file or directory</span></div><div class="line"><span class="keyword">ERROR</span>: Cound<span class="comment">'t copy emulator/prebuilts/gcc/linux-aarch64/host/gcc-arm-none-eabi/arm-none-eabi/lib/libstdc++.so <span class="doctag">--&gt;</span> objs/lib/libstdc++/libstdc++.so</span></div></pre></td></tr></table></figure></p>
+<p>这个是在拷贝 C++ 标准库是出现的问题。需要修改几个地方：一是 <code>qemu/android/scripts/utils/aosp_dir.shi</code> 文件中的 <code>aosp_prebuilt_toolchain_sysroot_subdir_for</code> 函数，提供对 ARM 64 的支持，找到正确的文件路径：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Return the AOSP subdirectory corresponding to the toolchain's sysroot.</span></div><div class="line"><span class="comment"># $1: System name (e.g. 'linux-x86' or 'linux-x86_64')</span></div><div class="line"><span class="function"><span class="title">aosp_prebuilt_toolchain_sysroot_subdir_for</span></span> () &#123;</div><div class="line">    <span class="built_in">local</span> PREBUILT_DIR</div><div class="line">    PREBUILT_DIR=<span class="string">"<span class="variable">$(aosp_prebuilt_toolchain_subdir_for "$1")</span>"</span></div><div class="line">    <span class="keyword">case</span> <span class="variable">$1</span> <span class="keyword">in</span></div><div class="line">        linux-aarch64)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"<span class="variable">$&#123;PREBUILT_DIR&#125;</span>/arm-none-eabi"</span></div><div class="line">            ;;</div><div class="line">        linux*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"<span class="variable">$&#123;PREBUILT_DIR&#125;</span>/x86_64-linux"</span></div><div class="line">            ;;</div><div class="line">        darwin*)</div><div class="line">            <span class="comment"># We use the developer machine's system SDK.</span></div><div class="line">            <span class="built_in">printf</span> <span class="string">""</span></div><div class="line">            ;;</div><div class="line">        windows*)</div><div class="line">            <span class="built_in">printf</span> <span class="string">"<span class="variable">$&#123;PREBUILT_DIR&#125;</span>/x86_64-w64-mingw32"</span></div><div class="line">            ;;</div><div class="line">    <span class="keyword">esac</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>二是 <code>qemu/android/configure.sh</code> 脚本中的 copy_toolchain_lib 函数及该函数调用的地方：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#   $3: Name of the library (without the .so suffix).</span></div><div class="line"><span class="function"><span class="title">copy_toolchain_lib</span></span> () &#123;</div><div class="line">    <span class="built_in">local</span> DESTDIR SRCDIR NAME</div><div class="line">    <span class="built_in">local</span> FROM REALNAME</div><div class="line">    <span class="built_in">local</span> SYMLINK SYMNAME</div><div class="line">    DESTDIR=<span class="string">"<span class="variable">$1</span>"</span></div><div class="line">    SRCDIR=<span class="string">"<span class="variable">$2</span>"</span></div><div class="line">    NAME=<span class="string">"<span class="variable">$3</span>.so"</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> [ ! <span class="_">-f</span> <span class="string">"<span class="variable">$&#123;SRCDIR&#125;</span>/<span class="variable">$&#123;NAME&#125;</span>"</span> ]; <span class="keyword">then</span></div><div class="line">        NAME=<span class="string">"<span class="variable">$3</span>.a"</span></div><div class="line">    <span class="keyword">fi</span></div><div class="line"></div><div class="line">    mkdir -p <span class="string">"<span class="variable">$&#123;DESTDIR&#125;</span>"</span> || panic <span class="string">"Failed to created <span class="variable">$&#123;DESTDIR&#125;</span>"</span></div><div class="line">. . . . . .</div><div class="line">            <span class="keyword">for</span> BUNDLED_LIB <span class="keyword">in</span> libstdc++; <span class="keyword">do</span></div><div class="line">                <span class="built_in">log</span> <span class="string">"  Bundling <span class="variable">$&#123;BUNDLED_LIB&#125;</span>"</span></div><div class="line"></div><div class="line">                <span class="keyword">case</span> <span class="string">"<span class="variable">$BUILD_ARCH</span>"</span> <span class="keyword">in</span></div><div class="line">                    aarch64) copy_toolchain_lib <span class="string">"<span class="variable">$&#123;OUT_DIR&#125;</span>/lib/libstdc++"</span> <span class="string">"<span class="variable">$&#123;TOOLCHAIN_SYSROOT&#125;</span>/lib"</span> <span class="string">"<span class="variable">$&#123;BUNDLED_LIB&#125;</span>"</span></div><div class="line">                    ;;</div><div class="line">                    *) copy_toolchain_lib <span class="string">"<span class="variable">$&#123;OUT_DIR&#125;</span>/lib/libstdc++"</span> <span class="string">"<span class="variable">$&#123;TOOLCHAIN_SYSROOT&#125;</span>/lib32"</span> <span class="string">"<span class="variable">$&#123;BUNDLED_LIB&#125;</span>"</span></div><div class="line">                    ;;</div><div class="line">                <span class="keyword">esac</span></div><div class="line">                copy_toolchain_lib <span class="string">"<span class="variable">$&#123;OUT_DIR&#125;</span>/lib64/libstdc++"</span> <span class="string">"<span class="variable">$&#123;TOOLCHAIN_SYSROOT&#125;</span>/lib64"</span> <span class="string">"<span class="variable">$&#123;BUNDLED_LIB&#125;</span>"</span></div><div class="line">            <span class="keyword">done</span></div></pre></td></tr></table></figure></p>
+<p>这是由于没有32 位 ARM 的平台的 C++ 标准库的动态库文件。</p>
+<p>再次执行 <code>qemu/android/configure.sh</code> 脚本，终于成功完成：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line">qemu_3<span class="number">.1</span>$ android/configure.sh --no-tests --verbose</div><div class="line">Auto-<span class="string">config:</span> --gles=dgl</div><div class="line">Auto-<span class="string">config:</span> --out-dir=objs</div><div class="line"><span class="string">Prebuilt   :</span> CCACHE=<span class="regexp">/usr/</span>bin/ccache</div><div class="line"><span class="string">Object     :</span> objs<span class="regexp">/build/</span>toolchain<span class="regexp">/aarch64-linux-gcc -o /</span>tmp<span class="regexp">/android-25912-test.o -c  /</span>tmp/android<span class="number">-25912</span>-test.c</div><div class="line"><span class="string">CC         :</span> compiler check ok (objs<span class="regexp">/build/</span>toolchain/aarch64-linux-gcc)</div><div class="line"><span class="string">CC_VER     :</span> arm-none-eabi-gcc (Ubuntu/Linaro <span class="number">5.4</span><span class="number">.0</span><span class="number">-6</span>ubuntu1~<span class="number">16.04</span><span class="number">.11</span>) <span class="number">5.4</span><span class="number">.0</span> <span class="number">20160609</span></div><div class="line">Copyright (C) <span class="number">2015</span> Free Software Foundation, Inc.</div><div class="line">This is free software; see the source <span class="keyword">for</span> copying conditions.  There is NO</div><div class="line">warranty; not even <span class="keyword">for</span> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div><div class="line"><span class="string">Link      :</span> objs<span class="regexp">/build/</span>toolchain<span class="regexp">/aarch64-linux-gcc -o /</span>tmp<span class="regexp">/android-25912-test /</span>tmp/android<span class="number">-25912</span>-test.o </div><div class="line"><span class="string">LD         :</span> linker check ok (objs<span class="regexp">/build/</span>toolchain/aarch64-linux-gcc)</div><div class="line"><span class="string">AR         :</span> archiver (objs<span class="regexp">/build/</span>toolchain/aarch64-linux-ar)</div><div class="line"><span class="string">GLES       :</span> Found GPU emulation <span class="string">sources:</span> android/android-emugl</div><div class="line">PC <span class="string">Bios    :</span> Probing emulator<span class="regexp">/prebuilts/</span>qemu-kernel<span class="regexp">/x86/</span>pc-bios</div><div class="line">PC <span class="string">Bios    :</span> Copying bios.bin</div><div class="line">PC <span class="string">Bios    :</span> Copying vgabios-cirrus.bin</div><div class="line">PC <span class="string">Bios    :</span> Copying bios<span class="number">-256</span>k.bin</div><div class="line">PC <span class="string">Bios    :</span> Copying efi-virtio.rom</div><div class="line">PC <span class="string">Bios    :</span> Copying kvmvapic.bin</div><div class="line">PC <span class="string">Bios    :</span> Copying linuxboot.bin</div><div class="line">PC <span class="string">Bios    :</span> Copying linuxboot_dma.bin</div><div class="line"><span class="string">Object     :</span> objs<span class="regexp">/build/</span>toolchain<span class="regexp">/aarch64-linux-gcc -o /</span>tmp<span class="regexp">/android-25912-test.o -c  /</span>tmp/android<span class="number">-25912</span>-test.c</div><div class="line"><span class="string">CC         :</span> compiler check ok (objs<span class="regexp">/build/</span>toolchain/aarch64-linux-gcc)</div><div class="line"><span class="string">CC_VER     :</span> arm-none-eabi-gcc (Ubuntu/Linaro <span class="number">5.4</span><span class="number">.0</span><span class="number">-6</span>ubuntu1~<span class="number">16.04</span><span class="number">.11</span>) <span class="number">5.4</span><span class="number">.0</span> <span class="number">20160609</span></div><div class="line">Copyright (C) <span class="number">2015</span> Free Software Foundation, Inc.</div><div class="line">This is free software; see the source <span class="keyword">for</span> copying conditions.  There is NO</div><div class="line">warranty; not even <span class="keyword">for</span> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div><div class="line"><span class="string">Link      :</span> objs<span class="regexp">/build/</span>toolchain<span class="regexp">/aarch64-linux-gcc -o /</span>tmp<span class="regexp">/android-25912-test /</span>tmp/android<span class="number">-25912</span>-test.o </div><div class="line"><span class="string">LD         :</span> linker check ok (objs<span class="regexp">/build/</span>toolchain/aarch64-linux-gcc)</div><div class="line"><span class="string">AR         :</span> archiver (objs<span class="regexp">/build/</span>toolchain/aarch64-linux-ar)</div><div class="line">Zlib prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/qemu-android-deps</div><div class="line">Libpng prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/qemu-android-deps</div><div class="line">Libxml2 prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>libxml2</div><div class="line">LibCURL prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/curl</div><div class="line">LibANGLEtranslation prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>ANGLE</div><div class="line">Protobuf prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/protobuf</div><div class="line">Breakpad prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>breakpad</div><div class="line">Qt prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/qt</div><div class="line">e2fsprogs prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>e2fsprogs</div><div class="line">ffmpeg prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>ffmpeg</div><div class="line">x264 prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>x264</div><div class="line"><span class="string">HeaderCheck:</span> &lt;byteswap.h&gt;</div><div class="line"><span class="string">Object     :</span> objs<span class="regexp">/build/</span>toolchain<span class="regexp">/aarch64-linux-gcc -o /</span>tmp<span class="regexp">/android-25912-test.o -c   /</span>tmp/android<span class="number">-25912</span>-test.c</div><div class="line"><span class="string">HeaderCheck:</span> &lt;byteswap.h&gt; [yes]</div><div class="line"><span class="string">HeaderCheck:</span> &lt;machine/bswap.h&gt;</div><div class="line"><span class="string">Object     :</span> objs<span class="regexp">/build/</span>toolchain<span class="regexp">/aarch64-linux-gcc -o /</span>tmp<span class="regexp">/android-25912-test.o -c   /</span>tmp/android<span class="number">-25912</span>-test.c</div><div class="line"><span class="string">HeaderCheck:</span> &lt;machine/bswap.h&gt; [no]</div><div class="line"><span class="string">HeaderCheck:</span> &lt;fnmatch.h&gt;</div><div class="line"><span class="string">Object     :</span> objs<span class="regexp">/build/</span>toolchain<span class="regexp">/aarch64-linux-gcc -o /</span>tmp<span class="regexp">/android-25912-test.o -c   /</span>tmp/android<span class="number">-25912</span>-test.c</div><div class="line"><span class="string">HeaderCheck:</span> &lt;fnmatch.h&gt; [yes]</div><div class="line">Copying Swiftshader prebuilt libraries from emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>swiftshader</div><div class="line">Copying Mesa prebuilt libraries from emulator<span class="regexp">/prebuilts/</span>android-emulator-build/mesa</div><div class="line">Copying Qt prebuilt libraries from emulator<span class="regexp">/prebuilts/</span>android-emulator-build/qt</div><div class="line">Copying e2fsprogs binaries.</div><div class="line">Copying emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>e2fsprogs<span class="regexp">/linux-x86_64/</span>sbin<span class="comment">/* -&gt; objs/bin64/</span></div><div class="line">Copying toolchain libraries to bundle with the program</div><div class="line">  Bundling libstdc++</div><div class="line">Mingw      : No libwinpthread-1.dll available.</div><div class="line">Generate   : objs/build/config.make</div><div class="line">QEMU2      : android/..  [auto-detect]</div><div class="line">Generate   : objs/build/config-host.h</div><div class="line">Generate   : objs/build/qemu1-qapi-auto-generated</div><div class="line">QEMU2    : Configuring.</div><div class="line">QEMU2 Dependencies prebuilts dir: emulator/prebuilts/android-emulator-build/qemu-android-deps</div><div class="line">QEMU2    : Version []</div><div class="line">Ready to go. Type 'make' to build emulator</div></pre></td></tr></table></figure></p>
+<p>至此，总算可以执行编译配置。</p>
+<h2 id="1-2-依赖"><a href="#1-2-依赖" class="headerlink" title="1.2 依赖"></a>1.2 依赖</h2><p><code>qemu/android/configure.sh</code> 脚本吐出来的信息包含了构建 Android QEMU 模拟器时所需的主要的库及其预编译库文件的路径。<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Zlib prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/qemu-android-deps</div><div class="line">Libpng prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/qemu-android-deps</div><div class="line">Libxml2 prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>libxml2</div><div class="line">LibCURL prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/curl</div><div class="line">LibANGLEtranslation prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>ANGLE</div><div class="line">Protobuf prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/protobuf</div><div class="line">Breakpad prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>breakpad</div><div class="line">Qt prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build/qt</div><div class="line">e2fsprogs prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>e2fsprogs</div><div class="line">ffmpeg prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>ffmpeg</div><div class="line">x264 prebuilts <span class="string">dir:</span> emulator<span class="regexp">/prebuilts/</span>android-emulator-build<span class="regexp">/common/</span>x264</div></pre></td></tr></table></figure></p>
+<p>解决依赖问题主要是为这些库编译出 ARM 64 平台的二进制库文件，并放置在上面的位置。编译上面的这些库，可以通过 <code>qemu/android/scripts/</code> 目录下，名为 <code>build-xxx.sh</code> 的脚本完成：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">qemu$ ls android/scripts/</div><div class="line">build-ANGLE<span class="selector-class">.sh</span>      build-ffmpeg<span class="selector-class">.sh</span>     build-protobuf<span class="selector-class">.sh</span>           build-wine<span class="selector-class">.sh</span>                 gen-charmap<span class="selector-class">.py</span>             gles3translatorgen    set-cpu-governor<span class="selector-class">.sh</span></div><div class="line">build-breakpad<span class="selector-class">.sh</span>   build-libxml2<span class="selector-class">.sh</span>    build-qemu-android-deps<span class="selector-class">.sh</span>  build-x264<span class="selector-class">.sh</span>                 gen-entries<span class="selector-class">.py</span>             migrate-glue-<span class="selector-tag">code</span><span class="selector-class">.py</span>  tests</div><div class="line">build-curl<span class="selector-class">.sh</span>       build-mesa-deps<span class="selector-class">.sh</span>  build-qemu-android<span class="selector-class">.sh</span>       download-sources<span class="selector-class">.sh</span>           generate-android-icons<span class="selector-class">.sh</span>  offset_layout<span class="selector-class">.py</span>      upload-symbols<span class="selector-class">.sh</span></div><div class="line">build-e2fsprogs<span class="selector-class">.sh</span>  build-mesa<span class="selector-class">.sh</span>       build-qt<span class="selector-class">.sh</span>                 gen-android-sdk-toolchain<span class="selector-class">.sh</span>  gen-hw-config<span class="selector-class">.py</span>           package-release<span class="selector-class">.sh</span>    util</div></pre></td></tr></table></figure></p>
+<p>对于不同库，上面的这些脚本可用性不太一样，有些脚本可以直接为 ARM 64 平台编译出二进制文件，有些则需要做更多的移植修改。这里暂时先不对这些依赖库的构建做更详细的说明。</p>
+<h2 id="1-3-编译配置"><a href="#1-3-编译配置" class="headerlink" title="1.3 编译配置"></a>1.3 编译配置</h2><p>如上面成功执行 <code>qemu/android/configure.sh</code> 脚本之后看到的那样，配置完成之后，可以通过执行 <code>make</code> 开始编译：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">qemu$ make</div><div class="line"><span class="string">Build:</span> Unsupported host <span class="string">architecture:</span> aarch64    </div><div class="line">android<span class="regexp">/build/</span>core/definitions-init.<span class="string">mk:</span><span class="number">251</span>: *** <span class="string">Build:</span> Aborting    .  Stop.</div></pre></td></tr></table></figure></p>
+<p>只是一上来，就报了错，在 <code>android/build/core/definitions-init.mk</code> 的 251 行左右：<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">else</span> <span class="comment"># BUILD_HOST_OS_BASE != windows</span></div><div class="line">    UNAME := $(shell uname -<span class="keyword">m</span>)</div><div class="line">    ifne<span class="string">q (,$(findstring 86,$(UNAME)</span>))</div><div class="line">        BUILD_HOST_ARCH := x86</div><div class="line">        ifne<span class="string">q (,$(shell $(BUILD_HOST_FILE_PROGRAM)</span> -L $(SHELL) | <span class="keyword">grep</span> <span class="string">'x86[_-]64'</span>))</div><div class="line">            BUILD_HOST_ARCH64 := x86_64</div><div class="line">        endif</div><div class="line">    endif</div><div class="line">    <span class="comment"># We should probably should not care at all</span></div><div class="line">    ifne<span class="string">q (,$(findstring Power,$(UNAME)</span>))</div><div class="line">        BUILD_HOST_ARCH := ppc</div><div class="line">    endif</div><div class="line">    ife<span class="string">q ($(BUILD_HOST_ARCH)</span>,)</div><div class="line">        $(call -build-info,Unsupported host architecture: $(UNAME))</div><div class="line">        $(call -build-error,Aborting)</div><div class="line">    endif</div><div class="line">endif <span class="comment"># BUILD_HOST_OS_BASE != windows</span></div></pre></td></tr></table></figure></p>
+<p>上面这个报错是由于在 <code>android/build/core/definitions-init.mk</code> 构建配置文件中缺乏对于 ARM 64 平台的支持。将上面那段代码修改为下面这样：<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">else</span> <span class="comment"># BUILD_HOST_OS_BASE != windows</span></div><div class="line">    UNAME := $(shell uname -<span class="keyword">m</span>)</div><div class="line">    ifne<span class="string">q (,$(findstring 86,$(UNAME)</span>))</div><div class="line">        BUILD_HOST_ARCH := x86</div><div class="line">        ifne<span class="string">q (,$(shell $(BUILD_HOST_FILE_PROGRAM)</span> -L $(SHELL) | <span class="keyword">grep</span> <span class="string">'x86[_-]64'</span>))</div><div class="line">            BUILD_HOST_ARCH64 := x86_64</div><div class="line">        endif</div><div class="line">    endif</div><div class="line">    <span class="comment"># We should probably should not care at all</span></div><div class="line">    ifne<span class="string">q (,$(findstring Power,$(UNAME)</span>))</div><div class="line">        BUILD_HOST_ARCH := ppc</div><div class="line">    endif</div><div class="line">    ifne<span class="string">q (,$(findstring aarch64,$(UNAME)</span>))</div><div class="line">        BUILD_HOST_ARCH := aarch64</div><div class="line">    endif</div><div class="line">    ife<span class="string">q ($(BUILD_HOST_ARCH)</span>,)</div><div class="line">        $(call -build-info,Unsupported host architecture: $(UNAME))</div><div class="line">        $(call -build-error,Aborting)</div><div class="line">    endif</div><div class="line">endif <span class="comment"># BUILD_HOST_OS_BASE != windows</span></div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，出现了另外的 error：<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">qemu_3<span class="number">.1</span>$ make</div><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-zlib/</span>emulator-zlib.a</div><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-libcurl/</span>emulator-libcurl.a</div><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-libssl/</span>emulator-libssl.a</div><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-libcrypto/</span>emulator-libcrypto.a</div><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-libuuid/</span>emulator-libuuid.a</div><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-libxml2/</span>emulator-libxml2.a</div><div class="line"><span class="symbol">Compile:</span> emulator-libsparse <span class="params">&lt;= src/backed_block.c</span></div><div class="line">arm-none-eabi-gcc: error: unrecognized command line option ‘-m64’</div><div class="line">android/build/emulator/binary.make:<span class="number">84</span>: recipe for target 'objs/build/intermediates64/emulator-libsparse/src/backed_block.o' failed</div><div class="line">make: *** [objs/build/intermediates64/emulator-libsparse/src/backed_block.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>这主要是在 <code>android/build/emulator/binary.make</code> 构建配置文件中，配置的 ‘-m64’ 等编译选项，ARM 平台的编译器不支持。为这个配置文件中，添加 ‘-m64’ 等编译选项的代码，加上判断，仅在 <code>x86_64</code> 平台上才添加这些编译选项，如下面这样：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">ifeq (x86_64,<span class="symbol">$</span>(BUILD_HOST_ARCH64))</div><div class="line"># Ensure only one of -m32 <span class="keyword">or</span> -m64 is being used <span class="keyword">and</span> place it first.</div><div class="line">LOCAL_CFLAGS := \</div><div class="line">    -m<span class="symbol">$</span>(LOCAL_BITS) \</div><div class="line">    <span class="symbol">$</span>(filter-out -m32 -m64, <span class="symbol">$</span>(LOCAL_CFLAGS))</div><div class="line"></div><div class="line">LOCAL_LDFLAGS := \</div><div class="line">    -m<span class="symbol">$</span>(LOCAL_BITS) \</div><div class="line">    <span class="symbol">$</span>(filter-out -m32 -m64, <span class="symbol">$</span>(LOCAL_LDFLAGS))</div><div class="line">endif</div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，不出意外仍然编译失败，报错如下：<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-libbreakpad/</span>emulator-libbreakpad.a</div><div class="line"><span class="symbol">PrebuiltLibrary:</span> objs<span class="meta-keyword">/build/</span>intermediates64<span class="meta-keyword">/emulator-libdisasm/</span>emulator-libdisasm.a</div><div class="line"><span class="symbol">Compile:</span> emulator-libjpeg <span class="params">&lt;= jcapimin.c</span></div><div class="line">arm-none-eabi-gcc: error: unrecognized command line option ‘-msse2’</div><div class="line">android/build/emulator/binary.make:<span class="number">86</span>: recipe for target 'objs/build/intermediates64/emulator-libjpeg/jcapimin.o' failed</div><div class="line">make: *** [objs/build/intermediates64/emulator-libjpeg/jcapimin.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>这是由于在 <code>android/build/emulator/binary.make</code> 编译配置文件中，编译 C 文件时，编译选项 ‘-msse2’ 无法被 ARM 平台上的编译器识别所致：<br><figure class="highlight mel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$(foreach src,$(LOCAL_C_SOURCES), \</div><div class="line">    $(<span class="keyword">eval</span> $(call compile-c-<span class="keyword">source</span>,$(src))) \</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p>修改 <code>qemu/android/third_party/jpeg-6b/libjpeg.mk</code> 文件中如下的这段代码：<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">LOCAL_CFLAGS += \</div><div class="line">    -<span class="ruby">DAVOID_TABLES \</span></div><div class="line">    -<span class="ruby">O3 \</span></div><div class="line">    -<span class="ruby">fstrict-aliasing \</span></div><div class="line">    -<span class="ruby">DANDROID_INTELSSE2_IDCT \</span></div><div class="line">    -<span class="ruby">msse2 \</span></div><div class="line">    -<span class="ruby">DANDROID_TILE_BASED_DECODE \</span></div><div class="line">    -<span class="ruby">Wno-all \</span></div></pre></td></tr></table></figure></p>
+<p>修改为下面这样：<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">LOCAL_CFLAGS += \</div><div class="line">    -<span class="ruby">DAVOID_TABLES \</span></div><div class="line">    -<span class="ruby">O3 \</span></div><div class="line">    -<span class="ruby">fstrict-aliasing \</span></div><div class="line">    -<span class="ruby">DANDROID_TILE_BASED_DECODE \</span></div><div class="line">    -<span class="ruby">Wno-all \</span></div><div class="line"></div><div class="line">ifneq (aarch64,$(BUILD_HOST_ARCH64))</div><div class="line">LOCAL_CFLAGS += \</div><div class="line">    -<span class="ruby">DANDROID_INTELSSE2_IDCT \</span></div><div class="line">    -<span class="ruby">msse2 \</span></div><div class="line"></div><div class="line">endif</div></pre></td></tr></table></figure></p>
+<p>以使得在 ARM 平台上编译的时候，不会加上 ‘-msse2’ 编译选项。再次执行 <code>make</code>，依然编译失败，报错如下：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">Compile</span>: <span class="keyword">android-emu </span>&lt;= <span class="keyword">android/wear-agent/PairUpWearPhone.cpp</span></div><div class="line"><span class="symbol">Library</span>: objs/<span class="keyword">build/intermediates64/android-emu/android-emu.a</span></div><div class="line"><span class="symbol">Qt</span> uic: ui_extended.h &lt;-- <span class="keyword">android/android-emu/android/skin/qt/extended.ui</span></div><div class="line"><span class="symbol">emulator</span>/prebuilts/<span class="keyword">android-emulator-build/qt/linux-x86_64/bin/uic: </span><span class="number">1</span>: emulator/prebuilts/<span class="keyword">android-emulator-build/qt/linux-x86_64/bin/uic: </span>Syntax error: <span class="string">"("</span> unexpected</div><div class="line"><span class="keyword">android/build/emulator/binary.make:106: </span>recipe for target <span class="string">'objs/build/intermediates64/emulator-libui/ui_extended.h'</span> failed</div><div class="line"><span class="symbol">make</span>: *** [objs/<span class="keyword">build/intermediates64/emulator-libui/ui_extended.h] </span>Error <span class="number">2</span></div></pre></td></tr></table></figure></p>
+<p>这是由于在 qemu/android/third_party/Qt5.mk 构建配置文件中，缺少对 ARM 平台的支持，如下面这样：<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">QT_TOP_DIR := <span class="variable">$(QT_PREBUILTS_DIR)</span>/<span class="variable">$(BUILD_TARGET_TAG)</span></div><div class="line">QT_TOP64_DIR := <span class="variable">$(QT_PREBUILTS_DIR)</span>/<span class="variable">$(BUILD_TARGET_OS)</span>-x86_64</div><div class="line">QT_MOC_TOOL := <span class="variable">$(QT_TOP64_DIR)</span>/bin/moc</div><div class="line">QT_RCC_TOOL := <span class="variable">$(QT_TOP64_DIR)</span>/bin/rcc</div></pre></td></tr></table></figure></p>
+<p>修改这个配置文件，增加对 ARM 64 平台的支持，来解决这个问题：<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">QT_TOP_DIR := <span class="variable">$(QT_PREBUILTS_DIR)</span>/<span class="variable">$(BUILD_TARGET_TAG)</span></div><div class="line">ifeq (aarch64,$(BUILD_HOST_ARCH))</div><div class="line">QT_TOP64_DIR := <span class="variable">$(QT_PREBUILTS_DIR)</span>/<span class="variable">$(BUILD_TARGET_OS)</span>-aarch64</div><div class="line">else</div><div class="line">QT_TOP64_DIR := <span class="variable">$(QT_PREBUILTS_DIR)</span>/<span class="variable">$(BUILD_TARGET_OS)</span>-x86_64</div><div class="line">endif</div><div class="line">QT_MOC_TOOL := <span class="variable">$(QT_TOP64_DIR)</span>/bin/moc</div><div class="line">QT_RCC_TOOL := <span class="variable">$(QT_TOP64_DIR)</span>/bin/rcc</div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，依然编译失败，报错如下：<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Qt rcc (dynamic): resources.rcc &lt;-- android/android-emu/android/skin/qt/resources.qrc</div><div class="line">Install: objs/resources/resources.rcc</div><div class="line"><span class="keyword">Compile</span>: emulator-libui &lt;= android/skin/charmap.c</div><div class="line">arm-none-eabi-gcc: <span class="built_in">error</span>: unrecognized command <span class="keyword">line</span> option ‘-mmmx’</div><div class="line">android/build/emulator/binary.<span class="built_in">make</span>:<span class="number">86</span>: recipe <span class="keyword">for</span> target 'objs/build/intermediates64/emulator-libui/android/skin/charmap.o' failed</div><div class="line"><span class="built_in">make</span>: *** [objs/build/intermediates64/emulator-libui/android/skin/charmap.o] <span class="built_in">Error</span> <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>又是一个由于编译选项编译器无法识别的问题。这通过修改 qemu/android/android-emu/android/skin/sources.mk 文件中如下的代码来解决：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># enable MMX <span class="meta">code</span> for our skin scaler</div><div class="line"><span class="keyword">ANDROID_SKIN_CFLAGS </span>+= -DUSE_MMX<span class="number">=1</span> -mmmx</div></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># enable MMX code for our skin scaler</span></div><div class="line">ifne<span class="string">q ($(BUILD_TARGET_ARCH)</span>,aarch64)</div><div class="line">    ANDROID_SKIN_CFLAGS += -DUSE_MMX=<span class="number">1</span> -mmmx</div><div class="line">endif</div></pre></td></tr></table></figure></p>
+<p>同时修改 qemu/android/build/Makefile.top.mk 文件中的如下代码段：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">ifdef</span> EMULATOR_BUILD_64BITS</div><div class="line"><span class="keyword">BUILD_TARGET_BITS </span>:= <span class="number">64</span></div><div class="line"><span class="keyword">BUILD_TARGET_ARCH </span>:= x86_64</div><div class="line"><span class="keyword">BUILD_TARGET_SUFFIX </span>:= <span class="number">64</span></div><div class="line"></div><div class="line"><span class="symbol">include</span> $(LOCAL_PATH)/<span class="keyword">android/build/Makefile.common.mk</span></div><div class="line"><span class="symbol">endif</span></div></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">ifdef</span> EMULATOR_BUILD_64BITS</div><div class="line">    <span class="keyword">BUILD_TARGET_BITS </span>:= <span class="number">64</span></div><div class="line">    ifeq (aarch64,$(<span class="keyword">BUILD_HOST_ARCH))</span></div><div class="line">        <span class="keyword">BUILD_TARGET_ARCH </span>:= aarch64</div><div class="line">    <span class="meta">else</span></div><div class="line">        <span class="keyword">BUILD_TARGET_ARCH </span>:= x86_64</div><div class="line">    <span class="meta">endif</span></div><div class="line">    <span class="keyword">BUILD_TARGET_SUFFIX </span>:= <span class="number">64</span></div><div class="line"></div><div class="line">    <span class="meta">include</span> $(LOCAL_PATH)/<span class="keyword">android/build/Makefile.common.mk</span></div><div class="line"><span class="symbol">endif</span></div></pre></td></tr></table></figure></p>
+<p>以增加对 ARM 64 平台的支持。Android QEMU 的构建系统在编译时，会同时编译出QEMU1 和 QEMU2 的模拟器，这主要在 android/build/Makefile.common.mk 文件中控制：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/android-emu/Makefile.crash-service.mk</div><div class="line"></div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-common.mk</div><div class="line"></div><div class="line"><span class="comment"># We want to build all variants of the emulator binaries. This makes</span></div><div class="line"><span class="comment"># it easier to catch target-specific regressions during emulator development.</span></div><div class="line">EMULATOR_TARGET_ARCH <span class="symbol">:</span>= arm</div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-target.mk</div><div class="line"></div><div class="line"><span class="comment"># <span class="doctag">Note:</span> the same binary handles x86 and x86_64</span></div><div class="line">EMULATOR_TARGET_ARCH <span class="symbol">:</span>= x86</div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-target.mk</div><div class="line"></div><div class="line">EMULATOR_TARGET_ARCH <span class="symbol">:</span>= mips</div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-target.mk</div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，在 ARM 平台上编译 QEMU1 时会报出如下错误：<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">Compile</span>: emulator-libqemu &lt;= audio/esdaudio.c</div><div class="line">android/qemu1/audio/esdaudio.c:<span class="number">25</span>:<span class="number">17</span>: fatal <span class="built_in">error</span>: esd.h: No such file <span class="keyword">or</span> directory</div><div class="line">compilation terminated.</div><div class="line">android/build/emulator/binary.<span class="built_in">make</span>:<span class="number">86</span>: recipe <span class="keyword">for</span> target 'objs/build/intermediates64/emulator-libqemu/audio/esdaudio.o' failed</div><div class="line"><span class="built_in">make</span>: *** [objs/build/intermediates64/emulator-libqemu/audio/esdaudio.o] <span class="built_in">Error</span> <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>可以修改上面那段代码，避免编译我们不需要的目标文件：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">ifneq (aarch64,<span class="variable">$(</span>BUILD_HOST_ARCH64))</div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/android-emu/Makefile.crash-service.mk</div><div class="line"></div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-common.mk</div><div class="line"></div><div class="line"><span class="comment"># We want to build all variants of the emulator binaries. This makes</span></div><div class="line"><span class="comment"># it easier to catch target-specific regressions during emulator development.</span></div><div class="line">EMULATOR_TARGET_ARCH <span class="symbol">:</span>= arm</div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-target.mk</div><div class="line"></div><div class="line"><span class="comment"># <span class="doctag">Note:</span> the same binary handles x86 and x86_64</span></div><div class="line">EMULATOR_TARGET_ARCH <span class="symbol">:</span>= x86</div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-target.mk</div><div class="line"></div><div class="line">EMULATOR_TARGET_ARCH <span class="symbol">:</span>= mips</div><div class="line"><span class="keyword">include</span> <span class="variable">$(</span>LOCAL_PATH)/android/qemu1/Makefile.qemu1-target.mk</div><div class="line">endif</div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，依然编译失败，报错如下：<br><figure class="highlight delphi"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">Library</span>: objs/build/intermediates64/libGLcommon/libGLcommon.a</div><div class="line">Compile: libOpenGLESDispatch &lt;= EGLDispatch.cpp</div><div class="line">android/android-emugl/host/libs/libOpenGLESDispatch/EGLDispatch.cpp: <span class="keyword">In</span> <span class="function"><span class="keyword">function</span> ‘<span class="title">bool</span> <span class="title">init_egl_dispatch</span><span class="params">()</span>’:</span></div><div class="line">android/android-emugl/host/libs/libOpenGLESDispatch/EGLDispatch.cpp:<span class="number">38</span>:<span class="number">59</span>: error: ‘EMUGL_LIBNAME’ was <span class="keyword">not</span> declared <span class="keyword">in</span> this scope</div><div class="line">android/build/emulator/binary.make:<span class="number">122</span>: recipe <span class="keyword">for</span> target <span class="string">'objs/build/intermediates64/libOpenGLESDispatch/EGLDispatch.o'</span> failed</div><div class="line">make: *** [objs/build/intermediates64/libOpenGLESDispatch/EGLDispatch.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>这是由于在 ARM 平台上编译时，缺少了常量 <code>EMUGL_LIBNAME</code> 的定义：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(__x86_64__)</span></div><div class="line"><span class="meta">#  <span class="meta-keyword">define</span> EMUGL_LIBNAME(name) <span class="meta-string">"lib64"</span> name</span></div><div class="line"><span class="meta">#<span class="meta-keyword">elif</span> defined(__i386__)</span></div><div class="line"><span class="meta">#  <span class="meta-keyword">define</span> EMUGL_LIBNAME(name) <span class="meta-string">"lib"</span> name</span></div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line"><span class="comment">/* This header is included by target w/o using EMUGL_LIBNAME().  Don't #error, leave it undefined */</span></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure></p>
+<p>修改这段代码，以便于为 ARM 平台增加常量定义：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(__x86_64__) || defined(__aarch64__)</span></div><div class="line"><span class="meta">#  <span class="meta-keyword">define</span> EMUGL_LIBNAME(name) <span class="meta-string">"lib64"</span> name</span></div><div class="line"><span class="meta">#<span class="meta-keyword">elif</span> defined(__i386__)</span></div><div class="line"><span class="meta">#  <span class="meta-keyword">define</span> EMUGL_LIBNAME(name) <span class="meta-string">"lib"</span> name</span></div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line"><span class="comment">/* This header is included by target w/o using EMUGL_LIBNAME().  Don't #error, leave it undefined */</span></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，依然编译失败，报错如下：<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Compile: libqemu2-<span class="keyword">common</span> &lt;= accel.c</div><div class="line"><span class="keyword">In</span> <span class="keyword">file</span> included from /workData/zhuyb/android_emu_2<span class="number">.5</span>/<span class="keyword">external</span>/qemu_3<span class="number">.1</span>/accel.c:<span class="number">26</span>:<span class="number">0</span>:</div><div class="line">/workData/zhuyb/android_emu_2<span class="number">.5</span>/<span class="keyword">external</span>/qemu_3<span class="number">.1</span>/<span class="keyword">include</span>/qemu/osdep.h:<span class="number">30</span>:<span class="number">25</span>: fatal error: config-host.h: No such <span class="keyword">file</span> or directory</div><div class="line">compilation terminated.</div><div class="line">android/build/emulator/binary.make:<span class="number">86</span>: recipe for <span class="keyword">target</span> <span class="string">'objs/build/intermediates64/libqemu2-common/accel.o'</span> failed</div><div class="line">make: *** [objs/build/intermediates64/libqemu2-<span class="keyword">common</span>/accel.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>这是由于缺少了一个配置头文件，我们参考 <code>qemu/android-qemu2-glue/config/linux-x86_64/config-host.h</code> 文件来创建 <code>qemu/android-qemu2-glue/config/linux-aarch64/config-host.h</code> 文件：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">define</span> HOST_AARCH64 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_POSIX 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_LINUX 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SLIRP 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SMBD_COMMAND <span class="meta-string">"/usr/sbin/smbd"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_AUDIO_DRIVERS \</span></div><div class="line">    &amp;no_audio_driver,\</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_PA 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_AUDIO_PT_INT 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_BDRV_RW_WHITELIST\</span></div><div class="line">    NULL</div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_BDRV_RO_WHITELIST\</span></div><div class="line">    NULL</div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_VNC 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_FNMATCH 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> QEMU_VERSION <span class="meta-string">"2.7.0"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SDL 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SDLABI 2.0</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_UTIMENSAT 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_PIPE2 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_ACCEPT4 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SPLICE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_EVENTFD 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_FALLOCATE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_POSIX_FALLOCATE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SYNC_FILE_RANGE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_FIEMAP 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_DUP3 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_PPOLL 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_PRCTL_PR_SET_TIMERSLACK 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_EPOLL 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_EPOLL_CREATE1 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SENDFILE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_TIMERFD 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_INOTIFY 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_INOTIFY1 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_BYTESWAP_H 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_HAS_GLIB_SUBPROCESS_TESTS 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_TLS_PRIORITY <span class="meta-string">"NORMAL"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> HAVE_IFADDRS_H 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_VHOST_SCSI 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_IOVEC 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_PREADV 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_FDT 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_SIGNALFD 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_FDATASYNC 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_MADVISE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_POSIX_MADVISE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_QOM_CAST_DEBUG 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_COROUTINE_BACKEND ucontext</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_COROUTINE_POOL 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_LINUX_MAGIC_H 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_PRAGMA_DIAGNOSTIC_AVAILABLE 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_HAS_ENVIRON 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_CPUID_H 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_INT128 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_TPM 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_TPM_PASSTHROUGH 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_TRACE_NOP 1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_TRACE_FILE trace</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> CONFIG_IASL iasl</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> HOST_DSOSUF <span class="meta-string">".so"</span></span></div></pre></td></tr></table></figure></p>
+<p>同时我们也不再编译 QEMU2 的部分目标平台模拟器，将如下这段代码：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-glue</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := x86</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := x86_64</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := arm</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := arm64</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := mips</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := mips64</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">LOCAL_PATH := $(QEMU2_OLD_LOCAL_PATH)</div></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-glue</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">ifneq (aarch64,$(BUILD_HOST_ARCH64))</div><div class="line">QEMU2_TARGET := x86</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := x86_64</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := arm</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := mips</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">QEMU2_TARGET := mips64</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line">endif</div><div class="line"></div><div class="line">QEMU2_TARGET := arm64</div><div class="line">include $(LOCAL_PATH)/android-qemu2-glue/build/Makefile<span class="selector-class">.qemu2-target</span><span class="selector-class">.mk</span></div><div class="line"></div><div class="line">LOCAL_PATH := $(QEMU2_OLD_LOCAL_PATH)</div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，依然编译失败，报错如下：<br><figure class="highlight oxygene"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Compile: libqemu2-common &lt;= util/compatfd.c</div><div class="line">/workData/zhuyb/android_emu_2.<span class="number">5</span>/<span class="keyword">external</span>/qemu_3.<span class="number">1</span>/util/compatfd.c: <span class="keyword">In</span> <span class="function"><span class="keyword">function</span> ‘<span class="title">qemu_signalfd</span>’:</span></div><div class="line">/workData/zhuyb/android_emu_2.<span class="number">5</span>/<span class="keyword">external</span>/qemu_3.<span class="number">1</span>/util/compatfd.c:<span class="number">103</span>:<span class="number">19</span>: error: ‘SYS_signalfd’ undeclared (first use <span class="keyword">in</span> this <span class="function"><span class="keyword">function</span>)</span></div><div class="line">     <span class="title">ret</span> = <span class="title">syscall</span><span class="params">(SYS_signalfd, -1, mask, _NSIG / 8)</span>;</div><div class="line">                   ^</div><div class="line">/workData/zhuyb/android_emu_2.<span class="number">5</span>/<span class="keyword">external</span>/qemu_3.<span class="number">1</span>/util/compatfd.c:<span class="number">103</span>:<span class="number">19</span>: note: <span class="keyword">each</span> undeclared identifier <span class="keyword">is</span> reported only once <span class="keyword">for</span> <span class="keyword">each</span> <span class="function"><span class="keyword">function</span> <span class="title">it</span> <span class="title">appears</span> <span class="title">in</span></span></div><div class="line"><span class="title">android</span>/<span class="title">build</span>/<span class="title">emulator</span>/<span class="title">binary</span>.<span class="title">make</span>:<span class="number">86</span>: recipe <span class="keyword">for</span> target <span class="string">'objs/build/intermediates64/libqemu2-common/util/compatfd.o'</span> failed</div><div class="line">make: *** [objs/build/intermediates64/libqemu2-common/util/compatfd.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>这是由于系统调用常量的定义在 ARM 64 平台上有些不同。修改 <code>qemu/util/compatfd.c</code> 文件中如下这段代码：<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">#<span class="keyword">if</span> defined(CONFIG_SIGNALFD)</div><div class="line">    int <span class="keyword">ret</span>;</div><div class="line"></div><div class="line">    <span class="keyword">ret</span> = syscall(SYS_signalfd, -1, mask, _NSIG / 8);</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">ret</span> != -1) &#123;</div><div class="line">        qemu_set_cloexec(<span class="keyword">ret</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">ret</span>;</div><div class="line">    &#125;</div><div class="line">#endif</div></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_SIGNALFD)</span></div><div class="line">    <span class="keyword">int</span> ret;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __aarch64__</span></div><div class="line">    ret = syscall(SYS_signalfd4, <span class="number">-1</span>, mask, _NSIG / <span class="number">8</span>);</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">    ret = syscall(SYS_signalfd, <span class="number">-1</span>, mask, _NSIG / <span class="number">8</span>);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">    <span class="keyword">if</span> (ret != <span class="number">-1</span>) &#123;</div><div class="line">        qemu_set_cloexec(ret);</div><div class="line">        <span class="keyword">return</span> ret;</div><div class="line">    &#125;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，依然编译失败，报错如下：<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">Compile</span>: libqemu2-<span class="keyword">system</span>-i386 &lt;= tcg/tcg.c</div><div class="line">In file included from /workData/zhuyb/android_emu_2<span class="number">.5</span>/<span class="keyword">external</span>/qemu_3<span class="number">.1</span>/tcg/tcg.c:<span class="number">255</span>:<span class="number">0</span>:</div><div class="line">/workData/zhuyb/android_emu_2<span class="number">.5</span>/<span class="keyword">external</span>/qemu_3<span class="number">.1</span>/tcg/i386/tcg-target.inc.c:<span class="number">111</span>:<span class="number">19</span>: fatal <span class="built_in">error</span>: cpuid.h: No such file <span class="keyword">or</span> directory</div><div class="line">compilation terminated.</div><div class="line">android/build/emulator/binary.<span class="built_in">make</span>:<span class="number">86</span>: recipe <span class="keyword">for</span> target 'objs/build/intermediates64/libqemu2-<span class="keyword">system</span>-i386/tcg/tcg.o' failed</div><div class="line"><span class="built_in">make</span>: *** [objs/build/intermediates64/libqemu2-<span class="keyword">system</span>-i386/tcg/tcg.o] <span class="built_in">Error</span> <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>编译 tcg 失败，又是由于缺少对 ARM 64 平台的支持所致。修改 <code>qemu/android-qemu2-glue/build/Makefile.qemu2-target.mk</code> 文件中的如下这段代码：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">QEMU2_SYSTEM_INCLUDES <span class="symbol">:</span>= \</div><div class="line">    $(QEMU2_INCLUDES) \</div><div class="line">    $(QEMU2_DEPS_TOP_DIR)/<span class="keyword">include</span> \</div><div class="line">    $(call qemu2-<span class="keyword">if</span>-linux,$(LOCAL_PATH)/linux-headers) \</div><div class="line">    $(LOCAL_PATH)/android-qemu2-glue/config/target-$(QEMU2_TARGET) \</div><div class="line">    $(LOCAL_PATH)/target-$(QEMU2_TARGET_TARGET) \</div><div class="line">    $(LOCAL_PATH)/tcg \</div><div class="line">    $(LOCAL_PATH)/tcg/i386 \</div></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">QEMU2_SYSTEM_INCLUDES <span class="symbol">:</span>= \</div><div class="line">    $(QEMU2_INCLUDES) \</div><div class="line">    $(QEMU2_DEPS_TOP_DIR)/<span class="keyword">include</span> \</div><div class="line">    $(call qemu2-<span class="keyword">if</span>-linux,$(LOCAL_PATH)/linux-headers) \</div><div class="line">    $(LOCAL_PATH)/android-qemu2-glue/config/target-$(QEMU2_TARGET) \</div><div class="line">    $(LOCAL_PATH)/target-$(QEMU2_TARGET_TARGET) \</div><div class="line">    $(LOCAL_PATH)/tcg \</div><div class="line"></div><div class="line">ifeq (x86_64,$(BUILD_HOST_ARCH64))</div><div class="line">QEMU2_SYSTEM_INCLUDES += \</div><div class="line">    $(LOCAL_PATH)/tcg/i386 \</div><div class="line"></div><div class="line">endif</div><div class="line"></div><div class="line">ifeq (aarch64,$(BUILD_HOST_ARCH))</div><div class="line">QEMU2_SYSTEM_INCLUDES += \</div><div class="line">    $(LOCAL_PATH)/tcg/aarch64 \</div><div class="line"></div><div class="line">endif</div></pre></td></tr></table></figure></p>
+<p>再次执行 <code>make</code>，依然编译失败，报错如下：<br><figure class="highlight delphi"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/workData/zhuyb/android_emu_2.<span class="number">5</span>/<span class="keyword">external</span>/qemu_3.<span class="number">1</span>/util/coroutine-ucontext.c: <span class="keyword">In</span> <span class="function"><span class="keyword">function</span> ‘<span class="title">qemu_coroutine_new</span>’:</span></div><div class="line">/workData/zhuyb/android_emu_2.<span class="number">5</span>/<span class="keyword">external</span>/qemu_3.<span class="number">1</span>/util/coroutine-ucontext.c:<span class="number">86</span>:<span class="number">24</span>: error: ‘co’ <span class="keyword">is</span> used uninitialized <span class="keyword">in</span> this <span class="function"><span class="keyword">function</span> [-<span class="title">Werror</span>=<span class="title">uninitialized</span>]</span></div><div class="line">     <span class="title">CoroutineUContext</span> *<span class="title">co</span>;</div><div class="line">                        ^</div><div class="line">cc1: all warnings being treated <span class="keyword">as</span> errors</div><div class="line">android/build/emulator/binary.make:<span class="number">86</span>: recipe <span class="keyword">for</span> target <span class="string">'objs/build/intermediates64/libqemu2-common/util/coroutine-ucontext.o'</span> failed</div><div class="line">make: *** [objs/build/intermediates64/libqemu2-common/util/coroutine-ucontext.o] Error <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>这是由于加了 <code>-Werror</code> 编译选项。注释掉 <code>qemu/android/build/Makefile.top.mk</code> 文件中加的 <code>-Werror</code> 编译选项即可：<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ifne<span class="string">q (,$(filter windows linux, $(BUILD_TARGET_OS)</span>))</div><div class="line"><span class="comment"># BUILD_TARGET_CFLAGS += -Werror</span></div><div class="line">endif</div></pre></td></tr></table></figure></p>
+<p>还可以移除对 qemu-upstream 的编译，以节省时间。删除 <code>qemu/android-qemu2-glue/build/Makefile.qemu2-target.mk</code> 文件中如下这段代码即可：<br><figure class="highlight livescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># The upstream version of QEMU2, without any Android-specific hacks.</span></div><div class="line"><span class="comment"># This uses the regular SDL2 UI backend.</span></div><div class="line"></div><div class="line">$(call start-emulator-program,qemu-upstream-$(QEMU2_TARGET_SYSTEM))</div><div class="line"></div><div class="line">LOCAL_WHOLE_STATIC_LIBRARIES += <span class="string">\</span></div><div class="line">    libqemu2-system-$(QEMU2_TARGET_SYSTEM) <span class="string">\</span></div><div class="line">    libqemu2-common <span class="string">\</span></div><div class="line"></div><div class="line">LOCAL_STATIC_LIBRARIES += <span class="string">\</span></div><div class="line">    $(QEMU2_SYSTEM_STATIC_LIBRARIES) <span class="string">\</span></div><div class="line"></div><div class="line">LOCAL_CFLAGS += <span class="string">\</span></div><div class="line">    $(QEMU2_SYSTEM_CFLAGS) <span class="string">\</span></div><div class="line"></div><div class="line">LOCAL_C_INCLUDES += <span class="string">\</span></div><div class="line">    $(QEMU2_SYSTEM_INCLUDES) <span class="string">\</span></div><div class="line">    $(QEMU2_SDL2_INCLUDES) <span class="string">\</span></div><div class="line"></div><div class="line">LOCAL_SRC_FILES += <span class="string">\</span></div><div class="line">    $(call qemu2-<span class="keyword">if</span>-target,x86 x86_64, <span class="string">\</span></div><div class="line">        hw/i386/acpi-build.c <span class="string">\</span></div><div class="line">        hw/i386/pc_piix.c <span class="string">\</span></div><div class="line">        ) <span class="string">\</span></div><div class="line">    $(call qemu2-<span class="keyword">if</span>-windows, <span class="string">\</span></div><div class="line">        stubs/win32-stubs.c <span class="string">\</span></div><div class="line">        ) <span class="string">\</span></div><div class="line">    ui/sdl2.c <span class="string">\</span></div><div class="line">    ui/sdl2-input.c <span class="string">\</span></div><div class="line">    ui/sdl2-<span class="number">2d</span>.c <span class="string">\</span></div><div class="line">    vl.c <span class="string">\</span></div><div class="line"></div><div class="line">LOCAL_LDFLAGS += $(QEMU2_SYSTEM_LDFLAGS)</div><div class="line"></div><div class="line">LOCAL_LDLIBS += <span class="string">\</span></div><div class="line">    $(QEMU2_SYSTEM_LDLIBS) <span class="string">\</span></div><div class="line">    $(QEMU2_SDL2_LDLIBS) <span class="string">\</span></div><div class="line"></div><div class="line">LOCAL_INSTALL_DIR := qemu/$(BUILD_TARGET_TAG)</div><div class="line"></div><div class="line">$(call end-emulator-program)</div></pre></td></tr></table></figure></p>
+<p>更多编译错误问题解决的细节，此处不再赘述。<br>Android QEMU 模拟器在 ARM Ubuntu Linux 平台上的编译就到这里。<br>Done。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/虚拟化/" rel="tag"># 虚拟化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/02/linux_kernel_start/" rel="next" title="Linux内核工程师是怎么步入内核殿堂的？">
+                <i class="fa fa-chevron-left"></i> Linux内核工程师是怎么步入内核殿堂的？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/25/the-road-to-quic/" rel="prev" title="QUIC 之路">
+                QUIC 之路 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-编译问题"><span class="nav-number">1.</span> <span class="nav-text">1. 编译问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-配置"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-依赖"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-编译配置"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 编译配置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="音视频开发," />
+
+
+<meta name="description" content="本文基于 WebRTC 中的示例应用 peerconnection_client 分析 WebRTC Audio 接收和发送的关键过程。首先是发送的过程，然后是接收的过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebRTC Audio 接收和发送的关键过程">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/07/20/webrtc_audio_receiving_and_sending/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="本文基于 WebRTC 中的示例应用 peerconnection_client 分析 WebRTC Audio 接收和发送的关键过程。首先是发送的过程，然后是接收的过程。">
+<meta property="og:updated_time" content="2019-07-21T04:30:06.281Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WebRTC Audio 接收和发送的关键过程">
+<meta name="twitter:description" content="本文基于 WebRTC 中的示例应用 peerconnection_client 分析 WebRTC Audio 接收和发送的关键过程。首先是发送的过程，然后是接收的过程。">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/07/20/webrtc_audio_receiving_and_sending/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>WebRTC Audio 接收和发送的关键过程 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/07/20/webrtc_audio_receiving_and_sending/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">WebRTC Audio 接收和发送的关键过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-20T23:05:49+08:00">2019-07-20</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/音视频开发/" itemprop="url" rel="index"><span itemprop="name">音视频开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/20/webrtc_audio_receiving_and_sending/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/20/webrtc_audio_receiving_and_sending/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/20/webrtc_audio_receiving_and_sending/" class="leancloud_visitors" data-flag-title="WebRTC Audio 接收和发送的关键过程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文基于 WebRTC 中的示例应用 peerconnection_client 分析 WebRTC Audio 接收和发送的关键过程。首先是发送的过程，然后是接收的过程。<br><a id="more"></a></p>
+<h1 id="创建-webrtc-AudioState"><a href="#创建-webrtc-AudioState" class="headerlink" title="创建 webrtc::AudioState"></a>创建 webrtc::AudioState</h1><p>应用程序择机初始化 <code>PeerConnectionFactory</code>：<br><figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#0  Init () at webrtc/src/pc/channel_manager.cc:<span class="number">121</span></div><div class="line">#1  Initialize () at webrtc/src/pc/peer_connection_factory.cc:<span class="number">139</span></div><div class="line">#6  webrtc<span class="type">::CreateModularPeerConnectionFactory</span>(webrtc<span class="type">::PeerConnectionFactoryDependencies</span>) () at webrtc/src/pc/peer_connection_factory.cc:<span class="number">55</span></div><div class="line">#7  webrtc<span class="type">::CreatePeerConnectionFactory</span>(rtc<span class="type">::Thread</span>*, rtc<span class="type">::Thread</span>*, rtc<span class="type">::Thread</span>*, rtc<span class="type">::scoped_refptr</span>&lt;webrtc<span class="type">::AudioDeviceModule</span>&gt;, rtc<span class="type">::scoped_refptr</span>&lt;webrtc<span class="type">::AudioEncoderFactory</span>&gt;, rtc<span class="type">::scoped_refptr</span>&lt;webrtc<span class="type">::AudioDecoderFactory</span>&gt;, std<span class="type">::__1</span><span class="type">::unique_ptr</span>&lt;webrtc<span class="type">::VideoEncoderFactory</span>, std<span class="type">::__1</span><span class="type">::default_delete</span>&lt;webrtc<span class="type">::VideoEncoderFactory</span>&gt; &gt;, std<span class="type">::__1</span><span class="type">::unique_ptr</span>&lt;webrtc<span class="type">::VideoDecoderFactory</span>, std<span class="type">::__1</span><span class="type">::default_delete</span>&lt;webrtc<span class="type">::VideoDecoderFactory</span>&gt; &gt;, rtc<span class="type">::scoped_refptr</span>&lt;webrtc<span class="type">::AudioMixer</span>&gt;, rtc<span class="type">::scoped_refptr</span>&lt;webrtc<span class="type">::AudioProcessing</span>&gt;) () at webrtc/src/api/create_peerconnection_factory.cc:<span class="number">65</span></div><div class="line">#8  InitializePeerConnection () at webrtc/src/examples/peerconnection/client/conductor.cc:<span class="number">132</span></div><div class="line">#9  ConnectToPeer () at webrtc/src/examples/peerconnection/client/conductor.cc:<span class="number">422</span></div><div class="line">#10 OnRowActivated () at webrtc/src/examples/peerconnection/client/linux/main_wnd.cc:<span class="number">433</span></div><div class="line">#11 (anonymous namespace)<span class="type">::OnRowActivatedCallback</span>(_GtkTreeView*, _GtkTreePath*, _GtkTreeViewColumn*, <span class="literal">void</span>*) () at webrtc/src/examples/peerconnection/client/linux/main_wnd.cc:<span class="number">70</span></div></pre></td></tr></table></figure></p>
+<p>由 <code>Conductor::InitializePeerConnection()</code> 的代码可知，<code>PeerConnectionFactory</code> 竟然是随同 peer connection一起创建的。</p>
+<p>在 <code>webrtc/src/pc/channel_manager.cc</code> 文件里定义的 <code>ChannelManager::Init()</code> 函数中会在另一个线程中起一个 task，调用 <code>media_engine_-&gt;Init()</code>，完成媒体引擎的初始化：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">bool</span> ChannelManager::Init() &#123;</div><div class="line">  RTC_DCHECK(!initialized_);</div><div class="line">  <span class="keyword">if</span> (initialized_) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">  &#125;</div><div class="line">  RTC_DCHECK(network_thread_);</div><div class="line">  RTC_DCHECK(worker_thread_);</div><div class="line">  <span class="keyword">if</span> (!network_thread_-&gt;IsCurrent()) &#123;</div><div class="line">    <span class="comment">// Do not allow invoking calls to other threads on the network thread.</span></div><div class="line">    network_thread_-&gt;Invoke&lt;void&gt;(</div><div class="line">        RTC_FROM_HERE, [&amp;] &#123; network_thread_-&gt;DisallowBlockingCalls(); &#125;);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (media_engine_) &#123;</div><div class="line">    initialized_ = worker_thread_-&gt;Invoke&lt;<span class="keyword">bool</span>&gt;(</div><div class="line">        RTC_FROM_HERE, [&amp;] &#123; <span class="keyword">return</span> media_engine_-&gt;Init(); &#125;);</div><div class="line">    RTC_DCHECK(initialized_);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    initialized_ = <span class="literal">true</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> initialized_;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>媒体引擎初始化过程中，将会创建 AudioState：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#<span class="number">0</span>  webrtc::AudioState::Create(webrtc::AudioState::Config <span class="keyword">const</span>&amp;) () at webrtc/src/audio/audio_state.cc:<span class="number">188</span></div><div class="line">#<span class="number">1</span>  Init () at webrtc/src/media/engine/webrtc_voice_engine.cc:<span class="number">260</span></div><div class="line">#<span class="number">2</span>  cricket::CompositeMediaEngine::Init() () at webrtc/src/media/base/media_engine.cc:<span class="number">155</span></div><div class="line">#<span class="number">3</span>  cricket::ChannelManager::Init()::$_3::operator()() <span class="keyword">const</span> () at webrtc/src/pc/channel_manager.cc:<span class="number">135</span></div></pre></td></tr></table></figure></p>
+<p>AudioState 伴随着 <code>PeerConnectionFactory</code> 、<code>ChannelManager</code> 和 <code>MediaEngine</code> 的创建及初始化一起创建。</p>
+<h1 id="创建-WebRTC-Call"><a href="#创建-WebRTC-Call" class="headerlink" title="创建 WebRTC Call"></a>创建 WebRTC Call</h1><p>应用程序根据需要创建 peer connection：<br><figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#0  CreatePeerConnection () at webrtc/src/pc/peer_connection_factory.cc:<span class="number">240</span></div><div class="line">#1  webrtc<span class="type">::PeerConnectionFactory</span><span class="type">::CreatePeerConnection</span>(webrtc<span class="type">::PeerConnectionInterface</span><span class="type">::RTCConfiguration</span> const&amp;, std<span class="type">::__1</span><span class="type">::unique_ptr</span>&lt;cricket<span class="type">::PortAllocator</span>, std<span class="type">::__1</span><span class="type">::default_delete</span>&lt;cricket<span class="type">::PortAllocator</span>&gt; &gt;, std<span class="type">::__1</span><span class="type">::unique_ptr</span>&lt;rtc<span class="type">::RTCCertificateGeneratorInterface</span>, std<span class="type">::__1</span><span class="type">::default_delete</span>&lt;rtc<span class="type">::RTCCertificateGeneratorInterface</span>&gt; &gt;, webrtc<span class="type">::PeerConnectionObserver</span>*) () at webrtc/src/pc/peer_connection_factory.cc:<span class="number">233</span></div><div class="line">#7  CreatePeerConnection () at webrtc/src/examples/peerconnection/client/conductor.cc:<span class="number">184</span></div><div class="line">#8  InitializePeerConnection () at webrtc/src/examples/peerconnection/client/conductor.cc:<span class="number">148</span></div><div class="line">#9  ConnectToPeer () at webrtc/src/examples/peerconnection/client/conductor.cc:<span class="number">422</span></div><div class="line">#10 OnRowActivated () at webrtc/src/examples/peerconnection/client/linux/main_wnd.cc:<span class="number">433</span></div><div class="line">#11 (anonymous namespace)<span class="type">::OnRowActivatedCallback</span>(_GtkTreeView*, _GtkTreePath*, _GtkTreeViewColumn*, <span class="literal">void</span>*) () at webrtc/src/examples/peerconnection/client/linux/main_wnd.cc:<span class="number">70</span></div></pre></td></tr></table></figure></p>
+<p><code>PeerConnectionFactory::CreatePeerConnection()</code> 在创建 connection 时，会在另一个线程中起一个task 来创建 Call：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">rtc::scoped_refptr&lt;PeerConnectionInterface&gt;</div><div class="line">PeerConnectionFactory::CreatePeerConnection(</div><div class="line">    <span class="keyword">const</span> PeerConnectionInterface::RTCConfiguration&amp; configuration,</div><div class="line">    PeerConnectionDependencies dependencies) &#123;</div><div class="line">  RTC_DCHECK(signaling_thread_-&gt;IsCurrent());</div><div class="line"></div><div class="line">  <span class="comment">// Set internal defaults if optional dependencies are not set.</span></div><div class="line">  <span class="keyword">if</span> (!dependencies.cert_generator) &#123;</div><div class="line">    dependencies.cert_generator =</div><div class="line">        absl::make_unique&lt;rtc::RTCCertificateGenerator&gt;(signaling_thread_,</div><div class="line">                                                        network_thread_);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (!dependencies.allocator) &#123;</div><div class="line">    network_thread_-&gt;Invoke&lt;void&gt;(RTC_FROM_HERE, [this, &amp;configuration,</div><div class="line">                                                  &amp;dependencies]() &#123;</div><div class="line">      dependencies.allocator = absl::make_unique&lt;cricket::BasicPortAllocator&gt;(</div><div class="line">          default_network_manager_.get(), default_socket_factory_.get(),</div><div class="line">          configuration.turn_customizer);</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// TODO(zstein): Once chromium injects its own AsyncResolverFactory, set</span></div><div class="line">  <span class="comment">// |dependencies.async_resolver_factory| to a new</span></div><div class="line">  <span class="comment">// |rtc::BasicAsyncResolverFactory| if no factory is provided.</span></div><div class="line"></div><div class="line">  network_thread_-&gt;Invoke&lt;void&gt;(</div><div class="line">      RTC_FROM_HERE,</div><div class="line">      rtc::Bind(&amp;cricket::PortAllocator::SetNetworkIgnoreMask,</div><div class="line">                dependencies.allocator.get(), options_.network_ignore_mask));</div><div class="line"></div><div class="line">  std::unique_ptr&lt;RtcEventLog&gt; event_log =</div><div class="line">      worker_thread_-&gt;Invoke&lt;std::unique_ptr&lt;RtcEventLog&gt;&gt;(</div><div class="line">          RTC_FROM_HERE,</div><div class="line">          rtc::Bind(&amp;PeerConnectionFactory::CreateRtcEventLog_w, this));</div><div class="line"></div><div class="line">  std::unique_ptr&lt;Call&gt; call = worker_thread_-&gt;Invoke&lt;std::unique_ptr&lt;Call&gt;&gt;(</div><div class="line">      RTC_FROM_HERE,</div><div class="line">      rtc::Bind(&amp;PeerConnectionFactory::CreateCall_w, this, event_log.get()));</div><div class="line"></div><div class="line">  rtc::scoped_refptr&lt;PeerConnection&gt; pc(</div><div class="line">      new rtc::RefCountedObject&lt;PeerConnection&gt;(this, std::<span class="keyword">move</span>(event_log),</div><div class="line">                                                std::<span class="keyword">move</span>(call)));</div><div class="line">  ActionsBeforeInitializeForTesting(pc);</div><div class="line">  <span class="keyword">if</span> (!pc-&gt;Initialize(configuration, std::<span class="keyword">move</span>(dependencies))) &#123;</div><div class="line">    <span class="keyword">return</span> nullptr;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> PeerConnectionProxy::Create(signaling_thread(), pc);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建 WebRTC Call 的过程如下：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::Call</span><span class="selector-pseudo">::Create(webrtc</span><span class="selector-pseudo">::CallConfig</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">call</span>/<span class="selector-tag">call</span><span class="selector-class">.cc</span><span class="selector-pseudo">:424</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::CallFactory</span><span class="selector-pseudo">::CreateCall(webrtc</span><span class="selector-pseudo">::CallConfig</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">call</span>/<span class="selector-tag">call_factory</span><span class="selector-class">.cc</span><span class="selector-pseudo">:84</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">CreateCall_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">peer_connection_factory</span><span class="selector-class">.cc</span><span class="selector-pseudo">:364</span></div></pre></td></tr></table></figure></p>
+<p>不难看出，在 WebRTC 中，Call 是 per peer connection 的。</p>
+<p>为 WebRTC Call 注入的 AudioState 来自于全局的 MediaEngine 的 VoiceEngine。AudioState 是全局的，而 Call 则是 connection 局部的。</p>
+<h1 id="创建-WebRtcAudioReceiveStream"><a href="#创建-WebRtcAudioReceiveStream" class="headerlink" title="创建  WebRtcAudioReceiveStream"></a>创建  WebRtcAudioReceiveStream</h1><p>WebRTC 应用需要起一个专门的专门的连接，用于接收媒体协商信息。在收到媒体协商信息之后，则将媒体协商信息进行层层传递及处理：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">#<span class="number">0</span>  cricket::BaseChannel::SetRemoteContent(cricket::MediaContentDescription <span class="keyword">const</span>*, webrtc::SdpType, std::__1::basic_string&lt;<span class="keyword">char</span>, std::__1::char_traits&lt;<span class="keyword">char</span>&gt;, std::__1::allocator&lt;<span class="keyword">char</span>&gt; &gt;*) () at webrtc/src/pc/channel.cc:<span class="number">299</span></div><div class="line">#<span class="number">1</span>  PushdownMediaDescription () at webrtc/src/pc/peer_connection.cc:<span class="number">5700</span></div><div class="line">#<span class="number">2</span>  UpdateSessionState () at webrtc/src/pc/peer_connection.cc:<span class="number">5668</span></div><div class="line">#<span class="number">3</span>  ApplyRemoteDescription () at webrtc/src/pc/peer_connection.cc:<span class="number">2668</span></div><div class="line">#<span class="number">4</span>  SetRemoteDescription () at webrtc/src/pc/peer_connection.cc:<span class="number">2562</span></div><div class="line">#<span class="number">5</span>  webrtc::PeerConnection::SetRemoteDescription(webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*) () at webrtc/src/pc/peer_connection.cc:<span class="number">2506</span></div><div class="line"></div><div class="line"></div><div class="line">#<span class="number">6</span>  void webrtc::ReturnType&lt;void&gt;::Invoke&lt;webrtc::PeerConnectionInterface, void (webrtc::PeerConnectionInterface::*)(webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*), webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*&gt;(webrtc::PeerConnectionInterface*, void (webrtc::PeerConnectionInterface::*)(webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*), webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*) () at webrtc/src/api/proxy.h:<span class="number">131</span></div><div class="line">#<span class="number">7</span>  webrtc::MethodCall2&lt;webrtc::PeerConnectionInterface, void, webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*&gt;::OnMessage(rtc::Message*) () at webrtc/src/api/proxy.h:<span class="number">252</span></div><div class="line">#<span class="number">8</span>  webrtc::internal::SynchronousMethodCall::Invoke(rtc::Location <span class="keyword">const</span>&amp;, rtc::Thread*) () at webrtc/src/api/proxy.cc:<span class="number">24</span></div><div class="line">#<span class="number">9</span>  webrtc::MethodCall2&lt;webrtc::PeerConnectionInterface, void, webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*&gt;::Marshal(rtc::Location <span class="keyword">const</span>&amp;, rtc::Thread*) () at webrtc/src/api/proxy.h:<span class="number">246</span></div><div class="line">#<span class="number">10</span> webrtc::PeerConnectionProxyWithInternal&lt;webrtc::PeerConnectionInterface&gt;::SetRemoteDescription(webrtc::SetSessionDescriptionObserver*, webrtc::SessionDescriptionInterface*) () at webrtc/src/api/peer_connection_proxy.h:<span class="number">101</span></div><div class="line"></div><div class="line"></div><div class="line">#<span class="number">11</span> OnMessageFromPeer () at webrtc/src/examples/peerconnection/client/conductor.cc:<span class="number">351</span></div><div class="line">#<span class="number">12</span> PeerConnectionClient::OnMessageFromPeer(<span class="keyword">int</span>, std::__1::basic_string&lt;<span class="keyword">char</span>, std::__1::char_traits&lt;<span class="keyword">char</span>&gt;, std::__1::allocator&lt;<span class="keyword">char</span>&gt; &gt; <span class="keyword">const</span>&amp;) ()</div><div class="line">    at webrtc/src/examples/peerconnection/client/peer_connection_client.cc:<span class="number">250</span></div><div class="line">#<span class="number">13</span> OnHangingGetRead () at webrtc/src/examples/peerconnection/client/peer_connection_client.cc:<span class="number">403</span></div><div class="line">#<span class="number">18</span> rtc::SocketDispatcher::OnEvent(unsigned <span class="keyword">int</span>, <span class="keyword">int</span>) () at webrtc/src/rtc_base/physical_socket_server.cc:<span class="number">790</span></div><div class="line">#<span class="number">19</span> rtc::ProcessEvents(rtc::Dispatcher*, <span class="keyword">bool</span>, <span class="keyword">bool</span>, <span class="keyword">bool</span>) () at webrtc/src/rtc_base/physical_socket_server.cc:<span class="number">1379</span></div><div class="line">#<span class="number">20</span> WaitEpoll () at webrtc/src/rtc_base/physical_socket_server.cc:<span class="number">1620</span></div><div class="line">#<span class="number">21</span> rtc::PhysicalSocketServer::Wait(<span class="keyword">int</span>, <span class="keyword">bool</span>) () at webrtc/src/rtc_base/physical_socket_server.cc:<span class="number">1328</span></div><div class="line">#<span class="number">22</span> CustomSocketServer::Wait(<span class="keyword">int</span>, <span class="keyword">bool</span>) () at webrtc/src/examples/peerconnection/client/linux/main.cc:<span class="number">56</span></div><div class="line">#<span class="number">23</span> Get () at webrtc/src/rtc_base/message_queue.cc:<span class="number">329</span></div><div class="line">#<span class="number">24</span> ProcessMessages () at webrtc/src/rtc_base/thread.cc:<span class="number">525</span></div><div class="line">#<span class="number">25</span> rtc::Thread::Run() () at webrtc/src/rtc_base/thread.cc:<span class="number">351</span></div><div class="line">#<span class="number">26</span> main () at webrtc/src/examples/peerconnection/client/linux/main.cc:<span class="number">111</span></div></pre></td></tr></table></figure></p>
+<p>在 webrtc/src/pc/channel.cc 文件里定义的 <code>BaseChannel::SetRemoteContent()</code> 函数中将收到的媒体协商信息，抛给另一个线程进行处理：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">bool</span> BaseChannel::SetRemoteContent(<span class="keyword">const</span> MediaContentDescription* content,</div><div class="line">                                   SdpType type,</div><div class="line">                                   <span class="built_in">std</span>::<span class="built_in">string</span>* error_desc) &#123;</div><div class="line">  TRACE_EVENT0(<span class="string">"webrtc"</span>, <span class="string">"BaseChannel::SetRemoteContent"</span>);</div><div class="line">  <span class="keyword">return</span> InvokeOnWorker&lt;<span class="keyword">bool</span>&gt;(</div><div class="line">      RTC_FROM_HERE,</div><div class="line">      Bind(&amp;BaseChannel::SetRemoteContent_w, <span class="keyword">this</span>, content, type, error_desc));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>WebRtcAudioReceiveStream</code> 最终由 webrtc/src/media/engine/webrtc_voice_engine.cc 文件中定义的 <code>WebRtcVoiceMediaChannel::AddRecvStream()</code> 创建：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">AddRecvStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1854</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">AddRecvStream_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:599</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">UpdateRemoteStreams_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:714</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">SetRemoteContent_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:951</span></div></pre></td></tr></table></figure></p>
+<p>创建 WebRtcAudioReceiveStream 时，也会一并创建 Call 的 AudioReceiveStream：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">CreateAudioReceiveStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">call</span>/<span class="selector-tag">call</span><span class="selector-class">.cc</span><span class="selector-pseudo">:779</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">RecreateAudioReceiveStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1224</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">WebRtcAudioReceiveStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1090</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">AddRecvStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1889</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">AddRecvStream_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:599</span></div><div class="line"><span class="selector-id">#5</span>  <span class="selector-tag">UpdateRemoteStreams_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:714</span></div></pre></td></tr></table></figure></p>
+<p><code>WebRtcAudioReceiveStream</code> 创建完成后，随即将其加进 mixer，作为 mixer 的 audio source 之一：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">AddSource</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_mixer</span>/<span class="selector-tag">audio_mixer_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:160</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">AddReceivingStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">audio_state</span><span class="selector-class">.cc</span><span class="selector-pseudo">:60</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">Start</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">audio_receive_stream</span><span class="selector-class">.cc</span><span class="selector-pseudo">:161</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">SetPlayout</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1173</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">AddRecvStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1899</span></div><div class="line"><span class="selector-id">#5</span>  <span class="selector-tag">AddRecvStream_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:599</span></div></pre></td></tr></table></figure></p>
+<h1 id="WebRTC-中音频接收处理的关键流程"><a href="#WebRTC-中音频接收处理的关键流程" class="headerlink" title="WebRTC 中音频接收处理的关键流程"></a>WebRTC 中音频接收处理的关键流程</h1><h2 id="1-从网络收到-UDP-包"><a href="#1-从网络收到-UDP-包" class="headerlink" title="1. 从网络收到 UDP 包"></a>1. 从网络收到 UDP 包</h2><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">OnPacketReceived</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:507</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">cricket</span><span class="selector-pseudo">::BaseChannel</span><span class="selector-pseudo">::OnRtpPacket(webrtc</span><span class="selector-pseudo">::RtpPacketReceived</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:468</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::RtpDemuxer</span><span class="selector-pseudo">::OnRtpPacket(webrtc</span><span class="selector-pseudo">::RtpPacketReceived</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">call</span>/<span class="selector-tag">rtp_demuxer</span><span class="selector-class">.cc</span><span class="selector-pseudo">:177</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">DemuxPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">rtp_transport</span><span class="selector-class">.cc</span><span class="selector-pseudo">:194</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">OnRtpPacketReceived</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">srtp_transport</span><span class="selector-class">.cc</span><span class="selector-pseudo">:230</span></div><div class="line"><span class="selector-id">#5</span>  <span class="selector-tag">OnReadPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">rtp_transport</span><span class="selector-class">.cc</span><span class="selector-pseudo">:268</span></div><div class="line"><span class="selector-id">#10</span> <span class="selector-tag">OnReadPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">dtls_transport</span><span class="selector-class">.cc</span><span class="selector-pseudo">:600</span></div><div class="line"><span class="selector-id">#15</span> <span class="selector-tag">OnReadPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">p2p_transport_channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:2499</span></div><div class="line"><span class="selector-id">#20</span> <span class="selector-tag">OnReadPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">connection</span><span class="selector-class">.cc</span><span class="selector-pseudo">:415</span></div><div class="line"><span class="selector-id">#21</span> <span class="selector-tag">OnReadPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">stun_port</span><span class="selector-class">.cc</span><span class="selector-pseudo">:407</span></div><div class="line"><span class="selector-id">#22</span> <span class="selector-tag">cricket</span><span class="selector-pseudo">::UDPPort</span><span class="selector-pseudo">::HandleIncomingPacket(rtc</span><span class="selector-pseudo">::AsyncPacketSocket</span>*, <span class="selector-tag">char</span> <span class="selector-tag">const</span>*, <span class="selector-tag">unsigned</span> <span class="selector-tag">long</span>, <span class="selector-tag">rtc</span><span class="selector-pseudo">::SocketAddress</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>, <span class="selector-tag">long</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">stun_port</span><span class="selector-class">.cc</span><span class="selector-pseudo">:348</span></div><div class="line"><span class="selector-id">#23</span> <span class="selector-tag">OnReadPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">client</span>/<span class="selector-tag">basic_port_allocator</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1673</span></div><div class="line"><span class="selector-id">#28</span> <span class="selector-tag">OnReadEvent</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">async_udp_socket</span><span class="selector-class">.cc</span><span class="selector-pseudo">:132</span></div><div class="line"><span class="selector-id">#33</span> <span class="selector-tag">rtc</span><span class="selector-pseudo">::SocketDispatcher</span><span class="selector-pseudo">::OnEvent(unsigned</span> <span class="selector-tag">int</span>, <span class="selector-tag">int</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">physical_socket_server</span><span class="selector-class">.cc</span><span class="selector-pseudo">:790</span></div><div class="line"><span class="selector-id">#34</span> <span class="selector-tag">rtc</span><span class="selector-pseudo">::ProcessEvents(rtc</span><span class="selector-pseudo">::Dispatcher</span>*, <span class="selector-tag">bool</span>, <span class="selector-tag">bool</span>, <span class="selector-tag">bool</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">physical_socket_server</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1379</span></div><div class="line"><span class="selector-id">#35</span> <span class="selector-tag">WaitEpoll</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">physical_socket_server</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1620</span></div><div class="line"><span class="selector-id">#36</span> <span class="selector-tag">rtc</span><span class="selector-pseudo">::PhysicalSocketServer</span><span class="selector-pseudo">::Wait(int</span>, <span class="selector-tag">bool</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">physical_socket_server</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1328</span></div></pre></td></tr></table></figure>
+<p>在 webrtc/src/rtc_base/physical_socket_server.cc 文件里 <code>PhysicalSocketServer</code><br> 类的 <code>Wait()</code> 函数中，通过 epoll 机制等待网络数据包的到来。当数据包到来时，经过层层处理及传递，一直被传到 webrtc/src/pc/channel.cc 文件里 <code>BaseChannel</code> 类的 <code>OnPacketReceived()</code> 函数中，该函数又将数据包抛进另一个线程进行处理：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> <span class="string">BaseChannel:</span>:OnPacketReceived(bool rtcp,</div><div class="line">                                   const <span class="string">rtc:</span>:CopyOnWriteBuffer&amp; packet,</div><div class="line">                                   int64_t packet_time_us) &#123;</div><div class="line">  <span class="keyword">if</span> (!has_received_packet_ &amp;&amp; !rtcp) &#123;</div><div class="line">    has_received_packet_ = <span class="literal">true</span>;</div><div class="line">    signaling_thread()-&gt;Post(RTC_FROM_HERE, <span class="keyword">this</span>, MSG_FIRSTPACKETRECEIVED);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (!srtp_active() &amp;&amp; srtp_required_) &#123;</div><div class="line">    <span class="comment">// Our session description indicates that SRTP is required, but we got a</span></div><div class="line">    <span class="comment">// packet before our SRTP filter is active. This means either that</span></div><div class="line">    <span class="comment">// a) we got SRTP packets before we received the SDES keys, in which case</span></div><div class="line">    <span class="comment">//    we can't decrypt it anyway, or</span></div><div class="line">    <span class="comment">// b) we got SRTP packets before DTLS completed on both the RTP and RTCP</span></div><div class="line">    <span class="comment">//    transports, so we haven't yet extracted keys, even if DTLS did</span></div><div class="line">    <span class="comment">//    complete on the transport that the packets are being sent on. It's</span></div><div class="line">    <span class="comment">//    really good practice to wait for both RTP and RTCP to be good to go</span></div><div class="line">    <span class="comment">//    before sending  media, to prevent weird failure modes, so it's fine</span></div><div class="line">    <span class="comment">//    for us to just eat packets here. This is all sidestepped if RTCP mux</span></div><div class="line">    <span class="comment">//    is used anyway.</span></div><div class="line">    RTC_LOG(LS_WARNING)</div><div class="line">        &lt;&lt; <span class="string">"Can't process incoming "</span></div><div class="line">        &lt;&lt; RtpPacketTypeToString(rtcp ? RtpPacketType::kRtcp</div><div class="line">                                      : <span class="string">RtpPacketType:</span>:kRtp)</div><div class="line">        &lt;&lt; <span class="string">" packet when SRTP is inactive and crypto is required"</span>;</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  invoker_.AsyncInvoke&lt;<span class="keyword">void</span>&gt;(</div><div class="line">      RTC_FROM_HERE, worker_thread_,</div><div class="line">      Bind(&amp;<span class="string">BaseChannel:</span>:ProcessPacket, <span class="keyword">this</span>, rtcp, packet, packet_time_us));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="2-媒体引擎对收到的音频包的处理"><a href="#2-媒体引擎对收到的音频包的处理" class="headerlink" title="2. 媒体引擎对收到的音频包的处理"></a>2. 媒体引擎对收到的音频包的处理</h2><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">#<span class="number">0</span>  InsertPacketInternal () at webrtc/src/modules/audio_coding/neteq/neteq_impl<span class="selector-class">.cc</span>:<span class="number">467</span></div><div class="line">#<span class="number">1</span>  webrtc::NetEqImpl::InsertPacket(webrtc::RTPHeader const&amp;, rtc::ArrayView&lt;unsigned char const, -<span class="number">4711</span>l&gt;, unsigned int) () at webrtc/src/modules/audio_coding/neteq/neteq_impl<span class="selector-class">.cc</span>:<span class="number">153</span></div><div class="line">#<span class="number">2</span>  InsertPacket () at webrtc/src/modules/audio_coding/acm2/acm_receiver<span class="selector-class">.cc</span>:<span class="number">117</span></div><div class="line">#<span class="number">3</span>  IncomingPacket () at webrtc/src/modules/audio_coding/acm2/audio_coding_module<span class="selector-class">.cc</span>:<span class="number">667</span></div><div class="line">#<span class="number">4</span>  OnReceivedPayloadData () at webrtc/src/audio/channel_receive<span class="selector-class">.cc</span>:<span class="number">283</span></div><div class="line">#<span class="number">5</span>  ReceivePacket () at webrtc/src/audio/channel_receive<span class="selector-class">.cc</span>:<span class="number">669</span></div><div class="line">#<span class="number">6</span>  webrtc::voe::(anonymous namespace)::ChannelReceive::OnRtpPacket(webrtc::RtpPacketReceived const&amp;) () at webrtc/src/audio/channel_receive<span class="selector-class">.cc</span>:<span class="number">622</span></div><div class="line">#<span class="number">7</span>  webrtc::RtpDemuxer::OnRtpPacket(webrtc::RtpPacketReceived const&amp;) () at webrtc/src/call/rtp_demuxer<span class="selector-class">.cc</span>:<span class="number">177</span></div><div class="line">#<span class="number">8</span>  webrtc::RtpStreamReceiverController::OnRtpPacket(webrtc::RtpPacketReceived const&amp;) () at webrtc/src/call/rtp_stream_receiver_controller<span class="selector-class">.cc</span>:<span class="number">54</span></div><div class="line">#<span class="number">9</span>  DeliverRtp () at webrtc/src/call/call<span class="selector-class">.cc</span>:<span class="number">1423</span></div><div class="line">#<span class="number">10</span> DeliverPacket () at webrtc/src/call/call<span class="selector-class">.cc</span>:<span class="number">1461</span></div><div class="line">#<span class="number">11</span> OnPacketReceived () at webrtc/src/media/engine/webrtc_voice_engine<span class="selector-class">.cc</span>:<span class="number">2070</span></div><div class="line">#<span class="number">12</span> ProcessPacket () at webrtc/src/pc/channel<span class="selector-class">.cc</span>:<span class="number">540</span></div></pre></td></tr></table></figure>
+<p> webrtc/src/pc/channel.cc 文件里 <code>BaseChannel</code> 类的 <code>ProcessPacket()</code> 函数将收到的音频包送进媒体引擎进行处理，这一过程包括，根据 RTP 包的 ssrc 派发进不同的 channel，ACM receiver 的处理，一直到最终插入 NetEq 的缓冲区。在 NetEq 中将会完成数据包的重排序，网络对抗，音频的解码等处理操作。</p>
+<h1 id="音频数据的解码及播放"><a href="#音频数据的解码及播放" class="headerlink" title="音频数据的解码及播放"></a>音频数据的解码及播放</h1><p>AudioDevice 组件被初始化时，即会启动一个播放线程，如 (webrtc/src/modules/audio_device/linux/audio_device_pulse_linux.cc)：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">AudioDeviceGeneric::InitStatus AudioDeviceLinuxPulse::Init() &#123;</div><div class="line">  RTC_DCHECK(thread_checker_.IsCurrent());</div><div class="line">  <span class="keyword">if</span> (_initialized) &#123;</div><div class="line">    <span class="keyword">return</span> InitStatus::OK;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Initialize PulseAudio</span></div><div class="line">  <span class="keyword">if</span> (InitPulseAudio() &lt; <span class="number">0</span>) &#123;</div><div class="line">    RTC_LOG(LS_ERROR) &lt;&lt; <span class="string">"failed to initialize PulseAudio"</span>;</div><div class="line">    <span class="keyword">if</span> (TerminatePulseAudio() &lt; <span class="number">0</span>) &#123;</div><div class="line">      RTC_LOG(LS_ERROR) &lt;&lt; <span class="string">"failed to terminate PulseAudio"</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> InitStatus::OTHER_ERROR;</div><div class="line">  &#125;</div><div class="line"></div><div class="line"><span class="comment">#if defined(WEBRTC_USE_X11)</span></div><div class="line">  <span class="comment">// Get X display handle for typing detection</span></div><div class="line">  _XDisplay = XOpenDisplay(<span class="keyword">NULL</span>);</div><div class="line">  <span class="keyword">if</span> (!_XDisplay) &#123;</div><div class="line">    RTC_LOG(LS_WARNING)</div><div class="line">        &lt;&lt; <span class="string">"failed to open X display, typing detection will not work"</span>;</div><div class="line">  &#125;</div><div class="line"><span class="comment">#endif</span></div><div class="line"></div><div class="line">  <span class="comment">// RECORDING</span></div><div class="line">  _ptrThreadRec.reset(<span class="keyword">new</span> rtc::PlatformThread(RecThreadFunc, this,</div><div class="line">                                              <span class="string">"webrtc_audio_module_rec_thread"</span>,</div><div class="line">                                              rtc::kRealtimePriority));</div><div class="line"></div><div class="line">  _ptrThreadRec-&gt;Start();</div><div class="line"></div><div class="line">  <span class="comment">// PLAYOUT</span></div><div class="line">  _ptrThreadPlay.reset(<span class="keyword">new</span> rtc::PlatformThread(</div><div class="line">      PlayThreadFunc, this, <span class="string">"webrtc_audio_module_play_thread"</span>,</div><div class="line">      rtc::kRealtimePriority));</div><div class="line">  _ptrThreadPlay-&gt;Start();</div><div class="line"></div><div class="line">  _initialized = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> InitStatus::OK;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个线程不断地从媒体引擎中拿数据进行播放，这个过程如下：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">GetNextAudioInterleaved</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_coding</span>/<span class="selector-tag">neteq</span>/<span class="selector-tag">sync_buffer</span><span class="selector-class">.cc</span><span class="selector-pseudo">:85</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">GetAudioInternal</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_coding</span>/<span class="selector-tag">neteq</span>/<span class="selector-tag">neteq_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:897</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">GetAudio</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_coding</span>/<span class="selector-tag">neteq</span>/<span class="selector-tag">neteq_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:215</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">GetAudio</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_coding</span>/<span class="selector-tag">acm2</span>/<span class="selector-tag">acm_receiver</span><span class="selector-class">.cc</span><span class="selector-pseudo">:134</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">PlayoutData10Ms</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_coding</span>/<span class="selector-tag">acm2</span>/<span class="selector-tag">audio_coding_module</span><span class="selector-class">.cc</span><span class="selector-pseudo">:704</span></div><div class="line"><span class="selector-id">#5</span>  <span class="selector-tag">GetAudioFrameWithInfo</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">channel_receive</span><span class="selector-class">.cc</span><span class="selector-pseudo">:332</span></div><div class="line"><span class="selector-id">#6</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::internal</span><span class="selector-pseudo">::AudioReceiveStream</span><span class="selector-pseudo">::GetAudioFrameWithInfo(int</span>, <span class="selector-tag">webrtc</span><span class="selector-pseudo">::AudioFrame</span>*) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">audio_receive_stream</span><span class="selector-class">.cc</span><span class="selector-pseudo">:276</span></div><div class="line"><span class="selector-id">#7</span>  <span class="selector-tag">GetAudioFromSources</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_mixer</span>/<span class="selector-tag">audio_mixer_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:186</span></div><div class="line"><span class="selector-id">#8</span>  <span class="selector-tag">Mix</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_mixer</span>/<span class="selector-tag">audio_mixer_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:130</span></div><div class="line"><span class="selector-id">#9</span>  <span class="selector-tag">NeedMorePlayData</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">audio_transport_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:193</span></div><div class="line"><span class="selector-id">#10</span> <span class="selector-tag">RequestPlayoutData</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">audio_device_buffer</span><span class="selector-class">.cc</span><span class="selector-pseudo">:301</span></div><div class="line"><span class="selector-id">#11</span> <span class="selector-tag">PlayThreadProcess</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">linux</span>/<span class="selector-tag">audio_device_pulse_linux</span><span class="selector-class">.cc</span><span class="selector-pseudo">:2121</span></div><div class="line"><span class="selector-id">#12</span> <span class="selector-tag">webrtc</span><span class="selector-pseudo">::AudioDeviceLinuxPulse</span><span class="selector-pseudo">::PlayThreadFunc(void</span>*) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">linux</span>/<span class="selector-tag">audio_device_pulse_linux</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1984</span></div></pre></td></tr></table></figure></p>
+<p>WebRTC 中对于音频，是即解码即播放的，播放和解码在同一个线程中完成，此外从解码到播放，还将完成回声消除，混音等处理。</p>
+<p>上面创建 <code>WebRtcAudioReceiveStream</code>，并接收到音频数据包，是这里能够从 mixer 拿到数据并播放的基础。</p>
+<h1 id="webrtc-AudioSendStream-的创建"><a href="#webrtc-AudioSendStream-的创建" class="headerlink" title="webrtc::AudioSendStream 的创建"></a>webrtc::AudioSendStream 的创建</h1><p>webrtc::AudioSendStream 的创建由应用程序发起：<br><figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#0  cricket<span class="type">::BaseChannel</span><span class="type">::SetLocalContent</span>(cricket<span class="type">::MediaContentDescription</span> const*, webrtc<span class="type">::SdpType</span>, std<span class="type">::__1</span><span class="type">::basic_string</span>&lt;char, std<span class="type">::__1</span><span class="type">::char_traits</span>&lt;char&gt;, std<span class="type">::__1</span><span class="type">::allocator</span>&lt;char&gt; &gt;*) () at webrtc/src/pc/channel.cc:<span class="number">290</span></div><div class="line">#1  PushdownMediaDescription () at webrtc/src/pc/peer_connection.cc:<span class="number">5699</span></div><div class="line">#2  UpdateSessionState () at webrtc/src/pc/peer_connection.cc:<span class="number">5668</span></div><div class="line">#3  ApplyLocalDescription () at webrtc/src/pc/peer_connection.cc:<span class="number">2356</span></div><div class="line">#4  SetLocalDescription () at webrtc/src/pc/peer_connection.cc:<span class="number">2187</span></div><div class="line">#10 Conductor<span class="type">::OnSuccess</span>(webrtc<span class="type">::SessionDescriptionInterface</span>*) () at webrtc/src/examples/peerconnection/client/conductor.cc:<span class="number">544</span></div><div class="line">#11 OnMessage () at webrtc/src/pc/webrtc_session_description_factory.cc:<span class="number">299</span></div><div class="line">#12 Dispatch () at webrtc/src/rtc_base/message_queue.cc:<span class="number">513</span></div><div class="line">#13 ProcessMessages () at webrtc/src/rtc_base/<span class="keyword">thread</span>.cc:<span class="number">527</span></div><div class="line">#14 rtc<span class="type">::Thread</span><span class="type">::Run</span>() () at webrtc/src/rtc_base/<span class="keyword">thread</span>.cc:<span class="number">351</span></div><div class="line">#15 main () at webrtc/src/examples/peerconnection/client/linux/main.cc:<span class="number">111</span></div></pre></td></tr></table></figure></p>
+<p><code>webrtc/src/pc/channel.cc</code> 文件里的 <code>BaseChannel::SetLocalContent()</code> 将 MediaContentDescription 抛进 worker_thread 中进一步处理：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">bool</span> BaseChannel::SetLocalContent(<span class="keyword">const</span> MediaContentDescription* content,</div><div class="line">                                  SdpType type,</div><div class="line">                                  <span class="built_in">std</span>::<span class="built_in">string</span>* error_desc) &#123;</div><div class="line">  TRACE_EVENT0(<span class="string">"webrtc"</span>, <span class="string">"BaseChannel::SetLocalContent"</span>);</div><div class="line">  <span class="keyword">return</span> InvokeOnWorker&lt;<span class="keyword">bool</span>&gt;(</div><div class="line">      RTC_FROM_HERE,</div><div class="line">      Bind(&amp;BaseChannel::SetLocalContent_w, <span class="keyword">this</span>, content, type, error_desc));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>webrtc::AudioSendStream 最终在 Call 中创建：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">CreateAudioSendStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">call</span>/<span class="selector-tag">call</span><span class="selector-class">.cc</span><span class="selector-pseudo">:707</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">WebRtcAudioSendStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:735</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">AddSendStream</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_voice_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1803</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">UpdateLocalStreams_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:671</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">SetLocalContent_w</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:906</span></div></pre></td></tr></table></figure></p>
+<h1 id="音频数据的发送"><a href="#音频数据的发送" class="headerlink" title="音频数据的发送"></a>音频数据的发送</h1><p>如前面看到的，AudioDevice 组件被初始化时，在启动播放线程的同时，还会启动一个录制线程。录制线程捕获录制的音频数据，一路传递进行处理：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">ProcessAndEncodeAudio</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">channel_send</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1101</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">SendAudioData</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">audio_send_stream</span><span class="selector-class">.cc</span><span class="selector-pseudo">:365</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">RecordedDataIsAvailable</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">audio</span>/<span class="selector-tag">audio_transport_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:164</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">DeliverRecordedData</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">audio_device_buffer</span><span class="selector-class">.cc</span><span class="selector-pseudo">:269</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::AudioDeviceLinuxPulse</span><span class="selector-pseudo">::ProcessRecordedData(signed</span> <span class="selector-tag">char</span>*, <span class="selector-tag">unsigned</span> <span class="selector-tag">int</span>, <span class="selector-tag">unsigned</span> <span class="selector-tag">int</span>) ()</div><div class="line">    <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">linux</span>/<span class="selector-tag">audio_device_pulse_linux</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1971</span></div><div class="line"><span class="selector-id">#5</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::AudioDeviceLinuxPulse</span><span class="selector-pseudo">::ReadRecordedData(void</span> <span class="selector-tag">const</span>*, <span class="selector-tag">unsigned</span> <span class="selector-tag">long</span>) ()</div><div class="line">    <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">linux</span>/<span class="selector-tag">audio_device_pulse_linux</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1918</span></div><div class="line"><span class="selector-id">#6</span>  <span class="selector-tag">RecThreadProcess</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">linux</span>/<span class="selector-tag">audio_device_pulse_linux</span><span class="selector-class">.cc</span><span class="selector-pseudo">:2229</span></div><div class="line"><span class="selector-id">#7</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::AudioDeviceLinuxPulse</span><span class="selector-pseudo">::RecThreadFunc(void</span>*) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">audio_device</span>/<span class="selector-tag">linux</span>/<span class="selector-tag">audio_device_pulse_linux</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1990</span></div></pre></td></tr></table></figure></p>
+<p>AudioDevice 将录制的音频数据一直传递到 webrtc/src/audio/channel_send.cc 文件里的 <code>ChannelSend::ProcessAndEncodeAudio()</code>：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> ChannelSend::ProcessAndEncodeAudio(</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;AudioFrame&gt; audio_frame) &#123;</div><div class="line">  RTC_DCHECK_RUNS_SERIALIZED(&amp;audio_thread_race_checker_);</div><div class="line">  <span class="keyword">struct</span> ProcessAndEncodeAudio &#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span> </span>&#123;</div><div class="line">      RTC_DCHECK_RUN_ON(&amp;channel-&gt;encoder_queue_);</div><div class="line">      <span class="keyword">if</span> (!channel-&gt;encoder_queue_is_active_) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">      &#125;</div><div class="line">      channel-&gt;ProcessAndEncodeAudioOnTaskQueue(audio_frame.get());</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;AudioFrame&gt; audio_frame;</div><div class="line">    ChannelSend* <span class="keyword">const</span> channel;</div><div class="line">  &#125;;</div><div class="line">  <span class="comment">// Profile time between when the audio frame is added to the task queue and</span></div><div class="line">  <span class="comment">// when the task is actually executed.</span></div><div class="line">  audio_frame-&gt;UpdateProfileTimeStamp();</div><div class="line">  encoder_queue_.PostTask(ProcessAndEncodeAudio&#123;<span class="built_in">std</span>::move(audio_frame), <span class="keyword">this</span>&#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在该函数中，录制获得的 AudioFrame 被抛进编码的线程中的 task 进行编码，封装为 RTP 包，并送进 <code>PacedSender</code>，<code>PacedSender</code> 将 RTP 包放进 queue 中：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">#<span class="number">0</span>  InsertPacket () at webrtc/src/modules/pacing/paced_sender.cc:<span class="number">200</span></div><div class="line">#<span class="number">1</span>  non-<span class="keyword">virtual</span> thunk to webrtc::PacedSender::InsertPacket(webrtc::RtpPacketSender::Priority, <span class="keyword">unsigned</span> <span class="keyword">int</span>, <span class="keyword">unsigned</span> <span class="keyword">short</span>, <span class="keyword">long</span>, <span class="keyword">unsigned</span> <span class="keyword">long</span>, <span class="keyword">bool</span>) ()</div><div class="line">#<span class="number">2</span>  webrtc::voe::(anonymous <span class="keyword">namespace</span>)::RtpPacketSenderProxy::InsertPacket(webrtc::RtpPacketSender::Priority, <span class="keyword">unsigned</span> <span class="keyword">int</span>, <span class="keyword">unsigned</span> <span class="keyword">short</span>, <span class="keyword">long</span>, <span class="keyword">unsigned</span> <span class="keyword">long</span>, <span class="keyword">bool</span>) () at webrtc/src/audio/channel_send.cc:<span class="number">391</span></div><div class="line">#<span class="number">3</span>  SendToNetwork () at webrtc/src/modules/rtp_rtcp/source/rtp_sender.cc:<span class="number">963</span></div><div class="line">#<span class="number">4</span>  webrtc::RTPSenderAudio::LogAndSendToNetwork(<span class="built_in">std</span>::__1::<span class="built_in">unique_ptr</span>&lt;webrtc::RtpPacketToSend, <span class="built_in">std</span>::__1::default_delete&lt;webrtc::RtpPacketToSend&gt; &gt;, webrtc::StorageType) () at webrtc/src/modules/rtp_rtcp/source/rtp_sender_audio.cc:<span class="number">363</span></div><div class="line">#<span class="number">5</span>  SendAudio () at webrtc/src/modules/rtp_rtcp/source/rtp_sender_audio.cc:<span class="number">260</span></div><div class="line">#<span class="number">6</span>  SendRtpAudio () at webrtc/src/audio/channel_send.cc:<span class="number">568</span></div><div class="line">#<span class="number">7</span>  SendData () at webrtc/src/audio/channel_send.cc:<span class="number">497</span></div><div class="line">#<span class="number">8</span>  Encode () at webrtc/src/modules/audio_coding/acm2/audio_coding_module.cc:<span class="number">385</span></div><div class="line">#<span class="number">9</span>  webrtc::(anonymous <span class="keyword">namespace</span>)::AudioCodingModuleImpl::Add10MsData(webrtc::AudioFrame <span class="keyword">const</span>&amp;) ()</div><div class="line">    at webrtc/src/modules/audio_coding/acm2/audio_coding_module.cc:<span class="number">430</span></div><div class="line">#<span class="number">10</span> ProcessAndEncodeAudioOnTaskQueue () at webrtc/src/audio/channel_send.cc:<span class="number">1152</span></div></pre></td></tr></table></figure></p>
+<p><code>PacedSender</code> 中的另一个线程从 queue 中拿到 RTP 包并发送：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">SendPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:397</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">cricket</span><span class="selector-pseudo">::BaseChannel</span><span class="selector-pseudo">::SendPacket(rtc</span><span class="selector-pseudo">::CopyOnWriteBuffer</span>*, <span class="selector-tag">rtc</span><span class="selector-pseudo">::PacketOptions</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:328</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">cricket</span><span class="selector-pseudo">::MediaChannel</span><span class="selector-pseudo">::DoSendPacket(rtc</span><span class="selector-pseudo">::CopyOnWriteBuffer</span>*, <span class="selector-tag">bool</span>, <span class="selector-tag">rtc</span><span class="selector-pseudo">::PacketOptions</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">base</span>/<span class="selector-tag">media_channel</span><span class="selector-class">.h</span><span class="selector-pseudo">:328</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">cricket</span><span class="selector-pseudo">::MediaChannel</span><span class="selector-pseudo">::SendPacket(rtc</span><span class="selector-pseudo">::CopyOnWriteBuffer</span>*, <span class="selector-tag">rtc</span><span class="selector-pseudo">::PacketOptions</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">base</span>/<span class="selector-tag">media_channel</span><span class="selector-class">.h</span><span class="selector-pseudo">:249</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">cricket</span><span class="selector-pseudo">::WebRtcVideoChannel</span><span class="selector-pseudo">::SendRtp(unsigned</span> <span class="selector-tag">char</span> <span class="selector-tag">const</span>*, <span class="selector-tag">unsigned</span> <span class="selector-tag">long</span>, <span class="selector-tag">webrtc</span><span class="selector-pseudo">::PacketOptions</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">media</span>/<span class="selector-tag">engine</span>/<span class="selector-tag">webrtc_video_engine</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1690</span></div><div class="line"><span class="selector-id">#5</span>  <span class="selector-tag">SendPacketToNetwork</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">rtp_rtcp</span>/<span class="selector-tag">source</span>/<span class="selector-tag">rtp_sender</span><span class="selector-class">.cc</span><span class="selector-pseudo">:550</span></div><div class="line"><span class="selector-id">#6</span>  <span class="selector-tag">PrepareAndSendPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">rtp_rtcp</span>/<span class="selector-tag">source</span>/<span class="selector-tag">rtp_sender</span><span class="selector-class">.cc</span><span class="selector-pseudo">:791</span></div><div class="line"><span class="selector-id">#7</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::RTPSender</span><span class="selector-pseudo">::TimeToSendPacket(unsigned</span> <span class="selector-tag">int</span>, <span class="selector-tag">unsigned</span> <span class="selector-tag">short</span>, <span class="selector-tag">long</span>, <span class="selector-tag">bool</span>, <span class="selector-tag">webrtc</span><span class="selector-pseudo">::PacedPacketInfo</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">rtp_rtcp</span>/<span class="selector-tag">source</span>/<span class="selector-tag">rtp_sender</span><span class="selector-class">.cc</span><span class="selector-pseudo">:604</span></div><div class="line"><span class="selector-id">#8</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::ModuleRtpRtcpImpl</span><span class="selector-pseudo">::TimeToSendPacket(unsigned</span> <span class="selector-tag">int</span>, <span class="selector-tag">unsigned</span> <span class="selector-tag">short</span>, <span class="selector-tag">long</span>, <span class="selector-tag">bool</span>, <span class="selector-tag">webrtc</span><span class="selector-pseudo">::PacedPacketInfo</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">rtp_rtcp</span>/<span class="selector-tag">source</span>/<span class="selector-tag">rtp_rtcp_impl</span><span class="selector-class">.cc</span><span class="selector-pseudo">:415</span></div><div class="line"><span class="selector-id">#9</span>  <span class="selector-tag">webrtc</span><span class="selector-pseudo">::PacketRouter</span><span class="selector-pseudo">::TimeToSendPacket(unsigned</span> <span class="selector-tag">int</span>, <span class="selector-tag">unsigned</span> <span class="selector-tag">short</span>, <span class="selector-tag">long</span>, <span class="selector-tag">bool</span>, <span class="selector-tag">webrtc</span><span class="selector-pseudo">::PacedPacketInfo</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) ()</div><div class="line">    <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">pacing</span>/<span class="selector-tag">packet_router</span><span class="selector-class">.cc</span><span class="selector-pseudo">:123</span></div><div class="line"><span class="selector-id">#10</span> <span class="selector-tag">Process</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">modules</span>/<span class="selector-tag">pacing</span>/<span class="selector-tag">paced_sender</span><span class="selector-class">.cc</span><span class="selector-pseudo">:390</span></div></pre></td></tr></table></figure></p>
+<p>RTP 包被 <code>PacedSender</code> 一直递到 webrtc/src/pc/channel.cc 文件里定义的 <code>BaseChannel::SendPacket()</code>。<code>BaseChannel::SendPacket()</code> 将包抛进网络发送线程中发送：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">bool</span> BaseChannel::SendPacket(<span class="keyword">bool</span> rtcp,</div><div class="line">                             rtc::CopyOnWriteBuffer* packet,</div><div class="line">                             <span class="keyword">const</span> rtc::PacketOptions&amp; options) &#123;</div><div class="line">  <span class="comment">// Until all the code is migrated to use RtpPacketType instead of bool.</span></div><div class="line">  RtpPacketType packet_type = rtcp ? RtpPacketType::kRtcp : RtpPacketType::kRtp;</div><div class="line">  <span class="comment">// SendPacket gets called from MediaEngine, on a pacer or an encoder thread.</span></div><div class="line">  <span class="comment">// If the thread is not our network thread, we will post to our network</span></div><div class="line">  <span class="comment">// so that the real work happens on our network. This avoids us having to</span></div><div class="line">  <span class="comment">// synchronize access to all the pieces of the send path, including</span></div><div class="line">  <span class="comment">// SRTP and the inner workings of the transport channels.</span></div><div class="line">  <span class="comment">// The only downside is that we can't return a proper failure code if</span></div><div class="line">  <span class="comment">// needed. Since UDP is unreliable anyway, this should be a non-issue.</span></div><div class="line">  <span class="keyword">if</span> (!network_thread_-&gt;IsCurrent()) &#123;</div><div class="line">    <span class="comment">// Avoid a copy by transferring the ownership of the packet data.</span></div><div class="line">    <span class="keyword">int</span> message_id = rtcp ? MSG_SEND_RTCP_PACKET : MSG_SEND_RTP_PACKET;</div><div class="line">    SendPacketMessageData* data = new SendPacketMessageData;</div><div class="line">    data-&gt;packet = std::<span class="keyword">move</span>(*packet);</div><div class="line">    data-&gt;options = options;</div><div class="line">    network_thread_-&gt;Post(RTC_FROM_HERE, this, message_id, data);</div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
+<p>网络发送线程将数据包通过系统 socket 发送到网络：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="selector-id">#0</span>  <span class="selector-tag">rtc</span><span class="selector-pseudo">::PhysicalSocket</span><span class="selector-pseudo">::DoSendTo(int</span>, <span class="selector-tag">char</span> <span class="selector-tag">const</span>*, <span class="selector-tag">int</span>, <span class="selector-tag">int</span>, <span class="selector-tag">sockaddr</span> <span class="selector-tag">const</span>*, <span class="selector-tag">unsigned</span> <span class="selector-tag">int</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">physical_socket_server</span><span class="selector-class">.cc</span><span class="selector-pseudo">:479</span></div><div class="line"><span class="selector-id">#1</span>  <span class="selector-tag">SendTo</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">physical_socket_server</span><span class="selector-class">.cc</span><span class="selector-pseudo">:344</span></div><div class="line"><span class="selector-id">#2</span>  <span class="selector-tag">rtc</span><span class="selector-pseudo">::AsyncUDPSocket</span><span class="selector-pseudo">::SendTo(void</span> <span class="selector-tag">const</span>*, <span class="selector-tag">unsigned</span> <span class="selector-tag">long</span>, <span class="selector-tag">rtc</span><span class="selector-pseudo">::SocketAddress</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>, <span class="selector-tag">rtc</span><span class="selector-pseudo">::PacketOptions</span> <span class="selector-tag">const</span><span class="selector-tag">&amp;</span>) () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">rtc_base</span>/<span class="selector-tag">async_udp_socket</span><span class="selector-class">.cc</span><span class="selector-pseudo">:84</span></div><div class="line"><span class="selector-id">#3</span>  <span class="selector-tag">SendTo</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">stun_port</span><span class="selector-class">.cc</span><span class="selector-pseudo">:301</span></div><div class="line"><span class="selector-id">#4</span>  <span class="selector-tag">Send</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">connection</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1162</span></div><div class="line"><span class="selector-id">#5</span>  <span class="selector-tag">SendPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">p2p_transport_channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:1473</span></div><div class="line"><span class="selector-id">#6</span>  <span class="selector-tag">SendPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">p2p</span>/<span class="selector-tag">base</span>/<span class="selector-tag">dtls_transport</span><span class="selector-class">.cc</span><span class="selector-pseudo">:409</span></div><div class="line"><span class="selector-id">#7</span>  <span class="selector-tag">SendPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">rtp_transport</span><span class="selector-class">.cc</span><span class="selector-pseudo">:147</span></div><div class="line"><span class="selector-id">#8</span>  <span class="selector-tag">SendRtpPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">srtp_transport</span><span class="selector-class">.cc</span><span class="selector-pseudo">:173</span></div><div class="line"><span class="selector-id">#9</span>  <span class="selector-tag">SendPacket</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:457</span></div><div class="line"><span class="selector-id">#10</span> <span class="selector-tag">OnMessage</span> () <span class="selector-tag">at</span> <span class="selector-tag">webrtc</span>/<span class="selector-tag">src</span>/<span class="selector-tag">pc</span>/<span class="selector-tag">channel</span><span class="selector-class">.cc</span><span class="selector-pseudo">:757</span></div></pre></td></tr></table></figure></p>
+<p>webrtc/src/rtc_base/physical_socket_server.cc 文件里定义的 <code>PhysicalSocket::DoSendTo()</code> 函数将数据包通过系统的 socket 发送到网络上：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> PhysicalSocket::DoSendTo(SOCKET socket,</div><div class="line">                             <span class="keyword">const</span> <span class="keyword">char</span>* buf,</div><div class="line">                             <span class="keyword">int</span> len,</div><div class="line">                             <span class="keyword">int</span> flags,</div><div class="line">                             <span class="keyword">const</span> <span class="keyword">struct</span> sockaddr* dest_addr,</div><div class="line">                             <span class="keyword">socklen_t</span> addrlen) &#123;</div><div class="line">  <span class="keyword">return</span> ::sendto(socket, buf, len, flags, dest_addr, addrlen);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/音视频开发/" rel="tag"># 音视频开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/03/fetch_webrtc_source_code/" rel="next" title="无需翻墙的 WebRTC 源码下载">
+                <i class="fa fa-chevron-left"></i> 无需翻墙的 WebRTC 源码下载
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/01/googletest_primer/" rel="prev" title="Googletest 入门">
+                Googletest 入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#创建-webrtc-AudioState"><span class="nav-number">1.</span> <span class="nav-text">创建 webrtc::AudioState</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建-WebRTC-Call"><span class="nav-number">2.</span> <span class="nav-text">创建 WebRTC Call</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建-WebRtcAudioReceiveStream"><span class="nav-number">3.</span> <span class="nav-text">创建  WebRtcAudioReceiveStream</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WebRTC-中音频接收处理的关键流程"><span class="nav-number">4.</span> <span class="nav-text">WebRTC 中音频接收处理的关键流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-从网络收到-UDP-包"><span class="nav-number">4.1.</span> <span class="nav-text">1. 从网络收到 UDP 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-媒体引擎对收到的音频包的处理"><span class="nav-number">4.2.</span> <span class="nav-text">2. 媒体引擎对收到的音频包的处理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#音频数据的解码及播放"><span class="nav-number">5.</span> <span class="nav-text">音频数据的解码及播放</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#webrtc-AudioSendStream-的创建"><span class="nav-number">6.</span> <span class="nav-text">webrtc::AudioSendStream 的创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#音频数据的发送"><span class="nav-number">7.</span> <span class="nav-text">音频数据的发送</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

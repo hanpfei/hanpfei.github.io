@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<html class="theme-next mist use-motion" lang="zh-CN">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -115,7 +115,7 @@
 <meta property="og:site_name" content="WolfcsTech">
 <meta property="og:description" content="摘要这份规范描述了一种 超文本传输协议(HTTP) 语义的优化表达，被称为HTTP 版本 2(HTTP/2)。HTTP/2通过引入首部字段压缩，及允许在相同的连接上并发的进行多个数据交换，而使得对网络资源的使用更高效，且获得可感知的延迟降低。它还引入了服务器向客户端未经请求的推送语义。
 这份规范是HTTP/1.1消息语法的替代品，但并不废弃它。HTTP既有的语义保持不变。">
-<meta property="og:updated_time" content="2017-02-21T05:02:16.756Z">
+<meta property="og:updated_time" content="2018-07-26T07:54:05.913Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTP2规范（RFC7540）">
 <meta name="twitter:description" content="摘要这份规范描述了一种 超文本传输协议(HTTP) 语义的优化表达，被称为HTTP 版本 2(HTTP/2)。HTTP/2通过引入首部字段压缩，及允许在相同的连接上并发的进行多个数据交换，而使得对网络资源的使用更高效，且获得可感知的延迟降低。它还引入了服务器向客户端未经请求的推送语义。
@@ -194,7 +194,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
   
   
@@ -239,37 +239,37 @@
         
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-commonweal">
           <a href="http://www.ixirong.com/404.html" rel="section">
-            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />Commonweal 404</a>
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
         </li>
       
 
@@ -340,9 +340,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-29T13:37:49+08:00">2016-10-29</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-29T13:37:49+08:00">2016-10-29</time>
             
 
             
@@ -360,7 +360,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">分类于</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a></span>
@@ -379,7 +379,7 @@
                   <i class="fa fa-comment-o"></i>
                 </span>
                 <a href="/2016/10/29/http2-spec/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2016/10/29/http2-spec/" itemprop="commentsCount"></span>
+                  <span class="post-comments-count valine-comment-count" data-xid="/2016/10/29/http2-spec/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -393,7 +393,7 @@
                  <i class="fa fa-eye"></i>
                </span>
                
-                 <span class="post-meta-item-text">Visitors&#58;</span>
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
                
                  <span class="leancloud-visitors-count"></span>
              </span>
@@ -421,8 +421,7 @@
         <h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>这份规范描述了一种 超文本传输协议(HTTP) 语义的优化表达，被称为HTTP 版本 2(HTTP/2)。HTTP/2通过引入首部字段压缩，及允许在相同的连接上并发的进行多个数据交换，而使得对网络资源的使用更高效，且获得可感知的延迟降低。它还引入了服务器向客户端未经请求的推送语义。</p>
 <p>这份规范是HTTP/1.1消息语法的替代品，但并不废弃它。HTTP既有的语义保持不变。</p>
 <a id="more"></a>
-<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a><a href="http://httpwg.org/specs/rfc7540.html#intro" target="_blank" rel="external">1. 简介</a></h1><p>超文本传输协议(HTTP)是一个取得了广泛成功的协议。然而，HTTP/1.1使用底层传输模块(<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="http://httpwg.org/specs/rfc7230.html#connection.management" target="_blank" rel="external">Section 6</a>)的方式具有一些特性，那对今天的应用的整体性能产生了负面的影响。</p>
+<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a><a href="http://httpwg.org/specs/rfc7540.html#intro" target="_blank" rel="external">1. 简介</a></h1><p>超文本传输协议(HTTP)是一个取得了广泛成功的协议。然而，HTTP/1.1使用底层传输模块(<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]</a>， <a href="http://httpwg.org/specs/rfc7230.html#connection.management" target="_blank" rel="external">Section 6</a>)的方式具有一些特性，那对今天的应用的整体性能产生了负面的影响。</p>
 <p>特别地，同一时间在一个给定的TCP连接上，HTTP/1.1只允许发起一个请求。虽然HTTP/1.1加入了请求管线，但这只是部分地解决了请求并发执行的问题，且依然会被队头阻塞问题困扰。因此，那些需要发起大量请求的HTTP/1.0和HTTP/1.1客户端会通过与同一个服务器建立多个连接的方式来实现并发从而降低延迟。</p>
 <p>此外，HTTP首部字段常常是重复而冗长的，这导致了不必要的网络流量消耗，且导致初始的<a href="http://httpwg.org/specs/rfc7540.html#TCP" target="_blank" rel="external">TCP</a>[TCP]拥塞窗口被快速填满。在一个新的TCP连接上发起多个请求时，这导致过多的延迟。</p>
 <p>HTTP/2解决了这些问题，它定义了一种优化的HTTP语义到一个底层连接的映射。特别地，它允许同一个连接上请求和响应消息的交叉，并使用了一种HTTP首部字段高效的编码。它也允许请求优先级，使得更重要的请求更快地完成，这进一步提高了性能。</p>
@@ -432,7 +431,7 @@
 <p>HTTP/2中基本的协议单元是一个帧(<a href="http://httpwg.org/specs/rfc7540.html#FrameHeader" target="_blank" rel="external">Section4.1</a>)。每一个帧类型服务于一个不通的目的。比如，<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>和<a href="http://httpwg.org/specs/rfc7540.html#DATA" target="_blank" rel="external">DATA</a>帧构成了HTTP请求和响应的基础(<a href="http://httpwg.org/specs/rfc7540.html#HttpSequence" target="_blank" rel="external">Section8.1</a>)；其它的帧类型，比如<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>，<a href="http://httpwg.org/specs/rfc7540.html#WINDOW_UPDATE" target="_blank" rel="external">WINDOW_UPDATE</a>，和<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>被用于支持其它的HTTP/2功能。</p>
 <p>请求的多路复用通过使得每个HTTP请求/响应交换关联它自己的流(<a href="http://httpwg.org/specs/rfc7540.html#StreamsLayer" target="_blank" rel="external">Section5</a>)来实现。流在很大程度上是相互独立的，因而一个阻塞或止步不前的请求或响应不会阻止其它流的进程。</p>
 <p>Flow控制和优先级确保高效地使用多路复用的流是可能的。Flow控制(<a href="http://httpwg.org/specs/rfc7540.html#FlowControl" target="_blank" rel="external">Section5.2</a>)帮助确保只有能被接收者使用的数据才被传输。优先级(<a href="http://httpwg.org/specs/rfc7540.html#StreamPriority" target="_blank" rel="external">Section5.3</a>)确保有限的资源可以被首先导到最终要的流。</p>
-<p>HTTP/2添加了一种新的交互模式，服务器可以借以向一个客户端推送响应(<a href="http://httpwg.org/specs/rfc7540.html#PushResources" target="_blank" rel="external">Section8.2</a>)。服务器推送允许一个服务器推测性地发送服务器预期客户端可能需要的数据给一个客户端，权衡比较网络流量的消耗和一个潜在延迟的增加。服务器通过合成一个请求来做到这一点，该请求以一个<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>来发送。然后服务器可以为合成的请求在另一个流上发送一个响应</p>
+<p>HTTP/2添加了一种新的交互模式，服务器可以借以向一个客户端推送响应(<a href="http://httpwg.org/specs/rfc7540.html#PushResources" target="_blank" rel="external">Section8.2</a>)。服务器推送允许一个服务器推测性地发送服务器预期客户端可能需要的数据给一个客户端，权衡比较网络流量的消耗和一个潜在延迟的增加。服务器通过合成一个请求来做到这一点，该请求以一个<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>来发送。然后服务器可以为合成的请求在另一个流上发送一个响应。</p>
 <p>由于一个连接中HTTP首部字段可能包含大量冗余数据，包含它们的帧被压缩(<a href="http://httpwg.org/specs/rfc7540.html#HeaderBlock" target="_blank" rel="external">Section4.3</a>)。这对于常见情况下的请求大小具有特别有利的影响，它允许多个请求被压缩为一个包。</p>
 <h2 id="2-1-文档组织"><a href="#2-1-文档组织" class="headerlink" title="2.1 文档组织"></a><a href="http://httpwg.org/specs/rfc7540.html#rfc.section.2.1" target="_blank" rel="external">2.1 文档组织</a></h2><p>HTTP/2规范被分为了四个部分：</p>
 <ul>
@@ -442,7 +441,7 @@
 <li>HTTP映射(<a href="http://httpwg.org/specs/rfc7540.html#HTTPLayer" target="_blank" rel="external">Section8</a>)和额外的需求(<a href="http://httpwg.org/specs/rfc7540.html#HttpExtra" target="_blank" rel="external">Section9</a>)描述了HTTP语义如何使用帧和流来表述。</li>
 </ul>
 <p>尽管帧和流层的一些概念与HTTP是隔离的，但这份规范不定义一个完整的通用帧层。帧和流层被裁剪为满足HTTP协议和服务器推送的需要。</p>
-<h2 id="2-2-约定和术语"><a href="#2-2-约定和术语" class="headerlink" title="2.2 约定和术语"></a><a href="http://httpwg.org/specs/rfc7540.html#rfc.section.2.2" target="_blank" rel="external">2.2 约定和术语</a></h2><p>这份文档中关键字”MUST”，”MUST NOT”，”REQUIRED”，”SHALL”，”SHALL NOT”，”SHOULD”，”SHOULD NOT”，”RECOMMENDED”，”MAY”，和”OPTIONAL”的解释在<a href="http://httpwg.org/specs/rfc7540.html#RFC2119" target="_blank" rel="external">RFC 2119</a>[RFC2119]中描述。</p>
+<h2 id="2-2-约定和术语"><a href="#2-2-约定和术语" class="headerlink" title="2.2 约定和术语"></a><a href="http://httpwg.org/specs/rfc7540.html#rfc.section.2.2" target="_blank" rel="external">2.2 约定和术语</a></h2><p>这份文档中关键字”MUST”， “MUST NOT”， “REQUIRED”， “SHALL”， “SHALL NOT”， “SHOULD”， “SHOULD NOT”， “RECOMMENDED”， “MAY”， 和 “OPTIONAL” 的解释在<a href="http://httpwg.org/specs/rfc7540.html#RFC2119" target="_blank" rel="external">RFC 2119</a>[RFC2119]中描述。</p>
 <p>所有的数字值以网络子节序。值是无符号的除非特别指明。字面值以十进制或在适当的时候以16进制提供。十六进制字面值以0x为前缀以与十进制字面值进行区分。</p>
 <p>使用了下面的术语：</p>
 <p><strong>客户端(client)</strong>：初始化一个HTTP/2连接的终端。客户端发送HTTP请求并接收HTTP响应。</p>
@@ -456,22 +455,20 @@
 <p><strong>服务器(server)</strong>：接受一个HTTP/2连接的终端。服务器接收HTTP请求并发送HTTP响应。</p>
 <p><strong>流(stream)</strong>：HTTP/2连接内一个双向的帧流。</p>
 <p><strong>流错误(stream error)</strong>：关于独立的HTTP/2流的错误。</p>
-<p>最后，术语”网关(gateway)”，”intermediary”，”代理(proxy)”，和”隧道(tunnel)”在<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>的<a href="http://httpwg.org/specs/rfc7230.html#intermediaries" target="_blank" rel="external">Section 2.3</a>中定义。Intermediaries在不同的时间客户端和服务器的角色都扮演。</p>
-<p>术语”载荷体(payload body)”在<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>的<a href="http://httpwg.org/specs/rfc7230.html#message.body" target="_blank" rel="external">Section 3.3</a>中定义。</p>
-<h1 id="3-启动-HTTP-2"><a href="#3-启动-HTTP-2" class="headerlink" title="3. 启动 HTTP/2"></a><a href="http://httpwg.org/specs/rfc7540.html#starting" target="_blank" rel="external">3. 启动 HTTP/2</a></h1><p>一个HTTP/2连接是一个运行于一个TCP连接(<a href="http://httpwg.org/specs/rfc7540.html#TCP" target="_blank" rel="external">[TCP]
-</a>)之上的应用层协议。客户端是TCP连接的发起者。</p>
+<p>最后，术语”网关(gateway)”，”intermediary”，”代理(proxy)”，和”隧道(tunnel)”在 <a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]</a> 的 <a href="http://httpwg.org/specs/rfc7230.html#intermediaries" target="_blank" rel="external">Section 2.3</a> 中定义。Intermediaries在不同的时间客户端和服务器的角色都扮演。</p>
+<p>术语”载荷体(payload body)”在 <a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]</a> 的 <a href="http://httpwg.org/specs/rfc7230.html#message.body" target="_blank" rel="external">Section 3.3</a> 中定义。</p>
+<h1 id="3-启动-HTTP-2"><a href="#3-启动-HTTP-2" class="headerlink" title="3. 启动 HTTP/2"></a><a href="http://httpwg.org/specs/rfc7540.html#starting" target="_blank" rel="external">3. 启动 HTTP/2</a></h1><p>一个HTTP/2连接是一个运行于一个TCP连接(<a href="http://httpwg.org/specs/rfc7540.html#TCP" target="_blank" rel="external">[TCP]</a>)之上的应用层协议。客户端是TCP连接的发起者。</p>
 <p>HTTP/2使用了与HTTP/1.1所使用的相同的”http”和”https” URI schemes。HTTP/2共享了相同的默认端口号：”http” URIs的是80，”https” URIs的是443。作为结果，HTTP/2的实现在为处理诸如 <a href="http://example.org/foo" target="_blank" rel="external">http://example.org/foo</a> 或 <a href="https://example.com/bar" target="_blank" rel="external">https://example.com/bar</a> 这样的URIs的目标资源的请求时，需要首先发现upstream server(客户端希望建立连接的中间对端)是支持HTTP/2的。</p>
 <p>对于”http”和”https” URIs，确定是否支持HTTP/2的方法是不同的。确定”http” URIs是否支持HTTP/2的方法在<a href="http://httpwg.org/specs/rfc7540.html#discover-http" target="_blank" rel="external">Section3.2</a>中描述。确定”https” URIs是否支持HTTP/2的方法在<a href="http://httpwg.org/specs/rfc7540.html#discover-https" target="_blank" rel="external">Section3.3</a>中描述。</p>
 <h2 id="3-1-HTTP-2-版本识别"><a href="#3-1-HTTP-2-版本识别" class="headerlink" title="3.1 HTTP/2 版本识别"></a><a href="http://httpwg.org/specs/rfc7540.html#versioning" target="_blank" rel="external">3.1 HTTP/2 版本识别</a></h2><p>这份文档中定义的协议具有两个标识符。</p>
 <ul>
-<li>字符串”h2”标识HTTP/2使用了<a href="http://httpwg.org/specs/rfc7540.html#TLS12" target="_blank" rel="external">传输层安全 (TLS)</a>[TLS12]的协议。这个标识符在<a href="http://httpwg.org/specs/rfc7540.html#TLS-ALPN" target="_blank" rel="external">TLS 应用层协议协商(ALPN)扩展</a>[TLS-ALPN]字段中使用，及任何运行于TLS之上的HTTP/2被标识的地方。<br>字符串”h2”被序列化为两个字节值序列的ALPN协议标识符：0x68，0x32。</li>
-<li>字符串”h2c”标识了HTTP/2运行于明文TCP之上的协议。这个标识符被用于HTTP/1.1 Upgrade首部字段，及任何运行于TCP之上的HTTP/2被标识的地方。<br>字符串”h2c”是从ALPN标识符空间中预分配的，但描述了一个不使用TLS的协议。</li>
+<li><p>字符串”h2”标识HTTP/2使用了<a href="http://httpwg.org/specs/rfc7540.html#TLS12" target="_blank" rel="external">传输层安全 (TLS)</a>[TLS12]的协议。这个标识符在<a href="http://httpwg.org/specs/rfc7540.html#TLS-ALPN" target="_blank" rel="external">TLS 应用层协议协商(ALPN)扩展</a>[TLS-ALPN]字段中使用，及任何运行于TLS之上的HTTP/2被标识的地方。<br>字符串”h2”被序列化为两个字节值序列的ALPN协议标识符：0x68，0x32。</p>
+</li>
+<li><p>字符串”h2c”标识了HTTP/2运行于明文TCP之上的协议。这个标识符被用于HTTP/1.1 Upgrade首部字段，及任何运行于TCP之上的HTTP/2被标识的地方。<br>字符串”h2c”是从ALPN标识符空间中预分配的，但描述了一个不使用TLS的协议。</p>
+</li>
 </ul>
 <p>协商”h2”或”h2c”暗含了对这份文档中描述的传输方式，安全，分帧，和消息语义的使用。</p>
-<h2 id="3-2-启动”http”-URIs的HTTP-2"><a href="#3-2-启动”http”-URIs的HTTP-2" class="headerlink" title="3.2 启动”http” URIs的HTTP/2"></a><a href="http://httpwg.org/specs/rfc7540.html#discover-http" target="_blank" rel="external">3.2 启动”http” URIs的HTTP/2</a></h2><p>一个客户端为一个”http” URI创建一个请求，而又没有先验的关于是否支持HTTP/2的知识，则在下一跳使用HTTP Upgrade机制(<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>的<a href="http://httpwg.org/specs/rfc7230.html#header.upgrade" target="_blank" rel="external">Section 6.7</a>)。客户端通过创建一个其中包含了值为”h2c” token的Upgrade首部字段的HTTP/1.1请求来做到这一点。这样一个HTTP/1.1请求<strong>必须(MUST)</strong>精确地包含一个HTTP2-Settings(<a href="http://httpwg.org/specs/rfc7540.html#Http2SettingsHeader" target="_blank" rel="external">Section3.2.1</a>)首部字段。</p>
+<h2 id="3-2-启动”http”-URIs-的HTTP-2"><a href="#3-2-启动”http”-URIs-的HTTP-2" class="headerlink" title="3.2 启动”http” URIs 的HTTP/2"></a><a href="http://httpwg.org/specs/rfc7540.html#discover-http" target="_blank" rel="external">3.2 启动”http” URIs 的HTTP/2</a></h2><p>一个客户端为一个”http” URI创建一个请求，而又没有先验的关于是否支持HTTP/2的知识，则在下一跳使用HTTP Upgrade机制(<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]</a>的<a href="http://httpwg.org/specs/rfc7230.html#header.upgrade" target="_blank" rel="external">Section 6.7</a>)。客户端通过创建一个其中包含了值为”h2c” token的Upgrade首部字段的HTTP/1.1请求来做到这一点。这样一个HTTP/1.1请求<strong>必须(MUST)</strong>精确地包含一个HTTP2-Settings(<a href="http://httpwg.org/specs/rfc7540.html#Http2SettingsHeader" target="_blank" rel="external">Section3.2.1</a>)首部字段。</p>
 <p>比如：<br><figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">GET</span> <span class="string">/</span> HTTP/1.1</div><div class="line"><span class="attribute">Host</span>: server.example.com</div><div class="line"><span class="attribute">Connection</span>: Upgrade, HTTP2-Settings</div><div class="line"><span class="attribute">Upgrade</span>: h2c</div><div class="line"><span class="attribute">HTTP2-Settings</span>: &lt;base64url encoding of HTTP/2 SETTINGS payload&gt;</div></pre></td></tr></table></figure></p>
 <p>包含一个载荷体的请求<strong>必须(MUST)</strong>在客户端发送HTTP/2帧之前全文发送。这意味着一个大的请求可能会阻塞对连接的使用直到它被发送完。</p>
 <p>如果一个初始的请求与后续的请求的并发很重要，一个OPTIONS请求可被用于执行HTTP/2升级，在消耗额外的一个round trip的情况下。</p>
@@ -483,32 +480,28 @@
 <p>先于upgrade发送的HTTP/1.1请求被分配一个为1的流标识符(参考<a href="http://httpwg.org/specs/rfc7540.html#StreamIdentifiers" target="_blank" rel="external">Section5.1.1</a>)且具有默认的优先级(<a href="http://httpwg.org/specs/rfc7540.html#pri-default" target="_blank" rel="external">Section5.3.5</a>)。自请求作为一个HTTP/1.1请求被完成之后，流1就是从客户端向服务器的隐含地”half-closed”的了。HTTP/2连接启动之后，流1被用于响应。</p>
 <h3 id="3-2-1-HTTP2-Settings首部字段"><a href="#3-2-1-HTTP2-Settings首部字段" class="headerlink" title="3.2.1 HTTP2-Settings首部字段"></a><a href="http://httpwg.org/specs/rfc7540.html#Http2SettingsHeader" target="_blank" rel="external">3.2.1 HTTP2-Settings首部字段</a></h3><p>从HTTP/1.1升级到HTTP/2的请求<strong>必须(MUST)</strong>准确地包含一个<code>HTTP2-Settings</code>首部字段。<code>HTTP2-Settings</code>首部字段是一个连接特有的首部字段，它包含了控制HTTP/2连接的参数，以接受请求提供升级的服务器的预期来提供。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attr">HTTP2-Settings</span>    = token68</div></pre></td></tr></table></figure></p>
 <p>如果没有这个首部字段，或这个首部字段出现了多次，服务器<strong>必须不(MUST NOT)</strong>升级到HTTP/2连接。服务器<strong>必须不(MUST NOT)</strong>发送这个首部字段。</p>
-<p><code>HTTP2-Settings</code>首部字段的内容是<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧(<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">Section6.5</a>)的载荷，它被编码为一个base64url字符串(即, <a href="http://httpwg.org/specs/rfc7540.html#RFC4648" target="_blank" rel="external">[RFC4648]
-</a>的<a href="https://tools.ietf.org/html/rfc4648#section-5" target="_blank" rel="external">Section 5</a>中描述的URL和文件名安全的Base64编码，但省去了尾部的’=’字符)。token68的<a href="http://httpwg.org/specs/rfc7540.html#RFC5234" target="_blank" rel="external">ABNF</a>[RFC5234]产品在<a href="http://httpwg.org/specs/rfc7540.html#RFC7235" target="_blank" rel="external">[RFC7235]
-</a>的<a href="http://httpwg.org/specs/rfc7235.html#challenge.and.response" target="_blank" rel="external">Section 2.1</a>中定义。</p>
-<p>由于upgrade仅仅是为了应用于直接连接，一个客户端发送了<code>HTTP2-Settings</code>首部字段<strong>必须(MUST)</strong>也在Connection首部字段中将<code>HTTP2-Settings</code>作为一个连接选项发送，以防止它被转发(参见<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>的<a href="http://httpwg.org/specs/rfc7230.html#header.connection" target="_blank" rel="external">Section 6.1</a>)。</p>
+<p><code>HTTP2-Settings</code>首部字段的内容是<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧(<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">Section6.5</a>)的载荷，它被编码为一个base64url字符串(即, <a href="http://httpwg.org/specs/rfc7540.html#RFC4648" target="_blank" rel="external">[RFC4648]</a>的<a href="https://tools.ietf.org/html/rfc4648#section-5" target="_blank" rel="external">Section 5</a>中描述的URL和文件名安全的Base64编码，但省去了尾部的’=’字符)。token68的<a href="http://httpwg.org/specs/rfc7540.html#RFC5234" target="_blank" rel="external">ABNF</a>[RFC5234]产品在<a href="http://httpwg.org/specs/rfc7540.html#RFC7235" target="_blank" rel="external">[RFC7235]</a>的<a href="http://httpwg.org/specs/rfc7235.html#challenge.and.response" target="_blank" rel="external">Section 2.1</a>中定义。</p>
+<p>由于upgrade仅仅是为了应用于直接连接，一个客户端发送了<code>HTTP2-Settings</code>首部字段<strong>必须(MUST)</strong>也在Connection首部字段中将<code>HTTP2-Settings</code>作为一个连接选项发送，以防止它被转发(参见<a href="http://httpwg.org/specs/rfc7540.html#RFC7230" target="_blank" rel="external">[RFC7230]</a>的<a href="http://httpwg.org/specs/rfc7230.html#header.connection" target="_blank" rel="external">Section 6.1</a>)。</p>
 <p>服务器像其它<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧那样解码并解释这些值。不一定要显式地确认这些设置(<a href="http://httpwg.org/specs/rfc7540.html#SettingsSync" target="_blank" rel="external">Section6.5.3</a>)，因为101响应可作为隐式的确认。在upgrade请求中提供这些值，给客户端提供了一个机会，在从服务器接收任何帧之前提供参数。</p>
 <h2 id="3-3-启动”https”-URIs的HTTP-2"><a href="#3-3-启动”https”-URIs的HTTP-2" class="headerlink" title="3.3 启动”https” URIs的HTTP/2"></a><a href="http://httpwg.org/specs/rfc7540.html#discover-https" target="_blank" rel="external">3.3 启动”https” URIs的HTTP/2</a></h2><p>创建”https” URI的请求的客户端借助于<a href="http://httpwg.org/specs/rfc7540.html#TLS-ALPN" target="_blank" rel="external">应用层协议协商(ALPN)扩展</a>[TLS-ALPN]来使用<a href="http://httpwg.org/specs/rfc7540.html#TLS12" target="_blank" rel="external">TLS</a>[TLS12]</p>
 <p>TLS之上的HTTP/2使用”h2”协议标识符。客户端<strong>必须不(MUST NOT)</strong>发送协议标识符”h2c”，它也不能被服务器选中；”h2c”描述了一个不使用TLS的协议。</p>
 <p>一旦TLS协商完成，客户端和服务器都<strong>必须(MUST)</strong>发送一个连接preface (<a href="http://httpwg.org/specs/rfc7540.html#ConnectionHeader" target="_blank" rel="external">Section3.5</a>)。</p>
-<h2 id="3-4-以先验知识启动HTTP-2"><a href="#3-4-以先验知识启动HTTP-2" class="headerlink" title="3.4 以先验知识启动HTTP/2"></a><a href="http://httpwg.org/specs/rfc7540.html#known-http" target="_blank" rel="external">3.4 以先验知识启动HTTP/2</a></h2><p>客户端可以通过其它的方式来了解特定服务器支持HTTP/2的情况。比如，<em><a href="http://httpwg.org/specs/rfc7540.html#ALT-SVC" target="_blank" rel="external">[ALT-SVC]
-</a></em>描述了一种机制来广告这种能力。</p>
+<h2 id="3-4-以先验知识启动HTTP-2"><a href="#3-4-以先验知识启动HTTP-2" class="headerlink" title="3.4 以先验知识启动HTTP/2"></a><a href="http://httpwg.org/specs/rfc7540.html#known-http" target="_blank" rel="external">3.4 以先验知识启动HTTP/2</a></h2><p>客户端可以通过其它的方式来了解特定服务器支持HTTP/2的情况。比如，<em><a href="http://httpwg.org/specs/rfc7540.html#ALT-SVC" target="_blank" rel="external">[ALT-SVC]</a></em>描述了一种机制来广告这种能力。</p>
 <p>客户端<strong>必须(MUST)</strong>发送连接preface (<a href="http://httpwg.org/specs/rfc7540.html#ConnectionHeader" target="_blank" rel="external">Section3.5</a>)，它还<strong>可以(MAY)</strong>立即向这个服务器发送HTTP/2帧；服务器可以通过连接preface的出现来识别这些连接。这只影响明文TCP之上的HTTP/2连接的建立；支持TLS之上的HTTP/2的实现<strong>必须(MUST)</strong>使用<a href="http://httpwg.org/specs/rfc7540.html#TLS-ALPN" target="_blank" rel="external">TLS中的协议协商</a>[TLS-ALPN]。</p>
 <p>同样地，服务器<strong>必须(MUST)</strong>发送一个连接preface(<a href="http://httpwg.org/specs/rfc7540.html#ConnectionHeader" target="_blank" rel="external">Section3.5</a>)。</p>
 <p>没有额外信息时，给定服务器先前对于HTTP/2的支持不是该服务器在未来的连接中也支持HTTP/2的强信号。比如，服务器的配置可能改变，可能是为了不同集群服务器实例不同的配置，或者为了网络条件的改变。</p>
 <h2 id="3-5-HTTP-2-连接Preface"><a href="#3-5-HTTP-2-连接Preface" class="headerlink" title="3.5 HTTP/2 连接Preface"></a><a href="http://httpwg.org/specs/rfc7540.html#ConnectionHeader" target="_blank" rel="external">3.5 HTTP/2 连接Preface</a></h2><p>在HTTP/2中，每个终端都需要发送一个连接preface作为在使用的协议的一个最终的确认，并为HTTP/2连接建立初始的设定。客户端和服务器相互发送一个不同的连接preface。</p>
 <p>客户端的连接preface以一个24字节的序列开始，其十六进制形式为：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="number">0x505249202a20485454502f322e300d0a0d0a534d0d0a0d</span>0a</div></pre></td></tr></table></figure></p>
 <p>即，连接preface以字符串PRI <em> HTTP/2.0\r\n\r\nSM\r\n\r\n)开始。这个序列后面<strong>必须(MUST)</strong>跟着一个<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧(<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">Section6.5</a>)，它<em>*可能(MAY)</em></em>是空的。客户端一收到101(Switching Protocols)响应(表示一个成功的升级)就立即发送客户端连接preface，或作为一个TLS连接的第一个数据字节。如果以服务器对协议的支持情况的先验知识来启动一个HTTP/2连接，客户端连接preface在连接建立时立即发送。</p>
-<p><strong>注意：</strong>选中客户端连接preface以使得大部分的HTTP/1.1或HTTP/1.0服务器和intermediaries不会尝试去处理更多的帧。注意这没有解决<a href="http://httpwg.org/specs/rfc7540.html#TALKING" target="_blank" rel="external">[TALKING]
-</a>中提出的问题。</p>
+<p><strong>注意：</strong>选中客户端连接preface以使得大部分的HTTP/1.1或HTTP/1.0服务器和intermediaries不会尝试去处理更多的帧。注意这没有解决<a href="http://httpwg.org/specs/rfc7540.html#TALKING" target="_blank" rel="external">[TALKING]</a>中提出的问题。</p>
 <p>服务器连接preface由一个潜在的空<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧(<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">Section6.5</a>)组成，它<strong>必须(MUST)</strong>是服务器在HTTP/2连接中发送的第一帧。</p>
 <p>作为连接preface的一部分从对端接收的<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧<strong>必须(MUST)</strong>在发送连接preface之后做确认(参见<a href="http://httpwg.org/specs/rfc7540.html#SettingsSync" target="_blank" rel="external">Section6.5.3</a>)。</p>
 <p>为了避免不必要的延迟，客户端被允许在发送完客户端连接preface之后立即向服务器发送额外的帧，而无需等待接收服务器连接preface。然而，有一点很重要，服务器连接preface <a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧可能包含后续客户端要如何与服务器进行通信所必须的参数。一旦收到了<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>帧，客户端需要按照参数建立连接。在某些配置下，服务器可能会在客户端发送额外的帧之前传送<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS" target="_blank" rel="external">SETTINGS</a>，提供了一个机会来避免这个问题。</p>
 <p>客户端和服务器<strong>必须(MUST)</strong>将一个无效的连接preface当作一个类型为<a href="http://httpwg.org/specs/rfc7540.html#PROTOCOL_ERROR" target="_blank" rel="external">PROTOCOL_ERROR</a>的连接错误(<a href="http://httpwg.org/specs/rfc7540.html#ConnectionErrorHandler" target="_blank" rel="external">Section5.4.1</a>)。在这种情况下，<a href="http://httpwg.org/specs/rfc7540.html#GOAWAY" target="_blank" rel="external">GOAWAY</a>帧(<a href="http://httpwg.org/specs/rfc7540.html#GOAWAY" target="_blank" rel="external">Section6.8</a>)<strong>可能(MAY)</strong>会被省略，因为一个无效的preface表示对端没有在使用HTTP/2。</p>
 <h1 id="4-HTTP帧"><a href="#4-HTTP帧" class="headerlink" title="4. HTTP帧"></a><a href="http://httpwg.org/specs/rfc7540.html#FramingLayer" target="_blank" rel="external">4. HTTP帧</a></h1><p>建立了HTTP/2连接之后，端点间就可以开始进行帧的交换了。</p>
 <h2 id="4-1-帧格式"><a href="#4-1-帧格式" class="headerlink" title="4.1 帧格式"></a><a href="http://httpwg.org/specs/rfc7540.html#FrameHeader" target="_blank" rel="external">4.1 帧格式</a></h2><p>所有的帧都以一个固定的9字节首部开始，其后紧跟一个可变长度的载荷。<br><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="code">+-----------------------------------------------+</span></div><div class="line"><span class="section">|                 Length (24)                   |</span></div><div class="line">+---------------+---------------+---------------+</div><div class="line"><span class="section">|   Type (8)    |   Flags (8)   |</span></div><div class="line">+-+-------------+---------------+-------------------------------+</div><div class="line"><span class="section">|R|                 Stream Identifier (31)                      |</span></div><div class="line">+=+=============================================================+</div><div class="line"><span class="section">|                   Frame Payload (0...)                      ...</span></div><div class="line">+---------------------------------------------------------------+</div></pre></td></tr></table></figure></p>
-<p>图 1：帧格式<br>帧首部的字段定义如下：</p>
+<p>图 1：帧格式</p>
+<p>帧首部的字段定义如下：</p>
 <ul>
 <li><p><strong>长度(Length)</strong>：帧载荷的长度，以一个无符号24位整数表示。<strong>必须不(MUST NOT)</strong>能发送大于2^14(16,384)的值，除非接收者已经为<a href="http://httpwg.org/specs/rfc7540.html#SETTINGS_MAX_FRAME_SIZE" target="_blank" rel="external">SETTINGS_MAX_FRAME_SIZE</a>设置了更大的值。<br>9字节的帧首部不包含在这个值之内。</p>
 </li>
@@ -533,20 +526,26 @@
 <p>接收终端通过连接首部块的片段来重新组装首部块，然后解压缩首部块并重建首部列表。</p>
 <p>一个完整的首部块由这些组成：</p>
 <ul>
-<li>一个单独的<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>或<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧，其中设置了END_HEADERS标记，或</li>
-<li>一个<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>或<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧，其中END_HEADERS被清除，及一个或多个<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧，其中最后一个<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧设置了END_HEADERS标记</li>
+<li><p>一个单独的<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>或<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧，其中设置了END_HEADERS标记，或</p>
+</li>
+<li><p>一个<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>或<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧，其中END_HEADERS被清除，及一个或多个<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧，其中最后一个<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧设置了END_HEADERS标记</p>
+</li>
 </ul>
 <p>首部压缩是有状态的。压缩上下文和解压上下文被用于整个连接。首部块中的解码错误<strong>必须(MUST)</strong>被作为类型<a href="http://httpwg.org/specs/rfc7540.html#COMPRESSION_ERROR" target="_blank" rel="external">COMPRESSION_ERROR</a>的连接错误(<a href="http://httpwg.org/specs/rfc7540.html#ConnectionErrorHandler" target="_blank" rel="external">Section5.4.1</a>)。</p>
 <p>每个首部块都被当做一个离散的单元处理。首部块<strong>必须(MUST)</strong>被作为一个连续的帧序列传输，而不能插入其它类型或其它流的帧。<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>或<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧序列中的最后帧设置END_HEADERS标记。<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>或<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧序列中的最后帧设置END_HEADERS标记。这使得首部块在逻辑上等价于一个单独的帧。</p>
 <p>首部块字段只能作为<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>，<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>，或<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧的载荷来发送，因为这些帧携带的数据可以修改由接收者维护的压缩上下文。一个接收了<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>，<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>，或<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧的终端需要重新装配首部块，并执行解压缩，即使帧将被丢弃。如果一个接收者不解压缩首部块，而出现了一个类型为<a href="http://httpwg.org/specs/rfc7540.html#COMPRESSION_ERROR" target="_blank" rel="external">COMPRESSION_ERROR</a>的连接错误，则它<strong>必须(MUST)</strong>终止连接。</p>
-<p><a href="http://httpwg.org/specs/rfc7540.html#rfc.section.2.2" target="_blank" rel="external">http://httpwg.org/specs/rfc7540.html#rfc.section.2.2</a></p>
 <h1 id="5-流和多路复用"><a href="#5-流和多路复用" class="headerlink" title="5. 流和多路复用"></a>5. 流和多路复用</h1><p>“流”是一个HTTP/2连接内在客户端和服务器间独立的双向的交换的帧序列。流具有一些重要的特性：</p>
 <ul>
-<li>单个的HTTP/2连接可以包含多个并发打开的流，各个终端多个流的帧可以交叉。</li>
-<li>流可以单方面地建立和使用，或由客户端或服务器共享。</li>
-<li>流可以被任何一端关闭。</li>
-<li>流中帧的发送顺序是值得注意的。接收者以它们收到帧的顺序处理。特别的，<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>帧和<a href="http://httpwg.org/specs/rfc7540.html#DATA" target="_blank" rel="external">DATA</a>帧在语义上是非常重要的。</li>
-<li>流由一个整数标识。流标识符由发起流的一端来赋值。</li>
+<li><p>单个的HTTP/2连接可以包含多个并发打开的流，各个终端多个流的帧可以交叉。</p>
+</li>
+<li><p>流可以单方面地建立和使用，或由客户端或服务器共享。</p>
+</li>
+<li><p>流可以被任何一端关闭。</p>
+</li>
+<li><p>流中帧的发送顺序是值得注意的。接收者以它们收到帧的顺序处理。特别的，<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>帧和<a href="http://httpwg.org/specs/rfc7540.html#DATA" target="_blank" rel="external">DATA</a>帧在语义上是非常重要的。</p>
+</li>
+<li><p>流由一个整数标识。流标识符由发起流的一端来赋值。</p>
+</li>
 </ul>
 <h2 id="5-1-流状态"><a href="#5-1-流状态" class="headerlink" title="5.1 流状态"></a>5.1 流状态</h2><p>一个流的生命周期如下面的<a href="http://httpwg.org/specs/rfc7540.html#StreamStatesFigure" target="_blank" rel="external">图 2</a>所示。</p>
 <figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">        </div><div class="line">                         +--------+</div><div class="line">                 send PP |<span class="string">        </span>|<span class="string"> recv PP</span></div><div class="line">                ,--------|<span class="string">  idle  </span>|<span class="string">--------.</span></div><div class="line">               /         |<span class="string">        </span>|<span class="string">         \</span></div><div class="line">              v          +--------+          v</div><div class="line">       +----------+          |<span class="string">           +----------+</span></div><div class="line">       |<span class="string">          </span>|<span class="string">          </span>|<span class="string"> send H /  </span>|<span class="string">          </span>|</div><div class="line">,------|<span class="string"> reserved </span>|<span class="string">          </span>|<span class="string"> recv H    </span>|<span class="string"> reserved </span>|<span class="string">------.</span></div><div class="line">|<span class="string">      </span>|<span class="string"> (local)  </span>|<span class="string">          </span>|<span class="string">           </span>|<span class="string"> (remote) </span>|<span class="string">      </span>|</div><div class="line">|<span class="string">      +----------+          v           +----------+      </span>|</div><div class="line">|<span class="string">          </span>|<span class="string">             +--------+             </span>|<span class="string">          </span>|</div><div class="line">|<span class="string">          </span>|<span class="string">     recv ES </span>|<span class="string">        </span>|<span class="string"> send ES     </span>|<span class="string">          </span>|</div><div class="line">|<span class="string">   send H </span>|<span class="string">     ,-------</span>|<span class="string">  open  </span>|<span class="string">-------.     </span>|<span class="string"> recv H   </span>|</div><div class="line">|<span class="string">          </span>|<span class="string">    /        </span>|<span class="string">        </span>|<span class="string">        \    </span>|<span class="string">          </span>|</div><div class="line">|<span class="string">          v   v         +--------+         v   v          </span>|</div><div class="line">|<span class="string">      +----------+          </span>|<span class="string">           +----------+      </span>|</div><div class="line">|<span class="string">      </span>|<span class="string">   half   </span>|<span class="string">          </span>|<span class="string">           </span>|<span class="string">   half   </span>|<span class="string">      </span>|</div><div class="line">|<span class="string">      </span>|<span class="string">  closed  </span>|<span class="string">          </span>|<span class="string"> send R /  </span>|<span class="string">  closed  </span>|<span class="string">      </span>|</div><div class="line">|<span class="string">      </span>|<span class="string"> (remote) </span>|<span class="string">          </span>|<span class="string"> recv R    </span>|<span class="string"> (local)  </span>|<span class="string">      </span>|</div><div class="line">|<span class="string">      +----------+          </span>|<span class="string">           +----------+      </span>|</div><div class="line">|<span class="string">           </span>|<span class="string">                </span>|<span class="string">                 </span>|<span class="string">           </span>|</div><div class="line">|<span class="string">           </span>|<span class="string"> send ES /      </span>|<span class="string">       recv ES / </span>|<span class="string">           </span>|</div><div class="line">|<span class="string">           </span>|<span class="string"> send R /       v        send R / </span>|<span class="string">           </span>|</div><div class="line">|<span class="string">           </span>|<span class="string"> recv R     +--------+   recv R   </span>|<span class="string">           </span>|</div><div class="line">|<span class="string"> send R /  `-----------&gt;</span>|<span class="string">        </span>|<span class="string">&lt;-----------'  send R / </span>|</div><div class="line">|<span class="string"> recv R                 </span>|<span class="string"> closed </span>|<span class="string">               recv R   </span>|</div><div class="line">`-----------------------&gt;|<span class="string">        </span>|<span class="string">&lt;----------------------'</span></div><div class="line">                         +--------+</div><div class="line"></div><div class="line">   send:   endpoint sends this frame</div><div class="line">   recv:   endpoint receives this frame</div><div class="line"></div><div class="line">   H:  HEADERS frame (with implied CONTINUATIONs)</div><div class="line">   PP: PUSH_PROMISE frame (with implied CONTINUATIONs)</div><div class="line">   ES: END_STREAM flag</div><div class="line">   R:  RST_STREAM frame</div></pre></td></tr></table></figure>
@@ -554,8 +553,7 @@
 <p>注意，这个图只显示了流状态的转换及会影响到那些转换的帧和标记。就此而言，<a href="http://httpwg.org/specs/rfc7540.html#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧不引发这种状态转变，它们是它们跟着的<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>或<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧的有效部分。为了转变状态，END_STREAM标记被作为独立于携带它的帧的事件处理；设置了END_STREAM标记的<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>帧可能导致两次状态转变。</p>
 <p>端点都有一个自己的流状态的主视图，它在帧传输的过程中可能会有不同。终端间不会协调流的创建；终端会单方面地创建流。发送<a href="http://httpwg.org/specs/rfc7540.html#RST_STREAM" target="_blank" rel="external">RST_STREAM</a>之后，状态上不匹配的负面结果被限制在”closed”状态，在关闭之后的某个时间可能会收到帧。</p>
 <p>流具有如下的这些状态：</p>
-<p><strong>idle:</strong></p>
-<p>所有的流以”idle”状态开始。<br>下面的状态是以这个状态为起始状态的有效目的状态：</p>
+<p><strong>idle:</strong><br>所有的流以”idle”状态开始。<br>下面的状态是以这个状态为起始状态的有效目的状态：</p>
 <ul>
 <li>发送或接收一个<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>帧使这个流进入”open”状态。选择流标识符的方法如<a href="http://httpwg.org/specs/rfc7540.html#StreamIdentifiers" target="_blank" rel="external">Section 5.1.1</a> 中所述。相同的<a href="http://httpwg.org/specs/rfc7540.html#HEADERS" target="_blank" rel="external">HEADERS</a>帧也可能使一个流立即进入”half-closed”状态。</li>
 <li>在另一个流上发送一个<a href="http://httpwg.org/specs/rfc7540.html#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧保留被标识的idle流以备后用。保留的流的流状态转变为”reserved (local)”。</li>
@@ -628,8 +626,7 @@
 <p>实现也要负责管理请求和响应要如何基于优先级来发送，选择如何避免请求的队首阻塞，及管理新流的创建。为此选择的算法可以与任何的flow-control算法交互。</p>
 <h3 id="5-2-2-对Flow-Control的适当使用"><a href="#5-2-2-对Flow-Control的适当使用" class="headerlink" title="5.2.2 对Flow Control的适当使用"></a>5.2.2 对Flow Control的适当使用</h3><p>Flow control是为保护在资源受限的条件下操作的终端而定义的。比如，一个代理需要在许多连接间共享内存，而且可能具有一个较慢的上行连接和一个较快的下行连接。Flow-control解决了接收者不能处理一个流中的数据，而想要继续处理相同连接上其它流中的数据的问题。</p>
 <p>无需这种能力的部署可以广告一个最大的flow-control 窗口大小(2^31-1)，并且可以通过在收到任何数据时发送一个WINDOW_UPDATE帧来维护这个窗口。这将有效地为那个接收者禁用flow control。相反地，发送者要总是受制于接收者广告的flow-control窗口。</p>
-<p>资源受限条件下的部署（比如，内存）可以通过flow control来限制一个对端可以消耗的内存数量。然而请注意，如果在不了解带宽－延迟(参见 <a href="https://http2.github.io/http2-spec/#RFC7323" target="_blank" rel="external">[RFC7323]
-</a>)的情况下启用flow control，则可能导致对于可用的网络资源次优的使用。</p>
+<p>资源受限条件下的部署（比如，内存）可以通过flow control来限制一个对端可以消耗的内存数量。然而请注意，如果在不了解带宽－延迟(参见 <a href="https://http2.github.io/http2-spec/#RFC7323" target="_blank" rel="external">[RFC7323]</a>)的情况下启用flow control，则可能导致对于可用的网络资源次优的使用。</p>
 <p>即使对当前的带宽－延迟有了充分的了解，flow-control的实现也可能是非常困难的。当使用flow control时，接收者 <strong>必须(MUST)</strong> 及时地从TCP的接收缓冲区中读取。当决定性的帧，比如 <a href="https://http2.github.io/http2-spec/#WINDOW_UPDATE" target="_blank" rel="external">WINDOW_UPDATE</a>没有被读取并起作用时，这个操作失败的话可能会导致一个死锁。</p>
 <h2 id="5-3流优先级"><a href="#5-3流优先级" class="headerlink" title="5.3流优先级"></a>5.3流优先级</h2><p>客户端可以通过在打开流的HEADERS帧(<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">Section 6.2</a>)中包含优先级信息来给一个新流分配一个优先级。在其它任何时间，PRIORITY帧(<a href="https://http2.github.io/http2-spec/#PRIORITY" target="_blank" rel="external">Section 6.3</a>)可被用于改变流的优先级。</p>
 <p>优先级的目的是，使一个端点在管理多个并发的流时，可以表达它希望连接的对端分配资源的倾向性。最重要的是，当发送能力有限时，优先级可以用于选择传送帧的流。</p>
@@ -673,8 +670,7 @@
 <p>在<a href="https://http2.github.io/http2-spec/#ErrorCodes" target="_blank" rel="external">Section 7</a>中列出了所有的错误码。</p>
 <h3 id="5-4-1-连接错误处理"><a href="#5-4-1-连接错误处理" class="headerlink" title="5.4.1 连接错误处理"></a>5.4.1 连接错误处理</h3><p>连接错误是阻止了帧层的进一步处理或破坏了连接状态的错误。</p>
 <p>遇到了一个连接错误的终端 <strong>应该(SHOULD)</strong> 首先发送一个带有从对端成功接收的最后一个流的流标识符的<a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>帧(<a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">Section 6.8</a>)。<a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>帧包含了指示连接为什么终止的错误码。在为错误情况发送给了<a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>帧之后，终端 <strong>必须(MUST)</strong> 关闭TCP连接。</p>
-<p><a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>可能没有被接收端可靠的接收到(<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#persistent.tear-down" target="_blank" rel="external">Section 6.6</a>描述了立即的连接关闭是如何导致数据丢失的)。在连接错误的事件中，<a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>只是提供了最好的努力尝试与对端就为什么连接被终止进行沟通。</p>
+<p><a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>可能没有被接收端可靠的接收到(<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#persistent.tear-down" target="_blank" rel="external">Section 6.6</a>描述了立即的连接关闭是如何导致数据丢失的)。在连接错误的事件中，<a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>只是提供了最好的努力尝试与对端就为什么连接被终止进行沟通。</p>
 <p>终端可以在任何时候结束一个连接。特别的，一个终端 <strong>可以(MAY)</strong> 选择将一个流错误作为一个连接错误。终端 <strong>应该(SHOULD)</strong> 在结束一个连接时发送一个<a href="https://http2.github.io/http2-spec/#GOAWAY" target="_blank" rel="external">GOAWAY</a>帧，提供发生那种状况的信息。</p>
 <h3 id="5-4-2-流错误处理"><a href="#5-4-2-流错误处理" class="headerlink" title="5.4.2 流错误处理"></a>5.4.2 流错误处理</h3><p>流错误是只与特定的流相关而不影响其它流的处理的错误。</p>
 <p>探测到流错误发生的端点发送一个<a href="https://http2.github.io/http2-spec/#RST_STREAM" target="_blank" rel="external">RST_STREAM</a>帧(<a href="https://http2.github.io/http2-spec/#RST_STREAM" target="_blank" rel="external">Section 6.4</a>)，其中包含了错误发生的流的流标识符。<a href="https://http2.github.io/http2-spec/#RST_STREAM" target="_blank" rel="external">RST_STREAM</a>帧包含指示错误类型的错误码。</p>
@@ -755,7 +751,7 @@
 <p>PRIORITY帧的长度不是5个字节的话， <strong>必须(MUST)</strong> 被当做一个类型为<a href="https://http2.github.io/http2-spec/#FRAME_SIZE_ERROR" target="_blank" rel="external">FRAME_SIZE_ERROR</a>的流错误(<a href="https://http2.github.io/http2-spec/#StreamErrorHandler" target="_blank" rel="external">Section 5.4.2</a>)。</p>
 <h2 id="6-4-RST-STREAM"><a href="#6-4-RST-STREAM" class="headerlink" title="6.4 RST_STREAM"></a>6.4 RST_STREAM</h2><p>RST_STREAM帧 (type=0x3)可以用于立即终止一个流。发送RST_STREAM来请求取消一个流，或者指明发生了一个错误状态。</p>
 <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="code">+---------------------------------------------------------------+</span></div><div class="line"><span class="section">|                        Error Code (32)                        |</span></div><div class="line">+---------------------------------------------------------------+</div></pre></td></tr></table></figure>
-<p>Figure 9: RST_STREAM帧载荷</p>
+<p>图 9: RST_STREAM帧载荷</p>
 <p>RST_STREAM帧包含了一个单独的无符号32位整型值的错误码(<a href="https://http2.github.io/http2-spec/#ErrorCodes" target="_blank" rel="external">Section 7</a>)。错误码指明了为什么要终止流。</p>
 <p>RST_STREAM帧不定义任何标记。</p>
 <p>RST_STREAM帧完全终止引用的流，并使它进入”closed”状态。在一个流中收到一个RST_STREAM之后，接收者 <strong>一定不能(MUST NOT)</strong> 再为那个流发送额外的帧，<a href="https://http2.github.io/http2-spec/#PRIORITY" target="_blank" rel="external">PRIORITY</a>是例外。然而，在发送RST_STREAM之后，发送端 <strong>必须(MUST)</strong> 准备接收和处理额外的，可能由对端在RST_STREAM到达之前在那个流上发送的帧。</p>
@@ -775,8 +771,7 @@
 <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="code">+-------------------------------+</span></div><div class="line"><span class="section">|       Identifier (16)         |</span></div><div class="line">+-------------------------------+-------------------------------+</div><div class="line"><span class="section">|                        Value (32)                             |</span></div><div class="line">+---------------------------------------------------------------+</div></pre></td></tr></table></figure>
 <p>图 10: 设置项的格式</p>
 <h3 id="6-5-2-已定义的SETTINGS参数"><a href="#6-5-2-已定义的SETTINGS参数" class="headerlink" title="6.5.2 已定义的SETTINGS参数"></a>6.5.2 已定义的SETTINGS参数</h3><p>已定义了如下的参数：</p>
-<p><strong>SETTINGS_HEADER_TABLE_SIZE (0x1):</strong><br>允许发送者通知远端，用于解码首部块的首部压缩表的最大大小，以字节位单位。编码器可以可以选择任何等于或小于这个值的大小，通过使用首部块内信号特有的首部压缩格式(参考<a href="https://http2.github.io/http2-spec/#COMPRESSION" target="_blank" rel="external">[COMPRESSION]
-</a>)。初始值是4,096字节。</p>
+<p><strong>SETTINGS_HEADER_TABLE_SIZE (0x1):</strong><br>允许发送者通知远端，用于解码首部块的首部压缩表的最大大小，以字节位单位。编码器可以可以选择任何等于或小于这个值的大小，通过使用首部块内信号特有的首部压缩格式(参考<a href="https://http2.github.io/http2-spec/#COMPRESSION" target="_blank" rel="external">[COMPRESSION]</a>)。初始值是4,096字节。</p>
 <p><strong>SETTINGS_ENABLE_PUSH (0x2):</strong><br>这个设置项可被用于禁用服务端推送(<a href="https://http2.github.io/http2-spec/#PushResources" target="_blank" rel="external">Section 8.2</a>)。一个终端如果收到了这个设置项，且值为0，则它 <strong>一定不能(MUST NOT)</strong> 发送<a href="https://http2.github.io/http2-spec/#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧。一个已经将这个参数设置为了0，且已经收到了对这个设置项的确认的终端，则在收到一个<a href="https://http2.github.io/http2-spec/#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a>帧时， <strong>必须(MUST)</strong> 将其作为一个类型是<a href="https://http2.github.io/http2-spec/#PROTOCOL_ERROR" target="_blank" rel="external">PROTOCOL_ERROR</a>的连接错误(<a href="https://http2.github.io/http2-spec/#ConnectionErrorHandler" target="_blank" rel="external">Section 5.4.1</a>)。</p>
 <p>初始值是1，这表示服务端推送是允许的。任何0或1之外的值 <strong>必须(MUST)</strong> 被作为一个类型是<a href="https://http2.github.io/http2-spec/#PROTOCOL_ERROR" target="_blank" rel="external">PROTOCOL_ERROR</a>的连接错误(<a href="https://http2.github.io/http2-spec/#ConnectionErrorHandler" target="_blank" rel="external">Section 5.4.1</a>)。</p>
 <p><strong>SETTINGS_MAX_CONCURRENT_STREAMS (0x3):</strong><br>指明了发送者允许的最大的并发流个数。这个限制是有方向的：它应用于发送者允许接收者创建的流的个数。初始时，这个值没有限制。建议这个值不要小于100，以便于不要不必要地限制了并发性。</p>
@@ -903,45 +898,31 @@
 <p>HTTP_1_1_REQUIRED (0xd): 终端需要用HTTP/1.1来替换HTTP/2。</p>
 <p>未知的或不支持的错误码<strong>必须不(MUST NOT)</strong> 触发任何特别的行为。一个实现 <strong>可以(MAY)</strong> 将这些当作<a href="https://http2.github.io/http2-spec/#INTERNAL_ERROR" target="_blank" rel="external">INTERNAL_ERROR</a>一样。</p>
 <h1 id="8-HTTP消息交换"><a href="#8-HTTP消息交换" class="headerlink" title="8. HTTP消息交换"></a><a href="https://http2.github.io/http2-spec/#HTTPLayer" target="_blank" rel="external">8. HTTP消息交换</a></h1><p>HTTP/2被期待着尽可能与当前使用的HTTP兼容。这意味着，从应用程序的视角来看，大部分的协议的功能不能变。为了实现这一点，而保留了所有的请求和响应的语义，尽管携带这些语义的语法已经变了。</p>
-<p>因而，HTTP/1.1的规范和要求，Semantics and Content <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，Conditional Requests <a href="https://http2.github.io/http2-spec/#RFC7232" target="_blank" rel="external">[RFC7232]
-</a>，Range Requests <a href="https://http2.github.io/http2-spec/#RFC7233" target="_blank" rel="external">[RFC7233]
-</a>，Caching <a href="https://http2.github.io/http2-spec/#RFC7234" target="_blank" rel="external">[RFC7234]
-</a>，和Authentication <a href="https://http2.github.io/http2-spec/#RFC7235" target="_blank" rel="external">[RFC7235]
-</a>依然适用于HTTP/2。选中的HTTP/1.1 Message Syntax and Routing <a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>的部分，比如HTTP和HTTPS URI schemes，也适用于HTTP/2，但是对于这个协议，那些语义的表达则在下面的小节定义。</p>
+<p>因而，HTTP/1.1的规范和要求，Semantics and Content <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，Conditional Requests <a href="https://http2.github.io/http2-spec/#RFC7232" target="_blank" rel="external">[RFC7232]</a>，Range Requests <a href="https://http2.github.io/http2-spec/#RFC7233" target="_blank" rel="external">[RFC7233]</a>，Caching <a href="https://http2.github.io/http2-spec/#RFC7234" target="_blank" rel="external">[RFC7234]</a>，和Authentication <a href="https://http2.github.io/http2-spec/#RFC7235" target="_blank" rel="external">[RFC7235]</a>依然适用于HTTP/2。选中的HTTP/1.1 Message Syntax and Routing <a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>的部分，比如HTTP和HTTPS URI schemes，也适用于HTTP/2，但是对于这个协议，那些语义的表达则在下面的小节定义。</p>
 <h2 id="8-1-HTTP-请求-响应-交换"><a href="#8-1-HTTP-请求-响应-交换" class="headerlink" title="8.1 HTTP 请求/响应 交换"></a><a href="https://http2.github.io/http2-spec/#HttpSequence" target="_blank" rel="external">8.1 HTTP 请求/响应 交换</a></h2><p>一个客户端在一个新流上发送一个HTTP请求，使用一个之前未使用的流标识符(<a href="https://http2.github.io/http2-spec/#StreamIdentifiers" target="_blank" rel="external">Section 5.1.1</a>)。一个服务器在与请求相同的流上发送HTTP响应。</p>
 <p>一个HTTP消息 (请求或响应)的组成为：</p>
 <ol>
-<li><p>仅适用于响应，0个或多个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧 (每个后面都跟着0个或多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)包含信息性的 (1xx) HTTP响应的消息头(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#header.fields" target="_blank" rel="external">Section 3.2</a>和<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.1xx" target="_blank" rel="external">Section 6.2</a>)。</p>
+<li><p>仅适用于响应，0个或多个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧 (每个后面都跟着0个或多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)包含信息性的 (1xx) HTTP响应的消息头(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#header.fields" target="_blank" rel="external">Section 3.2</a>和<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.1xx" target="_blank" rel="external">Section 6.2</a>)。</p>
 </li>
-<li><p>一个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧 (每个后面都跟着0个或多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)包含消息首部 (参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#header.fields" target="_blank" rel="external">Section 3.2</a>)</p>
+<li><p>一个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧 (每个后面都跟着0个或多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)包含消息首部 (参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#header.fields" target="_blank" rel="external">Section 3.2</a>)</p>
 </li>
-<li><p>0个或多个<a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a>帧包含载荷体 (参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#message.body" target="_blank" rel="external">Section 3.3</a>)，以及</p>
+<li><p>0个或多个<a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a>帧包含载荷体 (参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#message.body" target="_blank" rel="external">Section 3.3</a>)，以及</p>
 </li>
-<li><p>可选的，一个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧 (每个后面都跟着0个或多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)包含尾部，如果存在的话(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#chunked.trailer.part" target="_blank" rel="external">Section 4.1.2</a>)</p>
+<li><p>可选的，一个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧 (每个后面都跟着0个或多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)包含尾部，如果存在的话(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#chunked.trailer.part" target="_blank" rel="external">Section 4.1.2</a>)</p>
 </li>
 </ol>
 <p>序列的最后一帧携带END_STREAM标记，注意一个携带了END_STREAM标记的<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧后面可以跟多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧来携带首部块的其余部分。</p>
 <p><a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧和它后面跟着的任何<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧之间 <strong>必须不(MUST NOT)</strong> 能出现任何其它帧(来自于任何流)。</p>
-<p>HTTP/2使用DATA帧来携带携带消息载荷。在HTTP/2中 <strong>必须不(MUST NOT)</strong> 能使用在<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>的<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#chunked.encoding" target="_blank" rel="external">Section 4.1</a>定义的分块传输编码。</p>
+<p>HTTP/2使用DATA帧来携带携带消息载荷。在HTTP/2中 <strong>必须不(MUST NOT)</strong> 能使用在<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>的<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#chunked.encoding" target="_blank" rel="external">Section 4.1</a>定义的分块传输编码。</p>
 <p>首部尾字段 (trailing header fields)由一个首部块携带，首部块也会终止流。这样的一个首部块一个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧起始，后跟0个或多个<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧，其中<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧携带了END_STREAM标记。第一个首部块之后没有终止流的首部块不是HTTP请求或响应的一部分。</p>
 <p><a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧 (及其相关的<a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)只能出现在一个流的开始或结尾处。一个终端在接收到一个最终的 (final) (非信息性的)状态码之后，接收到了一个没有设置END_STREAM的<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧，则它 <strong>必须(MUST)</strong> 将对应的请求或响应当作是已损坏的(<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
 <p>一个HTTP请求/响应交换完全消耗一个流。一个请求以一个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧开始，而将流放进“打开”状态。请求以一个携带了END_STREAM的帧结束，而使得流对于客户端变为”half-closed (local)”，对于服务器变为”half-closed (remote)”。一个响应以一个<a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a>帧开始，以一个携带了END_STREAM的帧结束，而将流放进”closed”状态。</p>
 <p>一个HTTP响应在服务器发送——或客户端收到——一个设置了END_STREAM标记的帧(包含任何完成一个首部块所需的 <a href="https://http2.github.io/http2-spec/#CONTINUATION" target="_blank" rel="external">CONTINUATION</a>帧)之后完成。如果响应不依赖于请求的任何还未接收到的部分的话，则它可以在客户端发送完整的请求之前就发送一个完整的响应。如果是这种情况，服务器 <strong>可以(MAY)</strong> 在发送了完整的响应之后，通过发送一个携带了错误码<a href="https://http2.github.io/http2-spec/#NO_ERROR" target="_blank" rel="external">NO_ERROR</a>的<a href="https://http2.github.io/http2-spec/#RST_STREAM" target="_blank" rel="external">RST_STREAM</a>，无错误地请求客户端停止传输请求 (比如一个设置了END_STREAM标记的帧)。客户端在收到了这样的一个<a href="https://http2.github.io/http2-spec/#RST_STREAM" target="_blank" rel="external">RST_STREAM</a>时， <strong>必须不(MUST NOT)</strong> 能丢弃响应，尽管因为其它原因客户端总是有丢弃响应的自由。</p>
-<h3 id="8-1-1-从HTTP-2升级"><a href="#8-1-1-从HTTP-2升级" class="headerlink" title="8.1.1 从HTTP/2升级"></a><a href="https://http2.github.io/http2-spec/#informational-responses" target="_blank" rel="external">8.1.1 从HTTP/2升级</a></h3><p>HTTP/2移除了对101 (Switching Protocols) 信息性状态码(<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.101" target="_blank" rel="external">Section 6.2.2</a>)的支持。</p>
+<h3 id="8-1-1-从HTTP-2升级"><a href="#8-1-1-从HTTP-2升级" class="headerlink" title="8.1.1 从HTTP/2升级"></a><a href="https://http2.github.io/http2-spec/#informational-responses" target="_blank" rel="external">8.1.1 从HTTP/2升级</a></h3><p>HTTP/2移除了对101 (Switching Protocols) 信息性状态码(<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.101" target="_blank" rel="external">Section 6.2.2</a>)的支持。</p>
 <p>101 (Switching Protocols)的语义不再适用于多路复用的协议。HTTP/2使用的替代协议能够使用相同的语义来协商使用(参见<a href="https://http2.github.io/http2-spec/#starting" target="_blank" rel="external">Section 3</a>)。</p>
 <h3 id="8-1-2-HTTP-首部字段"><a href="#8-1-2-HTTP-首部字段" class="headerlink" title="8.1.2 HTTP 首部字段"></a><a href="https://http2.github.io/http2-spec/#HttpHeaders" target="_blank" rel="external">8.1.2 HTTP 首部字段</a></h3><p>HTTP首部字段以一系列键-值对的形式携带信息。要获得已注册的HTTP首部的列表，参见维护于<a href="[https://www.iana.org/assignments/message-headers](https://www.iana.org/assignments/message-headers)">[https://www.iana.org/assignments/message-headers](https://www.iana.org/assignments/message-headers)</a>的“消息首部字段”注册。</p>
 <p>就如同HTTP/1.x中的那样，首部字段名是不区分大小写的ASCII字符串。然而，首部字段名 <strong>必须(MUST)</strong> 在被编码进HTTP/2之前被转换为小写形式。一个请求或响应包含了大写的首部字段名 <strong>必须(MUST)</strong> 被当作是损坏的(<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
-<h4 id="8-1-2-1-伪首部字段"><a href="#8-1-2-1-伪首部字段" class="headerlink" title="8.1.2.1 伪首部字段"></a><a href="https://http2.github.io/http2-spec/#PseudoHeaderFields" target="_blank" rel="external">8.1.2.1 伪首部字段</a></h4><p>尽管 HTTP/1.x 使用消息起始行(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#start.line" target="_blank" rel="external">Section 3.1</a>)来携带目标URI，请求的method，和响应的状态码，而HTTP/2则使用以’:’字符 (ASCII 0x3a)起始的特殊的伪首部字段来达到这一目的。</p>
+<h4 id="8-1-2-1-伪首部字段"><a href="#8-1-2-1-伪首部字段" class="headerlink" title="8.1.2.1 伪首部字段"></a><a href="https://http2.github.io/http2-spec/#PseudoHeaderFields" target="_blank" rel="external">8.1.2.1 伪首部字段</a></h4><p>尽管 HTTP/1.x 使用消息起始行(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#start.line" target="_blank" rel="external">Section 3.1</a>)来携带目标URI，请求的method，和响应的状态码，而HTTP/2则使用以’:’字符 (ASCII 0x3a)起始的特殊的伪首部字段来达到这一目的。</p>
 <p>伪首部字段不是HTTP首部字段。终端 <strong>一定不能(MUST NOT)</strong> 产生这份文档中定义的之外的伪首部字段。</p>
 <p>伪首部字段只在定义它们的上下文有效。为请求定义的伪首部字段 <strong>一定不能(MUST NOT)</strong> 出现在响应中；为响应定义的伪首部字段 <strong>一定不能(MUST NOT)</strong> 出现在请求中。伪首部字段 <strong>一定不能(MUST NOT)</strong> 出现在尾部。终端 <strong>一定要(MUST)</strong> 将包含了未定义或无效的伪首部字段的请求或响应当做是损坏的(<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
 <p>所有的伪首部字段 <strong>必须(MUST)</strong> 出现在首部块中普通的首部字段之前。任何的在首部块中包含了位于普通首部字段之后的伪首部字段的请求或响应 <strong>必须(MUST)</strong> 被当做是损坏的(<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
@@ -951,37 +932,28 @@
 <p><strong>注意：</strong> HTTP/2自觉地不支持升级到其它协议。<a href="https://http2.github.io/http2-spec/#starting" target="_blank" rel="external">Section 3</a>中描述的握手方法对于协商使用的协议相信足够了。</p>
 <h4 id="8-1-2-3-请求的伪首部字段"><a href="#8-1-2-3-请求的伪首部字段" class="headerlink" title="8.1.2.3 请求的伪首部字段"></a><a href="https://http2.github.io/http2-spec/#HttpRequest" target="_blank" rel="external">8.1.2.3 请求的伪首部字段</a></h4><p>下面的伪首部字段是为HTTP/2请求定义的：</p>
 <ul>
-<li><code>:method</code> 伪首部字段包含HTTP method(<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#methods" target="_blank" rel="external">Section 4</a>)</li>
+<li><code>:method</code> 伪首部字段包含HTTP method(<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#methods" target="_blank" rel="external">Section 4</a>)</li>
 </ul>
 <ul>
-<li><code>:scheme</code> 伪首部字段包含了目标URI (<a href="https://http2.github.io/http2-spec/#RFC3986" target="_blank" rel="external">[RFC3986]
-</a>，<a href="https://tools.ietf.org/html/rfc3986#section-3.1" target="_blank" rel="external">Section 3.1</a>) 的scheme部分。</li>
+<li><code>:scheme</code> 伪首部字段包含了目标URI (<a href="https://http2.github.io/http2-spec/#RFC3986" target="_blank" rel="external">[RFC3986]</a>，<a href="https://tools.ietf.org/html/rfc3986#section-3.1" target="_blank" rel="external">Section 3.1</a>) 的scheme部分。</li>
 </ul>
 <p><code>:scheme</code> 不限于http和https schemed URIs。一个代理或网关可以为非HTTP schemes转换请求，以便于使用HTTP来与非HTTP服务交互。</p>
 <ul>
-<li><p><code>:authority</code> 伪首部字段包含了目标URI (<a href="https://http2.github.io/http2-spec/#RFC3986" target="_blank" rel="external">[RFC3986]
-</a>，<a href="https://tools.ietf.org/html/rfc3986#section-3.1" target="_blank" rel="external">Section 3.1</a>) 的认证部分。<code>authority</code>  <strong>一定不能(MUST NOT)</strong> 给http或https schemed URIs包含废弃的<code>userinfo</code>子组件。要确保HTTP/1.1请求行可以被精确地重现，当从 一个有着 以origin或asterisk的形式 (参见 <a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#request-target" target="_blank" rel="external">Section 5.3</a>) 的请求目标的HTTP/1.1请求转换时，这个伪首部字段 <strong>必须(MUST)</strong> 被省略。直接产生HTTP/2请求的客户端 <strong>应该(SHOULD)</strong> 使用<code>:authority</code> 伪首部字段，而不是Host首部字段。如果请求中没有Host首部字段的话，则将HTTP/2请求转换为HTTP/1.1的中继 <strong>必须(MUST)</strong> 通过复制<code>:authority</code>伪首部字段的值来创建一个。</p>
+<li><p><code>:authority</code> 伪首部字段包含了目标URI (<a href="https://http2.github.io/http2-spec/#RFC3986" target="_blank" rel="external">[RFC3986]</a>，<a href="https://tools.ietf.org/html/rfc3986#section-3.1" target="_blank" rel="external">Section 3.1</a>) 的认证部分。<code>authority</code>  <strong>一定不能(MUST NOT)</strong> 给http或https schemed URIs包含废弃的<code>userinfo</code>子组件。要确保HTTP/1.1请求行可以被精确地重现，当从 一个有着 以origin或asterisk的形式 (参见 <a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#request-target" target="_blank" rel="external">Section 5.3</a>) 的请求目标的HTTP/1.1请求转换时，这个伪首部字段 <strong>必须(MUST)</strong> 被省略。直接产生HTTP/2请求的客户端 <strong>应该(SHOULD)</strong> 使用<code>:authority</code> 伪首部字段，而不是Host首部字段。如果请求中没有Host首部字段的话，则将HTTP/2请求转换为HTTP/1.1的中继 <strong>必须(MUST)</strong> 通过复制<code>:authority</code>伪首部字段的值来创建一个。</p>
 </li>
-<li><p><code>:path</code> 伪首部字段包含了目标URI (完整的路径和一个可选的’?’字符及其后面接着的query) 的path和query部分(参见<a href="https://http2.github.io/http2-spec/#RFC3986" target="_blank" rel="external">[RFC3986]
-</a>的 Sections <a href="https://tools.ietf.org/html/rfc3986#section-3.3" target="_blank" rel="external">3.3</a>和<a href="https://tools.ietf.org/html/rfc3986#section-3.4" target="_blank" rel="external">3.4</a>)。星号形式的请求包含了值为’<em>‘的<code>:path</code>伪首部字段。对于http和https URI，这个伪首部字段 <strong>一定不能(MUST NOT)</strong> 是空的。不包含一个path组件的http和https URIs <strong>必须(MUST)</strong> 包含一个’/‘值。这条规则的例外是不包含path组件的http或https URI的OPTIONS请求；这些<strong>必须(MUST)</strong> 包含一个值为’</em>‘的<code>:path</code>伪首部字段(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#asterisk-form" target="_blank" rel="external">Section 5.3.4</a>)。</p>
+<li><p><code>:path</code> 伪首部字段包含了目标URI (完整的路径和一个可选的’?’字符及其后面接着的query) 的path和query部分(参见<a href="https://http2.github.io/http2-spec/#RFC3986" target="_blank" rel="external">[RFC3986]</a>的 Sections <a href="https://tools.ietf.org/html/rfc3986#section-3.3" target="_blank" rel="external">3.3</a>和<a href="https://tools.ietf.org/html/rfc3986#section-3.4" target="_blank" rel="external">3.4</a>)。星号形式的请求包含了值为’<em>‘的<code>:path</code>伪首部字段。对于http和https URI，这个伪首部字段 <strong>一定不能(MUST NOT)</strong> 是空的。不包含一个path组件的http和https URIs <strong>必须(MUST)</strong> 包含一个’/‘值。这条规则的例外是不包含path组件的http或https URI的OPTIONS请求；这些<strong>必须(MUST)</strong> 包含一个值为’</em>‘的<code>:path</code>伪首部字段(参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#asterisk-form" target="_blank" rel="external">Section 5.3.4</a>)。</p>
 </li>
 </ul>
 <p>所有的HTTP/2请求 <strong>必须(MUST)</strong> 为<code>:method</code>，<code>:scheme</code>和<code>:path</code>伪首部字段包含且只包含一个有效值，除非它是一个CONNECT请求 (<a href="https://http2.github.io/http2-spec/#CONNECT" target="_blank" rel="external">Section 8.3</a>)。一个省略了必须的伪首部字段的HTTP请求是损坏的(<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
 <p>HTTP/2没有定义一种方式来携带版本标识符，如同HTTP/1.1的请求行中包含的那样。</p>
-<h4 id="8-1-2-4-响应的伪首部字段"><a href="#8-1-2-4-响应的伪首部字段" class="headerlink" title="8.1.2.4 响应的伪首部字段"></a><a href="https://http2.github.io/http2-spec/#HttpResponse" target="_blank" rel="external">8.1.2.4 响应的伪首部字段</a></h4><p>对于HTTP/2响应，<code>:status</code>伪首部字段被定义来携带HTTP状态码字段(参见 <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.codes" target="_blank" rel="external">Section 6</a>)。这个伪首部字段 <strong>必须(MUST)</strong> 被包含在所有的响应中；否则，响应是损坏的 (<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
+<h4 id="8-1-2-4-响应的伪首部字段"><a href="#8-1-2-4-响应的伪首部字段" class="headerlink" title="8.1.2.4 响应的伪首部字段"></a><a href="https://http2.github.io/http2-spec/#HttpResponse" target="_blank" rel="external">8.1.2.4 响应的伪首部字段</a></h4><p>对于HTTP/2响应，<code>:status</code>伪首部字段被定义来携带HTTP状态码字段(参见 <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.codes" target="_blank" rel="external">Section 6</a>)。这个伪首部字段 <strong>必须(MUST)</strong> 被包含在所有的响应中；否则，响应是损坏的 (<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
 <p>HTTP/2没有定义一种携带HTTP/1.1的状态行中包含的版本或原因描述的方式。</p>
-<h4 id="8-1-2-5-压缩Cookie首部字段"><a href="#8-1-2-5-压缩Cookie首部字段" class="headerlink" title="8.1.2.5 压缩Cookie首部字段"></a><a href="https://http2.github.io/http2-spec/#CompressCookie" target="_blank" rel="external">8.1.2.5 压缩Cookie首部字段</a></h4><p><a href="https://http2.github.io/http2-spec/#COOKIE" target="_blank" rel="external">Cookie首部字段</a> [COOKIE]使用分号(“;”)来分割cookie-pairs (或 “crumbs”)。这个首部字段不遵守HTTP中 列表结构规则 (参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#field.order" target="_blank" rel="external">Section 3.2.2</a>)，那使得cookie-pairs无法被分成不同的名值对。在只有单独的cookie-pairs更新时，这将大大地降低压缩效率</p>
+<h4 id="8-1-2-5-压缩Cookie首部字段"><a href="#8-1-2-5-压缩Cookie首部字段" class="headerlink" title="8.1.2.5 压缩Cookie首部字段"></a><a href="https://http2.github.io/http2-spec/#CompressCookie" target="_blank" rel="external">8.1.2.5 压缩Cookie首部字段</a></h4><p><a href="https://http2.github.io/http2-spec/#COOKIE" target="_blank" rel="external">Cookie首部字段</a> [COOKIE]使用分号(“;”)来分割cookie-pairs (或 “crumbs”)。这个首部字段不遵守HTTP中 列表结构规则 (参见<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#field.order" target="_blank" rel="external">Section 3.2.2</a>)，那使得cookie-pairs无法被分成不同的名值对。在只有单独的cookie-pairs更新时，这将大大地降低压缩效率</p>
 <p>要达到更好的压缩效率，Cookie首部字段 <strong>可以(MAY)</strong> 被分割为分开的首部字段，每个包含一个或多个cookie-pairs。如果解压后有多个Cookie首部字段，则这些首部字段 <strong>必须(MUST)</strong> 在被传递给非HTTP/2上下文，如一个HTTP/1.1连接，或一个普通的HTTP服务应用 之前，使用值为0x3B，0x20的2-字节分隔符 (ASCII字符串”; “) 连接为一个单独字节串。</p>
 <p>因此，下面的两个Cookie首部字段列表在语义上是等价的。</p>
 <figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cookie: <span class="attr">a=b;</span> <span class="attr">c=d;</span> <span class="attr">e=f</span></div><div class="line"></div><div class="line">cookie: <span class="attr">a=b</span></div><div class="line">cookie: <span class="attr">c=d</span></div><div class="line">cookie: <span class="attr">e=f</span></div></pre></td></tr></table></figure>
 <h4 id="8-1-2-6-损坏的请求和响应"><a href="#8-1-2-6-损坏的请求和响应" class="headerlink" title="8.1.2.6 损坏的请求和响应"></a><a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">8.1.2.6 损坏的请求和响应</a></h4><p>一个损坏的请求或响应，是那种其它方面依然是一个有效的HTTP/2序列，但由于出现了无关的帧，禁用的首部字段，缺失了必要的首部字段，或包含了大写的首部字段名而变得无效的请求或响应。</p>
-<p>一个包含载荷体的请求或响应可以包含一个content-length首部字段。如果content-length首部字段的值不等于构成了载荷体的<a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a>帧载荷的长度和的请求或响应也是损坏的。被定义为不含有载荷的响应，在 <a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#header.content-length" target="_blank" rel="external">Section 3.3.2</a> 中描述，可以具有一个非零的content-length首部字段，尽管在 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧不包含内容。</p>
+<p>一个包含载荷体的请求或响应可以包含一个content-length首部字段。如果content-length首部字段的值不等于构成了载荷体的<a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a>帧载荷的长度和的请求或响应也是损坏的。被定义为不含有载荷的响应，在 <a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#header.content-length" target="_blank" rel="external">Section 3.3.2</a> 中描述，可以具有一个非零的content-length首部字段，尽管在 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧不包含内容。</p>
 <p>处理HTTP请求或响应的中继 (例如，任何不扮演隧道角色的中继) <strong>一定不能(MUST NOT)</strong> 转发损坏的请求或响应。探测到的损坏的请求或响应 <strong>必须(MUST)</strong> 被作为一个类型是 <a href="https://http2.github.io/http2-spec/#PROTOCOL_ERROR" target="_blank" rel="external">PROTOCOL_ERROR</a> 的流错误 (<a href="https://http2.github.io/http2-spec/#StreamErrorHandler" target="_blank" rel="external">Section 5.4.2</a>)对待。</p>
 <p>对于损坏的请求，服务器 <strong>可以(MAY)</strong> 在关闭或重置流之前发送一个HTTP响应。客户端 <strong>一定不能(MUST NOT)</strong> 接受一个损坏的响应。注意，这些要求被用来保护某些常见类型的HTTP攻击；由于许可可能将实现暴露给这些脆弱性，它们有意地比较严格。</p>
 <h3 id="8-1-3-例子"><a href="#8-1-3-例子" class="headerlink" title="8.1.3 例子"></a><a href="https://http2.github.io/http2-spec/#rfc.section.8.1.3" target="_blank" rel="external">8.1.3 例子</a></h3><p>这个小节展示了HTTP/1.1的请求和响应，以及等价的HTTP/2请求和相应的描述。</p>
@@ -1011,12 +983,8 @@
 <p>除了这些机制，<a href="https://http2.github.io/http2-spec/#PING" target="_blank" rel="external">PING</a> 帧给客户端提供了一种方式来简单地测试一个连接。处于闲置状态的连接可能由于一些middleboxes (比如，网络地址转换器，负载均衡器) 安静地废弃了连接绑定而损坏。<a href="https://http2.github.io/http2-spec/#PING" target="_blank" rel="external">PING</a> 帧使得客户端可以在不发送请求的情况下安全地测试一个连接是否有效。</p>
 <h2 id="8-2-服务器推送"><a href="#8-2-服务器推送" class="headerlink" title="8.2 服务器推送"></a><a href="https://http2.github.io/http2-spec/#PushResources" target="_blank" rel="external">8.2 服务器推送</a></h2><p>HTTP/2使服务器可以抢先地发送 (或推送) 与客户端之前初始化的请求相关联的响应 (伴随着对应的”promised”请求) 给客户端。当服务器知道客户端将需要那些响应以完全处理最初的请求的响应。</p>
 <p>客户端可以请求禁用服务器推送，尽管会为每个独立的hop协商。<a href="https://http2.github.io/http2-spec/#SETTINGS_ENABLE_PUSH" target="_blank" rel="external">SETTINGS_ENABLE_PUSH</a>设置项可以被设置为0以表明服务器推送被禁用。</p>
-<p>Promised请求 <strong>必须(MUST)</strong> 是可缓存的 (参见<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#cacheable.methods" target="_blank" rel="external">Section 4.2.3</a>)， <strong>必须(MUST)</strong> 是安全的(参见 <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#safe.methods" target="_blank" rel="external">Section 4.2.1</a>)， <strong>一定不能(MUST NOT)</strong> 包含请求体。客户端接收到一个promised请求，但请求不能被缓存，不知道是否安全，或者出现了请求体，必须通过一个类型为<a href="https://http2.github.io/http2-spec/#PROTOCOL_ERROR" target="_blank" rel="external">PROTOCOL_ERROR</a>的流错误(<a href="https://http2.github.io/http2-spec/#StreamErrorHandler" target="_blank" rel="external">Section 5.4.2</a>)来重置promised流。注意如果客户端无法确认一个新定义的method是安全的，则这可能导致promised流被重置。</p>
-<p>推送的可缓存的响应 (参见<a href="https://http2.github.io/http2-spec/#RFC7234" target="_blank" rel="external">[RFC7234]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7234.html#response.cacheability" target="_blank" rel="external">Section 3</a>) 可以被客户端保存，如果它实现了一个HTTP缓存的话。推送的响应被认为在原始的服务器上已经被成功地验证过 (比如，如果出现了”no-cache”缓存响应指示(<a href="https://http2.github.io/http2-spec/#RFC7234" target="_blank" rel="external">[RFC7234]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7234.html#cache-response-directive" target="_blank" rel="external">Section 5.2.2</a>)) 了，尽管由promised流ID标识的流依然是打开的。</p>
+<p>Promised请求 <strong>必须(MUST)</strong> 是可缓存的 (参见<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#cacheable.methods" target="_blank" rel="external">Section 4.2.3</a>)， <strong>必须(MUST)</strong> 是安全的(参见 <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#safe.methods" target="_blank" rel="external">Section 4.2.1</a>)， <strong>一定不能(MUST NOT)</strong> 包含请求体。客户端接收到一个promised请求，但请求不能被缓存，不知道是否安全，或者出现了请求体，必须通过一个类型为<a href="https://http2.github.io/http2-spec/#PROTOCOL_ERROR" target="_blank" rel="external">PROTOCOL_ERROR</a>的流错误(<a href="https://http2.github.io/http2-spec/#StreamErrorHandler" target="_blank" rel="external">Section 5.4.2</a>)来重置promised流。注意如果客户端无法确认一个新定义的method是安全的，则这可能导致promised流被重置。</p>
+<p>推送的可缓存的响应 (参见<a href="https://http2.github.io/http2-spec/#RFC7234" target="_blank" rel="external">[RFC7234]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7234.html#response.cacheability" target="_blank" rel="external">Section 3</a>) 可以被客户端保存，如果它实现了一个HTTP缓存的话。推送的响应被认为在原始的服务器上已经被成功地验证过 (比如，如果出现了”no-cache”缓存响应指示(<a href="https://http2.github.io/http2-spec/#RFC7234" target="_blank" rel="external">[RFC7234]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7234.html#cache-response-directive" target="_blank" rel="external">Section 5.2.2</a>)) 了，尽管由promised流ID标识的流依然是打开的。</p>
 <p>不能缓存的推送的响应 <strong>一定不能(MUST NOT)</strong> 被任何HTTP缓存保存。它们 <strong>可以(MAY)</strong> 单独提供给应用。</p>
 <p>服务器 <strong>必须(MUST)</strong> 在<code>:authority</code>伪首部字段中包含服务器认证授权的值(参见<a href="https://http2.github.io/http2-spec/#authority" target="_blank" rel="external">Section 10.1</a>)。客户端 <strong>必须(MUST)</strong> 将服务器没有认证的 <a href="https://http2.github.io/http2-spec/#PUSH_PROMISE" target="_blank" rel="external">PUSH_PROMISE</a> 当作类型为<a href="https://http2.github.io/http2-spec/#PROTOCOL_ERROR" target="_blank" rel="external">PROTOCOL_ERROR</a>的流错误(<a href="https://http2.github.io/http2-spec/#StreamErrorHandler" target="_blank" rel="external">Section 5.4.2</a>)。</p>
 <p>一个中继可从服务器接收推送而选择不把它们转发给客户端。换句话说，如何使用推送的信息由中继自行处理。同样的，服务器在没有采取任何行动的时候，中继也可能选择给客户端创建额外的推送。</p>
@@ -1040,8 +1008,7 @@
 <h2 id="8-3-CONNECT-Method"><a href="#8-3-CONNECT-Method" class="headerlink" title="8.3 CONNECT Method"></a><a href="https://http2.github.io/http2-spec/#CONNECT" target="_blank" rel="external">8.3 CONNECT Method</a></h2><p>在HTTP/1.x，pseudo-method CONNECT (<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#CONNECT" target="_blank" rel="external">Section 4.3.6</a>) 被用于将一个HTTP连接转换为一个到远程主机的隧道。CONNECT主要与HTTP代理一起使用，为了与https资源进行交互，而与原始服务器建立一个TLS会话。</p>
 <p>在HTTP/2中，为了类似的目的，CONNECT method被用于建立一个到远程的主机的基于单独的HTTP/2流的隧道。HTTP首部字段映射如同<a href="https://http2.github.io/http2-spec/#HttpRequest" target="_blank" rel="external">Section 8.1.2.3</a> (“<a href="https://http2.github.io/http2-spec/#HttpRequest" target="_blank" rel="external">请求的伪首部字段</a>“)中定义的那样工作，但略有不同。特别地：<code>:method</code> 伪首部字段被设置为CONNECT。而<code>:scheme</code> 和 <code>:path</code> 伪首部字段 <strong>必须(MUST)</strong> 被省略。<code>:authority</code> 伪首部字段包含了要连接的主机和端口 (等价于CONNECT请求(参见 <a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#request-target" target="_blank" rel="external">Section 5.3</a>)的request-target的authority-form)</p>
 <p>不符合这些限制的CONNECT请求是损坏的(<a href="https://http2.github.io/http2-spec/#malformed" target="_blank" rel="external">Section 8.1.2.6</a>)。</p>
-<p>支持CONNECT的代理建立一个与由<code>:authority</code>伪首部字段确定的服务器的<a href="https://http2.github.io/http2-spec/#TCP" target="_blank" rel="external">TCP connection</a> [TCP]。一旦这个连接被成功地建立了，代理给客户端发送一个 <a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a> 帧，其中包含了2xx系列状态码，如同 <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#CONNECT" target="_blank" rel="external">Section 4.3.6</a> 中定义的那样。</p>
+<p>支持CONNECT的代理建立一个与由<code>:authority</code>伪首部字段确定的服务器的<a href="https://http2.github.io/http2-spec/#TCP" target="_blank" rel="external">TCP connection</a> [TCP]。一旦这个连接被成功地建立了，代理给客户端发送一个 <a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a> 帧，其中包含了2xx系列状态码，如同 <a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#CONNECT" target="_blank" rel="external">Section 4.3.6</a> 中定义的那样。</p>
 <p>在每个端点发送了初始的 <a href="https://http2.github.io/http2-spec/#HEADERS" target="_blank" rel="external">HEADERS</a> 帧之后，数据对应的所有后续 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧在那个TCP连接上发送。客户端发送的所有 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧的载荷由代理传输给TCP服务器；从TCP服务器接收的数据由代理汇集为 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧。 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 和流管理帧(<a href="https://http2.github.io/http2-spec/#RST_STREAM" target="_blank" rel="external">RST_STREAM</a>，<a href="https://http2.github.io/http2-spec/#WINDOW_UPDATE" target="_blank" rel="external">WINDOW_UPDATE</a>，和 <a href="https://http2.github.io/http2-spec/#PRIORITY" target="_blank" rel="external">PRIORITY</a>)之外的其它类型帧 <strong>一定不能(MUST NOT)</strong> 在一个已连接的流上发送，而在出现时 <strong>必须(MUST)</strong> 被当作一个流错误 (<a href="https://http2.github.io/http2-spec/#StreamErrorHandler" target="_blank" rel="external">Section 5.4.2</a>)。</p>
 <p>TCP连接可以由连接的任何一端关闭。一个 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧的END_STREAM标记被认为与TCP FIN位一样。客户端在收到一个设置了END_STREAM标记的帧之后，被预期要发送一个设置了END_STREAM标记的 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧。接收到一个设置了END_STREAM标记的 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧的代理，发送在最后的片段上设置FIN位整合数据。接收到一个设置了FIN位的TCP片段的代理发送一个设置了END_STREAM标记的 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧。注意最后的TCP片段或 <a href="https://http2.github.io/http2-spec/#DATA" target="_blank" rel="external">DATA</a> 帧不能是空的。</p>
 <p>TCP连接错误用 <a href="https://http2.github.io/http2-spec/#RST_STREAM" target="_blank" rel="external">RST_STREAM</a> 通知。代理将TCP连接中的任何错误，包括接收到一个设置了RST位的TCP片段，作为类型是 <a href="https://http2.github.io/http2-spec/#CONNECT_ERROR" target="_blank" rel="external">CONNECT_ERROR</a> 的流错误 (<a href="https://http2.github.io/http2-spec/#StreamErrorHandler" target="_blank" rel="external">Section 5.4.2</a>)。相应的，如果探测到流或HTTP/2连接的错误，则代理 <strong>必须(MUST)</strong> 发送一个设置了RST位的TCP片段。</p>
@@ -1101,12 +1068,11 @@
 <p>接收到了大于想要处理的大小的首部块的服务器可以发送一个HTTP 431 (Request Header Fields Too Large) 状态码 <a href="https://http2.github.io/http2-spec/#RFC6585" target="_blank" rel="external">[RFC6585]</a>。客户端可以丢弃它不能处理的响应。除非连接被关闭了，否则首部块 <strong>必须(MUST)</strong> 得到处理，以保持一致的连接状态。</p>
 <h3 id="10-5-2-CONNECT问题"><a href="#10-5-2-CONNECT问题" class="headerlink" title="10.5.2 CONNECT问题"></a><a href="https://http2.github.io/http2-spec/#connectDos" target="_blank" rel="external">10.5.2 CONNECT问题</a></h3><p>CONNECT方法可以被用于创建代理上不成比例的负载，因为相对于TCP连接的创建和维护，创建流不那么昂贵。除携带了CONNECT请求的流的关闭之外，代理也许还要为TCP连接维护一些资源，因为外发的TCP连接保持为TIME_WAIT状态。然而，代理不能只依赖 <a href="https://http2.github.io/http2-spec/#SETTINGS_MAX_CONCURRENT_STREAMS" target="_blank" rel="external">SETTINGS_MAX_CONCURRENT_STREAMS</a> 来决定CONNECT请求消耗的资源。</p>
 <h2 id="10-6-压缩的使用"><a href="#10-6-压缩的使用" class="headerlink" title="10.6 压缩的使用"></a><a href="https://http2.github.io/http2-spec/#rfc.section.10.6" target="_blank" rel="external">10.6 压缩的使用</a></h2><p>当以与攻击者控制的数据相同的上下文压缩时，压缩可以使得攻击恢复机密数据。HTTP/2启用了首部字段压缩(<a href="https://http2.github.io/http2-spec/#HeaderBlock" target="_blank" rel="external">Section 4.3</a>)；下面的担忧同样适用于HTTP压缩 内容编码 (<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#content.codings" target="_blank" rel="external">Section 3.1.2.1</a>) 的使用。</p>
-<p>有一些关于压缩的攻击利用了web的特性 (例如，<a href="https://http2.github.io/http2-spec/#BREACH" target="_blank" rel="external">[BREACH]
-</a>)。攻击者引起了多个包含不同纯文本的请求，然后观察每个最终的加密文本的长度，当关于密文的一个猜测正确时这揭示了一个更短的长度。</p>
+<p>有一些关于压缩的攻击利用了web的特性 (例如，<a href="https://http2.github.io/http2-spec/#BREACH" target="_blank" rel="external">[BREACH]</a>)。攻击者引起了多个包含不同纯文本的请求，然后观察每个最终的加密文本的长度，当关于密文的一个猜测正确时这揭示了一个更短的长度。</p>
 <p>基于一个安全通道通信的实现 <strong>一定不能(MUST NOT)</strong> 压缩同时包含机密的和攻击者控制的数据的内容，除非为每个数据源使用不同的压缩字典。如果数据源无法被可靠的确定，则 <strong>一定不能(MUST NOT)</strong> 使用压缩。通用的流压缩，比如TLS提供的， <strong>一定不能(MUST NOT)</strong> 被用在HTTP/2中 (参见 <a href="https://http2.github.io/http2-spec/#TLSUsage" target="_blank" rel="external">Section 9.2</a>) 。</p>
 <p>关于首部压缩更多的注意事项在 <a href="https://http2.github.io/http2-spec/#COMPRESSION" target="_blank" rel="external">[COMPRESSION]
 </a> 中描述。</p>
-<h2 id="10-7-填充的使用"><a href="#10-7-填充的使用" class="headerlink" title="10.7 填充的使用"></a><a href="https://http2.github.io/http2-spec/#padding" target="_blank" rel="external">10.7 填充的使用</a></h2><p>HTTP/2中的填充并不打算替代通用的填充，比如可能由 <a href="https://http2.github.io/http2-spec/#TLS12" target="_blank" rel="external">TLS</a> [TLS12]提供的填充。<br>冗余填充甚至可能会适得其反。正确的应用程序可能依赖被填充的数据的特定知识。</p>
+<h2 id="10-7-填充的使用"><a href="#10-7-填充的使用" class="headerlink" title="10.7 填充的使用"></a><a href="https://http2.github.io/http2-spec/#padding" target="_blank" rel="external">10.7 填充的使用</a></h2><p>HTTP/2中的填充并不打算替代通用的填充，比如可能由 <a href="https://http2.github.io/http2-spec/#TLS12" target="_blank" rel="external">TLS</a> [TLS12]提供的填充。冗余填充甚至可能会适得其反。正确的应用程序可能依赖被填充的数据的特定知识。</p>
 <p>要减少依赖压缩的攻击，相对于填充而言，禁用或限制压缩可能是一个更适当的对策。</p>
 <p>填充可被用于模糊帧内容的准确大小，并被提供用以减少HTTP内特定的攻击，比如，压缩的内容包含了攻击者控制的纯文本和机密数据的攻击(e.g.，<a href="https://http2.github.io/http2-spec/#BREACH" target="_blank" rel="external">[BREACH]</a>)。</p>
 <p>相对于似乎很明显能看到的，对填充的使用可能导致更少的保护。最好，填充只是通过增加攻击者不得不观察的帧数量，而使得攻击者更难推断长度信息。不正确地实现填充方案很容易被探测出来。典型的，可预测分布的随机填充提供了非常少的保护；类似地，固定大小的填充载荷在跨固定大小边界时暴露了载荷的大小，如果攻击者可以控制文本的话这是可能的。</p>
@@ -1115,13 +1081,11 @@
 <p>这些在行为上建立了可观察的差别，它们可能被用作识别一个特定的客户端的基础，如同在 <a href="https://http2.github.io/http2-spec/#HTML5" target="_blank" rel="external">[HTML5]</a> 的 <a href="http://www.w3.org/TR/2014/REC-html5-20141028/introduction.html#fingerprint" target="_blank" rel="external">Section 1.8</a> 中定义的那样。</p>
 <p>HTTP/2对于使用单个TCP连接的偏好，允许获得一个站点上用户活动的相关性。为不同的源复用连接，允许跨那些源追踪。</p>
 <p>由于PING和SETTINGS帧请求立即响应，它们可能被终端用于测量延时。这在某些场景下可能对隐私有影响。</p>
-<h1 id="11-IANA-注意事项"><a href="#11-IANA-注意事项" class="headerlink" title="11. IANA 注意事项"></a><a href="https://http2.github.io/http2-spec/#iana" target="_blank" rel="external">11. IANA 注意事项</a></h1><p>一个用于识别HTTP/2的字符串进入了由 <a href="https://http2.github.io/http2-spec/#TLS-ALPN" target="_blank" rel="external">[TLS-ALPN]
-</a> 建立的 “应用层协议协商 (ALPN) 协议IDs” 注册表</p>
+<h1 id="11-IANA-注意事项"><a href="#11-IANA-注意事项" class="headerlink" title="11. IANA 注意事项"></a><a href="https://http2.github.io/http2-spec/#iana" target="_blank" rel="external">11. IANA 注意事项</a></h1><p>一个用于识别HTTP/2的字符串进入了由 <a href="https://http2.github.io/http2-spec/#TLS-ALPN" target="_blank" rel="external">[TLS-ALPN]</a> 建立的 “应用层协议协商 (ALPN) 协议IDs” 注册表</p>
 <p>本文档为帧类型，设置项，和错误码建立了一个注册表。这些新的注册表项出现在新的”Hypertext Transfer Protocol version 2 (HTTP/2) Parameters”一节。</p>
 <p>为了在HTTP中使用，本文档注册了HTTP2-Settings首部字段；它还注册了421 (Misdirected Request) 状态码。</p>
 <p>为了在HTTP中使用，本文档还注册了PRI方法，以避免与连接前言 (connection preface)  (<a href="https://http2.github.io/http2-spec/#ConnectionHeader" target="_blank" rel="external">Section 3.5</a>)冲突</p>
-<h2 id="11-1-HTTP-2-识别字符串的注册"><a href="#11-1-HTTP-2-识别字符串的注册" class="headerlink" title="11.1 HTTP/2 识别字符串的注册 "></a><a href="https://http2.github.io/http2-spec/#iana-alpn" target="_blank" rel="external">11.1 HTTP/2 识别字符串的注册 </a></h2><p>本文档为HTTP/2的识别 (参见 <a href="https://http2.github.io/http2-spec/#discover-https" target="_blank" rel="external">Section 3.3</a>) 而向由 <a href="https://http2.github.io/http2-spec/#TLS-ALPN" target="_blank" rel="external">[TLS-ALPN]
-</a> 建立的 “应用层协议协商 (ALPN) 协议IDs” 注册表中建立了两个注册项。</p>
+<h2 id="11-1-HTTP-2-识别字符串的注册"><a href="#11-1-HTTP-2-识别字符串的注册" class="headerlink" title="11.1 HTTP/2 识别字符串的注册 "></a><a href="https://http2.github.io/http2-spec/#iana-alpn" target="_blank" rel="external">11.1 HTTP/2 识别字符串的注册 </a></h2><p>本文档为HTTP/2的识别 (参见 <a href="https://http2.github.io/http2-spec/#discover-https" target="_blank" rel="external">Section 3.3</a>) 而向由 <a href="https://http2.github.io/http2-spec/#TLS-ALPN" target="_blank" rel="external">[TLS-ALPN]</a> 建立的 “应用层协议协商 (ALPN) 协议IDs” 注册表中建立了两个注册项。</p>
 <p>当在TLS之上使用HTTP/2时，用”h2”来标识HTTP/2：</p>
 <p>协议：HTTP/2 over TLS</p>
 <p>标识串：0x68 0x32 (“h2”)</p>
@@ -1363,20 +1327,17 @@
 <p>作者/变动控制者：IETF</p>
 <p>规范文档：本文档的 <a href="https://http2.github.io/http2-spec/#Http2SettingsHeader" target="_blank" rel="external">Section 3.2.1</a></p>
 <p>相关信息：这个首部字段只被 HTTP/2 客户端用于基于升级 (Upgrade-based) 的协商。</p>
-<h2 id="11-6-PRI-方法注册"><a href="#11-6-PRI-方法注册" class="headerlink" title="11.6 PRI 方法注册"></a><a href="https://http2.github.io/http2-spec/#rfc.section.11.6" target="_blank" rel="external">11.6 PRI 方法注册</a></h2><p>这一节向”HTTP方法注册表” (<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#method.registry" target="_blank" rel="external">Section 8.1</a>)中注册了PRI方法。</p>
+<h2 id="11-6-PRI-方法注册"><a href="#11-6-PRI-方法注册" class="headerlink" title="11.6 PRI 方法注册"></a><a href="https://http2.github.io/http2-spec/#rfc.section.11.6" target="_blank" rel="external">11.6 PRI 方法注册</a></h2><p>这一节向”HTTP方法注册表” (<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#method.registry" target="_blank" rel="external">Section 8.1</a>)中注册了PRI方法。</p>
 <p>方法名：PRI</p>
 <p>安全的：是</p>
 <p>幂等的：是</p>
 <p>规范说明：本文档的 <a href="https://http2.github.io/http2-spec/#ConnectionHeader" target="_blank" rel="external">Section 3.5</a></p>
 <p>相关信息：这个方法从不会由实际的客户端使用。这个方法主要在HTTP/1.1服务器或中继在解析HTTP/2连接前言（connection preface）时使用。</p>
-<h2 id="11-7-421-Misdirected-Request-HTTP状态码"><a href="#11-7-421-Misdirected-Request-HTTP状态码" class="headerlink" title="11.7 421 (Misdirected Request) HTTP状态码"></a><a href="https://http2.github.io/http2-spec/#iana-MisdirectedRequest" target="_blank" rel="external">11.7 421 (Misdirected Request) HTTP状态码</a></h2><p>本文档向 “HTTP状态码” 注册表 (<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.code.registry" target="_blank" rel="external">Section 8.2</a>)中注册了 421 (Misdirected Request) HTTP状态码。</p>
+<h2 id="11-7-421-Misdirected-Request-HTTP状态码"><a href="#11-7-421-Misdirected-Request-HTTP状态码" class="headerlink" title="11.7 421 (Misdirected Request) HTTP状态码"></a><a href="https://http2.github.io/http2-spec/#iana-MisdirectedRequest" target="_blank" rel="external">11.7 421 (Misdirected Request) HTTP状态码</a></h2><p>本文档向 “HTTP状态码” 注册表 (<a href="https://http2.github.io/http2-spec/#RFC7231" target="_blank" rel="external">[RFC7231]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7231.html#status.code.registry" target="_blank" rel="external">Section 8.2</a>)中注册了 421 (Misdirected Request) HTTP状态码。</p>
 <p>状态码：421</p>
 <p>简短描述：误重定向请求</p>
 <p>规范说明：本文档的 <a href="https://http2.github.io/http2-spec/#MisdirectedRequest" target="_blank" rel="external">Section 9.1.2</a></p>
-<h2 id="11-8-h2c-升级-Token"><a href="#11-8-h2c-升级-Token" class="headerlink" title="11.8  h2c 升级 Token"></a><a href="https://http2.github.io/http2-spec/#iana-h2c" target="_blank" rel="external">11.8  h2c 升级 Token</a></h2><p>本文档向”HTTP升级Tokens”注册表中 (<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]
-</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#upgrade.token.registry" target="_blank" rel="external">Section 8.6</a>)中注册了 “h2c”升级token。</p>
+<h2 id="11-8-h2c-升级-Token"><a href="#11-8-h2c-升级-Token" class="headerlink" title="11.8  h2c 升级 Token"></a><a href="https://http2.github.io/http2-spec/#iana-h2c" target="_blank" rel="external">11.8  h2c 升级 Token</a></h2><p>本文档向”HTTP升级Tokens”注册表中 (<a href="https://http2.github.io/http2-spec/#RFC7230" target="_blank" rel="external">[RFC7230]</a>，<a href="https://svn.tools.ietf.org/svn/wg/httpbis/specs/rfc7230.html#upgrade.token.registry" target="_blank" rel="external">Section 8.6</a>)中注册了 “h2c”升级token。</p>
 <p>值：h2c</p>
 <p>描述：超文本传输协议版本 2 (HTTP/2)</p>
 <p>期待的版本Tokens：None</p>
@@ -1710,21 +1671,21 @@
         <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
   <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
   <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>Donate</span>
+    <span>打赏</span>
   </button>
   <div id="QR" style="display: none;">
 
     
       <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei WeChat Pay"/>
-        <p>WeChat Pay</p>
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
       </div>
     
 
     
       <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei Alipay"/>
-        <p>Alipay</p>
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
       </div>
     
 
@@ -1799,11 +1760,7 @@
 
   
     <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
-
   
 
 
@@ -1829,10 +1786,10 @@
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
+            文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
+            站点概览
           </li>
         </ul>
       
@@ -1856,8 +1813,8 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">168</span>
-                    <span class="site-state-item-name">posts</span>
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
               
@@ -1907,8 +1864,10 @@
                     
                       
                     
+                      
+                    
                     <span class="site-state-item-count">19</span>
-                    <span class="site-state-item-name">categories</span>
+                    <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
               
@@ -1980,8 +1939,12 @@
                     
                       
                     
+                      
+                    
+                      
+                    
                     <span class="site-state-item-count">30</span>
-                    <span class="site-state-item-name">tags</span>
+                    <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
               
@@ -2040,10 +2003,6 @@
                     <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
                   </li>
                 
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.trinea.cn/" title="Trinea" target="_blank">Trinea</a>
-                  </li>
-                
               </ul>
             </div>
           
@@ -2066,7 +2025,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-简介"><span class="nav-number">2.</span> <span class="nav-text">1. 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-HTTP-2-协议总览"><span class="nav-number">3.</span> <span class="nav-text">2. HTTP/2 协议总览</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-文档组织"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 文档组织</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-约定和术语"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 约定和术语</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-启动-HTTP-2"><span class="nav-number">4.</span> <span class="nav-text">3. 启动 HTTP/2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-HTTP-2-版本识别"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 HTTP/2 版本识别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-启动”http”-URIs的HTTP-2"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 启动”http” URIs的HTTP/2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-HTTP2-Settings首部字段"><span class="nav-number">4.2.1.</span> <span class="nav-text">3.2.1 HTTP2-Settings首部字段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-启动”https”-URIs的HTTP-2"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 启动”https” URIs的HTTP/2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-以先验知识启动HTTP-2"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 以先验知识启动HTTP/2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-HTTP-2-连接Preface"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 HTTP/2 连接Preface</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-HTTP帧"><span class="nav-number">5.</span> <span class="nav-text">4. HTTP帧</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-帧格式"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 帧格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-帧大小"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 帧大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-首部压缩和解压"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 首部压缩和解压</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-流和多路复用"><span class="nav-number">6.</span> <span class="nav-text">5. 流和多路复用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-流状态"><span class="nav-number">6.1.</span> <span class="nav-text">5.1 流状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-1-流标识符"><span class="nav-number">6.1.1.</span> <span class="nav-text">5.1.1 流标识符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-2-流的并发"><span class="nav-number">6.1.2.</span> <span class="nav-text">5.1.2 流的并发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Flow-Control"><span class="nav-number">6.2.</span> <span class="nav-text">5.2 Flow Control</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-Flow-Control原理"><span class="nav-number">6.2.1.</span> <span class="nav-text">5.2.1 Flow-Control原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-2-对Flow-Control的适当使用"><span class="nav-number">6.2.2.</span> <span class="nav-text">5.2.2 对Flow Control的适当使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3流优先级"><span class="nav-number">6.3.</span> <span class="nav-text">5.3流优先级</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-1-流依赖"><span class="nav-number">6.3.1.</span> <span class="nav-text">5.3.1 流依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-2-依赖权值"><span class="nav-number">6.3.2.</span> <span class="nav-text">5.3.2 依赖权值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-3-改变优先级"><span class="nav-number">6.3.3.</span> <span class="nav-text">5.3.3 改变优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-4-优先级状态管理"><span class="nav-number">6.3.4.</span> <span class="nav-text">5.3.4 优先级状态管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-5-默认优先级"><span class="nav-number">6.3.5.</span> <span class="nav-text">5.3.5 默认优先级</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-错误处理"><span class="nav-number">6.4.</span> <span class="nav-text">5.4 错误处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-1-连接错误处理"><span class="nav-number">6.4.1.</span> <span class="nav-text">5.4.1 连接错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-2-流错误处理"><span class="nav-number">6.4.2.</span> <span class="nav-text">5.4.2 流错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-3-连接终止"><span class="nav-number">6.4.3.</span> <span class="nav-text">5.4.3 连接终止</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-扩展HTTP-2"><span class="nav-number">6.5.</span> <span class="nav-text">5.5 扩展HTTP/2</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-帧定义"><span class="nav-number">7.</span> <span class="nav-text">6. 帧定义</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-DATA"><span class="nav-number">7.1.</span> <span class="nav-text">6.1 DATA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-HEADERS"><span class="nav-number">7.2.</span> <span class="nav-text">6.2 HEADERS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-PRIORITY"><span class="nav-number">7.3.</span> <span class="nav-text">6.3 PRIORITY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-RST-STREAM"><span class="nav-number">7.4.</span> <span class="nav-text">6.4 RST_STREAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-5-SETTINGS"><span class="nav-number">7.5.</span> <span class="nav-text">6.5 SETTINGS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-1-SETTINGS格式"><span class="nav-number">7.5.1.</span> <span class="nav-text">6.5.1 SETTINGS格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-2-已定义的SETTINGS参数"><span class="nav-number">7.5.2.</span> <span class="nav-text">6.5.2 已定义的SETTINGS参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-3-设置同步"><span class="nav-number">7.5.3.</span> <span class="nav-text">6.5.3 设置同步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-6-PUSH-PROMISE"><span class="nav-number">7.6.</span> <span class="nav-text">6.6 PUSH_PROMISE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-7-PING"><span class="nav-number">7.7.</span> <span class="nav-text">6.7 PING</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-8-GOAWAY"><span class="nav-number">7.8.</span> <span class="nav-text">6.8 GOAWAY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-9-WINDOW-UPDATE"><span class="nav-number">7.9.</span> <span class="nav-text">6.9 WINDOW_UPDATE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9-1-Flow-Control窗口"><span class="nav-number">7.9.1.</span> <span class="nav-text">6.9.1 Flow-Control窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9-2-初始的Flow-Control窗口大小"><span class="nav-number">7.9.2.</span> <span class="nav-text">6.9.2 初始的Flow-Control窗口大小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9-3-减小流窗口大小"><span class="nav-number">7.9.3.</span> <span class="nav-text">6.9.3 减小流窗口大小</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-10-CONTINUATION"><span class="nav-number">7.10.</span> <span class="nav-text">6.10 CONTINUATION</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-错误码"><span class="nav-number">8.</span> <span class="nav-text">7. 错误码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-HTTP消息交换"><span class="nav-number">9.</span> <span class="nav-text">8. HTTP消息交换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-HTTP-请求-响应-交换"><span class="nav-number">9.1.</span> <span class="nav-text">8.1 HTTP 请求/响应 交换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-1-从HTTP-2升级"><span class="nav-number">9.1.1.</span> <span class="nav-text">8.1.1 从HTTP/2升级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-2-HTTP-首部字段"><span class="nav-number">9.1.2.</span> <span class="nav-text">8.1.2 HTTP 首部字段</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-1-伪首部字段"><span class="nav-number">9.1.2.1.</span> <span class="nav-text">8.1.2.1 伪首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-2-连接特有首部字段"><span class="nav-number">9.1.2.2.</span> <span class="nav-text">8.1.2.2 连接特有首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-3-请求的伪首部字段"><span class="nav-number">9.1.2.3.</span> <span class="nav-text">8.1.2.3 请求的伪首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-4-响应的伪首部字段"><span class="nav-number">9.1.2.4.</span> <span class="nav-text">8.1.2.4 响应的伪首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-5-压缩Cookie首部字段"><span class="nav-number">9.1.2.5.</span> <span class="nav-text">8.1.2.5 压缩Cookie首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-6-损坏的请求和响应"><span class="nav-number">9.1.2.6.</span> <span class="nav-text">8.1.2.6 损坏的请求和响应</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-3-例子"><span class="nav-number">9.1.3.</span> <span class="nav-text">8.1.3 例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-4-HTTP-2中的请求可靠性机制"><span class="nav-number">9.1.4.</span> <span class="nav-text">8.1.4 HTTP/2中的请求可靠性机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-服务器推送"><span class="nav-number">9.2.</span> <span class="nav-text">8.2 服务器推送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-1-推送请求"><span class="nav-number">9.2.1.</span> <span class="nav-text">8.2.1 推送请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-2-推送响应"><span class="nav-number">9.2.2.</span> <span class="nav-text">8.2.2 推送响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-3-CONNECT-Method"><span class="nav-number">9.3.</span> <span class="nav-text">8.3 CONNECT Method</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-额外的HTTP要求-注意事项"><span class="nav-number">10.</span> <span class="nav-text">9. 额外的HTTP要求/注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#9-1-连接管理"><span class="nav-number">10.1.</span> <span class="nav-text">9.1 连接管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-1-连接重用"><span class="nav-number">10.1.1.</span> <span class="nav-text">9.1.1 连接重用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-2-421-Misdirected-Request-状态码"><span class="nav-number">10.1.2.</span> <span class="nav-text">9.1.2 421 (Misdirected Request)状态码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-使用TLS特性"><span class="nav-number">10.2.</span> <span class="nav-text">9.2 使用TLS特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-1-TLS-1-2特性"><span class="nav-number">10.2.1.</span> <span class="nav-text">9.2.1 TLS 1.2特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-2-TLS-1-2-密文族"><span class="nav-number">10.2.2.</span> <span class="nav-text">9.2.2 TLS 1.2 密文族</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-安全注意事项"><span class="nav-number">11.</span> <span class="nav-text">10. 安全注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#10-1-服务器认证"><span class="nav-number">11.1.</span> <span class="nav-text">10.1 服务器认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-2-跨协议攻击"><span class="nav-number">11.2.</span> <span class="nav-text">10.2 跨协议攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-3-中间封装攻击"><span class="nav-number">11.3.</span> <span class="nav-text">10.3 中间封装攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-4-推送的响应的可缓存性"><span class="nav-number">11.4.</span> <span class="nav-text">10.4 推送的响应的可缓存性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-5-拒绝服务注意事项"><span class="nav-number">11.5.</span> <span class="nav-text">10.5 拒绝服务注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-5-1-首部块大小的限制"><span class="nav-number">11.5.1.</span> <span class="nav-text">10.5.1 首部块大小的限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-5-2-CONNECT问题"><span class="nav-number">11.5.2.</span> <span class="nav-text">10.5.2 CONNECT问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-6-压缩的使用"><span class="nav-number">11.6.</span> <span class="nav-text">10.6 压缩的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-7-填充的使用"><span class="nav-number">11.7.</span> <span class="nav-text">10.7 填充的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-8-隐私注意事项"><span class="nav-number">11.8.</span> <span class="nav-text">10.8 隐私注意事项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-IANA-注意事项"><span class="nav-number">12.</span> <span class="nav-text">11. IANA 注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#11-1-HTTP-2-识别字符串的注册"><span class="nav-number">12.1.</span> <span class="nav-text">11.1 HTTP/2 识别字符串的注册 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-2-帧类型注册表"><span class="nav-number">12.2.</span> <span class="nav-text">11.2 帧类型注册表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-3-设置项注册表"><span class="nav-number">12.3.</span> <span class="nav-text">11.3 设置项注册表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-4-错误码注册表"><span class="nav-number">12.4.</span> <span class="nav-text">11.4 错误码注册表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-5-HTTP2-Settings-首部字段注册"><span class="nav-number">12.5.</span> <span class="nav-text">11.5 HTTP2-Settings 首部字段注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-6-PRI-方法注册"><span class="nav-number">12.6.</span> <span class="nav-text">11.6 PRI 方法注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-7-421-Misdirected-Request-HTTP状态码"><span class="nav-number">12.7.</span> <span class="nav-text">11.7 421 (Misdirected Request) HTTP状态码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-8-h2c-升级-Token"><span class="nav-number">12.8.</span> <span class="nav-text">11.8  h2c 升级 Token</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-参考文献"><span class="nav-number">13.</span> <span class="nav-text">12. 参考文献</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#12-1-引用的标准"><span class="nav-number">13.1.</span> <span class="nav-text">12.1 引用的标准</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-2-资料性引用"><span class="nav-number">13.2.</span> <span class="nav-text">12.2 资料性引用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#A-TLS-1-2-加密套件黑名单"><span class="nav-number">14.</span> <span class="nav-text">A. TLS 1.2 加密套件黑名单</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Acknowledgements"><span class="nav-number">15.</span> <span class="nav-text">Acknowledgements</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Authors’-Addresses"><span class="nav-number">16.</span> <span class="nav-text">Authors’ Addresses</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-简介"><span class="nav-number">2.</span> <span class="nav-text">1. 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-HTTP-2-协议总览"><span class="nav-number">3.</span> <span class="nav-text">2. HTTP/2 协议总览</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-文档组织"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 文档组织</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-约定和术语"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 约定和术语</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-启动-HTTP-2"><span class="nav-number">4.</span> <span class="nav-text">3. 启动 HTTP/2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-HTTP-2-版本识别"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 HTTP/2 版本识别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-启动”http”-URIs-的HTTP-2"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 启动”http” URIs 的HTTP/2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-HTTP2-Settings首部字段"><span class="nav-number">4.2.1.</span> <span class="nav-text">3.2.1 HTTP2-Settings首部字段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-启动”https”-URIs的HTTP-2"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 启动”https” URIs的HTTP/2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-以先验知识启动HTTP-2"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 以先验知识启动HTTP/2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-HTTP-2-连接Preface"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 HTTP/2 连接Preface</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-HTTP帧"><span class="nav-number">5.</span> <span class="nav-text">4. HTTP帧</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-帧格式"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 帧格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-帧大小"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 帧大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-首部压缩和解压"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 首部压缩和解压</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-流和多路复用"><span class="nav-number">6.</span> <span class="nav-text">5. 流和多路复用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-流状态"><span class="nav-number">6.1.</span> <span class="nav-text">5.1 流状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-1-流标识符"><span class="nav-number">6.1.1.</span> <span class="nav-text">5.1.1 流标识符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-2-流的并发"><span class="nav-number">6.1.2.</span> <span class="nav-text">5.1.2 流的并发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Flow-Control"><span class="nav-number">6.2.</span> <span class="nav-text">5.2 Flow Control</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-Flow-Control原理"><span class="nav-number">6.2.1.</span> <span class="nav-text">5.2.1 Flow-Control原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-2-对Flow-Control的适当使用"><span class="nav-number">6.2.2.</span> <span class="nav-text">5.2.2 对Flow Control的适当使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3流优先级"><span class="nav-number">6.3.</span> <span class="nav-text">5.3流优先级</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-1-流依赖"><span class="nav-number">6.3.1.</span> <span class="nav-text">5.3.1 流依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-2-依赖权值"><span class="nav-number">6.3.2.</span> <span class="nav-text">5.3.2 依赖权值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-3-改变优先级"><span class="nav-number">6.3.3.</span> <span class="nav-text">5.3.3 改变优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-4-优先级状态管理"><span class="nav-number">6.3.4.</span> <span class="nav-text">5.3.4 优先级状态管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-5-默认优先级"><span class="nav-number">6.3.5.</span> <span class="nav-text">5.3.5 默认优先级</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-错误处理"><span class="nav-number">6.4.</span> <span class="nav-text">5.4 错误处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-1-连接错误处理"><span class="nav-number">6.4.1.</span> <span class="nav-text">5.4.1 连接错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-2-流错误处理"><span class="nav-number">6.4.2.</span> <span class="nav-text">5.4.2 流错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-3-连接终止"><span class="nav-number">6.4.3.</span> <span class="nav-text">5.4.3 连接终止</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-扩展HTTP-2"><span class="nav-number">6.5.</span> <span class="nav-text">5.5 扩展HTTP/2</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-帧定义"><span class="nav-number">7.</span> <span class="nav-text">6. 帧定义</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-DATA"><span class="nav-number">7.1.</span> <span class="nav-text">6.1 DATA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-HEADERS"><span class="nav-number">7.2.</span> <span class="nav-text">6.2 HEADERS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-PRIORITY"><span class="nav-number">7.3.</span> <span class="nav-text">6.3 PRIORITY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-RST-STREAM"><span class="nav-number">7.4.</span> <span class="nav-text">6.4 RST_STREAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-5-SETTINGS"><span class="nav-number">7.5.</span> <span class="nav-text">6.5 SETTINGS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-1-SETTINGS格式"><span class="nav-number">7.5.1.</span> <span class="nav-text">6.5.1 SETTINGS格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-2-已定义的SETTINGS参数"><span class="nav-number">7.5.2.</span> <span class="nav-text">6.5.2 已定义的SETTINGS参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-3-设置同步"><span class="nav-number">7.5.3.</span> <span class="nav-text">6.5.3 设置同步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-6-PUSH-PROMISE"><span class="nav-number">7.6.</span> <span class="nav-text">6.6 PUSH_PROMISE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-7-PING"><span class="nav-number">7.7.</span> <span class="nav-text">6.7 PING</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-8-GOAWAY"><span class="nav-number">7.8.</span> <span class="nav-text">6.8 GOAWAY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-9-WINDOW-UPDATE"><span class="nav-number">7.9.</span> <span class="nav-text">6.9 WINDOW_UPDATE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9-1-Flow-Control窗口"><span class="nav-number">7.9.1.</span> <span class="nav-text">6.9.1 Flow-Control窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9-2-初始的Flow-Control窗口大小"><span class="nav-number">7.9.2.</span> <span class="nav-text">6.9.2 初始的Flow-Control窗口大小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9-3-减小流窗口大小"><span class="nav-number">7.9.3.</span> <span class="nav-text">6.9.3 减小流窗口大小</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-10-CONTINUATION"><span class="nav-number">7.10.</span> <span class="nav-text">6.10 CONTINUATION</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-错误码"><span class="nav-number">8.</span> <span class="nav-text">7. 错误码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-HTTP消息交换"><span class="nav-number">9.</span> <span class="nav-text">8. HTTP消息交换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-HTTP-请求-响应-交换"><span class="nav-number">9.1.</span> <span class="nav-text">8.1 HTTP 请求/响应 交换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-1-从HTTP-2升级"><span class="nav-number">9.1.1.</span> <span class="nav-text">8.1.1 从HTTP/2升级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-2-HTTP-首部字段"><span class="nav-number">9.1.2.</span> <span class="nav-text">8.1.2 HTTP 首部字段</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-1-伪首部字段"><span class="nav-number">9.1.2.1.</span> <span class="nav-text">8.1.2.1 伪首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-2-连接特有首部字段"><span class="nav-number">9.1.2.2.</span> <span class="nav-text">8.1.2.2 连接特有首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-3-请求的伪首部字段"><span class="nav-number">9.1.2.3.</span> <span class="nav-text">8.1.2.3 请求的伪首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-4-响应的伪首部字段"><span class="nav-number">9.1.2.4.</span> <span class="nav-text">8.1.2.4 响应的伪首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-5-压缩Cookie首部字段"><span class="nav-number">9.1.2.5.</span> <span class="nav-text">8.1.2.5 压缩Cookie首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-6-损坏的请求和响应"><span class="nav-number">9.1.2.6.</span> <span class="nav-text">8.1.2.6 损坏的请求和响应</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-3-例子"><span class="nav-number">9.1.3.</span> <span class="nav-text">8.1.3 例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-4-HTTP-2中的请求可靠性机制"><span class="nav-number">9.1.4.</span> <span class="nav-text">8.1.4 HTTP/2中的请求可靠性机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-服务器推送"><span class="nav-number">9.2.</span> <span class="nav-text">8.2 服务器推送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-1-推送请求"><span class="nav-number">9.2.1.</span> <span class="nav-text">8.2.1 推送请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-2-推送响应"><span class="nav-number">9.2.2.</span> <span class="nav-text">8.2.2 推送响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-3-CONNECT-Method"><span class="nav-number">9.3.</span> <span class="nav-text">8.3 CONNECT Method</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-额外的HTTP要求-注意事项"><span class="nav-number">10.</span> <span class="nav-text">9. 额外的HTTP要求/注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#9-1-连接管理"><span class="nav-number">10.1.</span> <span class="nav-text">9.1 连接管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-1-连接重用"><span class="nav-number">10.1.1.</span> <span class="nav-text">9.1.1 连接重用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-2-421-Misdirected-Request-状态码"><span class="nav-number">10.1.2.</span> <span class="nav-text">9.1.2 421 (Misdirected Request)状态码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-使用TLS特性"><span class="nav-number">10.2.</span> <span class="nav-text">9.2 使用TLS特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-1-TLS-1-2特性"><span class="nav-number">10.2.1.</span> <span class="nav-text">9.2.1 TLS 1.2特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-2-TLS-1-2-密文族"><span class="nav-number">10.2.2.</span> <span class="nav-text">9.2.2 TLS 1.2 密文族</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-安全注意事项"><span class="nav-number">11.</span> <span class="nav-text">10. 安全注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#10-1-服务器认证"><span class="nav-number">11.1.</span> <span class="nav-text">10.1 服务器认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-2-跨协议攻击"><span class="nav-number">11.2.</span> <span class="nav-text">10.2 跨协议攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-3-中间封装攻击"><span class="nav-number">11.3.</span> <span class="nav-text">10.3 中间封装攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-4-推送的响应的可缓存性"><span class="nav-number">11.4.</span> <span class="nav-text">10.4 推送的响应的可缓存性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-5-拒绝服务注意事项"><span class="nav-number">11.5.</span> <span class="nav-text">10.5 拒绝服务注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-5-1-首部块大小的限制"><span class="nav-number">11.5.1.</span> <span class="nav-text">10.5.1 首部块大小的限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-5-2-CONNECT问题"><span class="nav-number">11.5.2.</span> <span class="nav-text">10.5.2 CONNECT问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-6-压缩的使用"><span class="nav-number">11.6.</span> <span class="nav-text">10.6 压缩的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-7-填充的使用"><span class="nav-number">11.7.</span> <span class="nav-text">10.7 填充的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-8-隐私注意事项"><span class="nav-number">11.8.</span> <span class="nav-text">10.8 隐私注意事项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-IANA-注意事项"><span class="nav-number">12.</span> <span class="nav-text">11. IANA 注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#11-1-HTTP-2-识别字符串的注册"><span class="nav-number">12.1.</span> <span class="nav-text">11.1 HTTP/2 识别字符串的注册 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-2-帧类型注册表"><span class="nav-number">12.2.</span> <span class="nav-text">11.2 帧类型注册表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-3-设置项注册表"><span class="nav-number">12.3.</span> <span class="nav-text">11.3 设置项注册表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-4-错误码注册表"><span class="nav-number">12.4.</span> <span class="nav-text">11.4 错误码注册表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-5-HTTP2-Settings-首部字段注册"><span class="nav-number">12.5.</span> <span class="nav-text">11.5 HTTP2-Settings 首部字段注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-6-PRI-方法注册"><span class="nav-number">12.6.</span> <span class="nav-text">11.6 PRI 方法注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-7-421-Misdirected-Request-HTTP状态码"><span class="nav-number">12.7.</span> <span class="nav-text">11.7 421 (Misdirected Request) HTTP状态码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-8-h2c-升级-Token"><span class="nav-number">12.8.</span> <span class="nav-text">11.8  h2c 升级 Token</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-参考文献"><span class="nav-number">13.</span> <span class="nav-text">12. 参考文献</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#12-1-引用的标准"><span class="nav-number">13.1.</span> <span class="nav-text">12.1 引用的标准</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-2-资料性引用"><span class="nav-number">13.2.</span> <span class="nav-text">12.2 资料性引用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#A-TLS-1-2-加密套件黑名单"><span class="nav-number">14.</span> <span class="nav-text">A. TLS 1.2 加密套件黑名单</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Acknowledgements"><span class="nav-number">15.</span> <span class="nav-text">Acknowledgements</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Authors’-Addresses"><span class="nav-number">16.</span> <span class="nav-text">Authors’ Addresses</span></a></li></ol></div>
             
 
           </div>
@@ -2086,7 +2045,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -2100,7 +2059,7 @@
 
 
 
-  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -2108,7 +2067,7 @@
 
 
 
-  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
 
 
 
@@ -2233,45 +2192,35 @@
 
 
 
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: window.location.pathname,
-            owner: 'hanpfei',
-            repo: 'blog_comment',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '2e5e06c86dfee4177d58dd4660d1ed4bce4f155d',
-            
-                client_id: '0ec580f0a999fbe77a63'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
 
 
 
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
 
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
 
 
   
@@ -2281,113 +2230,6 @@
 
 
   
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-  <script>AV.initialize("KUAjB88PxNQR5DOgg6jhgdp7-gzGzoHsz", "3c3yzt2EN31aXwYgVdmzDUUk");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
 
   
 

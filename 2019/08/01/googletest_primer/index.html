@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/freesoft.jpg?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/freesoft.jpg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="翻译,C/C++开发," />
+
+
+<meta name="description" content="简介：为什么是 googletest？googletest 可以帮助我们更好地编写 C++ 测试用例。
+googletest 是一个由 Google 的测试技术团队开发的测试框架，它考虑到了谷歌的特定需求和限制。无论你使用的是 Linux、Windows 还是 Mac，只要你编写 C++ 代码，googletest 都可以帮到你。它支持任何类型的测试，不只是单元测试。
+那么，什么是好的测试，以及">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Googletest 入门">
+<meta property="og:url" content="https://www.wolfcstech.com/2019/08/01/googletest_primer/index.html">
+<meta property="og:site_name" content="WolfcsTech">
+<meta property="og:description" content="简介：为什么是 googletest？googletest 可以帮助我们更好地编写 C++ 测试用例。
+googletest 是一个由 Google 的测试技术团队开发的测试框架，它考虑到了谷歌的特定需求和限制。无论你使用的是 Linux、Windows 还是 Mac，只要你编写 C++ 代码，googletest 都可以帮到你。它支持任何类型的测试，不只是单元测试。
+那么，什么是好的测试，以及">
+<meta property="og:updated_time" content="2019-08-01T15:02:54.897Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Googletest 入门">
+<meta name="twitter:description" content="简介：为什么是 googletest？googletest 可以帮助我们更好地编写 C++ 测试用例。
+googletest 是一个由 Google 的测试技术团队开发的测试框架，它考虑到了谷歌的特定需求和限制。无论你使用的是 Linux、Windows 还是 Mac，只要你编写 C++ 代码，googletest 都可以帮到你。它支持任何类型的测试，不只是单元测试。
+那么，什么是好的测试，以及">
+
+
+
+
+
+
+  <link rel="canonical" href="https://www.wolfcstech.com/2019/08/01/googletest_primer/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Googletest 入门 | WolfcsTech</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109419024-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109419024-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3c736b12c32c019fd9ff6c825b6b9b44";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WolfcsTech</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="http://www.ixirong.com/404.html" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />公益 404</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wolfcstech.com/2019/08/01/googletest_primer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Han Pengfei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/freesoft.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WolfcsTech">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Googletest 入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-01T21:05:49+08:00">2019-08-01</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C-C-开发/" itemprop="url" rel="index"><span itemprop="name">C/C++开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/01/googletest_primer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/01/googletest_primer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/08/01/googletest_primer/" class="leancloud_visitors" data-flag-title="Googletest 入门">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简介：为什么是-googletest？"><a href="#简介：为什么是-googletest？" class="headerlink" title="简介：为什么是 googletest？"></a>简介：为什么是 googletest？</h1><p><code>googletest</code> 可以帮助我们更好地编写 C++ 测试用例。</p>
+<p>googletest 是一个由 Google 的测试技术团队开发的测试框架，它考虑到了谷歌的特定需求和限制。无论你使用的是 Linux、Windows 还是 Mac，只要你编写 C++ 代码，googletest 都可以帮到你。它支持任何类型的测试，不只是单元测试。</p>
+<p>那么，什么是好的测试，以及 googletest 是如何做到这些的呢？我们相信：<br><a id="more"></a></p>
+<ol>
+<li><p>测试应该是 <em>独立的</em> 且 <em>可重复的</em>。调试由于其它测试而成功或失败的测试是令人痛苦的，googletest 通过在不同的对象上运行每个测试用例来隔离测试。当测试失败时，googletest 允许你单独运行它，以便快速调试。</p>
+</li>
+<li><p>测试应该得到良好的<em>组织</em>，并反映测试代码的结构。googletest 将相关的测试分组为测试套件，它们可以共享数据和子例程。这种常见的模式很容易接受，并且使测试很容易维护。这样的一致性在人们切换项目并开始工作在一个新的代码库上时尤其有用。</p>
+</li>
+<li><p>测试应该是 <em>可移植的</em> 且 <em>可复用的</em>。Google 具有大量的平台无关的代码，它的测试也应该是平台无关的。googletest 适用于不同的操作系统，不同的编译器，有异常或没有异常，所以 googletest 测试可以使用多种配置。</p>
+</li>
+<li><p>当测试失败时，它们应该提供尽可能多的关于故障的 <em>信息</em>。googletest  不会在第一个测试失败时停止。相反，它仅停止当前的测试并继续运行下一个。你还可以设置测试报告非致命故障，在此之后，当前测试将继续运行。这样，你可以在一个运行-编辑-编译周期中探测并解决多个 bug。</p>
+</li>
+<li><p>测试框架应该将测试编写者从家务活中解放出来，并让他们将精力集中在测试 <em>内容</em> 上。googletest 自动追踪所有定义的测试，且无需用户以运行它们的顺序迭代它们。</p>
+</li>
+<li><p>测试要 <em>快</em>。通过 googletest，你可以跨测试用例复用共享资源，且只支付一次 set-up/tear-down 的开销，不使测试相互依赖。</p>
+</li>
+</ol>
+<p>由于 googletest 是基于流行的 xUnit 框架的，如果你以前用过 JUnit 或 PYUnit，你会觉得很自在。如果没有，你需要大约 10 分钟来学习基础知识并开始使用。因此让我们开始吧。</p>
+<h1 id="术语说明"><a href="#术语说明" class="headerlink" title="术语说明"></a>术语说明</h1><p>注意：由于术语 <em>测试</em>，<em>测试用例</em> 和 <em>测试套件</em> 的定义不同，可能会出现一些概念上的混淆，因此要注意不要误解这些术语。</p>
+<p>从历史上看，googletest 刚开始使用术语 <em>测试用例</em> 来分组相关的测试，然而当前的出版物包括国际软件测试资格委员会(<a href="http://www.istqb.org/" target="_blank" rel="external">ISTQB</a>)及大量关于软件质量的教材使用术语 <em><a href="http://glossary.istqb.org/search/test%20suite" target="_blank" rel="external">测试套件</a></em> 来表示这一含义。</p>
+<p>与 googletest 中使用的术语 <em>测试</em> 相对应的是 ISTQB 等的术语 <em><a href="http://glossary.istqb.org/search/test%20case" target="_blank" rel="external">测试用例</a></em>。</p>
+<p>术语 <em>测试</em> 通常具有足够广泛的含义，包括 ISTQB 对 <em>测试用例</em> 的定义，所以这里没有太多问题。但 Google Test 中使用的术语 <em>测试用例</em> 具有矛盾的含义，因此令人困惑。</p>
+<p>googletest 最近开始用 <em>测试套件</em> 替换术语 <em>测试用例</em>。首选的 API 是 TestSuite<em>。旧的 TestCase</em> API 正慢慢地被弃用和重构。</p>
+<p>因此请注意术语的不同定义：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">含义</th>
+<th style="text-align:left">googletest 术语</th>
+<th style="text-align:left"><a href="http://www.istqb.org/" target="_blank" rel="external">ISTQB</a> 术语</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">以特定输入值执行一个特定的程序路径并验证结果</td>
+<td style="text-align:left"><a href="#simple-tests">TEST()</a></td>
+<td style="text-align:left"><a href="http://glossary.istqb.org/search/test%20case" target="_blank" rel="external">Test Case</a></td>
+</tr>
+</tbody>
+</table>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>使用 googletest 时，从编写 <em>断言</em> 开始，这些语句检查条件是否为真。一个断言的结果可以是 <em>成功</em>，<em>非致命失败</em>，或者<em>致命失败</em>。如果发生了致命失败，它终止当前函数；否则程序继续正常运行。</p>
+<p><em>测试</em> 使用断言验证被测代码的行为。如果一个测试崩溃或有一个失败的断言，则它 <em>失败</em>；否则它 <em>成功</em>。</p>
+<p><em>测试套件</em> 包含一个或多个测试。你应该将测试分组到反映被测代码结构的测试套件中。当一个测试套件中的多个测试需要共享相同的对象和子例程时，你可以把它们放进一个 <em>测试夹具</em> 类中。</p>
+<p>一个 <em>测试程序</em> 可以包含多个测试套件。</p>
+<p>我们将解释如何编写测试程序，从单个断言级别开始，直到测试和测试套件。</p>
+<h1 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h1><p>googletest 断言是像函数调用一样的宏。你通过制造关于类或函数的行为的断言来测试它。当一个断言失败时，googletest 打印断言的源文件和行号的位置，以及一条失败消息。你也可以提供定制的失败消息，它们将被加在 googletest 的消息的后面。</p>
+<p>断言成对的出现，它们测试相同的事情但对当前函数具有不同的影响。<code>ASSERT_*</code> 版本在它们失败时生成致命失败，并<strong>终止当前函数</strong>。<code>EXPECT_*</code> 版本生成非致命失败，它们不终止当前函数。通常 <code>EXPECT_*</code> 是首选，它们允许在一个测试中报告更多失败。然而，如果断言的问题失败时继续执行没有意义，则你应该使用 <code>ASSERT_*</code>。</p>
+<p>由于失败的 <code>ASSERT_*</code> 立即从当前函数返回，则可能跳过之后的清理代码，它可能导致空间泄露。依赖于泄露的属性，它可能值得或不值得解决 - 因此，如果在断言错误之外还出现堆检查器错误，请记住这一点。</p>
+<p>为了提供定制的失败消息，简单的使用 <code>&lt;&lt;</code> 操作符，或一串这种操作符，把它送进宏。一个例子如下：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ASSERT_EQ(<span class="name">x</span>.size(), y.size()) &lt;&lt; <span class="string">"Vectors x and y are of unequal length"</span><span class="comment">;</span></div><div class="line"></div><div class="line">for (<span class="name">int</span> i = <span class="number">0</span><span class="comment">; i &lt; x.size(); ++i) &#123;</span></div><div class="line">  EXPECT_EQ(<span class="name">x</span>[i], y[i]) &lt;&lt; <span class="string">"Vectors x and y differ at index "</span> &lt;&lt; i<span class="comment">;</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>任何可以被送给 <code>ostream</code> 的东西都可以被送进断言的宏 - 特别是，C 字符串和 <code>string</code> 对象。如果宽字符串（<code>wchar_t*</code>， Windows 上 <code>UNICODE</code> 模式的 <code>TCHAR*</code>，或 <code>std::wstring</code>）被送进断言，它将在打印时被转换为 UTF-8。</p>
+<h2 id="基本断言"><a href="#基本断言" class="headerlink" title="基本断言"></a>基本断言</h2><p>这些断言执行基本的 true/false 条件测试。</p>
+<table>
+<thead>
+<tr>
+<th>致命断言</th>
+<th>非致命断言</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ASSERT_TRUE(condition);</code></td>
+<td><code>EXPECT_TRUE(condition);</code></td>
+<td><code>condition</code> 是 true</td>
+</tr>
+<tr>
+<td><code>ASSERT_FALSE(condition);</code></td>
+<td><code>EXPECT_FALSE(condition);</code></td>
+<td><code>condition</code> 是 false</td>
+</tr>
+</tbody>
+</table>
+<p>记住，当它们失败时，<code>ASSERT_*</code> 产生一个致命错误，并从当前函数退出，<code>EXPECT_*</code> 则产生一个非致命错误，并允许函数继续运行。任何一种情况下，断言失败意味着包含它的测试失败。</p>
+<p><strong>可用性</strong>：Linux，Windows，Mac。</p>
+<h2 id="二元比较"><a href="#二元比较" class="headerlink" title="二元比较"></a>二元比较</h2><p>这个部分描述比较两个值的断言。</p>
+<table>
+<thead>
+<tr>
+<th>致命断言</th>
+<th>非致命断言</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ASSERT_EQ(val1, val2);</code></td>
+<td><code>EXPECT_EQ(val1, val2);</code></td>
+<td><code>val1 == val2</code></td>
+</tr>
+<tr>
+<td><code>ASSERT_NE(val1, val2);</code></td>
+<td><code>EXPECT_NE(val1, val2);</code></td>
+<td><code>val1 != val2</code></td>
+</tr>
+<tr>
+<td><code>ASSERT_LT(val1, val2);</code></td>
+<td><code>EXPECT_LT(val1, val2);</code></td>
+<td><code>val1 &lt; val2</code></td>
+</tr>
+<tr>
+<td><code>ASSERT_LE(val1, val2);</code></td>
+<td><code>EXPECT_LE(val1, val2);</code></td>
+<td><code>val1 &lt;= val2</code></td>
+</tr>
+<tr>
+<td><code>ASSERT_GT(val1, val2);</code></td>
+<td><code>EXPECT_GT(val1, val2);</code></td>
+<td><code>val1 &gt; val2</code></td>
+</tr>
+<tr>
+<td><code>ASSERT_GE(val1, val2);</code></td>
+<td><code>EXPECT_GE(val1, val2);</code></td>
+<td><code>val1 &gt;= val2</code></td>
+</tr>
+</tbody>
+</table>
+<p>值参数必须是断言的比较操作符可比较的，否则将报出编译错误。我们常要求参数支持 <code>&lt;&lt;</code> 操作符，以便于把它们送进 <code>ostream</code>，但这不再是必须的。如果支持 <code>&lt;&lt;</code>，则在断言失败时它将被调用来打印参数；否则 googletest 将尝试以它能找到的最好的方式打印它们。更多细节及如何定制参数的打印的信息，请参考<a href="https://github.com/google/googletest/blob/master/googlemock/docs/cook_book.md#teaching-gmock-how-to-print-your-values" target="_blank" rel="external">文档</a>。</p>
+<p>这些断言可以使用用户定义的类型，但只有你定义了对应的比较操作符（比如 ==，&lt;，等等）。由于这是 Google <a href="https://google.github.io/styleguide/cppguide.html#Operator_Overloading" target="_blank" rel="external">C++ Style Guide</a> 禁止的，你可以使用 <code>ASSERT_TRUE()</code> 或 <code>EXPECT_TRUE()</code> 断言两个用户定义类型的对象的相等性。</p>
+<p>然而，当可能时，<code>ASSERT_EQ(actual, expected)</code> 好于 <code>ASSERT_TRUE(actual == expected)</code>，因为它在失败时告诉你 <code>actual</code> 和 <code>expected</code> 的值。</p>
+<p>参数总是精确地计算一次。因此，参数有副作用也没关系。然而正如任何普通的 C/C++ 函数那样，参数的求值顺序是未定义的（比如编译器有选择任何顺序的自由），你的代码不应该依赖任何特定的参数求值顺序。</p>
+<p><code>ASSERT_EQ()</code> 对指针执行相等性操作。如果使用两个 C 字符串，它测试它们是否位于相同的内存位置，而不是它们是否具有相同的值。因此，如果你想比较 C 字符串的值（比如 <code>const char*</code>），使用 <code>ASSERT_STREQ()</code>，它将在后面描述。特别地，要断言 C 字符串是 <code>NULL</code>，则使用 <code>ASSERT_STREQ(c_string, NULL)</code>，如果支持 c++11 则考虑使用 <code>ASSERT_EQ(c_string, nullptr)</code>。要比较两个 <code>string</code> 对象，你应该使用 <code>ASSERT_EQ</code>。</p>
+<p>当执行指针比较时使用 <code>*_EQ(ptr, nullptr)</code> 和 <code>*_NE(ptr, nullptr)</code> 而不是 <code>*_EQ(ptr, NULL)</code> 和 <code>*_NE(ptr, NULL)</code>。这是因为 <code>nullptr</code> 是类型安全的而 <code>NULL</code> 不是。参考 <a href="https://github.com/google/googletest/blob/master/googletest/docs/faq.md" target="_blank" rel="external">FAQ</a> 获得更多信息。</p>
+<p>如果你在使用浮点数，你可能想要使用这些宏的浮点变体以避免四舍五入导致的问题。参考 <a href="https://github.com/google/googletest/blob/master/googletest/docs/advanced.md" target="_blank" rel="external">高级 googletest 主题</a> 了解更多信息。</p>
+<p>这一节的宏可以同时用于窄的和宽的字符串对象（<code>string</code> 和 <code>wstring</code>）。</p>
+<p><strong>可用性</strong>：Linux，Windows，Mac。</p>
+<p><strong>历史注释</strong>：在 2016 年 2 月之前 <code>*_EQ</code> 习惯上称其为 <code>ASSERT_EQ(expected, actual)</code>。，因此大量已有的代码使用这一顺序。现在 <code>*_EQ</code> 用同样的方法处理两个参数。</p>
+<h2 id="字符串比较"><a href="#字符串比较" class="headerlink" title="字符串比较"></a>字符串比较</h2><p>这一组断言比较两个 <strong>C 字符串</strong>。如果你想比较两个 <code>string</code> 对象，则使用 <code>EXPECT_EQ</code>，<code>EXPECT_NE</code>，等等。</p>
+<table>
+<thead>
+<tr>
+<th>致命断言</th>
+<th>非致命断言</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ASSERT_STREQ(str1, str2);</code></td>
+<td><code>EXPECT_STREQ(str1,  str2);</code></td>
+<td>两个 C 字符串具有相同的内容</td>
+</tr>
+<tr>
+<td><code>ASSERT_STRNE(str1, str2);</code></td>
+<td><code>EXPECT_STRNE(str1, str2);</code></td>
+<td>两个 C 字符串具有不同的内容</td>
+</tr>
+<tr>
+<td><code>ASSERT_STRCASEEQ(str1, str2);</code></td>
+<td><code>EXPECT_STRCASEEQ(str1, str2);</code></td>
+<td>两个 C 字符串具有相同的内容，忽略大小写</td>
+</tr>
+<tr>
+<td><code>ASSERT_STRCASENE(str1, str2);</code></td>
+<td><code>EXPECT_STRCASENE(str1, str2);</code></td>
+<td>两个 C 字符串具有不同的内容，忽略大小写</td>
+</tr>
+</tbody>
+</table>
+<p>注意断言名字中的 “CASE” 意味着忽略大小写。<code>NULL</code> 指针和空字符串被认为是不同的。</p>
+<p><code>*STREQ*</code> 和 <code>*STRNE*</code> 也接受宽 C 字符串（<code>wchar_t*</code>）。如果比较两个宽字符串失败，则它们的值将以 UTF-8 窄字符串的形式打印。</p>
+<p><strong>可用性</strong>：Linux，Windows，Mac。</p>
+<p><strong>另请参阅</strong>：更多字符串比较技巧（子字符串，前缀，后缀，和正则表达式匹配，比如），请参考高级 googletest 指南的<a href="https://github.com/google/googletest/blob/master/googletest/docs/advanced.md" target="_blank" rel="external">这个部分</a>。</p>
+<h1 id="简单的测试"><a href="#简单的测试" class="headerlink" title="简单的测试"></a>简单的测试</h1><p>要创建一个测试：</p>
+<ol>
+<li>使用 <code>TEST()</code> 宏定义并命名一个测试函数。这些是普通的没有返回值的 C++  函数。</li>
+<li>在这个函数中，可以包含任何你想包含的有效的 C++ 语句，使用各种 googletest 断言检查值。</li>
+<li>测试的结果由断言决定；如果测试中的任何断言失败了（致命的或非致命的），或者如果测试崩溃了，则整个测试失败。否则，测试成功。<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="title">TEST</span><span class="params">(TestSuiteName, TestName)</span></span> &#123;</div><div class="line">  ... test <span class="selector-tag">body</span> ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>TEST()</code> 的参数从一般到具体。<em>第一个</em>参数是测试套件的名字，<em>第二个</em>参数是测试用例中测试的名字。这两个名字都必须是有效的 C++ 标识符，且它们都不应该包含下划线（<code>_</code>）。测试的 <code>完整名字</code> 由包含它的测试套件和它自己的独立名字组成。不同的测试套件中的测试可以具有相同的独立名字。</p>
+<p>比如，让我们看一个简单的整数函数：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">Factorial</span><span class="params">(<span class="keyword">int</span> n)</span></span>;  <span class="comment">// Returns the factorial of n</span></div></pre></td></tr></table></figure></p>
+<p>这个函数的测试套件看起来可能像下面这样：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Tests factorial of 0.</span></div><div class="line">TEST(FactorialTest, HandlesZeroInput) &#123;</div><div class="line">  EXPECT_EQ(Factorial(<span class="number">0</span>), <span class="number">1</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Tests factorial of positive numbers.</span></div><div class="line">TEST(FactorialTest, HandlesPositiveInput) &#123;</div><div class="line">  EXPECT_EQ(Factorial(<span class="number">1</span>), <span class="number">1</span>);</div><div class="line">  EXPECT_EQ(Factorial(<span class="number">2</span>), <span class="number">2</span>);</div><div class="line">  EXPECT_EQ(Factorial(<span class="number">3</span>), <span class="number">6</span>);</div><div class="line">  EXPECT_EQ(Factorial(<span class="number">8</span>), <span class="number">40320</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>googletest 根据测试套件来分组结果，因此逻辑上相关的测试应该放进相同的测试套件里；换句话说，它们的 <code>TEST()</code> 的第一个参数应该是相同的。在上面的例子中，我们有两个测试，<code>HandlesZeroInput</code> 和 <code>HandlesPositiveInput</code>，它们属于相同的测试套件 <code>FactorialTest</code>。</p>
+<p>当命名你的测试套件和测试时，你应该遵循如<a href="https://google.github.io/styleguide/cppguide.html#Function_Names" target="_blank" rel="external">命名函数和类</a>相同的规则。</p>
+<p><strong>可用性</strong>：Linux，Windows，Mac。</p>
+<h1 id="测试夹具：多个测试使用相同的数据配置"><a href="#测试夹具：多个测试使用相同的数据配置" class="headerlink" title="测试夹具：多个测试使用相同的数据配置"></a>测试夹具：多个测试使用相同的数据配置</h1><p>如果你发现你写了两个或更多测试操作类似的数据，你可以使用一个 <em>测试夹具</em>。它允许你为多个不同的测试复用相同的对象配置。</p>
+<p>要创建一个测试夹具：</p>
+<ol>
+<li>创建一个继承自 <code>::testing::Test</code> 的类。由于我们想要从子类访问夹具的成员，因此从 <code>protected:</code> 开始创建类体。</li>
+<li>在类内部，生命任何你打算使用的对象。</li>
+<li>如果有需要，编写一个默认的构造函数或 <code>SetUp()</code> 函数为每个测试准备对象。一个常见的错误是把 <code>SetUp()</code> 拼成了 <code>Setup()</code>，其中有一个 <code>u</code> - 使用 C++11 中的 <code>override</code> 确保你正确地拼写了它。</li>
+<li>如果有需要，编写一个析构函数或 <code>TearDown()</code> 函数释放你在 <code>SetUp()</code> 中分配的所有资源。要学习何时你应该使用构造函数/析构函数以及何时你应该使用<code>SetUp()</code>/<code>TearDown()</code>，请阅读 <a href="https://github.com/google/googletest/blob/master/googletest/docs/faq.md" target="_blank" rel="external">FAQ</a>。</li>
+</ol>
+<p>当使用测试夹具时，使用 <code>TEST_F()</code> 而不是 <code>TEST()</code>，它允许你访问测试夹具中的对象和子例程：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="title">TEST_F</span><span class="params">(TestFixtureName, TestName)</span></span> &#123;</div><div class="line">  ... test <span class="selector-tag">body</span> ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>像 <code>TEST()</code> 一样，第一个参数是测试套件的名字，但对于 <code>TEST_F()</code>，这必须是测试夹具类的名字。你可能已经猜到：<code>_F</code> 指 fixture。</p>
+<p>不幸的是，C++ 宏系统不允许我们创建单个能处理这两种类型的测试的宏。使用错误的宏将导致编译器错误。</p>
+<p>而且，你必须在使用 <code>TEST_F()</code> 之前先定义一个测试夹具类，否则你将得到一个编译器错误 “virtual outside class declaration”。</p>
+<p>对于通过 <code>TEST_F()</code> 定义的每个测试，googletest 将在运行时创建一个 <em>全新的</em> 测试夹具，立即通过 <code>SetUp()</code> 初始化它，运行测试，通过调用 <code>TearDown()</code> 清理资源，然后删除测试夹具。注意相同测试套件中的不同测试夹具具有不同的测试夹具类，且 googletest 总是在创建下一个之前删除测试夹具。googletest <strong>不</strong> 为多个测试复用相同的测试夹具。一个测试对夹具的任何修改不影响其它的测试。</p>
+<p>举个例子，让我们为名为 <code>Queue</code> 的 FIFO 队列类编写测试，它具有如下的接口：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> E&gt;  <span class="comment">// E is the element type.</span></div><div class="line"><span class="keyword">class</span> Queue &#123;</div><div class="line"> <span class="keyword">public</span>:</div><div class="line">  Queue();</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">Enqueue</span><span class="params">(<span class="keyword">const</span> E&amp; element)</span></span>;</div><div class="line">  <span class="function">E* <span class="title">Dequeue</span><span class="params">()</span></span>;  <span class="comment">// Returns NULL if the queue is empty.</span></div><div class="line">  <span class="keyword">size_t</span> size() <span class="keyword">const</span>;</div><div class="line">  ...</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>首先，定义一个夹具类。按照惯例，当被测试的类是 <code>Foo</code> 时你应该把它命名为 <code>FooTest</code>。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> QueueTest : <span class="keyword">public</span> ::testing::Test &#123;</div><div class="line"> <span class="keyword">protected</span>:</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">SetUp</span><span class="params">()</span> override </span>&#123;</div><div class="line">     q1_.Enqueue(<span class="number">1</span>);</div><div class="line">     q2_.Enqueue(<span class="number">2</span>);</div><div class="line">     q2_.Enqueue(<span class="number">3</span>);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// void TearDown() override &#123;&#125;</span></div><div class="line"></div><div class="line">  Queue&lt;<span class="keyword">int</span>&gt; q0_;</div><div class="line">  Queue&lt;<span class="keyword">int</span>&gt; q1_;</div><div class="line">  Queue&lt;<span class="keyword">int</span>&gt; q2_;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>在这个例子中，不需要 <code>TearDown()</code>，因为在每个测试之后，我们无需清理资源，这些已经由析构函数完成了。</p>
+<p>现在我们将编写使用 <code>TEST_F()</code> 和这个夹具的测试。<br><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">TEST_F(QueueTest, IsEmptyInitially) &#123;</div><div class="line">  EXPECT_EQ(q0_.size(), <span class="number">0</span>)<span class="comment">;</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">TEST_F(QueueTest, DequeueWorks) &#123;</div><div class="line">  int* n = q0_.Dequeue()<span class="comment">;</span></div><div class="line">  EXPECT_EQ(n, nullptr)<span class="comment">;</span></div><div class="line"></div><div class="line">  n = q1_.Dequeue()<span class="comment">;</span></div><div class="line">  ASSERT_NE(n, nullptr)<span class="comment">;</span></div><div class="line">  EXPECT_EQ(*n, <span class="number">1</span>)<span class="comment">;</span></div><div class="line">  EXPECT_EQ(q1_.size(), <span class="number">0</span>)<span class="comment">;</span></div><div class="line">  delete n<span class="comment">;</span></div><div class="line"></div><div class="line">  n = q2_.Dequeue()<span class="comment">;</span></div><div class="line">  ASSERT_NE(n, nullptr)<span class="comment">;</span></div><div class="line">  EXPECT_EQ(*n, <span class="number">2</span>)<span class="comment">;</span></div><div class="line">  EXPECT_EQ(q2_.size(), <span class="number">1</span>)<span class="comment">;</span></div><div class="line">  delete n<span class="comment">;</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上例同时使用了 <code>ASSERT_*</code> 和 <code>EXPECT_*</code> 断言。经验法则是当你想要断言失败时测试继续执行揭露更多错误时使用 <code>EXPECT_*</code>，当失败之后继续执行没有意义时使用 <code>ASSERT_*</code>。比如，<code>Dequeue</code> 测试中的第二个断言是 <code>ASSERT_NE(nullptr, n)</code>，由于我们后面需要解引用指针 <code>n</code>，当 <code>n</code> 为 <code>NULL</code> 时这将导致段错误。</p>
+<p>当运行这些测试时，将发生如下的事情：</p>
+<ol>
+<li>googletest 构造一个 <code>QueueTest</code> 对象（让我们称它为 <code>t1</code>）。</li>
+<li><code>t1.SetUp()</code> 初始化 <code>t1</code>。</li>
+<li>在 <code>t1</code> 上运行第一个测试（<code>IsEmptyInitially</code>）。</li>
+<li>测试结束之后 <code>t1.TearDown()</code> 清理资源。</li>
+<li><code>t1</code> 被销毁。</li>
+<li>上面的步骤在另一个 <code>QueueTest</code> 对象上重复，这次运行 <code>DequeueWorks</code> 测试。</li>
+</ol>
+<p><strong>可用性</strong>：Linux，Windows，Mac。</p>
+<h1 id="调用测试"><a href="#调用测试" class="headerlink" title="调用测试"></a>调用测试</h1><p><code>TEST()</code> 和 <code>TEST_F()</code> 隐式地把它们的测试注册给 googletest。因此，不像许多其它的 C++ 测试框架，因此你无需以运行的顺序把你定义的测试重新列出。</p>
+<p>定义你的测试之后，你可以通过 <code>RUN_ALL_TESTS()</code> 运行它们，如果所有的测试都成功了它将返回 <code>0</code>，否则返回 <code>1</code>。注意 <code>RUN_ALL_TESTS()</code> 运行你的链接单元中的 <em>所有测试</em> – 它们可以来自于不同的测试套件，甚至是不同的源文件。</p>
+<p>当被调用时，<code>RUN_ALL_TESTS()</code> 宏：</p>
+<ul>
+<li>保存所有的 googletest 标记的状态</li>
+<li>为第一个测试创建一个测试夹具对象。</li>
+<li>通过 <code>SetUp()</code> 初始化它。</li>
+<li>在测试夹具对象上运行测试。</li>
+<li>通过 <code>TearDown()</code> 清理测试夹具。</li>
+<li>删除夹具。</li>
+<li>恢复所有的 googletest 标记的状态</li>
+<li>为下一个测试重复上述步骤，知道所有测试都已经运行完。</li>
+</ul>
+<p>如果发生了致命失败则后续的步骤将被跳过。</p>
+<blockquote>
+<p>重要：你一定不能忽略 <code>RUN_ALL_TESTS()</code> 的返回值，否则你将得到一个编译错误。这种设计的原理是自动化测试服务是基于测试的退出码来决定它是否通过的，而不是它的 stdout/stderr 输出，因此你的 <code>main()</code> 函数必须返回 <code>RUN_ALL_TESTS()</code> 的值。</p>
+<p>而且，你应该只调用 <code>RUN_ALL_TESTS()</code> <strong>一次</strong>。多次调用它将与 googletest 的一些高级功能冲突（比如线程安全的 <a href="https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#death-tests" target="_blank" rel="external">death tests</a>）且这是不支持的。</p>
+</blockquote>
+<p><strong>可用性</strong>：Linux，Windows，Mac。</p>
+<h1 id="编写-main-函数"><a href="#编写-main-函数" class="headerlink" title="编写 main() 函数"></a>编写 main() 函数</h1><p>编写你自己的 <code>main()</code> 函数，它应该返回 <code>RUN_ALL_TESTS()</code> 的值。</p>
+<p>你可以从下面的示例代码开始：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"this/package/foo.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"gtest/gtest.h"</span></span></div><div class="line"></div><div class="line"><span class="keyword">namespace</span> &#123;</div><div class="line"></div><div class="line"><span class="comment">// The fixture for testing class Foo.</span></div><div class="line"><span class="keyword">class</span> FooTest : <span class="keyword">public</span> ::testing::Test &#123;</div><div class="line"> <span class="keyword">protected</span>:</div><div class="line">  <span class="comment">// You can remove any or all of the following functions if its body</span></div><div class="line">  <span class="comment">// is empty.</span></div><div class="line"></div><div class="line">  FooTest() &#123;</div><div class="line">     <span class="comment">// You can do set-up work for each test here.</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  ~FooTest() override &#123;</div><div class="line">     <span class="comment">// You can do clean-up work that doesn't throw exceptions here.</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// If the constructor and destructor are not enough for setting up</span></div><div class="line">  <span class="comment">// and cleaning up each test, you can define the following methods:</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">SetUp</span><span class="params">()</span> override </span>&#123;</div><div class="line">     <span class="comment">// Code here will be called immediately after the constructor (right</span></div><div class="line">     <span class="comment">// before each test).</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">TearDown</span><span class="params">()</span> override </span>&#123;</div><div class="line">     <span class="comment">// Code here will be called immediately after each test (right</span></div><div class="line">     <span class="comment">// before the destructor).</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Objects declared here can be used by all tests in the test suite for Foo.</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Tests that the Foo::Bar() method does Abc.</span></div><div class="line">TEST_F(FooTest, MethodBarDoesAbc) &#123;</div><div class="line">  <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> input_filepath = <span class="string">"this/package/testdata/myinputfile.dat"</span>;</div><div class="line">  <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> output_filepath = <span class="string">"this/package/testdata/myoutputfile.dat"</span>;</div><div class="line">  Foo f;</div><div class="line">  EXPECT_EQ(f.Bar(input_filepath, output_filepath), <span class="number">0</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Tests that Foo does Xyz.</span></div><div class="line">TEST_F(FooTest, DoesXyz) &#123;</div><div class="line">  <span class="comment">// Exercises the Xyz feature of Foo.</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;  <span class="comment">// namespace</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</div><div class="line">  ::testing::InitGoogleTest(&amp;argc, argv);</div><div class="line">  <span class="keyword">return</span> RUN_ALL_TESTS();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>::testing::InitGoogleTest()</code> 函数解析 googletest 标记的命令行参数，并移除所有已识别的标记。这允许用户通过不同的标记控制测试程序的行为，我们将在 <a href="https://github.com/google/googletest/blob/master/googletest/docs/advanced.md" target="_blank" rel="external">AdvancedGuide</a> 描述相关的内容。你<strong>必须</strong>在调用 <code>RUN_ALL_TESTS()</code> 之前调用这个函数，否则标记将无法得到适当的初始化。</p>
+<p>在 Windows 上，<code>InitGoogleTest()</code> 也可以用宽字符串，因此它也可以被用于以 <code>UNICODE</code> 模式编译的程序。</p>
+<p>但是正如你可能认为的那样，编写所有这些 <code>main()</code> 函数太麻烦了？我们完全同意你的看法，那就是 Google Test 为什么提供一个基本的 <code>main()</code> 函数实现的原因。如果它能满足你的需要，则把你的测试与 gtest_main 库链接在一起就好，然后你可以走了。</p>
+<p>注意：<code>ParseGUnitFlags()</code> 被 <code>InitGoogleTest()</code> 废弃了。</p>
+<h1 id="已知限制"><a href="#已知限制" class="headerlink" title="已知限制"></a>已知限制</h1><ul>
+<li>Google Test 被设计为线程安全的。<code>pthreads</code> 库可用的系统上的实现是线程安全的。当前在其它系统（比如 Windows）上在两个线程中并发地使用 Google Test 断言是<em>不安全的</em>。在大多数测试中这通常不是问题，断言在主线程中完成。如果你想提供帮助，你可以志愿在 <code>gtest-port.h</code> 中为你的平台实现需要的同步原语。</li>
+</ul>
+<p><a href="https://github.com/google/googletest/blob/master/googletest/docs/primer.md" target="_blank" rel="external">原文</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.png" alt="Han Pengfei 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Han Pengfei 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/C-C-开发/" rel="tag"># C/C++开发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/20/webrtc_audio_receiving_and_sending/" rel="next" title="WebRTC Audio 接收和发送的关键过程">
+                <i class="fa fa-chevron-left"></i> WebRTC Audio 接收和发送的关键过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/05/ogg_file_format/" rel="prev" title="Ogg 封装格式版本 0">
+                Ogg 封装格式版本 0 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/freesoft.jpg"
+                alt="Han Pengfei" />
+            
+              <p class="site-author-name" itemprop="name">Han Pengfei</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hanpfei" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.douban.com/people/3681478/" target="_blank" title="豆瓣"><i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/han-peng-fei-49" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hanpfei@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/index.html" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://source.android.com/" title="Android Open Source Project" target="_blank">Android Open Source Project</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.vants.org/" title="蚂蚁网" target="_blank">蚂蚁网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介：为什么是-googletest？"><span class="nav-number">1.</span> <span class="nav-text">简介：为什么是 googletest？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#术语说明"><span class="nav-number">2.</span> <span class="nav-text">术语说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">3.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#断言"><span class="nav-number">4.</span> <span class="nav-text">断言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本断言"><span class="nav-number">4.1.</span> <span class="nav-text">基本断言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二元比较"><span class="nav-number">4.2.</span> <span class="nav-text">二元比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串比较"><span class="nav-number">4.3.</span> <span class="nav-text">字符串比较</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简单的测试"><span class="nav-number">5.</span> <span class="nav-text">简单的测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试夹具：多个测试使用相同的数据配置"><span class="nav-number">6.</span> <span class="nav-text">测试夹具：多个测试使用相同的数据配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调用测试"><span class="nav-number">7.</span> <span class="nav-text">调用测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写-main-函数"><span class="nav-number">8.</span> <span class="nav-text">编写 main() 函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#已知限制"><span class="nav-number">9.</span> <span class="nav-text">已知限制</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016.09.16 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Pengfei</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 's9sbM9ODdusCzKcm5JcIj6t8-gzGzoHsz',
+    appKey: 'UoO9ia1DLNwOXRUsTBQ6QXxm',
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
