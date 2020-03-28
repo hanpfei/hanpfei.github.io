@@ -120,7 +120,7 @@
 <meta property="og:image" content="https://www.wolfcstech.com/images/1315506-427af5f80fa0fabc.png">
 <meta property="og:image" content="https://www.wolfcstech.com/images/1315506-5917501187ac7bac.png">
 <meta property="og:image" content="https://www.wolfcstech.com/images/1315506-86d7a6b03ebab973.png">
-<meta property="og:updated_time" content="2020-03-22T10:55:45.569Z">
+<meta property="og:updated_time" content="2020-03-28T01:23:30.055Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RTC 技术知识体系">
 <meta name="twitter:description" content="RTC（Real-time Communications），直译或者广义指实时通信，狭义一般称为实时音视频，在这次全球大爆发的新冠肺炎疫情中，作为视频会议、视频通话、远程办公、远程医疗和互动直播等应用的底层技术，为全社会的尽力运转提供了巨大的支持。">
@@ -426,10 +426,10 @@
         <p>RTC（Real-time Communications），直译或者广义指实时通信，狭义一般称为实时音视频，在这次全球大爆发的新冠肺炎疫情中，作为视频会议、视频通话、远程办公、远程医疗和互动直播等应用的底层技术，为全社会的尽力运转提供了巨大的支持。<br><a id="more"></a><br>实时音视频本身并不是最近才出现的新技术，很早以前的网络教科书就已经在介绍 RTP 和 RTCP 了，如道格拉斯·科默 (Douglas E.Comer) 的 《用TCP/IP进行网际互联》。互联网语音通话、视频通话和视频会议等应用，也不是刚刚出现的新东西，几十年前这些应用就已经出现在许多地方了。只是受限于硬件的运算能力、网络传输带宽、网络传输技术和网络应用技术的发展，相关应用的部署、成本和体验，一直不太尽如人意，因而应用范围也就比较受限。</p>
 <p>前些年网络带宽，网络技术如浏览器的快速进步，大大提升了视频网站的用户体验，并使之得到了广泛认可和应用，甚至使传统的音视频下载分发网站的市场大大萎缩。近些年及未来的计算能力提升，5G 网络高带宽低延迟传输技术提升，及音视频处理技术的发展等，RTC 应用的用户体验极大提升和广泛应用相信就在眼前了。</p>
 <p>一般来说，一个完整的音视频系统大概是这样的：</p>
-<p><img src="https://www.wolfcstech.com/images/1315506-a7efe2e196617036.png" alt="音视频系统"></p>
+<p><img src="/images/1315506-a7efe2e196617036.png" alt="音视频系统"></p>
 <p>一个完整的音视频系统一般都会包含音视频采集，音视频数据的处理，音视频的编码，音视频编码数据的封装、保存，音视频编码数据的传输和分发，音视频的解码，音视频数据的处理，和音视频的播放和渲染。</p>
 <p>很多年以前，大家依赖于音视频下载网站来欣赏音视频的时代中，完整的音视频系统中各个部分的角色和分工大概是这样的：专业的音视频制作团队完成音视频的数据采集、处理、编码和封装保存，产生最终的如 mp3 文件，mp4 文件，flv 文件，mkv 文件等媒体文件；音视频网站拿到这些音视频文件放在他们的网站上，我们大家从音视频网站上下载这些文件，如曾经我们常常以百度为入口下载各种音视频文件的网站；在我们本地的 PC 机，Mac，Android 或 iOS 设备中安装有专门的播放器来播放这些文件，如很多年以前的千千静听，Winamp，超级解霸，RealPlayer 等，后来出现的暴风影音，VLC，QQ 影音等，从而欣赏到音视频资源。这个时代的音视频系统大概是这样的：</p>
-<p><img src="https://www.wolfcstech.com/images/1315506-5af2e8bd74343817.png" alt="媒体文件时代的音视频系统"></p>
+<p><img src="/images/1315506-5af2e8bd74343817.png" alt="媒体文件时代的音视频系统"></p>
 <p>这个时代中，音视频产业链中的不同团队可以更加专注于其中的一些环节，如音视频采集、处理、编码和封装保存到文件由专门的团队来做，音视频文件的分发下载由专门的团队来做，音视频文件的分发下载所用到的技术和其它各种文件的分发下载技术基本上没有本质任何区别，有专门的播放器团队提供播放器供用户下载使用。<strong>这个时代中，不同部分的工作，独立性比较强，相互之间的影响较弱。</strong></p>
 <p>下载媒体文件通常要耗费比较多的时间，下载到本地之后又需要占用大量的磁盘空间来保存，这些问题都常常造成不好的用户体验。随着网络带宽的增加，网络传输技术的发展，以及浏览器的发展，解决媒体文件时代的问题的条件逐渐成熟，于是我们进入了视频网站时代，或者说流媒体时代。此时的音视频系统大概是这样的：</p>
 <p><img src="https://www.wolfcstech.com/images/1315506-a73117f31e7d1393.png" alt="流媒体时代的音视频系统"></p>
@@ -645,8 +645,6 @@
                     
                       
                     
-                      
-                    
                     <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
@@ -659,10 +657,6 @@
                 <div class="site-state-item site-state-tags">
                   <a href="/tags/index.html">
                     
-                    
-                      
-                    
-                      
                     
                       
                     
